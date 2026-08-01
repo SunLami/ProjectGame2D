@@ -8,7 +8,7 @@ public class PlayerMovement : MonoBehaviour
 
     Vector2 _moveInput;
 
-    [SerializeField] float _moveSpeed = 5f;
+    [SerializeField] float _moveSpeed;
 
     void Awake()
     {
@@ -18,11 +18,11 @@ public class PlayerMovement : MonoBehaviour
 
     public void OnMove(InputAction.CallbackContext context)
     {
-        _animator.SetBool("isWalking", true);
+        _animator.SetBool("isMoving", true);
 
         if (context.canceled)
         {
-            _animator.SetBool("isWalking", false);
+            _animator.SetBool("isMoving", false);
             _animator.SetFloat("LastInputX", _moveInput.x);
             _animator.SetFloat("LastInputY", _moveInput.y);
         }
@@ -30,6 +30,20 @@ public class PlayerMovement : MonoBehaviour
         _moveInput = context.ReadValue<Vector2>();
         _animator.SetFloat("InputX", _moveInput.x);
         _animator.SetFloat("InputY", _moveInput.y);
+    }
+
+    public void OnSprint(InputAction.CallbackContext context)
+    {
+        if (context.started)
+        {
+            _animator.SetBool("isRunning", true);
+            _moveSpeed *= 2;
+        }
+        else if (context.canceled)
+        {
+            _animator.SetBool("isRunning", false);
+            _moveSpeed /= 2;
+        }
     }
 
     private void Start()
