@@ -1,7 +1,8 @@
+﻿using System.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public class PlayerMovement : MonoBehaviour
+public class Player : MonoBehaviour
 {
     Rigidbody2D _rb;
     Animator _animator;
@@ -15,6 +16,14 @@ public class PlayerMovement : MonoBehaviour
         _rb = GetComponent<Rigidbody2D>();
         _animator = GetComponent<Animator>();
     }
+    private void Start()
+    {
+    }
+
+    private void Update()
+    {
+        _rb.linearVelocity = _moveInput * _moveSpeed;
+    }
 
     public void OnMove(InputAction.CallbackContext context)
     {
@@ -23,9 +32,9 @@ public class PlayerMovement : MonoBehaviour
         if (context.canceled)
         {
             _animator.SetBool("isMoving", false);
-            _animator.SetFloat("LastInputX", _moveInput.x);
-            _animator.SetFloat("LastInputY", _moveInput.y);
         }
+        _animator.SetFloat("LastInputX", _moveInput.x);
+        _animator.SetFloat("LastInputY", _moveInput.y);
 
         _moveInput = context.ReadValue<Vector2>();
         _animator.SetFloat("InputX", _moveInput.x);
@@ -46,12 +55,11 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
-    private void Start()
+    public void OnAttack(InputAction.CallbackContext context)
     {
-    }
-   
-    private void Update()
-    {
-        _rb.linearVelocity = _moveInput * _moveSpeed;
+        if (context.started)
+        {
+            _animator.SetTrigger("Attack");
+        }
     }
 }
