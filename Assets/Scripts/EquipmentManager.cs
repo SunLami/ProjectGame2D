@@ -5,10 +5,12 @@ public class EquipmentManager : MonoBehaviour
 {
     [Header("Sprite Library Component")]
     public SpriteLibrary bodySpriteLibrary;
+    public SpriteLibrary headSpriteLibrary;
     public SpriteLibrary swordSpriteLibrary;
 
     [Header("List Of LibraryAssets")]
     public SpriteLibraryAsset[] bodyEquipmentAssets;
+    public SpriteLibraryAsset[] headEquipmentAssets;
     public SpriteLibraryAsset[] swordEquipmentAssets;
 
     private int currentBodyIndex = 0;
@@ -20,6 +22,9 @@ public class EquipmentManager : MonoBehaviour
 
         currentBodyIndex = index;
         bodySpriteLibrary.spriteLibraryAsset = bodyEquipmentAssets[index];
+
+        if (headSpriteLibrary != null && headEquipmentAssets != null && index < headEquipmentAssets.Length)
+            headSpriteLibrary.spriteLibraryAsset = headEquipmentAssets[index];
     }
 
     public void EquipSwordByIndex(int index)
