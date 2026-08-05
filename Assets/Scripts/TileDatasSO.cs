@@ -10,6 +10,7 @@ public enum FloorType
 public class TileDataSO : ScriptableObject
 {
     public TileBase[] tiles;
-    public AudioClip[] audioClip;
+    public AudioClip[] walkAudioClip;
+    public AudioClip[] runAudioClip;
     public FloorType floorType;
 }

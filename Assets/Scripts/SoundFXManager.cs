@@ -1,9 +1,11 @@
+using MCPForUnity.Editor.Tools;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class SoundFXManager : MonoBehaviour
 {
-    private static SoundFXManager Instance;
+    public static SoundFXManager Instance;
+    private GameObject _player;
     private static AudioSource _audioSource;
     private static SoundFXLibrary _soundFXLibrary;
     [SerializeField] private Slider _soundFXSlider;
@@ -13,8 +15,9 @@ public class SoundFXManager : MonoBehaviour
         if (Instance == null)
         {
             Instance = this;
+            _player = GameObject.FindGameObjectWithTag("Player");
             _audioSource = GetComponent<AudioSource>();
-            _soundFXLibrary = GetComponent<SoundFXLibrary>();
+            //_soundFXLibrary = GetComponent<SoundFXLibrary>();
             DontDestroyOnLoad(gameObject);
         }
         else
@@ -33,9 +36,9 @@ public class SoundFXManager : MonoBehaviour
 
     }
 
-    public static void Play(string soundClipName, float volumeScale)
+    public static void PlayFootSteps(float volumeScale)
     {
-        AudioClip clip = _soundFXLibrary.GetRandomClip(soundClipName);
+        AudioClip clip = MapManager.Instance.GetCurrentTileAudioClip(Instance._player.transform.position);
 
         if (clip != null)
         {

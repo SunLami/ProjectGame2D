@@ -21,21 +21,30 @@ public class PlayerAnimationEvent : MonoBehaviour
         player.IsAttacking = false;
     }
 
-    public void PlayWalkFootSteps()
+    public void PlayFootSteps()
     {
         if (Time.time - lastStepTime < STEP_COOLDOWN) return;
 
-        SoundFXManager.Play("PlayerGrassWalk", 0.5f);
+        SoundFXManager.PlayFootSteps(1f);
 
         lastStepTime = Time.time;
     }
 
-    public void PlayRunFootSteps()
-    {
-        if (Time.time - lastStepTime < STEP_COOLDOWN) return;
+    //public void PlayWalkFootSteps()
+    //{
+    //    if (Time.time - lastStepTime < STEP_COOLDOWN) return;
 
-        SoundFXManager.Play("PlayerGrassRun", 1f);
+    //    SoundFXManager.Play("PlayerGrassWalk", 0.5f);
 
-        lastStepTime = Time.time;
-    }
+    //    lastStepTime = Time.time;
+    //}
+
+    //public void PlayRunFootSteps()
+    //{
+    //    if (Time.time - lastStepTime < STEP_COOLDOWN) return;
+
+    //    SoundFXManager.Play("PlayerGrassRun", 1f);
+
+    //    lastStepTime = Time.time;
+    //}
 }
