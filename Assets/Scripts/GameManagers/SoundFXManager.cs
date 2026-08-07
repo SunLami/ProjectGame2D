@@ -1,21 +1,21 @@
 using MCPForUnity.Editor.Tools;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class SoundFXManager : MonoBehaviour
 {
     public static SoundFXManager Instance;
-    private GameObject _player;
+    [SerializeField] private Transform _playerFootPos;
     private static AudioSource _audioSource;
     private static SoundFXLibrary _soundFXLibrary;
-    [SerializeField] private Slider _soundFXSlider;
+    [SerializeField] private Slider _masterSoundSlider;
 
     private void Awake()
     {
         if (Instance == null)
         {
             Instance = this;
-            _player = GameObject.FindGameObjectWithTag("Player");
             _audioSource = GetComponent<AudioSource>();
             //_soundFXLibrary = GetComponent<SoundFXLibrary>();
             DontDestroyOnLoad(gameObject);
@@ -27,7 +27,7 @@ public class SoundFXManager : MonoBehaviour
     }
     void Start()
     {
-        _soundFXSlider.onValueChanged.AddListener(delegate { OnValueChanged(); });
+        _masterSoundSlider.onValueChanged.AddListener(delegate { OnValueChanged(); });
     }
 
     // Update is called once per frame
@@ -38,7 +38,7 @@ public class SoundFXManager : MonoBehaviour
 
     public static void PlayFootSteps(float volumeScale)
     {
-        AudioClip clip = MapManager.Instance.GetCurrentTileAudioClip(Instance._player.transform.position);
+        AudioClip clip = MapManager.Instance.GetCurrentTileAudioClip(Instance._playerFootPos.position);
 
         if (clip != null)
         {
@@ -56,9 +56,9 @@ public class SoundFXManager : MonoBehaviour
 
     public void OnValueChanged()
     {
-        if (_soundFXSlider != null)
+        if (_masterSoundSlider != null)
         {
-            SetVolume(_soundFXSlider.value);
+            SetVolume(_masterSoundSlider.value);
         }
     }
 }
