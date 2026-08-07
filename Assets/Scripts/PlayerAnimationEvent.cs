@@ -12,13 +12,14 @@ public class PlayerAnimationEvent : MonoBehaviour
         player = GetComponent<Player>();
     }
 
-    public void OnAttackStart()
-    {
-        player.IsAttacking = true;
-    }
     public void OnAttackEnd()
     {
         player.IsAttacking = false;
+    }
+
+    public void OnHitEnd()
+    {
+         player.IsHit = false;
     }
 
     public void PlayFootSteps()
@@ -29,22 +30,4 @@ public class PlayerAnimationEvent : MonoBehaviour
 
         lastStepTime = Time.time;
     }
-
-    //public void PlayWalkFootSteps()
-    //{
-    //    if (Time.time - lastStepTime < STEP_COOLDOWN) return;
-
-    //    SoundFXManager.Play("PlayerGrassWalk", 0.5f);
-
-    //    lastStepTime = Time.time;
-    //}
-
-    //public void PlayRunFootSteps()
-    //{
-    //    if (Time.time - lastStepTime < STEP_COOLDOWN) return;
-
-    //    SoundFXManager.Play("PlayerGrassRun", 1f);
-
-    //    lastStepTime = Time.time;
-    //}
 }

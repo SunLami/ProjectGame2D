@@ -14,11 +14,13 @@ public class Player : MonoBehaviour
     [SerializeField] private bool _isMoving;
     [SerializeField] private bool _isAttacking;
     [SerializeField] private bool _isRunning;
+    [SerializeField] private bool _isHit;
 
     public float MoveSpeed { get { return _moveSpeed; } set { _moveSpeed = value; } }
     public bool IsMoving { get { return _isMoving; } set { _isMoving = value; } }
     public bool IsAttacking { get { return _isAttacking; } set { _isAttacking = value; } }
     public bool IsRunning { get { return _isRunning; } set { _isRunning = value; } }
+    public bool IsHit { get { return _isHit; } set { _isHit = value; } }
 
     void Awake()
     {
@@ -33,6 +35,7 @@ public class Player : MonoBehaviour
 
     private void Update()
     {
+        if (_isHit) return;
         _rb.linearVelocity = _moveInput * _moveSpeed;
     }
 
@@ -48,7 +51,7 @@ public class Player : MonoBehaviour
             _isMoving = true;
             _animator.SetBool("isMoving", _isMoving);
 
-            if (!_isAttacking)
+            if (!_isAttacking && !_isHit)
             {
                 _animator.SetFloat("LastInputX", _moveInput.x);
                 _animator.SetFloat("LastInputY", _moveInput.y);
@@ -82,17 +85,33 @@ public class Player : MonoBehaviour
     {
         if (context.started && !_isAttacking)
         {
+            _isAttacking = true;
+
             if (_isRunning)
             {
                 _animator.SetFloat("LastInputX", _moveInput.x);
                 _animator.SetFloat("LastInputY", _moveInput.y);
             }
-            else
-                UpdateDirectionToMouse();
+            else UpdateDirectionToMouse();
 
             _animator.SetTrigger("Attack");
         }
     }
+    public void TakeDamage(float damageAmount, Vector2 knockbackDirection, float knockbackForce)
+    {
+        //if (_isHit) return;
+
+        _isHit = true;
+        _isAttacking = false;
+
+        _rb.linearVelocity = Vector2.zero;
+        _rb.AddForce(knockbackDirection * knockbackForce, ForceMode2D.Impulse);
+
+        PlayerStat.Instance.Health -= damageAmount;
+
+        _animator.SetTrigger("isHit");
+    }
+
 
     private void UpdateDirectionToMouse()
     {

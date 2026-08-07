@@ -2,9 +2,9 @@ using UnityEngine;
 
 public class PlayerStat : MonoBehaviour
 {
-    private static PlayerStat Instance;
-    private static float _health;
-    private static float _maxHealth;
+    public static PlayerStat Instance;
+    [SerializeField] private float _health;
+    [SerializeField] private float _maxHealth;
 
     public float Health { get { return _health; } set { _health = value; } }
     public float MaxHealth { get { return _maxHealth; } }
@@ -24,12 +24,12 @@ public class PlayerStat : MonoBehaviour
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        
+        _health = _maxHealth;
     }
 
     // Update is called once per frame
     void Update()
     {
-        
+
     }
 }
