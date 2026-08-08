@@ -273,7 +273,7 @@ public class Enemy : MonoBehaviour
         }
     }
 
-    private void OnDrawGizmos()
+    private void OnDrawGizmosSelected()
     {
         Vector3 basePos = Application.isPlaying ? (Vector3)initialPosition : transform.position;
 
