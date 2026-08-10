@@ -40,15 +40,15 @@ public class SoundFXManager : MonoBehaviour
 
         if (clip != null)
         {
-            Instance._audioSource.PlayOneShot(clip, volumeScale);
+            _audioSource.PlayOneShot(clip, volumeScale);
         }
     }
 
     public static void SetVolume(float volume)
     {
-        if (Instance != null && Instance._audioSource != null)
+        if (_audioSource != null)
         {
-            Instance._audioSource.volume = volume;
+            _audioSource.volume = volume;
         }
     }
 
