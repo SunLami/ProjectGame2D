@@ -1,4 +1,3 @@
-using MCPForUnity.Editor.Tools;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -6,8 +5,8 @@ public class SoundFXManager : MonoBehaviour
 {
     public static SoundFXManager Instance;
     private GameObject _player;
-    private static AudioSource _audioSource;
-    private static SoundFXLibrary _soundFXLibrary;
+    private AudioSource _audioSource;
+    private SoundFXLibrary _soundFXLibrary;
     [SerializeField] private Slider _soundFXSlider;
 
     private void Awake()
@@ -42,15 +41,15 @@ public class SoundFXManager : MonoBehaviour
 
         if (clip != null)
         {
-            _audioSource.PlayOneShot(clip, volumeScale);
+            Instance._audioSource.PlayOneShot(clip, volumeScale);
         }
     }
 
     public static void SetVolume(float volume)
     {
-        if (_audioSource != null)
+        if (Instance != null && Instance._audioSource != null)
         {
-            _audioSource.volume = volume;
+            Instance._audioSource.volume = volume;
         }
     }
 

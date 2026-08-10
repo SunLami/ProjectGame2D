@@ -3,8 +3,8 @@ using UnityEngine;
 public class PlayerStat : MonoBehaviour
 {
     private static PlayerStat Instance;
-    private static float _health;
-    private static float _maxHealth;
+    private float _health;
+    private float _maxHealth;
 
     public float Health { get { return _health; } set { _health = value; } }
     public float MaxHealth { get { return _maxHealth; } }
