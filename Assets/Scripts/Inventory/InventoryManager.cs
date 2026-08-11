@@ -7,9 +7,11 @@ public class InventoryManager : MonoBehaviour
     public static InventoryManager Instance;
 
     [SerializeField] private int _startingSlotCount = 40;
+    [SerializeField] private int _gold;
     private List<InventorySlot> _slots;
 
     public IReadOnlyList<InventorySlot> Slots => _slots;
+    public int Gold => _gold;
     public event Action OnInventoryChanged;
 
     private void Awake()
@@ -126,6 +128,74 @@ public class InventoryManager : MonoBehaviour
 
         (a.item, b.item) = (b.item, a.item);
         (a.quantity, b.quantity) = (b.quantity, a.quantity);
+
+        OnInventoryChanged?.Invoke();
+    }
+
+    public void AddGold(int amount)
+    {
+        if (amount <= 0) return;
+
+        _gold += amount;
+        OnInventoryChanged?.Invoke();
+    }
+
+    public bool SpendGold(int amount)
+    {
+        if (amount <= 0 || _gold < amount) return false;
+
+        _gold -= amount;
+        OnInventoryChanged?.Invoke();
+        return true;
+    }
+
+    // Snapshots current contents into a plain serializable DTO (not tied to any ScriptableObject
+    // asset) so it can be written to a per-player save file later.
+    public InventorySaveData ToSaveData()
+    {
+        var data = new InventorySaveData();
+        foreach (InventorySlot slot in _slots)
+        {
+            data.slots.Add(new InventorySaveData.SlotData
+            {
+                itemId = slot.IsEmpty ? null : slot.item.itemId,
+                quantity = slot.quantity
+            });
+        }
+
+        return data;
+    }
+
+    // Restores contents from a save-data snapshot, resolving each itemId through the given lookup
+    // (build one via ItemLookup.BuildFromResources()). Grows slot count if the save has more slots
+    // than currently exist; unmatched or unknown items are left empty rather than throwing.
+    public void LoadFromSaveData(InventorySaveData data, IReadOnlyDictionary<string, ItemSO> itemLookup)
+    {
+        if (data == null || data.slots == null || itemLookup == null) return;
+
+        if (data.slots.Count > _slots.Count)
+        {
+            AddSlots(data.slots.Count - _slots.Count);
+        }
+
+        for (int i = 0; i < _slots.Count; i++)
+        {
+            if (i >= data.slots.Count)
+            {
+                _slots[i].Clear();
+                continue;
+            }
+
+            InventorySaveData.SlotData slotData = data.slots[i];
+            if (string.IsNullOrEmpty(slotData.itemId) || !itemLookup.TryGetValue(slotData.itemId, out ItemSO item))
+            {
+                _slots[i].Clear();
+                continue;
+            }
+
+            _slots[i].item = item;
+            _slots[i].quantity = slotData.quantity;
+        }
 
         OnInventoryChanged?.Invoke();
     }
