@@ -52,7 +52,15 @@ public class EquipmentManager : MonoBehaviour
 
     private void Awake()
     {
-        Instance = this;
+        if (Instance == null)
+        {
+            Instance = this;
+            DontDestroyOnLoad(gameObject);
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
     }
 
     public EquipmentItemSO GetEquipped(EquipSlot slot)
