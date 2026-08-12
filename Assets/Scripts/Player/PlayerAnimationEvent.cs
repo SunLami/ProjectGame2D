@@ -1,33 +1,35 @@
 using UnityEngine;
 
+[RequireComponent(typeof(Player))]
 public class PlayerAnimationEvent : MonoBehaviour
 {
-    Player player;
+    private const float StepCooldown = 0.2f;
 
-    private float lastStepTime;
-    private const float STEP_COOLDOWN = 0.2f;
+    private Player _player;
+    private float _lastStepTime;
 
     private void Awake()
     {
-        player = GetComponent<Player>();
+        _player = GetComponent<Player>();
     }
 
     public void OnAttackEnd()
     {
-        player.IsAttacking = false;
+        _player.FinishAttack();
     }
 
     public void OnHitEnd()
     {
-         player.IsHit = false;
+        _player.FinishHit();
     }
 
     public void PlayFootSteps()
     {
-        if (Time.time - lastStepTime < STEP_COOLDOWN) return;
+        if (Time.time - _lastStepTime < StepCooldown)
+            return;
 
         SoundFXManager.PlayFootSteps(1f);
-
-        lastStepTime = Time.time;
+        _lastStepTime = Time.time;
     }
 }
+

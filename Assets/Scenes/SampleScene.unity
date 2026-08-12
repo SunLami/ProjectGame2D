@@ -1580,7 +1580,7 @@ SpriteRenderer:
   m_SortingLayer: 1
   m_SortingOrder: 1
   m_MaskInteraction: 0
-  m_Sprite: {fileID: -618004114279906421, guid: 5e65e5208d0745c4e9a03575c2accc29, type: 3}
+  m_Sprite: {fileID: -4361743883051759222, guid: 3913827a90c0aa44b8d3c29f3917bb4f, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -4206,6 +4206,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerMovement
   _moveSpeed: 2
+  _sprintMultiplier: 2
   _isMoving: 0
   _isAttacking: 0
   _isRunning: 0
@@ -4472,8 +4473,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: afb236b20e901fd4eafda56a61d7b0a5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerCollider
-  _player: {fileID: 0}
-  _knockbackForce: 1
 --- !u!114 &1570954203
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5141,7 +5140,7 @@ GameObject:
   - component: {fileID: 1790455607}
   - component: {fileID: 1790455604}
   m_Layer: 0
-  m_Name: DamageBox
+  m_Name: Enemy
   m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -5234,28 +5233,30 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9ead242b34e08ff49b867185ed50cb43, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Enemy
-  enemySprite: {fileID: 0}
-  animator: {fileID: 0}
-  rb: {fileID: 0}
-  player: {fileID: 0}
-  idleAnimation: {fileID: 0}
-  walkAnimation: {fileID: 0}
-  runAnimation: {fileID: 0}
-  attackAnimation: {fileID: 0}
-  hitAnimation: {fileID: 0}
-  deadAnimation: {fileID: 0}
-  maxHealth: 100
-  health: 100
-  moveSpeed: 1
-  detectionRange: 4
-  chaseRange: 8
-  patrolDistance: 3
-  attackRange: 1.2
-  attackDamage: 10
-  attackCooldown: 1.5
-  currentState: 1
-  initialPosition: {x: 0, y: 0}
-  idleTime: 2
+  _enemySprite: {fileID: 0}
+  _animator: {fileID: 0}
+  _rigidbody: {fileID: 0}
+  _player: {fileID: 0}
+  _idleAnimation: {fileID: 0}
+  _walkAnimation: {fileID: 0}
+  _runAnimation: {fileID: 0}
+  _attackAnimation: {fileID: 0}
+  _hitAnimation: {fileID: 0}
+  _deadAnimation: {fileID: 0}
+  _maxHealth: 100
+  _health: 100
+  _moveSpeed: 1
+  _detectionRange: 4.22
+  _chaseRange: 8
+  _patrolDistance: 3
+  _attackRange: 1.2
+  _attackDamage: 50
+  _attackCooldown: 1.5
+  _attackHitNormalizedTime: 0.5
+  _attackKnockbackForce: 5
+  _currentState: 1
+  _initialPosition: {x: 0, y: 0}
+  _idleTime: 2
 --- !u!95 &1790455605
 Animator:
   serializedVersion: 7
@@ -5469,7 +5470,7 @@ SpriteRenderer:
   m_SortingLayer: 1
   m_SortingOrder: 0
   m_MaskInteraction: 0
-  m_Sprite: {fileID: -3796262855647141906, guid: d91d7f7221a63fa4ea54c06457df2e36, type: 3}
+  m_Sprite: {fileID: 1778554653, guid: 0902d0ad96a742e4f8a21937c4d36548, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -5924,7 +5925,7 @@ SpriteRenderer:
   m_SortingLayer: 1
   m_SortingOrder: 0
   m_MaskInteraction: 0
-  m_Sprite: {fileID: 193043108463661583, guid: 0946bf4240e841a418e5d395ad323dfb, type: 3}
+  m_Sprite: {fileID: 9056706936069279385, guid: 6e2bebe5836a541498e7ed62a0fe559b, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
