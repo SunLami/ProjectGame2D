@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 using UnityEngine.Serialization;
 
@@ -21,14 +22,6 @@ public class Enemy : MonoBehaviour
     [FormerlySerializedAs("rb"), SerializeField] private Rigidbody2D _rigidbody;
     [FormerlySerializedAs("player"), SerializeField] private GameObject _player;
 
-    [Header("Animation Clips")]
-    [FormerlySerializedAs("idleAnimation"), SerializeField] private AnimationClip _idleAnimation;
-    [FormerlySerializedAs("walkAnimation"), SerializeField] private AnimationClip _walkAnimation;
-    [FormerlySerializedAs("runAnimation"), SerializeField] private AnimationClip _runAnimation;
-    [FormerlySerializedAs("attackAnimation"), SerializeField] private AnimationClip _attackAnimation;
-    [FormerlySerializedAs("hitAnimation"), SerializeField] private AnimationClip _hitAnimation;
-    [FormerlySerializedAs("deadAnimation"), SerializeField] private AnimationClip _deadAnimation;
-
     [Header("Basic Stats")]
     [FormerlySerializedAs("maxHealth"), SerializeField, Min(1f)] private float _maxHealth = 100f;
     [FormerlySerializedAs("health"), SerializeField] private float _health = 100f;
@@ -46,6 +39,18 @@ public class Enemy : MonoBehaviour
     [SerializeField, Range(0f, 1f)] private float _attackHitNormalizedTime = 0.5f;
     [SerializeField, Min(0f)] private float _attackKnockbackForce = 5f;
 
+    [Header("Animation Timing")]
+    [SerializeField, Min(0.01f)] private float _attackDuration = 0.5f;
+    [SerializeField, Min(0.01f)] private float _hitDuration = 0.3f;
+    [SerializeField, Min(0.01f)] private float _deathDuration = 3f;
+
+    [Header("Attack Hitbox")]
+    [SerializeField] private EnemyAttackHitbox _attackHitbox;
+    [Tooltip("Bật để hitbox xoay và đổi vị trí theo hướng Enemy. Tắt để giữ nguyên transform đã thiết lập trong prefab.")]
+    [SerializeField] private bool _rotateHitboxWithEnemyDirection = true;
+    [SerializeField, Min(0f)] private float _attackHitboxOffset = 0.8f;
+    [SerializeField, Min(0.02f)] private float _attackHitboxActiveDuration = 0.1f;
+
     [Header("State")]
     [FormerlySerializedAs("currentState"), SerializeField] private EnemyState _currentState;
     [FormerlySerializedAs("initialPosition"), SerializeField] private Vector2 _initialPosition;
@@ -56,8 +61,20 @@ public class Enemy : MonoBehaviour
     private Vector2 _desiredVelocity;
     private float _stateEnterTime;
     private float _lastAttackEndTime = float.NegativeInfinity;
-    private bool _attackDamageApplied;
     private Collider2D[] _colliders;
+    private Coroutine _stateRoutine;
+    private Vector2 _lastDirection = Vector2.down;
+    private bool _hasEnteredState;
+
+    private static readonly int InputXHash = Animator.StringToHash("InputX");
+    private static readonly int InputYHash = Animator.StringToHash("InputY");
+    private static readonly int LastInputXHash = Animator.StringToHash("LastInputX");
+    private static readonly int LastInputYHash = Animator.StringToHash("LastInputY");
+    private static readonly int IsWalkingHash = Animator.StringToHash("isWalking");
+    private static readonly int IsRunningHash = Animator.StringToHash("isRunning");
+    private static readonly int AttackHash = Animator.StringToHash("Attack");
+    private static readonly int IsHitHash = Animator.StringToHash("isHit");
+    private static readonly int IsDeadHash = Animator.StringToHash("isDead");
 
     public EnemyState CurrentState => _currentState;
     public float Health => _health;
@@ -71,12 +88,15 @@ public class Enemy : MonoBehaviour
 
         _colliders = GetComponentsInChildren<Collider2D>();
         _health = Mathf.Clamp(_health, 0f, _maxHealth);
+        EnsureAttackHitbox();
     }
 
     private void Start()
     {
         _initialPosition = transform.position;
         ResolvePlayer();
+        SetDirectionParameters(Vector2.zero, false);
+        SetLocomotionParameters(false, false);
         EnterState(_health <= 0f ? EnemyState.Dead : EnemyState.Idling);
     }
 
@@ -112,16 +132,16 @@ public class Enemy : MonoBehaviour
             case EnemyState.Patrolling: UpdatePatrol(); break;
             case EnemyState.Chasing: UpdateChase(); break;
             case EnemyState.Returning: UpdateReturning(); break;
-            case EnemyState.Attacking: UpdateAttack(); break;
-            case EnemyState.Hit: UpdateHit(); break;
         }
     }
 
     private void EnterState(EnemyState newState)
     {
-        if (_currentState == newState && newState != EnemyState.Hit)
+        if (_hasEnteredState && _currentState == newState && newState != EnemyState.Hit)
             return;
 
+        StopStateRoutine();
+        _hasEnteredState = true;
         _currentState = newState;
         _stateEnterTime = Time.time;
         _desiredVelocity = Vector2.zero;
@@ -129,24 +149,25 @@ public class Enemy : MonoBehaviour
         switch (newState)
         {
             case EnemyState.Idling:
-                PlayAnimation(_idleAnimation);
+                SetLocomotionParameters(false, false);
                 break;
             case EnemyState.Patrolling:
-                PlayAnimation(_walkAnimation);
                 _currentPatrolTarget = _initialPosition + Random.insideUnitCircle * _patrolDistance;
                 break;
             case EnemyState.Chasing:
-                PlayAnimation(_runAnimation != null ? _runAnimation : _walkAnimation);
                 break;
             case EnemyState.Returning:
-                PlayAnimation(_walkAnimation);
                 break;
             case EnemyState.Attacking:
-                _attackDamageApplied = false;
-                PlayAnimation(_attackAnimation);
+                SetLocomotionParameters(false, false);
+                FacePlayer();
+                _animator?.SetTrigger(AttackHash);
+                _stateRoutine = StartCoroutine(AttackRoutine());
                 break;
             case EnemyState.Hit:
-                PlayAnimation(_hitAnimation);
+                SetLocomotionParameters(false, false);
+                _animator?.SetTrigger(IsHitHash);
+                _stateRoutine = StartCoroutine(HitRoutine());
                 break;
             case EnemyState.Dead:
                 Die();
@@ -167,7 +188,7 @@ public class Enemy : MonoBehaviour
 
     private void UpdatePatrol()
     {
-        MoveTowards(_currentPatrolTarget);
+        MoveTowards(_currentPatrolTarget, false);
         if (IsNear(_currentPatrolTarget, 0.1f))
         {
             EnterState(EnemyState.Idling);
@@ -197,35 +218,60 @@ public class Enemy : MonoBehaviour
             return;
         }
 
-        MoveTowards(_player.transform.position);
+        MoveTowards(_player.transform.position, true);
     }
 
     private void UpdateReturning()
     {
-        MoveTowards(_initialPosition);
+        MoveTowards(_initialPosition, false);
         if (IsNear(_initialPosition, 0.1f))
             EnterState(EnemyState.Idling);
     }
 
-    private void UpdateAttack()
+    private IEnumerator AttackRoutine()
     {
-        float duration = GetDuration(_attackAnimation, 0.5f);
-        float elapsed = Time.time - _stateEnterTime;
+        float duration = _attackDuration;
+        float hitDelay = duration * _attackHitNormalizedTime;
 
-        if (!_attackDamageApplied && elapsed >= duration * _attackHitNormalizedTime)
-            ApplyAttackDamage();
+        if (hitDelay > 0f)
+            yield return new WaitForSeconds(hitDelay);
 
-        if (elapsed >= duration)
-        {
-            _lastAttackEndTime = Time.time;
-            EvaluateNextState();
-        }
+        float remainingDuration = duration - hitDelay;
+        float activeDuration = Mathf.Min(_attackHitboxActiveDuration, remainingDuration);
+        _attackHitbox.Configure(_lastDirection, _attackHitboxOffset, _rotateHitboxWithEnemyDirection);
+        _attackHitbox.BeginAttack();
+
+        if (activeDuration > 0f)
+            yield return new WaitForSeconds(activeDuration);
+
+        _attackHitbox.EndAttack();
+
+        float recoveryDuration = remainingDuration - activeDuration;
+        if (recoveryDuration > 0f)
+            yield return new WaitForSeconds(recoveryDuration);
+
+        _stateRoutine = null;
+        _lastAttackEndTime = Time.time;
+        EvaluateNextState();
     }
 
-    private void UpdateHit()
+    private IEnumerator HitRoutine()
     {
-        if (Time.time - _stateEnterTime >= GetDuration(_hitAnimation, 0.3f))
-            EvaluateNextState();
+        yield return new WaitForSeconds(_hitDuration);
+
+        _stateRoutine = null;
+        EvaluateNextState();
+    }
+
+    private void StopStateRoutine()
+    {
+        _attackHitbox?.EndAttack();
+
+        if (_stateRoutine == null)
+            return;
+
+        StopCoroutine(_stateRoutine);
+        _stateRoutine = null;
     }
 
     private void EvaluateNextState()
@@ -263,28 +309,89 @@ public class Enemy : MonoBehaviour
         return _player != null && (_playerScript == null || !_playerScript.IsDead);
     }
 
-    private void MoveTowards(Vector2 target)
+    private void MoveTowards(Vector2 target, bool isRunning)
     {
         Vector2 direction = (target - (Vector2)transform.position).normalized;
         _desiredVelocity = direction * _moveSpeed;
-
-        if (Mathf.Abs(direction.x) > Mathf.Epsilon && _enemySprite != null)
-            _enemySprite.flipX = direction.x < 0f;
+        SetDirectionParameters(direction, true);
+        SetLocomotionParameters(true, isRunning);
     }
 
-    private void ApplyAttackDamage()
+    private void FacePlayer()
     {
-        _attackDamageApplied = true;
-        if (!HasLivingPlayer() || !IsNear(_player.transform.position, _attackRange))
+        if (HasLivingPlayer())
+            SetDirectionParameters(_player.transform.position - transform.position, true);
+    }
+
+    private void SetLocomotionParameters(bool isWalking, bool isRunning)
+    {
+        if (_animator == null)
             return;
 
-        Vector2 knockbackDirection = (_player.transform.position - transform.position).normalized;
-        _playerScript?.TakeDamage(_attackDamage, knockbackDirection, _attackKnockbackForce);
+        _animator.SetBool(IsWalkingHash, isWalking);
+        _animator.SetBool(IsRunningHash, isWalking && isRunning);
+        if (!isWalking)
+        {
+            _animator.SetFloat(InputXHash, 0f);
+            _animator.SetFloat(InputYHash, 0f);
+        }
+    }
+
+    private void SetDirectionParameters(Vector2 direction, bool updateLastDirection)
+    {
+        if (_animator == null)
+            return;
+
+        Vector2 cardinal = ToCardinalDirection(direction);
+        if (updateLastDirection && cardinal != Vector2.zero)
+            _lastDirection = cardinal;
+
+        _animator.SetFloat(InputXHash, cardinal.x);
+        _animator.SetFloat(InputYHash, cardinal.y);
+        _animator.SetFloat(LastInputXHash, _lastDirection.x);
+        _animator.SetFloat(LastInputYHash, _lastDirection.y);
+    }
+
+    private static Vector2 ToCardinalDirection(Vector2 direction)
+    {
+        if (direction.sqrMagnitude <= Mathf.Epsilon)
+            return Vector2.zero;
+
+        return Mathf.Abs(direction.x) > Mathf.Abs(direction.y)
+            ? new Vector2(Mathf.Sign(direction.x), 0f)
+            : new Vector2(0f, Mathf.Sign(direction.y));
+    }
+
+    public void DamagePlayerFromHitbox(Player player)
+    {
+        if (IsDead || _currentState != EnemyState.Attacking || player == null || player.IsDead)
+            return;
+
+        Vector2 knockbackDirection = (player.transform.position - transform.position).normalized;
+        player.TakeDamage(_attackDamage, knockbackDirection, _attackKnockbackForce);
+    }
+
+    private void EnsureAttackHitbox()
+    {
+        if (_attackHitbox == null)
+            _attackHitbox = GetComponentInChildren<EnemyAttackHitbox>(true);
+
+        if (_attackHitbox == null)
+        {
+            GameObject hitboxObject = new("AttackHitbox");
+            hitboxObject.transform.SetParent(transform, false);
+            hitboxObject.AddComponent<PolygonCollider2D>();
+            _attackHitbox = hitboxObject.AddComponent<EnemyAttackHitbox>();
+        }
+
+        _attackHitbox.Initialize(this);
+        _attackHitbox.Configure(_lastDirection, _attackHitboxOffset, _rotateHitboxWithEnemyDirection);
     }
 
     private void Die()
     {
         _desiredVelocity = Vector2.zero;
+        _attackHitbox?.EndAttack();
         if (_rigidbody != null)
         {
             _rigidbody.linearVelocity = Vector2.zero;
@@ -294,24 +401,14 @@ public class Enemy : MonoBehaviour
         foreach (Collider2D enemyCollider in _colliders)
             enemyCollider.enabled = false;
 
-        PlayAnimation(_deadAnimation);
-        Destroy(gameObject, GetDuration(_deadAnimation, 3f));
-    }
-
-    private void PlayAnimation(AnimationClip clip)
-    {
-        if (_animator != null && clip != null)
-            _animator.Play(Animator.StringToHash(clip.name));
+        SetLocomotionParameters(false, false);
+        _animator?.SetBool(IsDeadHash, true);
+        Destroy(gameObject, _deathDuration);
     }
 
     private bool IsNear(Vector2 target, float distance)
     {
         return ((Vector2)transform.position - target).sqrMagnitude <= distance * distance;
-    }
-
-    private static float GetDuration(AnimationClip clip, float fallback)
-    {
-        return clip != null ? clip.length : fallback;
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
@@ -334,6 +431,11 @@ public class Enemy : MonoBehaviour
         _attackDamage = Mathf.Max(0f, _attackDamage);
         _attackCooldown = Mathf.Max(0f, _attackCooldown);
         _attackKnockbackForce = Mathf.Max(0f, _attackKnockbackForce);
+        _attackDuration = Mathf.Max(0.01f, _attackDuration);
+        _hitDuration = Mathf.Max(0.01f, _hitDuration);
+        _deathDuration = Mathf.Max(0.01f, _deathDuration);
+        _attackHitboxOffset = Mathf.Max(0f, _attackHitboxOffset);
+        _attackHitboxActiveDuration = Mathf.Max(0.02f, _attackHitboxActiveDuration);
     }
 
     private void OnDrawGizmosSelected()
