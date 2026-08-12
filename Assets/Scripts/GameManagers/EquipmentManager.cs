@@ -19,6 +19,7 @@ public class EquipmentManager : MonoBehaviour
 
     private int currentBodyIndex = 0;
     private int currentSwordIndex = 0;
+    private int currentHeadIndex = 0;
 
     public void EquipBodyByIndex(int index)
     {
@@ -37,6 +38,14 @@ public class EquipmentManager : MonoBehaviour
 
         currentSwordIndex = index;
         swordSpriteLibrary.spriteLibraryAsset = swordEquipmentAssets[index];
+    }
+
+    public void EquipHeadByIndex(int index)
+    {
+        if (headEquipmentAssets == null || index < 0 || index >= headEquipmentAssets.Length) return;
+
+        currentHeadIndex = index;
+        headSpriteLibrary.spriteLibraryAsset = headEquipmentAssets[index];
     }
 
     // --- Data-driven Equipment System (Inventory-integrated) ---
