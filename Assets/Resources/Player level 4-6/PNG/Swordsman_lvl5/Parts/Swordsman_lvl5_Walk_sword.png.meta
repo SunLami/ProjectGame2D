@@ -52,7 +52,7 @@ TextureImporter:
   maxTextureSize: 2048
   textureSettings:
     serializedVersion: 2
-    filterMode: 1
+    filterMode: 0
     aniso: 1
     mipBias: 0
     wrapU: 1
@@ -66,7 +66,7 @@ TextureImporter:
   spriteMeshType: 1
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
-  spritePixelsToUnits: 100
+  spritePixelsToUnits: 32
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
@@ -90,7 +90,7 @@ TextureImporter:
     maxTextureSize: 2048
     resizeAlgorithm: 0
     textureFormat: -1
-    textureCompression: 1
+    textureCompression: 0
     compressionQuality: 50
     crunchedCompression: 0
     allowsAlphaSplitting: 0
@@ -131,19 +131,19 @@ TextureImporter:
       name: lvl5_Walk_sword_0
       rect:
         serializedVersion: 2
-        x: 28
-        y: 80
-        width: 12
-        height: 12
+        x: 0
+        y: 192
+        width: 64
+        height: 64
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 8bf57684897f5fcf0800000000000000
+      spriteID: 0174d438ba794ea4ba2d93be4333372a
       internalID: -218996773435777096
       vertices: []
       indices: 
@@ -153,19 +153,19 @@ TextureImporter:
       name: lvl5_Walk_sword_1
       rect:
         serializedVersion: 2
-        x: 93
-        y: 81
-        width: 12
-        height: 12
+        x: 64
+        y: 192
+        width: 64
+        height: 64
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: f880621491499d100800000000000000
+      spriteID: c282d8aa0dd590041818d32b8df0981a
       internalID: 133300500172245135
       vertices: []
       indices: 
@@ -175,19 +175,19 @@ TextureImporter:
       name: lvl5_Walk_sword_2
       rect:
         serializedVersion: 2
-        x: 158
-        y: 81
-        width: 12
-        height: 12
+        x: 128
+        y: 192
+        width: 64
+        height: 64
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 61f63d1023a477290800000000000000
+      spriteID: 04137bd3adfcd1f488ac240f83848997
       internalID: -7892758243304050922
       vertices: []
       indices: 
@@ -197,19 +197,19 @@ TextureImporter:
       name: lvl5_Walk_sword_3
       rect:
         serializedVersion: 2
-        x: 222
-        y: 80
-        width: 12
-        height: 12
+        x: 192
+        y: 192
+        width: 64
+        height: 64
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 2d14920387c336170800000000000000
+      spriteID: 900457733890b284eaccd2abb0dcce6c
       internalID: 8170440635881963986
       vertices: []
       indices: 
@@ -219,19 +219,19 @@ TextureImporter:
       name: lvl5_Walk_sword_4
       rect:
         serializedVersion: 2
-        x: 285
-        y: 80
-        width: 12
-        height: 12
+        x: 256
+        y: 192
+        width: 64
+        height: 64
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 2f6fc29fffdcb4540800000000000000
+      spriteID: 90fd98ca94fb357459595d3cb04d3e84
       internalID: 4993311111151154930
       vertices: []
       indices: 
@@ -241,20 +241,416 @@ TextureImporter:
       name: lvl5_Walk_sword_5
       rect:
         serializedVersion: 2
-        x: 349
-        y: 81
-        width: 12
-        height: 12
+        x: 320
+        y: 192
+        width: 64
+        height: 64
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: ffff0dbd06ad0dc60800000000000000
+      spriteID: 04de02eb43318d547928fe66ccdbd89f
       internalID: 7841007060791656447
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: lvl5_Walk_sword_6
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 128
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a98e114a88fd3b14aa9b77df700d3d8d
+      internalID: -1510143009
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: lvl5_Walk_sword_7
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 128
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a77083753d9d7eb42a7eafb025f05bce
+      internalID: 1370161105
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: lvl5_Walk_sword_8
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 128
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: dfda923f0fb574040baeb6e8e835a94c
+      internalID: 1640770159
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: lvl5_Walk_sword_9
+      rect:
+        serializedVersion: 2
+        x: 192
+        y: 128
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d538498302c91c64ba63beeaa1b4447f
+      internalID: 1309324
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: lvl5_Walk_sword_10
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 128
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 53d4cfc7472b5b1458e8858919350052
+      internalID: 406171941
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: lvl5_Walk_sword_11
+      rect:
+        serializedVersion: 2
+        x: 320
+        y: 128
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 671749f427a37924ca16bd57ece9428f
+      internalID: -545641154
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: lvl5_Walk_sword_12
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 64
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3a69f3de25a82f24d8680e9294f90643
+      internalID: 749695397
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: lvl5_Walk_sword_13
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 64
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5de05ff031c215d4e9f4ab6a000c1ae1
+      internalID: 1525053684
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: lvl5_Walk_sword_14
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 64
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: dbfe004771791f5489dc45b3197d396f
+      internalID: 792133575
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: lvl5_Walk_sword_15
+      rect:
+        serializedVersion: 2
+        x: 192
+        y: 64
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b3def341c232a3240a70c356c41a8b73
+      internalID: -1066389785
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: lvl5_Walk_sword_16
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 64
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 83b6cedad54cda84994a11d73ce8963e
+      internalID: 1148309307
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: lvl5_Walk_sword_17
+      rect:
+        serializedVersion: 2
+        x: 320
+        y: 64
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a612c0e10553a1c41b8cc252f3dce765
+      internalID: 1094401344
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: lvl5_Walk_sword_18
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b3cdfd18fc0b1c34dadbcd2faed98f7e
+      internalID: 2080941011
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: lvl5_Walk_sword_19
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 0
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 06f1d13d8dd9ed54fb4ee41729a3d64c
+      internalID: 953639209
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: lvl5_Walk_sword_20
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 0
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8f41d923917aa054d804bd1d9b7498ec
+      internalID: 1273302585
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: lvl5_Walk_sword_21
+      rect:
+        serializedVersion: 2
+        x: 192
+        y: 0
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ab08bead4d48b804fb0712109a44340b
+      internalID: -2081267276
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: lvl5_Walk_sword_22
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 0
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c6e38e39321a4a44faeae1f33c3942f6
+      internalID: -1054236657
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: lvl5_Walk_sword_23
+      rect:
+        serializedVersion: 2
+        x: 320
+        y: 0
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4addf1e9dccfb4749a5c8bf2ced334e9
+      internalID: 462860048
       vertices: []
       indices: 
       edges: []
@@ -263,7 +659,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: 4460a922db0f06d498602590aba5e858
     internalID: 0
     vertices: []
     indices: 
@@ -275,10 +671,28 @@ TextureImporter:
     nameFileIdTable:
       lvl5_Walk_sword_0: -218996773435777096
       lvl5_Walk_sword_1: 133300500172245135
+      lvl5_Walk_sword_10: 406171941
+      lvl5_Walk_sword_11: -545641154
+      lvl5_Walk_sword_12: 749695397
+      lvl5_Walk_sword_13: 1525053684
+      lvl5_Walk_sword_14: 792133575
+      lvl5_Walk_sword_15: -1066389785
+      lvl5_Walk_sword_16: 1148309307
+      lvl5_Walk_sword_17: 1094401344
+      lvl5_Walk_sword_18: 2080941011
+      lvl5_Walk_sword_19: 953639209
       lvl5_Walk_sword_2: -7892758243304050922
+      lvl5_Walk_sword_20: 1273302585
+      lvl5_Walk_sword_21: -2081267276
+      lvl5_Walk_sword_22: -1054236657
+      lvl5_Walk_sword_23: 462860048
       lvl5_Walk_sword_3: 8170440635881963986
       lvl5_Walk_sword_4: 4993311111151154930
       lvl5_Walk_sword_5: 7841007060791656447
+      lvl5_Walk_sword_6: -1510143009
+      lvl5_Walk_sword_7: 1370161105
+      lvl5_Walk_sword_8: 1640770159
+      lvl5_Walk_sword_9: 1309324
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
