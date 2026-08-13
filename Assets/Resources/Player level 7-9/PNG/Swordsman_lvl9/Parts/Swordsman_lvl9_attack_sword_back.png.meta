@@ -76,7 +76,7 @@ TextureImporter:
   maxTextureSize: 2048
   textureSettings:
     serializedVersion: 2
-    filterMode: 1
+    filterMode: 0
     aniso: 1
     mipBias: 0
     wrapU: 1
@@ -90,7 +90,7 @@ TextureImporter:
   spriteMeshType: 1
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
-  spritePixelsToUnits: 100
+  spritePixelsToUnits: 32
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
@@ -114,7 +114,7 @@ TextureImporter:
     maxTextureSize: 2048
     resizeAlgorithm: 0
     textureFormat: -1
-    textureCompression: 1
+    textureCompression: 0
     compressionQuality: 50
     crunchedCompression: 0
     allowsAlphaSplitting: 0
@@ -152,309 +152,617 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: lvl9_attack_normal_sword_back_0
+      name: lvl9_attack_sword_back_0
       rect:
         serializedVersion: 2
-        x: 24
-        y: 150
-        width: 20
-        height: 19
+        x: 0
+        y: 192
+        width: 64
+        height: 64
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: bbb40bc821af9f1a0800000000000000
-      internalID: -6775109206825481285
+      spriteID: 8d9fa518586e3964ea4a8aaaacad5329
+      internalID: 428174401
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: lvl9_attack_normal_sword_back_1
+      name: lvl9_attack_sword_back_1
       rect:
         serializedVersion: 2
-        x: 90
-        y: 154
-        width: 20
-        height: 19
+        x: 64
+        y: 192
+        width: 64
+        height: 64
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 82f737347aa75f590800000000000000
-      internalID: -7641066333954408664
+      spriteID: 5bf9bb93a3dd0a64cb2891d230439e3a
+      internalID: 1523191316
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: lvl9_attack_normal_sword_back_2
+      name: lvl9_attack_sword_back_2
       rect:
         serializedVersion: 2
-        x: 156
-        y: 157
-        width: 22
-        height: 14
+        x: 128
+        y: 192
+        width: 64
+        height: 64
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: d4b4fcded6349e800800000000000000
-      internalID: 642118561297288013
+      spriteID: 8fe930fb13578c44597015e49f723097
+      internalID: -952959111
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: lvl9_attack_normal_sword_back_3
+      name: lvl9_attack_sword_back_3
       rect:
         serializedVersion: 2
-        x: 207
-        y: 148
-        width: 42
-        height: 28
+        x: 192
+        y: 192
+        width: 64
+        height: 64
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 60aae4f7b39939b00800000000000000
-      internalID: 834178836811655686
+      spriteID: 735700e70ae7669418dc8894ecd6cfe8
+      internalID: -567014440
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: lvl9_attack_normal_sword_back_4
+      name: lvl9_attack_sword_back_4
       rect:
         serializedVersion: 2
-        x: 271
-        y: 157
-        width: 18
-        height: 22
+        x: 256
+        y: 192
+        width: 64
+        height: 64
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 85a9dfad992ad8f50800000000000000
-      internalID: 6885338187007105624
+      spriteID: c3faa5ed95cbd5b40adcd0e9b494aa4f
+      internalID: 112885878
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: lvl9_attack_normal_sword_back_5
+      name: lvl9_attack_sword_back_5
       rect:
         serializedVersion: 2
-        x: 339
-        y: 159
-        width: 22
-        height: 19
+        x: 320
+        y: 192
+        width: 64
+        height: 64
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 207eb458ae90c28c0800000000000000
-      internalID: -4022829464285354238
+      spriteID: 51383051e3fd64d43bd1a842cef0da99
+      internalID: 1946704764
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: lvl9_attack_normal_sword_back_6
+      name: lvl9_attack_sword_back_6
       rect:
         serializedVersion: 2
-        x: 409
-        y: 153
-        width: 20
-        height: 19
+        x: 384
+        y: 192
+        width: 64
+        height: 64
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: ad5ff4ca0e09c4fa0800000000000000
-      internalID: -5815113724204157478
+      spriteID: d6d3a7eaf3b4bce4ca8c701a64bee8ea
+      internalID: -1974505300
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: lvl9_attack_normal_sword_back_7
+      name: lvl9_attack_sword_back_7
       rect:
         serializedVersion: 2
-        x: 34
-        y: 24
-        width: 20
-        height: 19
+        x: 0
+        y: 128
+        width: 64
+        height: 64
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 04209f6b497962260800000000000000
-      internalID: 7072506929812668992
+      spriteID: 529bae640fd0b8f47b818afa28803a06
+      internalID: -1145032736
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: lvl9_attack_normal_sword_back_8
+      name: lvl9_attack_sword_back_8
       rect:
         serializedVersion: 2
-        x: 100
-        y: 27
-        width: 20
-        height: 19
+        x: 64
+        y: 128
+        width: 64
+        height: 64
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 7e9cd87aa57f1b9f0800000000000000
-      internalID: -454310118657504793
+      spriteID: 346af34155ddb504eb55623238593458
+      internalID: 1251817895
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: lvl9_attack_normal_sword_back_9
+      name: lvl9_attack_sword_back_9
       rect:
         serializedVersion: 2
-        x: 165
-        y: 26
-        width: 22
-        height: 14
+        x: 128
+        y: 128
+        width: 64
+        height: 64
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: fc5e4218231770ef0800000000000000
-      internalID: -142020401509898801
+      spriteID: 4844ca4936faedb498e597c2b0ca6bd8
+      internalID: -831547279
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: lvl9_attack_normal_sword_back_10
+      name: lvl9_attack_sword_back_10
       rect:
         serializedVersion: 2
-        x: 199
-        y: 19
-        width: 53
-        height: 27
+        x: 192
+        y: 128
+        width: 64
+        height: 64
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 0e96029ed15ae4d40800000000000000
-      internalID: 5570571336987732448
+      spriteID: d76ce0466280a914aafbd5f708e55daa
+      internalID: 1454099205
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: lvl9_attack_normal_sword_back_11
+      name: lvl9_attack_sword_back_11
       rect:
         serializedVersion: 2
-        x: 263
-        y: 19
-        width: 23
-        height: 23
+        x: 256
+        y: 128
+        width: 64
+        height: 64
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 811a8727d66aadf80800000000000000
-      internalID: -8080963592360779496
+      spriteID: 2a61b4687bf3a004fad3b5b91d24398f
+      internalID: 1752217759
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: lvl9_attack_normal_sword_back_12
+      name: lvl9_attack_sword_back_12
       rect:
         serializedVersion: 2
-        x: 331
-        y: 21
-        width: 24
-        height: 11
+        x: 320
+        y: 128
+        width: 64
+        height: 64
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 0ccecfb676ac278e0800000000000000
-      internalID: -1697071564023075648
+      spriteID: 8070a96b0e3daf5419826233205019a1
+      internalID: 1959167143
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: lvl9_attack_normal_sword_back_13
+      name: lvl9_attack_sword_back_13
       rect:
         serializedVersion: 2
-        x: 411
-        y: 23
-        width: 14
-        height: 22
+        x: 384
+        y: 128
+        width: 64
+        height: 64
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 3bcd603fff4c632b0800000000000000
-      internalID: -5605076082642985805
+      spriteID: 55f5ce93da2d1144487f45e075c5deec
+      internalID: 277905791
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: lvl9_attack_sword_back_14
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 64
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 506813761e6337343bf97fbcfd305ece
+      internalID: 384965544
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: lvl9_attack_sword_back_15
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 64
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b4878387fd8dec34ba9da5f7846bba41
+      internalID: -832732809
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: lvl9_attack_sword_back_16
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 64
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4361cf8a9fcd8db43af3bf7e0906656b
+      internalID: -54284478
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: lvl9_attack_sword_back_17
+      rect:
+        serializedVersion: 2
+        x: 192
+        y: 64
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: adaf121e2b5e4f04cb7e5a298d5182c1
+      internalID: 1020403252
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: lvl9_attack_sword_back_18
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 64
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: dfbb7b90531fb4a4d95287fdd51dbd90
+      internalID: 368840112
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: lvl9_attack_sword_back_19
+      rect:
+        serializedVersion: 2
+        x: 320
+        y: 64
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0aee721f24b7f6a40a7063b6a000f857
+      internalID: -825569640
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: lvl9_attack_sword_back_20
+      rect:
+        serializedVersion: 2
+        x: 384
+        y: 64
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e3e822497348c9d4c84a9f0f634a3d68
+      internalID: 1097318443
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: lvl9_attack_sword_back_21
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 86e837115681ad641b6a304a2044ffe6
+      internalID: 176002074
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: lvl9_attack_sword_back_22
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 0
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 94659857522580945846a0fcc1a97bf1
+      internalID: -361697587
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: lvl9_attack_sword_back_23
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 0
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2c8d3bbdb1f845044a3d1c13518fc6bd
+      internalID: -1999034816
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: lvl9_attack_sword_back_24
+      rect:
+        serializedVersion: 2
+        x: 192
+        y: 0
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c116c2191a6c9324fb2ae7ce716b0909
+      internalID: 1775666249
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: lvl9_attack_sword_back_25
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 0
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7bb8af59e9a59f74d9263b0c7ab1c807
+      internalID: 1154517371
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: lvl9_attack_sword_back_26
+      rect:
+        serializedVersion: 2
+        x: 320
+        y: 0
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 375c3b84ebd2ef543b63c0391b72438c
+      internalID: 1534840351
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: lvl9_attack_sword_back_27
+      rect:
+        serializedVersion: 2
+        x: 384
+        y: 0
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c3c8820cc1fa88f4fa3244e24a3e5687
+      internalID: -1489308073
       vertices: []
       indices: 
       edges: []
@@ -463,7 +771,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: 8da9b2474cbe1b44bb50ed8ebe1f5ce1
     internalID: 0
     vertices: []
     indices: 
@@ -473,20 +781,34 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      lvl9_attack_normal_sword_back_0: -6775109206825481285
-      lvl9_attack_normal_sword_back_1: -7641066333954408664
-      lvl9_attack_normal_sword_back_10: 5570571336987732448
-      lvl9_attack_normal_sword_back_11: -8080963592360779496
-      lvl9_attack_normal_sword_back_12: -1697071564023075648
-      lvl9_attack_normal_sword_back_13: -5605076082642985805
-      lvl9_attack_normal_sword_back_2: 642118561297288013
-      lvl9_attack_normal_sword_back_3: 834178836811655686
-      lvl9_attack_normal_sword_back_4: 6885338187007105624
-      lvl9_attack_normal_sword_back_5: -4022829464285354238
-      lvl9_attack_normal_sword_back_6: -5815113724204157478
-      lvl9_attack_normal_sword_back_7: 7072506929812668992
-      lvl9_attack_normal_sword_back_8: -454310118657504793
-      lvl9_attack_normal_sword_back_9: -142020401509898801
+      lvl9_attack_sword_back_0: 428174401
+      lvl9_attack_sword_back_1: 1523191316
+      lvl9_attack_sword_back_10: 1454099205
+      lvl9_attack_sword_back_11: 1752217759
+      lvl9_attack_sword_back_12: 1959167143
+      lvl9_attack_sword_back_13: 277905791
+      lvl9_attack_sword_back_14: 384965544
+      lvl9_attack_sword_back_15: -832732809
+      lvl9_attack_sword_back_16: -54284478
+      lvl9_attack_sword_back_17: 1020403252
+      lvl9_attack_sword_back_18: 368840112
+      lvl9_attack_sword_back_19: -825569640
+      lvl9_attack_sword_back_2: -952959111
+      lvl9_attack_sword_back_20: 1097318443
+      lvl9_attack_sword_back_21: 176002074
+      lvl9_attack_sword_back_22: -361697587
+      lvl9_attack_sword_back_23: -1999034816
+      lvl9_attack_sword_back_24: 1775666249
+      lvl9_attack_sword_back_25: 1154517371
+      lvl9_attack_sword_back_26: 1534840351
+      lvl9_attack_sword_back_27: -1489308073
+      lvl9_attack_sword_back_3: -567014440
+      lvl9_attack_sword_back_4: 112885878
+      lvl9_attack_sword_back_5: 1946704764
+      lvl9_attack_sword_back_6: -1974505300
+      lvl9_attack_sword_back_7: -1145032736
+      lvl9_attack_sword_back_8: 1251817895
+      lvl9_attack_sword_back_9: -831547279
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
