@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 287898664380243375}
   m_Layer: 0
   m_Name: AttackHitbox
-  m_TagString: Untagged
+  m_TagString: EnemyHitbox
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -336,9 +336,8 @@ MonoBehaviour:
   _attackRange: 0.69
   _attackDamage: 50
   _attackCooldown: 1.5
-  _attackHitNormalizedTime: 0.5
-  _attackKnockbackForce: 5
-  _attackDuration: 0.5
+  _attackKnockbackForce: 2.5
+  _attackDuration: 0.9
   _hitDuration: 0.3
   _deathDuration: 3
   _attackHitbox: {fileID: 0}

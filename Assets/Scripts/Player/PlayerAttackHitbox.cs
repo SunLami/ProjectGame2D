@@ -2,35 +2,23 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [RequireComponent(typeof(PolygonCollider2D))]
-public sealed class EnemyAttackHitbox : MonoBehaviour
+public sealed class PlayerAttackHitbox : MonoBehaviour
 {
-    private readonly HashSet<Player> _hitPlayers = new();
-    private Enemy _owner;
+    private readonly HashSet<Component> _hitEnemies = new();
+    private Player _owner;
     private PolygonCollider2D _collider;
-    private Vector3 _authoredLocalPosition;
-    private Quaternion _authoredLocalRotation;
 
-    public void Initialize(Enemy owner)
+    public void Initialize(Player owner)
     {
         _owner = owner;
         _collider = GetComponent<PolygonCollider2D>();
         _collider.isTrigger = true;
         _collider.enabled = false;
-        gameObject.tag = "EnemyHitbox";
-        _authoredLocalPosition = transform.localPosition;
-        _authoredLocalRotation = transform.localRotation;
+        gameObject.tag = "Player_Hitbox";
     }
 
-    public void Configure(SpriteRenderer attackSpriteRenderer, Vector2 direction, float offset, bool rotateWithEnemyDirection)
+    public void Configure(SpriteRenderer attackSpriteRenderer, Vector2 direction, float offset)
     {
-        if (!rotateWithEnemyDirection)
-        {
-            transform.localPosition = _authoredLocalPosition;
-            transform.localRotation = _authoredLocalRotation;
-            _collider.offset = Vector2.zero;
-            return;
-        }
-
         if (TryMatchSpritePhysicsShape(attackSpriteRenderer))
             return;
 
@@ -58,10 +46,47 @@ public sealed class EnemyAttackHitbox : MonoBehaviour
         {
             points.Clear();
             sprite.GetPhysicsShape(shapeIndex, points);
+            if (spriteRenderer.flipX || spriteRenderer.flipY)
+            {
+                for (int pointIndex = 0; pointIndex < points.Count; pointIndex++)
+                {
+                    Vector2 point = points[pointIndex];
+                    points[pointIndex] = new Vector2(
+                        spriteRenderer.flipX ? -point.x : point.x,
+                        spriteRenderer.flipY ? -point.y : point.y);
+                }
+            }
+
             _collider.SetPath(shapeIndex, points);
         }
 
         return true;
+    }
+
+    public void BeginAttack()
+    {
+        _hitEnemies.Clear();
+        _collider.enabled = true;
+    }
+
+    public void EndAttack()
+    {
+        if (_collider != null)
+            _collider.enabled = false;
+    }
+
+    private void OnTriggerEnter2D(Collider2D other)
+    {
+        Enemy enemy = other.GetComponentInParent<Enemy>();
+        if (_owner != null && enemy != null && _hitEnemies.Add(enemy))
+        {
+            _owner.DamageEnemyFromHitbox(enemy);
+            return;
+        }
+
+        EnemyUniversal universalEnemy = other.GetComponentInParent<EnemyUniversal>();
+        if (_owner != null && universalEnemy != null && _hitEnemies.Add(universalEnemy))
+            _owner.DamageEnemyFromHitbox(universalEnemy);
     }
 
     private static Vector2 ToCardinalDirection(Vector2 direction)
@@ -74,34 +99,12 @@ public sealed class EnemyAttackHitbox : MonoBehaviour
             : new Vector2(0f, Mathf.Sign(direction.y));
     }
 
-    // The polygon is authored facing Down in the prefab.
     private static float DirectionToAngle(Vector2 direction)
     {
         if (direction == Vector2.right) return 90f;
         if (direction == Vector2.up) return 180f;
         if (direction == Vector2.left) return -90f;
         return 0f;
-    }
-
-    public void BeginAttack()
-    {
-        _hitPlayers.Clear();
-        _collider.enabled = true;
-    }
-
-    public void EndAttack()
-    {
-        if (_collider != null)
-            _collider.enabled = false;
-    }
-
-    private void OnTriggerEnter2D(Collider2D other)
-    {
-        Player player = other.GetComponentInParent<Player>();
-        if (_owner == null || player == null || !_hitPlayers.Add(player))
-            return;
-
-        _owner.DamagePlayerFromHitbox(player);
     }
 
     private void OnDisable()
