@@ -27,9 +27,6 @@ public class EquipmentManager : MonoBehaviour
 
         currentBodyIndex = index;
         bodySpriteLibrary.spriteLibraryAsset = bodyEquipmentAssets[index];
-
-        if (headSpriteLibrary != null && headEquipmentAssets != null && index < headEquipmentAssets.Length)
-            headSpriteLibrary.spriteLibraryAsset = headEquipmentAssets[index];
     }
 
     public void EquipSwordByIndex(int index)

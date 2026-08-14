@@ -76,7 +76,7 @@ TextureImporter:
   maxTextureSize: 2048
   textureSettings:
     serializedVersion: 2
-    filterMode: 1
+    filterMode: 0
     aniso: 1
     mipBias: 0
     wrapU: 1
@@ -90,7 +90,7 @@ TextureImporter:
   spriteMeshType: 1
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
-  spritePixelsToUnits: 100
+  spritePixelsToUnits: 32
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
@@ -114,7 +114,7 @@ TextureImporter:
     maxTextureSize: 2048
     resizeAlgorithm: 0
     textureFormat: -1
-    textureCompression: 1
+    textureCompression: 0
     compressionQuality: 50
     crunchedCompression: 0
     allowsAlphaSplitting: 0
@@ -152,309 +152,617 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: lvl5_attack_nornal_sword_back_0
+      name: lvl5_attack_sword_back_0
       rect:
         serializedVersion: 2
-        x: 200
-        y: 149
-        width: 24
-        height: 33
+        x: 0
+        y: 192
+        width: 64
+        height: 64
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 192c09d107c6f5be0800000000000000
-      internalID: -1486350123220811119
+      spriteID: 44a37f0a88ab1d14c816e2c74776660a
+      internalID: 1690184244
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: lvl5_attack_nornal_sword_back_1
+      name: lvl5_attack_sword_back_1
       rect:
         serializedVersion: 2
-        x: 270
-        y: 162
-        width: 18
-        height: 18
+        x: 64
+        y: 192
+        width: 64
+        height: 64
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: ac331a6ec92f86540800000000000000
-      internalID: 5001514141893080010
+      spriteID: a54142f435352d84eaa2f21e43895abf
+      internalID: 1708826931
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: lvl5_attack_nornal_sword_back_2
+      name: lvl5_attack_sword_back_2
       rect:
         serializedVersion: 2
-        x: 345
-        y: 166
-        width: 8
-        height: 15
+        x: 128
+        y: 192
+        width: 64
+        height: 64
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 2ef8ac00053895a00800000000000000
-      internalID: 745771592940425186
+      spriteID: 1ea12b44f33a5c64ab0ecddb4757a8ba
+      internalID: -623559772
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: lvl5_attack_nornal_sword_back_3
+      name: lvl5_attack_sword_back_3
       rect:
         serializedVersion: 2
-        x: 22
-        y: 147
-        width: 10
-        height: 12
+        x: 192
+        y: 192
+        width: 64
+        height: 64
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: bda8497398aafc6d0800000000000000
-      internalID: -2967966123094144293
+      spriteID: 1d3218baf4fc6374eae3f12c3df55946
+      internalID: -1460671897
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: lvl5_attack_nornal_sword_back_4
+      name: lvl5_attack_sword_back_4
       rect:
         serializedVersion: 2
-        x: 84
-        y: 149
-        width: 14
-        height: 8
+        x: 256
+        y: 192
+        width: 64
+        height: 64
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 68009043a6c433b10800000000000000
-      internalID: 1959994281859547270
+      spriteID: fff478b6434f5bd4ab8e6b074591ca14
+      internalID: -2131543815
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: lvl5_attack_nornal_sword_back_5
+      name: lvl5_attack_sword_back_5
       rect:
         serializedVersion: 2
-        x: 154
-        y: 150
-        width: 13
-        height: 8
+        x: 320
+        y: 192
+        width: 64
+        height: 64
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 4b9252ab031b7a1b0800000000000000
-      internalID: -5645348785046083148
+      spriteID: e6b553d32b8389e4d8546a99b73c93b0
+      internalID: -307379074
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: lvl5_attack_nornal_sword_back_6
+      name: lvl5_attack_sword_back_6
       rect:
         serializedVersion: 2
-        x: 403
-        y: 154
-        width: 14
-        height: 8
+        x: 384
+        y: 192
+        width: 64
+        height: 64
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: bf86cc610547b4850800000000000000
-      internalID: 6362306785919658235
+      spriteID: 83523851c919da343a924b68ff1ce26d
+      internalID: -1657113964
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: lvl5_attack_nornal_sword_back_7
+      name: lvl5_attack_sword_back_7
       rect:
         serializedVersion: 2
-        x: 35
-        y: 16
-        width: 12
-        height: 12
+        x: 0
+        y: 128
+        width: 64
+        height: 64
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 51b8d955041b2d7a0800000000000000
-      internalID: -6353821234393937131
+      spriteID: b82b64938fe23ed4ea076a4d5cbf9c92
+      internalID: -418712668
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: lvl5_attack_nornal_sword_back_8
+      name: lvl5_attack_sword_back_8
       rect:
         serializedVersion: 2
-        x: 100
-        y: 20
-        width: 14
-        height: 8
+        x: 64
+        y: 128
+        width: 64
+        height: 64
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 5baf9336174664800800000000000000
-      internalID: 596274438831995573
+      spriteID: 22b8214c94137ba43bc161a9d742528d
+      internalID: -31603351
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: lvl5_attack_nornal_sword_back_9
+      name: lvl5_attack_sword_back_9
       rect:
         serializedVersion: 2
-        x: 165
-        y: 23
-        width: 16
-        height: 8
+        x: 128
+        y: 128
+        width: 64
+        height: 64
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: d5f2cefb26eec8440800000000000000
-      internalID: 4939584999212724061
+      spriteID: 178864bcb7bf3ca43b6ea6e5553b5fc8
+      internalID: 1582344140
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: lvl5_attack_nornal_sword_back_10
+      name: lvl5_attack_sword_back_10
       rect:
         serializedVersion: 2
-        x: 203
-        y: 22
-        width: 43
-        height: 23
+        x: 192
+        y: 128
+        width: 64
+        height: 64
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: c604881e28c1c28b0800000000000000
-      internalID: -5175730523300413332
+      spriteID: d44f8884e40197349a8c77a75fa4cb2d
+      internalID: 746907231
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: lvl5_attack_nornal_sword_back_11
+      name: lvl5_attack_sword_back_11
       rect:
         serializedVersion: 2
-        x: 268
-        y: 18
-        width: 12
-        height: 20
+        x: 256
+        y: 128
+        width: 64
+        height: 64
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 97cfbcd573102b520800000000000000
-      internalID: 2716234862566308985
+      spriteID: 13b25678044a59d4f893ec24fd115773
+      internalID: -1250327743
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: lvl5_attack_nornal_sword_back_12
+      name: lvl5_attack_sword_back_12
       rect:
         serializedVersion: 2
-        x: 333
-        y: 16
-        width: 12
-        height: 12
+        x: 320
+        y: 128
+        width: 64
+        height: 64
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 50ed840e8286bdce0800000000000000
-      internalID: -1379394336088072699
+      spriteID: ee7fa1b04ce584545a040550a194ec3d
+      internalID: -1562573991
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: lvl5_attack_nornal_sword_back_13
+      name: lvl5_attack_sword_back_13
       rect:
         serializedVersion: 2
-        x: 405
-        y: 21
-        width: 14
-        height: 8
+        x: 384
+        y: 128
+        width: 64
+        height: 64
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 70793bfb1a475ec40800000000000000
-      internalID: 5540963154604037895
+      spriteID: ffe056effa8a41d4488352705f54b67a
+      internalID: -891212931
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: lvl5_attack_sword_back_14
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 64
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 17fe4910629bbfe4e94dc55022610f25
+      internalID: 1481266927
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: lvl5_attack_sword_back_15
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 64
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 224cf7d8167654d44864ad0a3132328c
+      internalID: -2095752500
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: lvl5_attack_sword_back_16
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 64
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 79544c133dac57c4a89e6b7c1f76de80
+      internalID: 941942811
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: lvl5_attack_sword_back_17
+      rect:
+        serializedVersion: 2
+        x: 192
+        y: 64
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ca45fd117997aae47af50a8c22ca3eac
+      internalID: 397482570
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: lvl5_attack_sword_back_18
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 64
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1531689c1be456f4e9ab193488346b63
+      internalID: -518466382
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: lvl5_attack_sword_back_19
+      rect:
+        serializedVersion: 2
+        x: 320
+        y: 64
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0544aac4dd6407a4295b3fef8cd70518
+      internalID: -1366996617
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: lvl5_attack_sword_back_20
+      rect:
+        serializedVersion: 2
+        x: 384
+        y: 64
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 467c3be9d97c17f48ac7066aa824e544
+      internalID: 2001575219
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: lvl5_attack_sword_back_21
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 86fd34b075b76d04e853448b4e1a9fb5
+      internalID: 1614946461
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: lvl5_attack_sword_back_22
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 0
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d5c830698209ab64ca46c18eaa83b158
+      internalID: -49940713
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: lvl5_attack_sword_back_23
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 0
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3777efc545615ce48854abe988b83383
+      internalID: 2099268971
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: lvl5_attack_sword_back_24
+      rect:
+        serializedVersion: 2
+        x: 192
+        y: 0
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8e8ed9e9ea7e60e4c8a3d74e40d32039
+      internalID: -2075067842
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: lvl5_attack_sword_back_25
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 0
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4f3358963d2072d429914b42d9c032b7
+      internalID: 2069912
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: lvl5_attack_sword_back_26
+      rect:
+        serializedVersion: 2
+        x: 320
+        y: 0
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: bfe915f9cfe65ad4bb8bbf43105d9376
+      internalID: -465783507
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: lvl5_attack_sword_back_27
+      rect:
+        serializedVersion: 2
+        x: 384
+        y: 0
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 49a93634f7bfaa94cab446b912e20cda
+      internalID: 1327311830
       vertices: []
       indices: 
       edges: []
@@ -463,7 +771,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: 08d74ed19d6af5d4c966ec528e92ddaf
     internalID: 0
     vertices: []
     indices: 
@@ -473,20 +781,34 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      lvl5_attack_nornal_sword_back_0: -1486350123220811119
-      lvl5_attack_nornal_sword_back_1: 5001514141893080010
-      lvl5_attack_nornal_sword_back_10: -5175730523300413332
-      lvl5_attack_nornal_sword_back_11: 2716234862566308985
-      lvl5_attack_nornal_sword_back_12: -1379394336088072699
-      lvl5_attack_nornal_sword_back_13: 5540963154604037895
-      lvl5_attack_nornal_sword_back_2: 745771592940425186
-      lvl5_attack_nornal_sword_back_3: -2967966123094144293
-      lvl5_attack_nornal_sword_back_4: 1959994281859547270
-      lvl5_attack_nornal_sword_back_5: -5645348785046083148
-      lvl5_attack_nornal_sword_back_6: 6362306785919658235
-      lvl5_attack_nornal_sword_back_7: -6353821234393937131
-      lvl5_attack_nornal_sword_back_8: 596274438831995573
-      lvl5_attack_nornal_sword_back_9: 4939584999212724061
+      lvl5_attack_sword_back_0: 1690184244
+      lvl5_attack_sword_back_1: 1708826931
+      lvl5_attack_sword_back_10: 746907231
+      lvl5_attack_sword_back_11: -1250327743
+      lvl5_attack_sword_back_12: -1562573991
+      lvl5_attack_sword_back_13: -891212931
+      lvl5_attack_sword_back_14: 1481266927
+      lvl5_attack_sword_back_15: -2095752500
+      lvl5_attack_sword_back_16: 941942811
+      lvl5_attack_sword_back_17: 397482570
+      lvl5_attack_sword_back_18: -518466382
+      lvl5_attack_sword_back_19: -1366996617
+      lvl5_attack_sword_back_2: -623559772
+      lvl5_attack_sword_back_20: 2001575219
+      lvl5_attack_sword_back_21: 1614946461
+      lvl5_attack_sword_back_22: -49940713
+      lvl5_attack_sword_back_23: 2099268971
+      lvl5_attack_sword_back_24: -2075067842
+      lvl5_attack_sword_back_25: 2069912
+      lvl5_attack_sword_back_26: -465783507
+      lvl5_attack_sword_back_27: 1327311830
+      lvl5_attack_sword_back_3: -1460671897
+      lvl5_attack_sword_back_4: -2131543815
+      lvl5_attack_sword_back_5: -307379074
+      lvl5_attack_sword_back_6: -1657113964
+      lvl5_attack_sword_back_7: -418712668
+      lvl5_attack_sword_back_8: -31603351
+      lvl5_attack_sword_back_9: 1582344140
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

@@ -29,6 +29,7 @@ public class Player : MonoBehaviour
     [SerializeField, Min(0f)] private float _attackHitboxOffset = 0.6f;
     [SerializeField, Min(0.02f)] private float _attackHitboxActiveDuration = 0.1f;
     [SerializeField, Min(0f)] private float _attackKnockbackForce = 2.5f;
+    private Vector2 _facingDirection = Vector2.down;
 
     [SerializeField, Min(0f)] private float _moveSpeed = 2f;
     [SerializeField, Min(1f)] private float _sprintMultiplier = 2f;
@@ -37,6 +38,11 @@ public class Player : MonoBehaviour
     [SerializeField] private bool _isRunning;
     [SerializeField] private bool _isHit;
     [SerializeField] private bool _isDead;
+
+    [SerializeField] private SpriteRenderer _weaponRenderer;
+    [SerializeField] private int _weaponSortingOrderRight = 1;
+    [SerializeField] private int _weaponSortingOrderLeft = -1;
+    [SerializeField] private int _weaponSortingOrderVertical = 0;
 
     private bool _deathPending;
 
@@ -65,6 +71,35 @@ public class Player : MonoBehaviour
         if (_attackFxRenderer == null)
             _attackFxRenderer = transform.Find("AttackFX")?.GetComponent<SpriteRenderer>();
         EnsureAttackHitbox();
+
+        if (_weaponRenderer == null)
+        {
+            Transform weaponTransform = transform.Find("Weapon");
+            if (weaponTransform != null)
+                _weaponRenderer = weaponTransform.GetComponent<SpriteRenderer>();
+        }
+    }
+
+    private void LateUpdate()
+    {
+        UpdateWeaponSortingOrder();
+    }
+
+    private void UpdateWeaponSortingOrder()
+    {
+        if (_weaponRenderer == null)
+            return;
+
+        int targetOrder;
+        if (_facingDirection.x > 0f)
+            targetOrder = _weaponSortingOrderRight;
+        else if (_facingDirection.x < 0f)
+            targetOrder = _weaponSortingOrderLeft;
+        else
+            targetOrder = _weaponSortingOrderVertical;
+
+        if (_weaponRenderer.sortingOrder != targetOrder)
+            _weaponRenderer.sortingOrder = targetOrder;
     }
 
     private void FixedUpdate()
@@ -238,6 +273,7 @@ public class Player : MonoBehaviour
         _lastFacingDirection = Mathf.Abs(direction.x) > Mathf.Abs(direction.y)
             ? new Vector2(Mathf.Sign(direction.x), 0f)
             : new Vector2(0f, Mathf.Sign(direction.y));
+        _facingDirection = direction;
         _animator.SetFloat(LastInputXHash, direction.x);
         _animator.SetFloat(LastInputYHash, direction.y);
     }
