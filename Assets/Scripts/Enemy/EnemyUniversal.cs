@@ -68,6 +68,7 @@ public sealed class EnemyUniversal : MonoBehaviour, IDamageable
     [SerializeField, Min(0f)] private float _chaseSpeed = 2f;
     [SerializeField, Min(0f)] private float _hurtDuration = 0.3f;
     [SerializeField, Min(0f)] private float _deathLifetime = 3f;
+    [SerializeField, Min(0)] private int _experienceReward = 25;
 
     [Header("AI")]
     [SerializeField, Min(0f)] private float _detectionRange = 4f;
@@ -98,6 +99,7 @@ public sealed class EnemyUniversal : MonoBehaviour, IDamageable
     private Coroutine _launchRoutine;
     private Vector2 _launchVelocity;
     private float _currentHealth;
+    private bool _experienceGranted;
 
     public float Health => _currentHealth;
     public float MaxHealth => _maxHealth;
@@ -437,6 +439,8 @@ public sealed class EnemyUniversal : MonoBehaviour, IDamageable
         if (state == State.Hurt) _animator.SetTrigger(IsHit);
         if (state != State.Dead) return;
 
+        GrantExperience();
+
         if (_hurtRoutine != null)
         {
             StopCoroutine(_hurtRoutine);
@@ -448,6 +452,15 @@ public sealed class EnemyUniversal : MonoBehaviour, IDamageable
         _rigidbody.simulated = false;
         foreach (Collider2D collider in GetComponentsInChildren<Collider2D>()) collider.enabled = false;
         Destroy(gameObject, _deathLifetime);
+    }
+
+    private void GrantExperience()
+    {
+        if (_experienceGranted || _experienceReward <= 0)
+            return;
+
+        _experienceGranted = true;
+        PlayerStat.Instance?.AddExperience(_experienceReward);
     }
 
     private void MoveTowards(Vector2 target, bool running)
