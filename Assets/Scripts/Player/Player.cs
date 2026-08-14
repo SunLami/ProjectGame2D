@@ -19,6 +19,7 @@ public class Player : MonoBehaviour
     private PlayerStat _stats;
     private Camera _mainCamera;
     private Vector2 _moveInput;
+    private Vector2 _facingDirection = Vector2.down;
 
     [SerializeField, Min(0f)] private float _moveSpeed = 2f;
     [SerializeField, Min(1f)] private float _sprintMultiplier = 2f;
@@ -27,6 +28,11 @@ public class Player : MonoBehaviour
     [SerializeField] private bool _isRunning;
     [SerializeField] private bool _isHit;
     [SerializeField] private bool _isDead;
+
+    [SerializeField] private SpriteRenderer _weaponRenderer;
+    [SerializeField] private int _weaponSortingOrderRight = 1;
+    [SerializeField] private int _weaponSortingOrderLeft = -1;
+    [SerializeField] private int _weaponSortingOrderVertical = 0;
 
     private bool _deathPending;
 
@@ -52,6 +58,35 @@ public class Player : MonoBehaviour
         _animator = GetComponent<Animator>();
         _stats = GetComponent<PlayerStat>();
         _mainCamera = Camera.main;
+
+        if (_weaponRenderer == null)
+        {
+            Transform weaponTransform = transform.Find("Weapon");
+            if (weaponTransform != null)
+                _weaponRenderer = weaponTransform.GetComponent<SpriteRenderer>();
+        }
+    }
+
+    private void LateUpdate()
+    {
+        UpdateWeaponSortingOrder();
+    }
+
+    private void UpdateWeaponSortingOrder()
+    {
+        if (_weaponRenderer == null)
+            return;
+
+        int targetOrder;
+        if (_facingDirection.x > 0f)
+            targetOrder = _weaponSortingOrderRight;
+        else if (_facingDirection.x < 0f)
+            targetOrder = _weaponSortingOrderLeft;
+        else
+            targetOrder = _weaponSortingOrderVertical;
+
+        if (_weaponRenderer.sortingOrder != targetOrder)
+            _weaponRenderer.sortingOrder = targetOrder;
     }
 
     private void FixedUpdate()
@@ -157,6 +192,7 @@ public class Player : MonoBehaviour
 
     private void SetFacingDirection(Vector2 direction)
     {
+        _facingDirection = direction;
         _animator.SetFloat(LastInputXHash, direction.x);
         _animator.SetFloat(LastInputYHash, direction.y);
     }
