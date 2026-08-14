@@ -77,6 +77,11 @@ public class EquipmentManager : MonoBehaviour
         SetSwordVisible(GetEquipped(EquipSlot.Weapon) != null);
     }
 
+    private void Start()
+    {
+        RefreshPlayerStats();
+    }
+
     private void SetSwordVisible(bool visible)
     {
         if (_swordRenderer != null)
@@ -117,6 +122,7 @@ public class EquipmentManager : MonoBehaviour
         }
 
         InventoryManager.Instance.NotifyChanged();
+        RefreshPlayerStats();
         OnEquipmentChanged?.Invoke();
         return true;
     }
@@ -147,8 +153,24 @@ public class EquipmentManager : MonoBehaviour
             InventoryManager.Instance?.AddItem(item, 1);
         }
 
+        RefreshPlayerStats();
         OnEquipmentChanged?.Invoke();
         return true;
+    }
+
+    private void RefreshPlayerStats()
+    {
+        if (PlayerStat.Instance == null)
+            return;
+
+        PlayerStatModifiers total = default;
+        foreach (EquipmentItemSO item in _equipped.Values)
+        {
+            if (item != null)
+                total += item.statModifiers;
+        }
+
+        PlayerStat.Instance.ApplyEquipmentModifiers(total);
     }
 
     private void ApplyVisual(EquipmentItemSO item)

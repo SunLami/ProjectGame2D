@@ -2186,7 +2186,7 @@ SpriteRenderer:
   m_SortingLayer: 1
   m_SortingOrder: 1
   m_MaskInteraction: 0
-  m_Sprite: {fileID: -8145272135737659639, guid: d51dde73d74add3409a71c6e6ee2ff30, type: 3}
+  m_Sprite: {fileID: -4276345421356332225, guid: d51dde73d74add3409a71c6e6ee2ff30, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -6465,17 +6465,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 95c6618c07f8921439e9156a0722fdf0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerMovement
-  _attackHitbox: {fileID: 974908966}
-  _attackFxRenderer: {fileID: 184038123}
-  _attackHitboxOffset: 0.6
-  _attackKnockbackForce: 2.5
-  _moveSpeed: 2
-  _sprintMultiplier: 2
   _isMoving: 0
   _isAttacking: 0
   _isRunning: 0
   _isHit: 0
   _isDead: 0
+  _attackHitbox: {fileID: 974908966}
+  _attackFxRenderer: {fileID: 184038123}
+  _attackHitboxOffset: 0.6
+  _attackKnockbackForce: 2.5
   _weaponRenderer: {fileID: 0}
   _weaponSortingOrderRight: 1
   _weaponSortingOrderLeft: -1
@@ -6753,10 +6751,24 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c74b8c8f69df7ea48a05edbe778aa245, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerStat
-  _health: 0
   _maxHealth: 100
-  _baseAtkDmg: 10
-  _atkDmg: 10
+  _attackDamage: 10
+  _legacyAttackDamage: 0
+  _defense: 2
+  _moveSpeed: 2
+  _sprintMultiplier: 1.75
+  _criticalChance: 0.05
+  _criticalMultiplier: 1.5
+  _damageReduction: 0
+  _healthRegeneration: 0
+  _dodgeChance: 0
+  _healthPerLevel: 3
+  _attackPerLevel: 0.5
+  _defensePerLevel: 0.15
+  _criticalChancePerLevel: 0.001
+  _level: 1
+  _currentExperience: 0
+  _health: 0
 --- !u!1 &1584266711
 GameObject:
   m_ObjectHideFlags: 0
@@ -8565,7 +8577,7 @@ SpriteRenderer:
   m_SortingLayer: 1
   m_SortingOrder: 0
   m_MaskInteraction: 0
-  m_Sprite: {fileID: -1795064938766473371, guid: 0c89435e6661a4441893b05b597bb373, type: 3}
+  m_Sprite: {fileID: -7122013226061832205, guid: 76a5126a44a10134e94ecb4bc8df4374, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -9025,7 +9037,7 @@ SpriteRenderer:
   m_SortingLayer: 1
   m_SortingOrder: 0
   m_MaskInteraction: 0
-  m_Sprite: {fileID: 5767702966415667648, guid: e556602954e9b0e4b85d7eacc9b2d594, type: 3}
+  m_Sprite: {fileID: 8286473647133735285, guid: e556602954e9b0e4b85d7eacc9b2d594, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0

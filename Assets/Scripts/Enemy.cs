@@ -26,6 +26,7 @@ public class Enemy : MonoBehaviour, IDamageable
     [FormerlySerializedAs("maxHealth"), SerializeField, Min(1f)] private float _maxHealth = 100f;
     [FormerlySerializedAs("health"), SerializeField] private float _health = 100f;
     [FormerlySerializedAs("moveSpeed"), SerializeField, Min(0f)] private float _moveSpeed = 2f;
+    [SerializeField, Min(0)] private int _experienceReward = 25;
 
     [Header("Detection Ranges")]
     [FormerlySerializedAs("detectionRange"), SerializeField, Range(1f, 10f)] private float _detectionRange = 4f;
@@ -65,6 +66,7 @@ public class Enemy : MonoBehaviour, IDamageable
     private Coroutine _attackHitboxRoutine;
     private Vector2 _lastDirection = Vector2.down;
     private bool _hasEnteredState;
+    private bool _experienceGranted;
 
     private static readonly int InputXHash = Animator.StringToHash("InputX");
     private static readonly int InputYHash = Animator.StringToHash("InputY");
@@ -420,6 +422,12 @@ public class Enemy : MonoBehaviour, IDamageable
 
     private void Die()
     {
+        if (!_experienceGranted && _experienceReward > 0)
+        {
+            _experienceGranted = true;
+            PlayerStat.Instance?.AddExperience(_experienceReward);
+        }
+
         _desiredVelocity = Vector2.zero;
         _attackHitbox?.EndAttack();
         if (_rigidbody != null)
