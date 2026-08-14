@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -19,6 +20,15 @@ public class Player : MonoBehaviour
     private PlayerStat _stats;
     private Camera _mainCamera;
     private Vector2 _moveInput;
+    private Vector2 _lastFacingDirection = Vector2.down;
+    private Coroutine _attackHitboxRoutine;
+
+    [Header("Attack Hitbox")]
+    [SerializeField] private PlayerAttackHitbox _attackHitbox;
+    [SerializeField] private SpriteRenderer _attackFxRenderer;
+    [SerializeField, Min(0f)] private float _attackHitboxOffset = 0.6f;
+    [SerializeField, Min(0.02f)] private float _attackHitboxActiveDuration = 0.1f;
+    [SerializeField, Min(0f)] private float _attackKnockbackForce = 2.5f;
     private Vector2 _facingDirection = Vector2.down;
 
     [SerializeField, Min(0f)] private float _moveSpeed = 2f;
@@ -58,6 +68,9 @@ public class Player : MonoBehaviour
         _animator = GetComponent<Animator>();
         _stats = GetComponent<PlayerStat>();
         _mainCamera = Camera.main;
+        if (_attackFxRenderer == null)
+            _attackFxRenderer = transform.Find("AttackFX")?.GetComponent<SpriteRenderer>();
+        EnsureAttackHitbox();
 
         if (_weaponRenderer == null)
         {
@@ -147,6 +160,7 @@ public class Player : MonoBehaviour
 
         _isHit = true;
         _isAttacking = false;
+        DisableAttackHitbox();
         _rigidbody.linearVelocity = Vector2.zero;
         _rigidbody.AddForce(knockbackDirection.normalized * knockbackForce, ForceMode2D.Impulse);
         _animator.SetTrigger(IsHitHash);
@@ -154,7 +168,71 @@ public class Player : MonoBehaviour
 
     public void FinishAttack()
     {
+        DisableAttackHitbox();
         _isAttacking = false;
+    }
+
+    // Called by Animation Events on all Player attack clips.
+    public void ActivatePlayerAttackHitbox()
+    {
+        if (!_isAttacking || _isHit || _isDead || _attackHitboxRoutine != null)
+            return;
+
+        _attackHitbox.Configure(_attackFxRenderer, _lastFacingDirection, _attackHitboxOffset);
+        _attackHitbox.BeginAttack();
+        _attackHitboxRoutine = StartCoroutine(DisableAttackHitboxAfterDelay());
+    }
+
+    public void DamageEnemyFromHitbox(Enemy enemy)
+    {
+        if (!_isAttacking || _isHit || _isDead || enemy == null || enemy.IsDead)
+            return;
+
+        Vector2 knockbackDirection = (enemy.transform.position - transform.position).normalized;
+        enemy.TakeDamage(_stats.AtkDmg, knockbackDirection, _attackKnockbackForce);
+    }
+
+    public void DamageEnemyFromHitbox(EnemyUniversal enemy)
+    {
+        if (!_isAttacking || _isHit || _isDead || enemy == null || enemy.IsDeadNow)
+            return;
+
+        Vector2 knockbackDirection = (enemy.transform.position - transform.position).normalized;
+        enemy.TakeDamage(_stats.AtkDmg, knockbackDirection, _attackKnockbackForce);
+    }
+
+    private IEnumerator DisableAttackHitboxAfterDelay()
+    {
+        yield return new WaitForSeconds(_attackHitboxActiveDuration);
+        _attackHitbox.EndAttack();
+        _attackHitboxRoutine = null;
+    }
+
+    private void DisableAttackHitbox()
+    {
+        _attackHitbox?.EndAttack();
+        if (_attackHitboxRoutine == null)
+            return;
+
+        StopCoroutine(_attackHitboxRoutine);
+        _attackHitboxRoutine = null;
+    }
+
+    private void EnsureAttackHitbox()
+    {
+        if (_attackHitbox == null)
+            _attackHitbox = GetComponentInChildren<PlayerAttackHitbox>(true);
+
+        if (_attackHitbox == null)
+        {
+            GameObject hitboxObject = new("AttackHitbox");
+            hitboxObject.transform.SetParent(transform, false);
+            hitboxObject.AddComponent<PolygonCollider2D>();
+            _attackHitbox = hitboxObject.AddComponent<PlayerAttackHitbox>();
+        }
+
+        _attackHitbox.Initialize(this);
+        _attackHitbox.Configure(_attackFxRenderer, _lastFacingDirection, _attackHitboxOffset);
     }
 
     public void FinishHit()
@@ -192,6 +270,9 @@ public class Player : MonoBehaviour
 
     private void SetFacingDirection(Vector2 direction)
     {
+        _lastFacingDirection = Mathf.Abs(direction.x) > Mathf.Abs(direction.y)
+            ? new Vector2(Mathf.Sign(direction.x), 0f)
+            : new Vector2(0f, Mathf.Sign(direction.y));
         _facingDirection = direction;
         _animator.SetFloat(LastInputXHash, direction.x);
         _animator.SetFloat(LastInputYHash, direction.y);
@@ -203,6 +284,7 @@ public class Player : MonoBehaviour
         _isDead = true;
         _isHit = false;
         _isAttacking = false;
+        DisableAttackHitbox();
         _moveInput = Vector2.zero;
 
         SetMoving(false);
