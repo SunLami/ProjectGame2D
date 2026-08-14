@@ -2226,7 +2226,7 @@ SpriteRenderer:
   m_SortingLayer: 1
   m_SortingOrder: 1
   m_MaskInteraction: 0
-  m_Sprite: {fileID: -4361743883051759222, guid: 3913827a90c0aa44b8d3c29f3917bb4f, type: 3}
+  m_Sprite: {fileID: 6810331663067563206, guid: ff25b763ab6107e4cb89756856c9c83d, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -3017,9 +3017,9 @@ MonoBehaviour:
   - {fileID: 7108339969198208228, guid: e61fe7367f6e9484184396aec8761351, type: 3}
   - {fileID: 7108339969198208228, guid: 4692dab8e94a49a43907db44258e2e8f, type: 3}
   - {fileID: 7108339969198208228, guid: 29ebf3ff15623f347a8f7a01fa0676e7, type: 3}
-  _defaultBodyAsset: {fileID: 0}
-  _defaultHeadAsset: {fileID: 0}
-  _defaultSwordAsset: {fileID: 0}
+  _defaultBodyAsset: {fileID: 7108339969198208228, guid: ff5825b0878a9c64f962303fe9bdfc31, type: 3}
+  _defaultHeadAsset: {fileID: 7108339969198208228, guid: cc70e3a387882ca4cbba331d62fe071d, type: 3}
+  _defaultSwordAsset: {fileID: 7108339969198208228, guid: f012c391175fb4a4e9c2a9a08f8ddaea, type: 3}
 --- !u!1 &765565552
 GameObject:
   m_ObjectHideFlags: 0
@@ -6392,6 +6392,10 @@ MonoBehaviour:
   _isRunning: 0
   _isHit: 0
   _isDead: 0
+  _weaponRenderer: {fileID: 0}
+  _weaponSortingOrderRight: 1
+  _weaponSortingOrderLeft: -1
+  _weaponSortingOrderVertical: 0
 --- !u!114 &1570954197
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -8671,7 +8675,7 @@ SpriteRenderer:
   m_SortingLayer: 1
   m_SortingOrder: 0
   m_MaskInteraction: 0
-  m_Sprite: {fileID: 1778554653, guid: 0902d0ad96a742e4f8a21937c4d36548, type: 3}
+  m_Sprite: {fileID: -841816529, guid: 045f70e112fd28d499deb480d6deafd2, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -8697,7 +8701,7 @@ MonoBehaviour:
   m_CategoryHash: 0.24973127
   m_labelHash: 3.884472e-36
   m_SpriteKey: 0
-  m_SpriteHash: 668270397
+  m_SpriteHash: 701932520
 --- !u!114 &1899992295
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -9131,7 +9135,7 @@ SpriteRenderer:
   m_SortingLayer: 1
   m_SortingOrder: 0
   m_MaskInteraction: 0
-  m_Sprite: {fileID: 9056706936069279385, guid: 6e2bebe5836a541498e7ed62a0fe559b, type: 3}
+  m_Sprite: {fileID: 1206770060944113528, guid: 37fa5f6f1254abd4eb8b2899a18eacbb, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
