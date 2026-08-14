@@ -9,7 +9,9 @@ public class PlayerStat : MonoBehaviour
     [Header("Level 1 Base Stats")]
     [SerializeField, Min(1f)] private float _maxHealth = 100f;
     [FormerlySerializedAs("_baseAtkDmg")]
-    [SerializeField, Min(0f)] private float _attackDamage = 10f;
+    [SerializeField, Min(0.1f)] private float _attackDamage = 10f;
+    [FormerlySerializedAs("_atkDmg")]
+    [SerializeField, HideInInspector] private float _legacyAttackDamage;
     [SerializeField, Min(0f)] private float _defense = 2f;
     [SerializeField, Min(0f)] private float _moveSpeed = 2f;
     [SerializeField, Min(1f)] private float _sprintMultiplier = 2f;
@@ -63,6 +65,8 @@ public class PlayerStat : MonoBehaviour
 
     private void Awake()
     {
+        MigrateLegacyAttackDamage();
+
         if (Instance == null)
         {
             Instance = this;
@@ -161,12 +165,21 @@ public class PlayerStat : MonoBehaviour
 
     private void OnValidate()
     {
+        MigrateLegacyAttackDamage();
         _maxHealth = Mathf.Max(1f, _maxHealth);
-        _attackDamage = Mathf.Max(0f, _attackDamage);
+        _attackDamage = Mathf.Max(0.1f, _attackDamage);
         _defense = Mathf.Max(0f, _defense);
         _moveSpeed = Mathf.Max(0f, _moveSpeed);
         _sprintMultiplier = Mathf.Max(1f, _sprintMultiplier);
         _level = Mathf.Max(1, _level);
         _currentExperience = Mathf.Max(0, _currentExperience);
+    }
+
+    private void MigrateLegacyAttackDamage()
+    {
+        if (_attackDamage > 0f)
+            return;
+
+        _attackDamage = _legacyAttackDamage > 0f ? _legacyAttackDamage : 10f;
     }
 }
