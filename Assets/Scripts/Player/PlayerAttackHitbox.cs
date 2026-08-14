@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.U2D.Animation;
 
 [RequireComponent(typeof(PolygonCollider2D))]
 public sealed class PlayerAttackHitbox : MonoBehaviour
@@ -7,6 +8,8 @@ public sealed class PlayerAttackHitbox : MonoBehaviour
     private readonly HashSet<Component> _hitEnemies = new();
     private Player _owner;
     private PolygonCollider2D _collider;
+    private SpriteRenderer _cachedAttackRenderer;
+    private SpriteResolver _cachedAttackResolver;
 
     public void Initialize(Player owner)
     {
@@ -30,6 +33,19 @@ public sealed class PlayerAttackHitbox : MonoBehaviour
 
     private bool TryMatchSpritePhysicsShape(SpriteRenderer spriteRenderer)
     {
+        if (spriteRenderer != _cachedAttackRenderer)
+        {
+            _cachedAttackRenderer = spriteRenderer;
+            _cachedAttackResolver = spriteRenderer != null
+                ? spriteRenderer.GetComponent<SpriteResolver>()
+                : null;
+        }
+
+        // Animation Events can run before SpriteResolver has copied its newly
+        // animated label to the SpriteRenderer. Resolve first so every attack
+        // state reads the Physics Shape belonging to its current swing frame.
+        _cachedAttackResolver?.ResolveSpriteToSpriteRenderer();
+
         Sprite sprite = spriteRenderer != null ? spriteRenderer.sprite : null;
         int shapeCount = sprite != null ? sprite.GetPhysicsShapeCount() : 0;
         if (shapeCount <= 0)
@@ -73,6 +89,16 @@ public sealed class PlayerAttackHitbox : MonoBehaviour
     {
         if (_collider != null)
             _collider.enabled = false;
+    }
+
+    private void LateUpdate()
+    {
+        if (_collider == null || !_collider.enabled || _cachedAttackRenderer == null)
+            return;
+
+        // AttackFX can change sprite several times while one damage window is
+        // active. Keep the collider synchronized with the visible swing frame.
+        TryMatchSpritePhysicsShape(_cachedAttackRenderer);
     }
 
     private void OnTriggerEnter2D(Collider2D other)

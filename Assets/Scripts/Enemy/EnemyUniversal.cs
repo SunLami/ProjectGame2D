@@ -3,7 +3,7 @@ using System.Collections;
 using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody2D), typeof(Animator))]
-public sealed class EnemyUniversal : MonoBehaviour
+public sealed class EnemyUniversal : MonoBehaviour, IDamageable
 {
     public enum State { Idle, Patrol, Chase, Attack, Hurt, Dead, ReturnHome }
     public enum AttackType { Melee, Area, Projectile, Custom }
@@ -18,12 +18,22 @@ public sealed class EnemyUniversal : MonoBehaviour
         [Min(0f)] public float knockbackForce = 2.5f;
         [Min(0f)] public float cooldown = 1f;
         public string animatorTrigger = "Attack";
+        public bool launchForward;
+        [Min(0f)] public float launchDistance = 0.5f;
+        [Min(0.01f)] public float launchDuration = 0.15f;
         public UniversalEnemyAttackHitbox[] hitboxes;
         public UniversalEnemyProjectile projectilePrefab;
         public Transform projectileOrigin;
         [Min(0f)] public float projectileSpeed = 5f;
 
         [NonSerialized] public float lastUsedTime = float.NegativeInfinity;
+        [NonSerialized] public int animatorTriggerHash;
+
+        public void InitializeRuntime()
+        {
+            lastUsedTime = float.NegativeInfinity;
+            animatorTriggerHash = Animator.StringToHash(animatorTrigger);
+        }
     }
 
     [Header("References")]
@@ -33,7 +43,6 @@ public sealed class EnemyUniversal : MonoBehaviour
 
     [Header("Stats")]
     [SerializeField, Min(1f)] private float _maxHealth = 100f;
-    [SerializeField, Min(0f)] private float _health = 100f;
     [SerializeField, Min(0f)] private float _patrolSpeed = 1f;
     [SerializeField, Min(0f)] private float _chaseSpeed = 2f;
     [SerializeField, Min(0f)] private float _hurtDuration = 0.3f;
@@ -53,7 +62,7 @@ public sealed class EnemyUniversal : MonoBehaviour
     private static readonly int IsWalking = Animator.StringToHash("isWalking");
     private static readonly int IsRunning = Animator.StringToHash("isRunning");
     private static readonly int IsHit = Animator.StringToHash("isHit");
-    private static readonly int IsDead = Animator.StringToHash("isDead");
+    private static readonly int IsDeadHash = Animator.StringToHash("isDead");
 
     private State _state;
     private Vector2 _home;
@@ -63,16 +72,26 @@ public sealed class EnemyUniversal : MonoBehaviour
     private float _stateEnteredAt;
     private AttackProfile _activeAttack;
     private Player _playerComponent;
+    private Transform _playerTransform;
+    private Coroutine _hurtRoutine;
+    private Coroutine _launchRoutine;
+    private Vector2 _launchVelocity;
+    private float _currentHealth;
 
     public State CurrentState => _state;
-    public float Health => _health;
-    public bool IsDeadNow => _state == State.Dead;
+    public float Health => _currentHealth;
+    public float MaxHealth => _maxHealth;
+    public bool IsDead => _state == State.Dead;
+    public bool IsDeadNow => IsDead;
+    public event Action<float, float> HealthChanged;
+    public event Action ReturnedHome;
 
     private void Awake()
     {
         if (_rigidbody == null) _rigidbody = GetComponent<Rigidbody2D>();
         if (_animator == null) _animator = GetComponent<Animator>();
-        _health = Mathf.Clamp(_health, 0f, _maxHealth);
+        _currentHealth = _maxHealth;
+        InitializeAttacks();
         InitializeHitboxes();
     }
 
@@ -80,7 +99,8 @@ public sealed class EnemyUniversal : MonoBehaviour
     {
         _home = transform.position;
         ResolvePlayer();
-        EnterState(_health <= 0f ? State.Dead : State.Idle);
+        EnterState(State.Idle);
+        HealthChanged?.Invoke(_currentHealth, _maxHealth);
     }
 
     private void Update()
@@ -100,14 +120,17 @@ public sealed class EnemyUniversal : MonoBehaviour
     private void FixedUpdate()
     {
         if (_state != State.Hurt && _rigidbody != null)
-            _rigidbody.linearVelocity = _state == State.Dead ? Vector2.zero : _desiredVelocity;
+            _rigidbody.linearVelocity = _state == State.Dead
+                ? Vector2.zero
+                : _launchRoutine != null ? _launchVelocity : _desiredVelocity;
     }
 
     public void TakeDamage(float damage, Vector2 direction = default, float knockbackForce = 0f)
     {
         if (_state == State.Dead || damage <= 0f) return;
-        _health = Mathf.Max(0f, _health - damage);
-        if (_health <= 0f) { EnterState(State.Dead); return; }
+        _currentHealth = Mathf.Max(0f, _currentHealth - damage);
+        HealthChanged?.Invoke(_currentHealth, _maxHealth);
+        if (_currentHealth <= 0f) { EnterState(State.Dead); return; }
 
         EnterState(State.Hurt);
         if (_rigidbody != null && direction != Vector2.zero && knockbackForce > 0f)
@@ -115,7 +138,9 @@ public sealed class EnemyUniversal : MonoBehaviour
             _rigidbody.linearVelocity = Vector2.zero;
             _rigidbody.AddForce(direction.normalized * knockbackForce, ForceMode2D.Impulse);
         }
-        StartCoroutine(FinishHurtAfterDelay());
+        if (_hurtRoutine != null)
+            StopCoroutine(_hurtRoutine);
+        _hurtRoutine = StartCoroutine(FinishHurtAfterDelay());
     }
 
     private void UpdateIdle()
@@ -145,7 +170,7 @@ public sealed class EnemyUniversal : MonoBehaviour
 
         AttackProfile attack = SelectReadyAttack();
         if (attack != null) { BeginAttack(attack); return; }
-        MoveTowards(_player.transform.position, true);
+        MoveTowards(_playerTransform.position, true);
     }
 
     private void UpdateReturnHome()
@@ -158,6 +183,7 @@ public sealed class EnemyUniversal : MonoBehaviour
             else
                 transform.position = _home;
 
+            ReturnedHome?.Invoke();
             EnterState(State.Idle);
         }
     }
@@ -167,7 +193,7 @@ public sealed class EnemyUniversal : MonoBehaviour
         if (_attacks == null) return null;
         foreach (AttackProfile attack in _attacks)
         {
-            if (attack != null && IsNear(_player.transform.position, attack.activationRange)
+            if (attack != null && IsNear(_playerTransform.position, attack.activationRange)
                 && Time.time - attack.lastUsedTime >= attack.cooldown)
                 return attack;
         }
@@ -177,9 +203,42 @@ public sealed class EnemyUniversal : MonoBehaviour
     private void BeginAttack(AttackProfile attack)
     {
         _activeAttack = attack;
-        Face(_player.transform.position - transform.position);
+        Face(_playerTransform.position - transform.position);
         EnterState(State.Attack);
-        _animator.SetTrigger(Animator.StringToHash(attack.animatorTrigger));
+        _animator.SetTrigger(attack.animatorTriggerHash);
+        BeginLaunch(attack);
+    }
+
+    private void BeginLaunch(AttackProfile attack)
+    {
+        if (!attack.launchForward || attack.launchDistance <= 0f)
+            return;
+
+        StopLaunch();
+        _launchRoutine = StartCoroutine(LaunchForward(attack.launchDistance, attack.launchDuration));
+    }
+
+    private IEnumerator LaunchForward(float distance, float duration)
+    {
+        duration = Mathf.Max(0.01f, duration);
+        _launchVelocity = _lastDirection * (distance / duration);
+        yield return new WaitForSeconds(duration);
+
+        _launchRoutine = null;
+        _launchVelocity = Vector2.zero;
+        if (_rigidbody != null && _state == State.Attack)
+            _rigidbody.linearVelocity = Vector2.zero;
+    }
+
+    private void StopLaunch()
+    {
+        if (_launchRoutine != null)
+        {
+            StopCoroutine(_launchRoutine);
+            _launchRoutine = null;
+        }
+
+        _launchVelocity = Vector2.zero;
     }
 
     // Animation Events. A clip may call these repeatedly for multi-hit attacks.
@@ -223,6 +282,7 @@ public sealed class EnemyUniversal : MonoBehaviour
     private IEnumerator FinishHurtAfterDelay()
     {
         yield return new WaitForSeconds(_hurtDuration);
+        _hurtRoutine = null;
         if (_state != State.Hurt) yield break;
         _rigidbody.linearVelocity = Vector2.zero;
         EnterState(HasLivingPlayer() ? State.Chase : State.Idle);
@@ -232,7 +292,10 @@ public sealed class EnemyUniversal : MonoBehaviour
     {
         CloseAttackWindow();
         if (_state == State.Attack && state != State.Attack)
+        {
+            StopLaunch();
             _activeAttack = null;
+        }
         _state = state;
         _stateEnteredAt = Time.time;
         _desiredVelocity = Vector2.zero;
@@ -242,7 +305,13 @@ public sealed class EnemyUniversal : MonoBehaviour
         if (state == State.Hurt) _animator.SetTrigger(IsHit);
         if (state != State.Dead) return;
 
-        _animator.SetBool(IsDead, true);
+        if (_hurtRoutine != null)
+        {
+            StopCoroutine(_hurtRoutine);
+            _hurtRoutine = null;
+        }
+
+        _animator.SetBool(IsDeadHash, true);
         _rigidbody.linearVelocity = Vector2.zero;
         _rigidbody.simulated = false;
         foreach (Collider2D collider in GetComponentsInChildren<Collider2D>()) collider.enabled = false;
@@ -278,15 +347,56 @@ public sealed class EnemyUniversal : MonoBehaviour
                 foreach (UniversalEnemyAttackHitbox hitbox in attack.hitboxes) hitbox?.Initialize(this);
     }
 
+    private void InitializeAttacks()
+    {
+        if (_attacks == null) return;
+        foreach (AttackProfile attack in _attacks)
+            attack?.InitializeRuntime();
+    }
+
     private void ResolvePlayer()
     {
         if (_player == null) _player = GameObject.FindGameObjectWithTag("Player");
         _playerComponent = _player != null ? _player.GetComponent<Player>() : null;
+        _playerTransform = _player != null ? _player.transform : null;
     }
 
-    private bool HasLivingPlayer() => _player != null && (_playerComponent == null || !_playerComponent.IsDead);
-    private bool CanSeePlayer() { if (_player == null) ResolvePlayer(); return HasLivingPlayer() && IsNear(_player.transform.position, _detectionRange); }
+    private bool HasLivingPlayer() => _playerTransform != null && (_playerComponent == null || !_playerComponent.IsDead);
+    private bool CanSeePlayer() { if (_playerTransform == null) ResolvePlayer(); return HasLivingPlayer() && IsNear(_playerTransform.position, _detectionRange); }
     private bool IsNear(Vector2 target, float range) => ((Vector2)transform.position - target).sqrMagnitude <= range * range;
+
+    private void OnValidate()
+    {
+        if (_rigidbody == null)
+            _rigidbody = GetComponent<Rigidbody2D>();
+        if (_animator == null)
+            _animator = GetComponent<Animator>();
+
+        _maxHealth = Mathf.Max(1f, _maxHealth);
+        _patrolSpeed = Mathf.Max(0f, _patrolSpeed);
+        _chaseSpeed = Mathf.Max(0f, _chaseSpeed);
+        _hurtDuration = Mathf.Max(0f, _hurtDuration);
+        _deathLifetime = Mathf.Max(0f, _deathLifetime);
+        _detectionRange = Mathf.Max(0f, _detectionRange);
+        _chaseRange = Mathf.Max(_detectionRange, _chaseRange);
+        _patrolRadius = Mathf.Max(0f, _patrolRadius);
+        _idleDuration = Mathf.Max(0f, _idleDuration);
+
+        if (_attacks == null) return;
+        foreach (AttackProfile attack in _attacks)
+        {
+            if (attack == null) continue;
+            attack.activationRange = Mathf.Max(0f, attack.activationRange);
+            attack.damage = Mathf.Max(0f, attack.damage);
+            attack.knockbackForce = Mathf.Max(0f, attack.knockbackForce);
+            attack.cooldown = Mathf.Max(0f, attack.cooldown);
+            attack.launchDistance = Mathf.Max(0f, attack.launchDistance);
+            attack.launchDuration = Mathf.Max(0.01f, attack.launchDuration);
+            attack.projectileSpeed = Mathf.Max(0f, attack.projectileSpeed);
+            if (string.IsNullOrWhiteSpace(attack.animatorTrigger))
+                attack.animatorTrigger = "Attack";
+        }
+    }
 
     private void OnDrawGizmosSelected()
     {

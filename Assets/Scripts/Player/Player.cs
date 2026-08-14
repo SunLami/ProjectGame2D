@@ -1,9 +1,8 @@
-using System.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
 [RequireComponent(typeof(Rigidbody2D), typeof(Animator), typeof(PlayerStat))]
-public class Player : MonoBehaviour
+public class Player : MonoBehaviour, IDamageable
 {
     private static readonly int InputXHash = Animator.StringToHash("InputX");
     private static readonly int InputYHash = Animator.StringToHash("InputY");
@@ -21,13 +20,11 @@ public class Player : MonoBehaviour
     private Camera _mainCamera;
     private Vector2 _moveInput;
     private Vector2 _lastFacingDirection = Vector2.down;
-    private Coroutine _attackHitboxRoutine;
 
     [Header("Attack Hitbox")]
     [SerializeField] private PlayerAttackHitbox _attackHitbox;
     [SerializeField] private SpriteRenderer _attackFxRenderer;
     [SerializeField, Min(0f)] private float _attackHitboxOffset = 0.6f;
-    [SerializeField, Min(0.02f)] private float _attackHitboxActiveDuration = 0.1f;
     [SerializeField, Min(0f)] private float _attackKnockbackForce = 2.5f;
     private Vector2 _facingDirection = Vector2.down;
 
@@ -172,15 +169,21 @@ public class Player : MonoBehaviour
         _isAttacking = false;
     }
 
+    // Called by Animation Events to close the damage window independently
+    // from the visual end of the attack animation.
+    public void CloseAttackHitbox()
+    {
+        DisableAttackHitbox();
+    }
+
     // Called by Animation Events on all Player attack clips.
     public void ActivatePlayerAttackHitbox()
     {
-        if (!_isAttacking || _isHit || _isDead || _attackHitboxRoutine != null)
+        if (!_isAttacking || _isHit || _isDead)
             return;
 
         _attackHitbox.Configure(_attackFxRenderer, _lastFacingDirection, _attackHitboxOffset);
         _attackHitbox.BeginAttack();
-        _attackHitboxRoutine = StartCoroutine(DisableAttackHitboxAfterDelay());
     }
 
     public void DamageEnemyFromHitbox(Enemy enemy)
@@ -201,21 +204,9 @@ public class Player : MonoBehaviour
         enemy.TakeDamage(_stats.AtkDmg, knockbackDirection, _attackKnockbackForce);
     }
 
-    private IEnumerator DisableAttackHitboxAfterDelay()
-    {
-        yield return new WaitForSeconds(_attackHitboxActiveDuration);
-        _attackHitbox.EndAttack();
-        _attackHitboxRoutine = null;
-    }
-
     private void DisableAttackHitbox()
     {
         _attackHitbox?.EndAttack();
-        if (_attackHitboxRoutine == null)
-            return;
-
-        StopCoroutine(_attackHitboxRoutine);
-        _attackHitboxRoutine = null;
     }
 
     private void EnsureAttackHitbox()
