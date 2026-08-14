@@ -5,7 +5,7 @@ using UnityEngine;
 [RequireComponent(typeof(Rigidbody2D), typeof(Animator))]
 public sealed class EnemyUniversal : MonoBehaviour
 {
-    public enum State { Idle, Patrol, Chase, Attack, Hurt, Dead }
+    public enum State { Idle, Patrol, Chase, Attack, Hurt, Dead, ReturnHome }
     public enum AttackType { Melee, Area, Projectile, Custom }
 
     [Serializable]
@@ -17,7 +17,6 @@ public sealed class EnemyUniversal : MonoBehaviour
         [Min(0f)] public float damage = 10f;
         [Min(0f)] public float knockbackForce = 2.5f;
         [Min(0f)] public float cooldown = 1f;
-        [Min(0.01f)] public float fallbackDuration = 0.7f;
         public string animatorTrigger = "Attack";
         public UniversalEnemyAttackHitbox[] hitboxes;
         public UniversalEnemyProjectile projectilePrefab;
@@ -35,7 +34,8 @@ public sealed class EnemyUniversal : MonoBehaviour
     [Header("Stats")]
     [SerializeField, Min(1f)] private float _maxHealth = 100f;
     [SerializeField, Min(0f)] private float _health = 100f;
-    [SerializeField, Min(0f)] private float _moveSpeed = 2f;
+    [SerializeField, Min(0f)] private float _patrolSpeed = 1f;
+    [SerializeField, Min(0f)] private float _chaseSpeed = 2f;
     [SerializeField, Min(0f)] private float _hurtDuration = 0.3f;
     [SerializeField, Min(0f)] private float _deathLifetime = 3f;
 
@@ -62,7 +62,6 @@ public sealed class EnemyUniversal : MonoBehaviour
     private Vector2 _lastDirection = Vector2.down;
     private float _stateEnteredAt;
     private AttackProfile _activeAttack;
-    private Coroutine _fallbackRoutine;
     private Player _playerComponent;
 
     public State CurrentState => _state;
@@ -94,6 +93,7 @@ public sealed class EnemyUniversal : MonoBehaviour
             case State.Idle: UpdateIdle(); break;
             case State.Patrol: UpdatePatrol(); break;
             case State.Chase: UpdateChase(); break;
+            case State.ReturnHome: UpdateReturnHome(); break;
         }
     }
 
@@ -137,10 +137,29 @@ public sealed class EnemyUniversal : MonoBehaviour
 
     private void UpdateChase()
     {
-        if (!HasLivingPlayer() || !IsNear(_home, _chaseRange)) { EnterState(State.Idle); return; }
+        if (!HasLivingPlayer() || !IsNear(_home, _chaseRange))
+        {
+            EnterState(State.ReturnHome);
+            return;
+        }
+
         AttackProfile attack = SelectReadyAttack();
         if (attack != null) { BeginAttack(attack); return; }
         MoveTowards(_player.transform.position, true);
+    }
+
+    private void UpdateReturnHome()
+    {
+        MoveTowards(_home, true);
+        if (IsNear(_home, 0.1f))
+        {
+            if (_rigidbody != null)
+                _rigidbody.position = _home;
+            else
+                transform.position = _home;
+
+            EnterState(State.Idle);
+        }
     }
 
     private AttackProfile SelectReadyAttack()
@@ -161,7 +180,6 @@ public sealed class EnemyUniversal : MonoBehaviour
         Face(_player.transform.position - transform.position);
         EnterState(State.Attack);
         _animator.SetTrigger(Animator.StringToHash(attack.animatorTrigger));
-        _fallbackRoutine = StartCoroutine(FinishAttackFallback(attack.fallbackDuration));
     }
 
     // Animation Events. A clip may call these repeatedly for multi-hit attacks.
@@ -197,18 +215,9 @@ public sealed class EnemyUniversal : MonoBehaviour
     {
         if (_state != State.Attack) return;
         CloseAttackWindow();
-        if (_fallbackRoutine != null) StopCoroutine(_fallbackRoutine);
-        _fallbackRoutine = null;
         _activeAttack.lastUsedTime = Time.time;
         _activeAttack = null;
         EnterState(State.Chase);
-    }
-
-    private IEnumerator FinishAttackFallback(float duration)
-    {
-        yield return new WaitForSeconds(duration);
-        _fallbackRoutine = null;
-        FinishAttackAnimation();
     }
 
     private IEnumerator FinishHurtAfterDelay()
@@ -223,16 +232,12 @@ public sealed class EnemyUniversal : MonoBehaviour
     {
         CloseAttackWindow();
         if (_state == State.Attack && state != State.Attack)
-        {
-            if (_fallbackRoutine != null) StopCoroutine(_fallbackRoutine);
-            _fallbackRoutine = null;
             _activeAttack = null;
-        }
         _state = state;
         _stateEnteredAt = Time.time;
         _desiredVelocity = Vector2.zero;
-        _animator.SetBool(IsWalking, state is State.Patrol or State.Chase);
-        _animator.SetBool(IsRunning, state == State.Chase);
+        _animator.SetBool(IsWalking, state is State.Patrol or State.Chase or State.ReturnHome);
+        _animator.SetBool(IsRunning, state is State.Chase or State.ReturnHome);
 
         if (state == State.Hurt) _animator.SetTrigger(IsHit);
         if (state != State.Dead) return;
@@ -248,7 +253,8 @@ public sealed class EnemyUniversal : MonoBehaviour
     {
         Vector2 direction = (target - (Vector2)transform.position).normalized;
         Face(direction);
-        _desiredVelocity = direction * _moveSpeed;
+        float speed = running ? _chaseSpeed : _patrolSpeed;
+        _desiredVelocity = direction * speed;
         _animator.SetBool(IsWalking, true);
         _animator.SetBool(IsRunning, running);
     }
@@ -281,4 +287,28 @@ public sealed class EnemyUniversal : MonoBehaviour
     private bool HasLivingPlayer() => _player != null && (_playerComponent == null || !_playerComponent.IsDead);
     private bool CanSeePlayer() { if (_player == null) ResolvePlayer(); return HasLivingPlayer() && IsNear(_player.transform.position, _detectionRange); }
     private bool IsNear(Vector2 target, float range) => ((Vector2)transform.position - target).sqrMagnitude <= range * range;
+
+    private void OnDrawGizmosSelected()
+    {
+        Vector3 home = Application.isPlaying ? (Vector3)_home : transform.position;
+
+        Gizmos.color = Color.blue;
+        Gizmos.DrawWireSphere(home, _patrolRadius);
+
+        Gizmos.color = Color.green;
+        Gizmos.DrawWireSphere(transform.position, _detectionRange);
+
+        Gizmos.color = Color.yellow;
+        Gizmos.DrawWireSphere(home, _chaseRange);
+
+        if (_attacks == null)
+            return;
+
+        Gizmos.color = Color.red;
+        foreach (AttackProfile attack in _attacks)
+        {
+            if (attack != null)
+                Gizmos.DrawWireSphere(transform.position, attack.activationRange);
+        }
+    }
 }
