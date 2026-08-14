@@ -35,6 +35,7 @@ public class EquipmentManager : MonoBehaviour
 
         currentSwordIndex = index;
         swordSpriteLibrary.spriteLibraryAsset = swordEquipmentAssets[index];
+        SetSwordVisible(true);
     }
 
     public void EquipHeadByIndex(int index)
@@ -53,6 +54,7 @@ public class EquipmentManager : MonoBehaviour
     [SerializeField] private SpriteLibraryAsset _defaultSwordAsset;
 
     private readonly Dictionary<EquipSlot, EquipmentItemSO> _equipped = new Dictionary<EquipSlot, EquipmentItemSO>();
+    private SpriteRenderer _swordRenderer;
 
     public event Action OnEquipmentChanged;
 
@@ -67,6 +69,18 @@ public class EquipmentManager : MonoBehaviour
         {
             Destroy(gameObject);
         }
+
+        if (swordSpriteLibrary != null)
+            _swordRenderer = swordSpriteLibrary.GetComponent<SpriteRenderer>();
+
+        // Weapon starts unequipped (bare-handed) by default — unlike Head/Body, which always have a base look.
+        SetSwordVisible(GetEquipped(EquipSlot.Weapon) != null);
+    }
+
+    private void SetSwordVisible(bool visible)
+    {
+        if (_swordRenderer != null)
+            _swordRenderer.enabled = visible;
     }
 
     public EquipmentItemSO GetEquipped(EquipSlot slot)
@@ -109,12 +123,29 @@ public class EquipmentManager : MonoBehaviour
 
     public bool Unequip(EquipSlot slot)
     {
+        return Unequip(slot, null);
+    }
+
+    // Unequips into a specific inventory slot (e.g. drag-and-drop target) when that slot is
+    // empty; falls back to the first empty slot otherwise (or when no target slot is given).
+    public bool Unequip(EquipSlot slot, InventorySlot targetSlot)
+    {
         EquipmentItemSO item = GetEquipped(slot);
         if (item == null) return false;
 
         ClearVisual(slot);
         _equipped[slot] = null;
-        InventoryManager.Instance?.AddItem(item, 1);
+
+        if (targetSlot != null && targetSlot.IsEmpty)
+        {
+            targetSlot.item = item;
+            targetSlot.quantity = 1;
+            InventoryManager.Instance?.NotifyChanged();
+        }
+        else
+        {
+            InventoryManager.Instance?.AddItem(item, 1);
+        }
 
         OnEquipmentChanged?.Invoke();
         return true;
@@ -138,6 +169,7 @@ public class EquipmentManager : MonoBehaviour
 
             case EquipSlot.Weapon:
                 swordSpriteLibrary.spriteLibraryAsset = item.spriteLibraryAsset;
+                SetSwordVisible(true);
                 break;
         }
     }
@@ -158,7 +190,8 @@ public class EquipmentManager : MonoBehaviour
                 break;
 
             case EquipSlot.Weapon:
-                swordSpriteLibrary.spriteLibraryAsset = _defaultSwordAsset;
+                // No default sword look — unequipping means bare-handed, so just hide it.
+                SetSwordVisible(false);
                 break;
         }
     }
