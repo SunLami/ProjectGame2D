@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 8107879833369486285}
   - component: {fileID: 5480208628138816974}
   - component: {fileID: 7503842574384714514}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Background
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -86,7 +86,7 @@ GameObject:
   - component: {fileID: 2982503051512717001}
   - component: {fileID: 287898664380243375}
   - component: {fileID: 4997528536127544020}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: AttackHitbox
   m_TagString: EnemyHitbox
   m_Icon: {fileID: 0}
@@ -115,7 +115,7 @@ PolygonCollider2D:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2278906738051936837}
-  m_Enabled: 0
+  m_Enabled: 1
   serializedVersion: 3
   m_Density: 1
   m_Material: {fileID: 0}
@@ -154,11 +154,13 @@ PolygonCollider2D:
   m_AutoTiling: 0
   m_Points:
     m_Paths:
-    - - {x: 0, y: 1}
-      - {x: -0.95105654, y: 0.30901697}
-      - {x: -0.5877852, y: -0.80901706}
-      - {x: 0.58778536, y: -0.80901694}
-      - {x: 0.9510565, y: 0.30901712}
+    - - {x: -0.0036071744, y: 0.34608036}
+      - {x: -0.25845104, y: 0.24656394}
+      - {x: -0.36052394, y: 0.02858758}
+      - {x: -0.12379746, y: -0.102809615}
+      - {x: 0.13949385, y: -0.10316012}
+      - {x: 0.4074194, y: 0.04328257}
+      - {x: 0.24402201, y: 0.26493266}
   m_UseDelaunayMesh: 1
 --- !u!114 &4997528536127544020
 MonoBehaviour:
@@ -188,7 +190,7 @@ GameObject:
   - component: {fileID: 1254512393058373241}
   - component: {fileID: 674670843969415753}
   - component: {fileID: 8967839321786618117}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Slime1
   m_TagString: Enemy
   m_Icon: {fileID: 0}
@@ -419,13 +421,25 @@ MonoBehaviour:
     knockbackForce: 2.5
     cooldown: 1.5
     animatorTrigger: Attack
-    launchForward: 1
+    launchForward: 0
+    launchDelay: 0
     launchDistance: 0.5
     launchDuration: 0.15
+    meleeHitboxDown: {fileID: 0}
+    meleeHitboxLeft: {fileID: 0}
+    meleeHitboxRight: {fileID: 0}
+    meleeHitboxUp: {fileID: 0}
     hitboxes:
     - {fileID: 4997528536127544020}
+    areaMode: 0
+    areaRadius: 1.5
+    areaTargetLayers:
+      serializedVersion: 2
+      m_Bits: 4294967295
     projectilePrefab: {fileID: 0}
     projectileOrigin: {fileID: 0}
+    projectileSpawnOffset: {x: 0, y: 0}
+    rotateProjectileOffsetWithDirection: 1
     projectileSpeed: 5
 --- !u!1 &6408508590867732106
 GameObject:
@@ -438,7 +452,7 @@ GameObject:
   - component: {fileID: 7128774129898196673}
   - component: {fileID: 296350506696134328}
   - component: {fileID: 3002849782201132421}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Fill
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -513,7 +527,7 @@ GameObject:
   - component: {fileID: 8208691069883584986}
   - component: {fileID: 8253022197839526400}
   - component: {fileID: 4749324345132777330}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: HealthBar
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -538,8 +552,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 0.65}
-  m_SizeDelta: {x: 1, y: 0.12}
+  m_AnchoredPosition: {x: 0, y: 0.2844}
+  m_SizeDelta: {x: 0.4, y: 0.05}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!223 &8253022197839526400
 Canvas:

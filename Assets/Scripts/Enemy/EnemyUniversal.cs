@@ -1,12 +1,14 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody2D), typeof(Animator))]
 public sealed class EnemyUniversal : MonoBehaviour, IDamageable
 {
     public enum State { Idle, Patrol, Chase, Attack, Hurt, Dead, ReturnHome }
-    public enum AttackType { Melee, Area, Projectile, Custom }
+    public enum AttackType { Melee, Area, Projectile }
+    public enum AreaMode { LocalHitboxes, Radius }
 
     [Serializable]
     public sealed class AttackProfile
@@ -18,12 +20,31 @@ public sealed class EnemyUniversal : MonoBehaviour, IDamageable
         [Min(0f)] public float knockbackForce = 2.5f;
         [Min(0f)] public float cooldown = 1f;
         public string animatorTrigger = "Attack";
+
+        // Melee
         public bool launchForward;
+        [Min(0f)] public float launchDelay;
         [Min(0f)] public float launchDistance = 0.5f;
         [Min(0.01f)] public float launchDuration = 0.15f;
+
+        public UniversalEnemyAttackHitbox meleeHitboxDown;
+        public UniversalEnemyAttackHitbox meleeHitboxLeft;
+        public UniversalEnemyAttackHitbox meleeHitboxRight;
+        public UniversalEnemyAttackHitbox meleeHitboxUp;
+
+        // Local area
         public UniversalEnemyAttackHitbox[] hitboxes;
+
+        // Area
+        public AreaMode areaMode = AreaMode.LocalHitboxes;
+        [Min(0f)] public float areaRadius = 1.5f;
+        public LayerMask areaTargetLayers = ~0;
+
+        // Projectile
         public UniversalEnemyProjectile projectilePrefab;
         public Transform projectileOrigin;
+        public Vector2 projectileSpawnOffset;
+        public bool rotateProjectileOffsetWithDirection = true;
         [Min(0f)] public float projectileSpeed = 5f;
 
         [NonSerialized] public float lastUsedTime = float.NegativeInfinity;
@@ -78,11 +99,9 @@ public sealed class EnemyUniversal : MonoBehaviour, IDamageable
     private Vector2 _launchVelocity;
     private float _currentHealth;
 
-    public State CurrentState => _state;
     public float Health => _currentHealth;
     public float MaxHealth => _maxHealth;
     public bool IsDead => _state == State.Dead;
-    public bool IsDeadNow => IsDead;
     public event Action<float, float> HealthChanged;
     public event Action ReturnedHome;
 
@@ -206,7 +225,8 @@ public sealed class EnemyUniversal : MonoBehaviour, IDamageable
         Face(_playerTransform.position - transform.position);
         EnterState(State.Attack);
         _animator.SetTrigger(attack.animatorTriggerHash);
-        BeginLaunch(attack);
+        if (attack.type == AttackType.Melee)
+            BeginLaunch(attack);
     }
 
     private void BeginLaunch(AttackProfile attack)
@@ -215,19 +235,44 @@ public sealed class EnemyUniversal : MonoBehaviour, IDamageable
             return;
 
         StopLaunch();
-        _launchRoutine = StartCoroutine(LaunchForward(attack.launchDistance, attack.launchDuration));
+        _launchRoutine = StartCoroutine(LaunchForward(
+            attack.launchDelay,
+            attack.launchDistance,
+            attack.launchDuration));
     }
 
-    private IEnumerator LaunchForward(float distance, float duration)
+    private IEnumerator LaunchForward(float delay, float distance, float duration)
     {
+        if (delay > 0f)
+            yield return new WaitForSeconds(delay);
+
+        if (_state != State.Attack)
+        {
+            _launchRoutine = null;
+            yield break;
+        }
+
         duration = Mathf.Max(0.01f, duration);
-        _launchVelocity = _lastDirection * (distance / duration);
+        Vector2 launchDirection = GetLaunchDirectionToPlayer();
+        _launchVelocity = launchDirection * (distance / duration);
         yield return new WaitForSeconds(duration);
 
         _launchRoutine = null;
         _launchVelocity = Vector2.zero;
         if (_rigidbody != null && _state == State.Attack)
             _rigidbody.linearVelocity = Vector2.zero;
+    }
+
+    private Vector2 GetLaunchDirectionToPlayer()
+    {
+        if (_playerTransform != null)
+        {
+            Vector2 direction = (Vector2)_playerTransform.position - (Vector2)transform.position;
+            if (direction.sqrMagnitude > Mathf.Epsilon)
+                return direction.normalized;
+        }
+
+        return _lastDirection == Vector2.zero ? Vector2.down : _lastDirection.normalized;
     }
 
     private void StopLaunch()
@@ -245,9 +290,67 @@ public sealed class EnemyUniversal : MonoBehaviour, IDamageable
     public void OpenAttackWindow()
     {
         if (_state != State.Attack || _activeAttack == null) return;
-        if (_activeAttack.hitboxes == null) return;
+
+        switch (_activeAttack.type)
+        {
+            case AttackType.Melee:
+                OpenDirectionalMeleeHitbox();
+                break;
+            case AttackType.Area:
+                if (_activeAttack.areaMode == AreaMode.Radius)
+                    DamagePlayersInArea(_activeAttack);
+                else
+                    OpenConfiguredHitboxes();
+                break;
+        }
+    }
+
+    private void OpenDirectionalMeleeHitbox()
+    {
+        UniversalEnemyAttackHitbox hitbox = GetDirectionalMeleeHitbox(_activeAttack, _lastDirection);
+        hitbox?.Open(_activeAttack.damage, _activeAttack.knockbackForce);
+    }
+
+    private static UniversalEnemyAttackHitbox GetDirectionalMeleeHitbox(
+        AttackProfile attack,
+        Vector2 direction)
+    {
+        if (attack == null) return null;
+
+        if (Mathf.Abs(direction.x) > Mathf.Abs(direction.y))
+            return direction.x >= 0f ? attack.meleeHitboxRight : attack.meleeHitboxLeft;
+
+        return direction.y > 0f ? attack.meleeHitboxUp : attack.meleeHitboxDown;
+    }
+
+    private void OpenConfiguredHitboxes()
+    {
+        if (_activeAttack?.hitboxes == null) return;
         foreach (UniversalEnemyAttackHitbox hitbox in _activeAttack.hitboxes)
-            hitbox?.Open(_activeAttack.damage, _activeAttack.knockbackForce);
+        {
+            if (hitbox == null) continue;
+            hitbox.Open(_activeAttack.damage, _activeAttack.knockbackForce);
+        }
+    }
+
+    private void DamagePlayersInArea(AttackProfile attack)
+    {
+        if (attack.areaRadius <= 0f) return;
+
+        Collider2D[] overlaps = Physics2D.OverlapCircleAll(
+            transform.position,
+            attack.areaRadius,
+            attack.areaTargetLayers);
+        HashSet<Player> damagedPlayers = new();
+
+        foreach (Collider2D overlap in overlaps)
+        {
+            Player player = overlap != null ? overlap.GetComponentInParent<Player>() : null;
+            if (player == null || player.IsDead || !damagedPlayers.Add(player)) continue;
+
+            Vector2 direction = (player.transform.position - transform.position).normalized;
+            player.TakeDamage(attack.damage, direction, attack.knockbackForce);
+        }
     }
 
     // Compatibility with the existing Slime attack clips.
@@ -258,16 +361,45 @@ public sealed class EnemyUniversal : MonoBehaviour, IDamageable
 
     public void CloseAttackWindow()
     {
-        if (_activeAttack?.hitboxes == null) return;
-        foreach (UniversalEnemyAttackHitbox hitbox in _activeAttack.hitboxes) hitbox?.Close();
+        if (_activeAttack == null) return;
+
+        CloseDirectionalMeleeHitboxes(_activeAttack);
+        if (_activeAttack.hitboxes == null) return;
+        foreach (UniversalEnemyAttackHitbox hitbox in _activeAttack.hitboxes)
+            hitbox?.Close();
+    }
+
+    private static void CloseDirectionalMeleeHitboxes(AttackProfile attack)
+    {
+        attack.meleeHitboxDown?.Close();
+        attack.meleeHitboxLeft?.Close();
+        attack.meleeHitboxRight?.Close();
+        attack.meleeHitboxUp?.Close();
     }
 
     public void FireProjectile()
     {
-        if (_state != State.Attack || _activeAttack?.projectilePrefab == null) return;
+        if (_state != State.Attack || _activeAttack?.type != AttackType.Projectile
+            || _activeAttack.projectilePrefab == null) return;
+
         Transform origin = _activeAttack.projectileOrigin != null ? _activeAttack.projectileOrigin : transform;
-        UniversalEnemyProjectile projectile = Instantiate(_activeAttack.projectilePrefab, origin.position, Quaternion.identity);
+        Vector2 offset = _activeAttack.projectileSpawnOffset;
+        if (_activeAttack.rotateProjectileOffsetWithDirection)
+            offset = RotateFromDown(offset, _lastDirection);
+
+        Vector2 spawnPosition = (Vector2)origin.position + offset;
+        UniversalEnemyProjectile projectile = Instantiate(
+            _activeAttack.projectilePrefab,
+            spawnPosition,
+            Quaternion.identity);
         projectile.Launch(_lastDirection, _activeAttack.projectileSpeed, _activeAttack.damage, _activeAttack.knockbackForce);
+    }
+
+    private static Vector2 RotateFromDown(Vector2 value, Vector2 direction)
+    {
+        if (direction == Vector2.zero) direction = Vector2.down;
+        float angle = Vector2.SignedAngle(Vector2.down, direction);
+        return (Vector2)(Quaternion.Euler(0f, 0f, angle) * (Vector3)value);
     }
 
     public void FinishAttackAnimation()
@@ -343,8 +475,18 @@ public sealed class EnemyUniversal : MonoBehaviour, IDamageable
     {
         if (_attacks == null) return;
         foreach (AttackProfile attack in _attacks)
-            if (attack?.hitboxes != null)
-                foreach (UniversalEnemyAttackHitbox hitbox in attack.hitboxes) hitbox?.Initialize(this);
+        {
+            if (attack == null) continue;
+
+            attack.meleeHitboxDown?.Initialize(this);
+            attack.meleeHitboxLeft?.Initialize(this);
+            attack.meleeHitboxRight?.Initialize(this);
+            attack.meleeHitboxUp?.Initialize(this);
+
+            if (attack.hitboxes != null)
+                foreach (UniversalEnemyAttackHitbox hitbox in attack.hitboxes)
+                    hitbox?.Initialize(this);
+        }
     }
 
     private void InitializeAttacks()
@@ -390,8 +532,10 @@ public sealed class EnemyUniversal : MonoBehaviour, IDamageable
             attack.damage = Mathf.Max(0f, attack.damage);
             attack.knockbackForce = Mathf.Max(0f, attack.knockbackForce);
             attack.cooldown = Mathf.Max(0f, attack.cooldown);
+            attack.launchDelay = Mathf.Max(0f, attack.launchDelay);
             attack.launchDistance = Mathf.Max(0f, attack.launchDistance);
             attack.launchDuration = Mathf.Max(0.01f, attack.launchDuration);
+            attack.areaRadius = Mathf.Max(0f, attack.areaRadius);
             attack.projectileSpeed = Mathf.Max(0f, attack.projectileSpeed);
             if (string.IsNullOrWhiteSpace(attack.animatorTrigger))
                 attack.animatorTrigger = "Attack";
@@ -417,8 +561,29 @@ public sealed class EnemyUniversal : MonoBehaviour, IDamageable
         Gizmos.color = Color.red;
         foreach (AttackProfile attack in _attacks)
         {
-            if (attack != null)
-                Gizmos.DrawWireSphere(transform.position, attack.activationRange);
+            if (attack == null) continue;
+
+            Gizmos.color = Color.red;
+            Gizmos.DrawWireSphere(transform.position, attack.activationRange);
+
+            if (attack.type == AttackType.Area && attack.areaMode == AreaMode.Radius)
+            {
+                Gizmos.color = new Color(1f, 0.35f, 0f);
+                Gizmos.DrawWireSphere(transform.position, attack.areaRadius);
+            }
+
+            if (attack.type == AttackType.Projectile)
+            {
+                Transform origin = attack.projectileOrigin != null ? attack.projectileOrigin : transform;
+                Vector2 direction = Application.isPlaying ? _lastDirection : Vector2.down;
+                Vector2 offset = attack.rotateProjectileOffsetWithDirection
+                    ? RotateFromDown(attack.projectileSpawnOffset, direction)
+                    : attack.projectileSpawnOffset;
+                Vector3 spawnPosition = origin.position + (Vector3)offset;
+                Gizmos.color = Color.cyan;
+                Gizmos.DrawWireSphere(spawnPosition, 0.1f);
+                Gizmos.DrawLine(spawnPosition, spawnPosition + (Vector3)direction);
+            }
         }
     }
 }

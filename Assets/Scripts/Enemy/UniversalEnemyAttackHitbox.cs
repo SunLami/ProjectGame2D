@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-[RequireComponent(typeof(Collider2D))]
 public sealed class UniversalEnemyAttackHitbox : MonoBehaviour
 {
     private readonly HashSet<Player> _hits = new();

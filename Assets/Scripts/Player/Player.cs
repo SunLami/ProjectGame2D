@@ -197,7 +197,7 @@ public class Player : MonoBehaviour, IDamageable
 
     public void DamageEnemyFromHitbox(EnemyUniversal enemy)
     {
-        if (!_isAttacking || _isHit || _isDead || enemy == null || enemy.IsDeadNow)
+        if (!_isAttacking || _isHit || _isDead || enemy == null || enemy.IsDead)
             return;
 
         Vector2 knockbackDirection = (enemy.transform.position - transform.position).normalized;
