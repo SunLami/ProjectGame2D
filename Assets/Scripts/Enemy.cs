@@ -3,7 +3,7 @@ using UnityEngine;
 using UnityEngine.Serialization;
 
 [RequireComponent(typeof(Rigidbody2D))]
-public class Enemy : MonoBehaviour
+public class Enemy : MonoBehaviour, IDamageable
 {
     public enum EnemyState
     {
@@ -26,6 +26,7 @@ public class Enemy : MonoBehaviour
     [FormerlySerializedAs("maxHealth"), SerializeField, Min(1f)] private float _maxHealth = 100f;
     [FormerlySerializedAs("health"), SerializeField] private float _health = 100f;
     [FormerlySerializedAs("moveSpeed"), SerializeField, Min(0f)] private float _moveSpeed = 2f;
+    [SerializeField, Min(0)] private int _experienceReward = 25;
 
     [Header("Detection Ranges")]
     [FormerlySerializedAs("detectionRange"), SerializeField, Range(1f, 10f)] private float _detectionRange = 4f;
@@ -36,11 +37,10 @@ public class Enemy : MonoBehaviour
     [FormerlySerializedAs("attackRange"), SerializeField, Range(0.5f, 5f)] private float _attackRange = 1.2f;
     [FormerlySerializedAs("attackDamage"), SerializeField, Min(0f)] private float _attackDamage = 10f;
     [FormerlySerializedAs("attackCooldown"), SerializeField, Min(0f)] private float _attackCooldown = 1.5f;
-    [SerializeField, Range(0f, 1f)] private float _attackHitNormalizedTime = 0.5f;
     [SerializeField, Min(0f)] private float _attackKnockbackForce = 5f;
 
     [Header("Animation Timing")]
-    [SerializeField, Min(0.01f)] private float _attackDuration = 0.5f;
+    [SerializeField, Min(0.01f)] private float _attackDuration = 0.9f;
     [SerializeField, Min(0.01f)] private float _hitDuration = 0.3f;
     [SerializeField, Min(0.01f)] private float _deathDuration = 3f;
 
@@ -63,8 +63,10 @@ public class Enemy : MonoBehaviour
     private float _lastAttackEndTime = float.NegativeInfinity;
     private Collider2D[] _colliders;
     private Coroutine _stateRoutine;
+    private Coroutine _attackHitboxRoutine;
     private Vector2 _lastDirection = Vector2.down;
     private bool _hasEnteredState;
+    private bool _experienceGranted;
 
     private static readonly int InputXHash = Animator.StringToHash("InputX");
     private static readonly int InputYHash = Animator.StringToHash("InputY");
@@ -111,17 +113,38 @@ public class Enemy : MonoBehaviour
 
     private void FixedUpdate()
     {
-        if (_rigidbody != null)
-            _rigidbody.linearVelocity = IsDead ? Vector2.zero : _desiredVelocity;
+        if (_rigidbody == null)
+            return;
+
+        if (IsDead)
+            _rigidbody.linearVelocity = Vector2.zero;
+        else if (_currentState != EnemyState.Hit)
+            _rigidbody.linearVelocity = _desiredVelocity;
     }
 
     public void TakeDamage(float damage)
+    {
+        TakeDamage(damage, Vector2.zero, 0f);
+    }
+
+    public void TakeDamage(float damage, Vector2 knockbackDirection, float knockbackForce)
     {
         if (IsDead || damage <= 0f)
             return;
 
         _health = Mathf.Clamp(_health - damage, 0f, _maxHealth);
-        EnterState(_health <= 0f ? EnemyState.Dead : EnemyState.Hit);
+        if (_health <= 0f)
+        {
+            EnterState(EnemyState.Dead);
+            return;
+        }
+
+        EnterState(EnemyState.Hit);
+        if (_rigidbody != null && knockbackForce > 0f && knockbackDirection != Vector2.zero)
+        {
+            _rigidbody.linearVelocity = Vector2.zero;
+            _rigidbody.AddForce(knockbackDirection.normalized * knockbackForce, ForceMode2D.Impulse);
+        }
     }
 
     private void UpdateState()
@@ -230,34 +253,37 @@ public class Enemy : MonoBehaviour
 
     private IEnumerator AttackRoutine()
     {
-        float duration = _attackDuration;
-        float hitDelay = duration * _attackHitNormalizedTime;
-
-        if (hitDelay > 0f)
-            yield return new WaitForSeconds(hitDelay);
-
-        float remainingDuration = duration - hitDelay;
-        float activeDuration = Mathf.Min(_attackHitboxActiveDuration, remainingDuration);
-        _attackHitbox.Configure(_lastDirection, _attackHitboxOffset, _rotateHitboxWithEnemyDirection);
-        _attackHitbox.BeginAttack();
-
-        if (activeDuration > 0f)
-            yield return new WaitForSeconds(activeDuration);
-
-        _attackHitbox.EndAttack();
-
-        float recoveryDuration = remainingDuration - activeDuration;
-        if (recoveryDuration > 0f)
-            yield return new WaitForSeconds(recoveryDuration);
+        yield return new WaitForSeconds(_attackDuration);
 
         _stateRoutine = null;
         _lastAttackEndTime = Time.time;
         EvaluateNextState();
     }
 
+    // Called by the Animation Event on every Slime_Attack direction clip.
+    public void ActivateAttackHitbox()
+    {
+        if (IsDead || _currentState != EnemyState.Attacking || _attackHitboxRoutine != null)
+            return;
+
+        _attackHitbox.Configure(_enemySprite, _lastDirection, _attackHitboxOffset, _rotateHitboxWithEnemyDirection);
+        _attackHitbox.BeginAttack();
+        _attackHitboxRoutine = StartCoroutine(DisableAttackHitboxAfterDelay());
+    }
+
+    private IEnumerator DisableAttackHitboxAfterDelay()
+    {
+        yield return new WaitForSeconds(_attackHitboxActiveDuration);
+        _attackHitbox.EndAttack();
+        _attackHitboxRoutine = null;
+    }
+
     private IEnumerator HitRoutine()
     {
         yield return new WaitForSeconds(_hitDuration);
+
+        if (_rigidbody != null)
+            _rigidbody.linearVelocity = Vector2.zero;
 
         _stateRoutine = null;
         EvaluateNextState();
@@ -266,6 +292,12 @@ public class Enemy : MonoBehaviour
     private void StopStateRoutine()
     {
         _attackHitbox?.EndAttack();
+
+        if (_attackHitboxRoutine != null)
+        {
+            StopCoroutine(_attackHitboxRoutine);
+            _attackHitboxRoutine = null;
+        }
 
         if (_stateRoutine == null)
             return;
@@ -385,11 +417,17 @@ public class Enemy : MonoBehaviour
         }
 
         _attackHitbox.Initialize(this);
-        _attackHitbox.Configure(_lastDirection, _attackHitboxOffset, _rotateHitboxWithEnemyDirection);
+        _attackHitbox.Configure(_enemySprite, _lastDirection, _attackHitboxOffset, _rotateHitboxWithEnemyDirection);
     }
 
     private void Die()
     {
+        if (!_experienceGranted && _experienceReward > 0)
+        {
+            _experienceGranted = true;
+            PlayerStat.Instance?.AddExperience(_experienceReward);
+        }
+
         _desiredVelocity = Vector2.zero;
         _attackHitbox?.EndAttack();
         if (_rigidbody != null)
@@ -409,18 +447,6 @@ public class Enemy : MonoBehaviour
     private bool IsNear(Vector2 target, float distance)
     {
         return ((Vector2)transform.position - target).sqrMagnitude <= distance * distance;
-    }
-
-    private void OnTriggerEnter2D(Collider2D collision)
-    {
-        if (!collision.CompareTag("HitBox_Player"))
-            return;
-
-        PlayerStat playerStats = collision.GetComponentInParent<PlayerStat>();
-        if (playerStats == null && _player != null)
-            playerStats = _player.GetComponent<PlayerStat>();
-
-        TakeDamage(playerStats != null ? playerStats.AtkDmg : 10f);
     }
 
     private void OnValidate()

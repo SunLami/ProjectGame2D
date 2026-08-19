@@ -62,7 +62,7 @@ public class InventorySlotUI : MonoBehaviour, IPointerClickHandler, IBeginDragHa
         EquipmentSlotUI sourceEquipSlot = eventData.pointerDrag.GetComponent<EquipmentSlotUI>();
         if (sourceEquipSlot != null)
         {
-            EquipmentManager.Instance.Unequip(sourceEquipSlot.Slot);
+            EquipmentManager.Instance.Unequip(sourceEquipSlot.Slot, _slot);
         }
     }
 

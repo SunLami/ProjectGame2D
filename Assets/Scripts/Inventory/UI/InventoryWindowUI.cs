@@ -17,4 +17,9 @@ public class InventoryWindowUI : MonoBehaviour
     {
         _windowRoot.SetActive(false);
     }
+
+    public void OpenWindow()
+    {
+        _windowRoot.SetActive(true);
+    }
 }
