@@ -1,9 +1,131 @@
 # Claude → Codex Handoff
 
-Status: `READY_FOR_CODEX_UI_BINDING`
+Status: `READY_FOR_CODEX_UI`
 
 Ngày: 2026-08-22
-Feature: Phase 6 — Quest backend (Quest Log/Tracker/NPC UI cần Codex dựng tiếp)
+Feature: Phase 7 — Shop/Crafting backend (Shop/Crafting UI cần Codex dựng tiếp)
+
+## Bối cảnh
+
+Phase 7 Shop/Crafting backend đã hoàn tất và tự vận hành đúng (46/46 EditMode, 64/64 PlayMode PASS,
+Content Validation 0 error, verify sống trong DemoScene qua `execute_code`). Chi tiết kiến trúc đầy
+đủ: [Phase7ImplementationReport.md](../Phase7ImplementationReport.md).
+
+Việc cần Codex làm: dựng Shop UI (mua/bán) và Crafting UI (chọn recipe/craft), cùng thêm
+`ShopInteraction`/`CraftingInteraction` capability vào `TownElderNPC` (prefab đã có từ Phase 6, tái
+dùng làm chủ shop/recipe ở phase này -- không cần NPC mới). Đây thuần là UI/Canvas + component bind
+vào service có sẵn — **không cần** dựng Dialogue UI hay hệ thống resource/gather (chưa tồn tại,
+ngoài phạm vi Phase 7).
+
+## Contract phía Claude cung cấp (đã có sẵn, không cần đổi)
+
+### ShopManager (`Assets/Scripts/Shop/ShopManager.cs`), qua `ShopManager.Instance`
+
+Persistent singleton, luôn tồn tại trong DemoScene sau khi scene load xong.
+
+```csharp
+public IShopResolver Catalog { get; }   // .AllShops để liệt kê shop content
+public bool TryPurchase(string shopId, string itemId, int quantity, out ShopTransactionResult result);
+public bool TrySell(string shopId, string itemId, int quantity, out ShopTransactionResult result);
+```
+
+`ShopDefinition` (đọc qua `Catalog.AllShops` hoặc `Catalog.TryResolve(shopId, out def)`):
+`ShopId`, `DisplayName`, `NpcId`, `Stock` (mỗi `ShopStockEntry` có `ItemId`/`Price`),
+`SellPriceMultiplier`.
+
+`ShopTransactionResult` enum: `Success`, `ShopNotFound`, `ItemNotInStock`, `InsufficientGold`,
+`InsufficientInventoryCapacity`, `InsufficientItemQuantity`, `GameplayNotAllowed` -- dùng để hiển
+thị lý do fail cụ thể.
+
+**Lưu ý bán lại**: `TrySell` chỉ bán được item nằm trong chính `Stock` của shop đó (giá = `Price *
+SellPriceMultiplier`). Bán item không thuộc stock trả `ItemNotInStock`/`ShopNotFound` tuỳ trường hợp
+-- không phải bug, là scope quyết định (xem Known limitations trong report).
+
+### CraftingManager (`Assets/Scripts/Crafting/CraftingManager.cs`), qua `CraftingManager.Instance`
+
+```csharp
+public IRecipeResolver Catalog { get; }   // .AllRecipes
+public bool TryCraft(string recipeId, string stationTag, out CraftingTransactionResult result);
+```
+
+`RecipeDefinition`: `RecipeId`, `DisplayName`, `Ingredients` (mỗi `RecipeIngredientEntry` có
+`ItemId`/`Quantity`), `OutputItemId`/`OutputQuantity`, `RequiredStationTag` (rỗng = craft mọi nơi,
+truyền `null`/`""` cho `stationTag`), `NpcId`.
+
+`CraftingTransactionResult` enum: `Success`, `RecipeNotFound`, `WrongStation`,
+`InsufficientIngredients`, `InsufficientOutputCapacity`, `GameplayNotAllowed`.
+
+### ShopNpcInteractionService / CraftingNpcInteractionService (plain C#, không MonoBehaviour)
+
+NPC component tạo instance (`new ShopNpcInteractionService(ShopManager.Instance)`,
+`new CraftingNpcInteractionService(CraftingManager.Instance)`) và gọi qua đây, giống pattern
+`QuestNpcInteractionService` đã dùng cho `TownElderNPC`:
+
+```csharp
+// Shop
+public bool TryGetShop(string npcId, out ShopDefinition shop);
+public bool TryPurchase(string npcId, string shopId, string itemId, int quantity, out ShopTransactionResult result);
+public bool TrySell(string npcId, string shopId, string itemId, int quantity, out ShopTransactionResult result);
+
+// Crafting
+public IReadOnlyList<RecipeDefinition> GetOfferedRecipes(string npcId);
+public bool TryCraft(string npcId, string recipeId, string stationTag, out CraftingTransactionResult result);
+```
+
+Cả hai validate đúng `npcId` sở hữu shop/recipe trước khi chạm Manager -- NPC component không cần tự
+kiểm tra ownership.
+
+## Content thật đã có để test UI ngay (không cần tạo asset mới)
+
+- `Assets/Shops/ShopCatalog.asset` → `shop.town.general` (`npcId = npc.town.elder`, tái dùng
+  `TownElderNPC`): bán `item.material.wood` (5 gold), `item.consumable.health_potion` (20 gold).
+- `Assets/Crafting/RecipeCatalog.asset` → 2 recipe (cả hai `npcId = npc.town.elder`):
+  `recipe.material.plank` (3× Wood → 1× Plank, không cần station) và
+  `recipe.consumable.health_potion` (2× Wood + 1× Iron Ore → 1× Health Potion, cần
+  `stationTag = "station.forge"`).
+- 3 item mới có icon placeholder: `item.material.iron`, `item.material.plank`,
+  `item.consumable.health_potion` (`Assets/Resources/Items/Shop/`).
+- Player không có sẵn Iron Ore trong starting inventory -- để test recipe cần station, seed tạm qua
+  `Resources.Load<ItemSO>("Items/Shop/IronOre")` + `InventoryManager.Instance.AddItem(...)`, hoặc
+  đợi hệ thống Gather (chưa tồn tại) cấp Iron Ore thật ở phase sau.
+
+## Việc Codex KHÔNG cần làm
+
+- Không cần đổi bất kỳ script nào trong `Assets/Scripts/Shop/`, `Assets/Scripts/Crafting/` -- nếu
+  cần field/API mới (ví dụ stock quantity giới hạn, base sell value chung), báo lại Claude qua
+  `CodexToClaude.md`.
+- Không cần lo về Quest integration -- `ShopManager.TryPurchase`/`CraftingManager.TryCraft` đã tự
+  raise `QuestDomainEvents.ItemPurchased`/`ItemCrafted` thật, `QuestManager` (Phase 6) đã subscribe
+  sẵn; UI chỉ cần gọi transaction, không cần biết gì về Quest.
+- Không cần dựng Dialogue UI hay Resource/Gather UI (chưa tồn tại, ngoài phạm vi Phase 7).
+- Không chỉnh `QuestUIRoot`, visual của `TownElderNPC`, Inventory UI, Tutorial UI hay layout/font
+  hiện có -- chỉ thêm component/Canvas mới cho Shop/Crafting.
+
+## Test cần có phía Codex (nếu theo đúng quy trình Quality Strategy)
+
+- Manual: mở Shop tại `TownElderNPC`, mua Health Potion → gold trừ đúng, item vào inventory; mua khi
+  không đủ gold → từ chối, không trừ gì.
+  bán lại Wood cho đúng shop đó → gold cộng đúng theo `sellPriceMultiplier`.
+- Manual: mở Crafting tại `TownElderNPC`, craft Wood Plank (không cần station) → thành công, nguyên
+  liệu bị trừ đúng. Craft Health Potion không đứng gần station (nếu UI có khái niệm station theo
+  vị trí) → `WrongStation`; đứng đúng chỗ có `stationTag = "station.forge"` → thành công.
+- Manual: một quest test tạm với objective Purchase/Craft (không có sẵn trong content hiện tại, có
+  thể tạo asset tạm chỉ để verify rồi xoá) → xác nhận progress lên `ReadyToTurnIn` sau giao dịch
+  thật, không cần click nào khác ngoài nút Buy/Craft.
+
+## Phạm vi Claude không chỉnh trực tiếp
+
+Toàn bộ Canvas/hierarchy/layout/font/màu cho Shop/Crafting UI và mọi thay đổi trên
+`TownElderNPC` prefab thuộc Codex. Khi xong, cập nhật `CodexToClaude.md` để Claude biết UI đã sẵn
+sàng (không cần thay đổi gì phía backend trừ khi phát sinh gap mới).
+
+---
+
+# Phase 6 — Quest backend (Quest Log/Tracker/NPC UI cần Codex dựng tiếp)
+
+Status: `READY_FOR_CODEX_UI_BINDING` (đã `VERIFIED` bởi Codex, xem `CodexToClaude.md`)
+
+Ngày: 2026-08-22
 
 ## Update 2026-08-22 — Trả lời 2 gap trong `CodexToClaude.md` (`BACKEND_GAP_FOUND`)
 

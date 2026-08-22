@@ -12,6 +12,12 @@ Phase 6 (2026-08-22): sau khi thêm QuestDefinition/QuestCatalog validator và h
 (`quest.tutorial.crafting.001`, `quest.main.001`) cùng hai item mới (`item.quest.tutorial_badge`,
 `item.material.wood`): **0 Error, 60 Warning (không đổi), 69 assets checked**.
 
+Phase 7 (2026-08-22): sau khi thêm ShopDefinition/ShopCatalog và RecipeDefinition/RecipeCatalog
+validator, một shop (`shop.town.general`, 2 stock entry) và hai recipe
+(`recipe.material.plank`, `recipe.consumable.health_potion`) cùng ba item mới
+(`item.material.iron`, `item.material.plank`, `item.consumable.health_potion`):
+**0 Error, 60 Warning (không đổi), 77 assets checked**.
+
 ## Phạm vi hiện tại
 
 - Item ID rỗng, trùng và format stable ID.
@@ -22,10 +28,16 @@ Phase 6 (2026-08-22): sau khi thêm QuestDefinition/QuestCatalog validator và h
 - ItemDatabase null item, amount không hợp lệ và duplicate loadout entry.
 - TileData required tile/audio, null entry và tile thuộc nhiều surface definitions.
 - TutorialDefinition/TutorialStepDefinition ID rỗng/trùng, ReachArea thiếu targetAreaId.
-- QuestDefinition ID rỗng/trùng/format, objective target ID rỗng, targetCount <= 0, reward item ID
-  rỗng/quantity invalid, prerequisite tham chiếu ID không tồn tại, prerequisite cycle (DFS trên
-  toàn bộ đồ thị quest), isMainQuest thiếu prerequisiteQuestIds (Warning), QuestCatalog thiếu/
-  duplicate quest, quest không nằm trong catalog nào.
+- QuestDefinition ID rỗng/trùng/format, objective target ID rỗng, targetCount <= 0, objective
+  description rỗng (required presentation field), reward item ID rỗng/quantity invalid,
+  prerequisite tham chiếu ID không tồn tại, prerequisite cycle (DFS trên toàn bộ đồ thị quest),
+  isMainQuest thiếu prerequisiteQuestIds (Warning), QuestCatalog thiếu/duplicate quest, quest
+  không nằm trong catalog nào.
+- ShopDefinition ID rỗng/trùng/format, stock rỗng, stock itemId rỗng/trùng/không tồn tại trong bất
+  kỳ ItemSO nào, stock price âm, ShopCatalog thiếu/duplicate shop.
+- RecipeDefinition ID rỗng/trùng/format, ingredients rỗng, ingredient itemId rỗng/trùng/không tồn
+  tại, ingredient quantity <= 0, outputItemId rỗng/không tồn tại, outputQuantity <= 0,
+  RecipeCatalog thiếu/duplicate recipe.
 
 ## Severity
 

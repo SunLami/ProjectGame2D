@@ -18,12 +18,14 @@ public static class ContentValidationRunner
         List<ItemSO> items = LoadAssets<ItemSO>();
         List<EquipmentItemSO> equipment = LoadAssets<EquipmentItemSO>();
 
-        ValidateItems(items, report);
+        HashSet<string> knownItemIds = ValidateItems(items, report);
         ValidateEquipmentCatalogs(equipment, report);
         ValidateItemDatabases(report);
         ValidateTileData(report);
         ValidateTutorialDefinitions(report);
         ValidateQuestDefinitions(report);
+        ValidateShopDefinitions(report, knownItemIds);
+        ValidateRecipeDefinitions(report, knownItemIds);
 
         string summary = $"Content validation finished: {report.ErrorCount} error(s), "
             + $"{report.WarningCount} warning(s), {report.CheckedAssetCount} asset(s) checked.";
@@ -36,7 +38,7 @@ public static class ContentValidationRunner
             Debug.Log(summary);
     }
 
-    private static void ValidateItems(IReadOnlyList<ItemSO> items, ValidationReport report)
+    private static HashSet<string> ValidateItems(IReadOnlyList<ItemSO> items, ValidationReport report)
     {
         var byId = new Dictionary<string, ItemSO>(StringComparer.Ordinal);
 
@@ -80,6 +82,8 @@ public static class ContentValidationRunner
             if (!item.isStackable && item.maxStackSize != 1)
                 report.Error(path, "non-stackable item must have maxStackSize = 1.", item);
         }
+
+        return new HashSet<string>(byId.Keys, StringComparer.Ordinal);
     }
 
     private static void ValidateEquipmentCatalogs(
@@ -439,6 +443,155 @@ public static class ContentValidationRunner
             }
             chain.RemoveAt(chain.Count - 1);
             state[questId] = 2;
+        }
+    }
+
+    private static void ValidateShopDefinitions(ValidationReport report, HashSet<string> knownItemIds)
+    {
+        var shopIds = new HashSet<string>(StringComparer.Ordinal);
+        List<ShopDefinition> shops = LoadAssets<ShopDefinition>();
+
+        foreach (ShopDefinition shop in shops)
+        {
+            report.Check(shop);
+            string path = AssetDatabase.GetAssetPath(shop);
+
+            if (string.IsNullOrWhiteSpace(shop.ShopId))
+                report.Error(path, "shopId is empty.", shop);
+            else if (!shopIds.Add(shop.ShopId))
+                report.Error(path, $"shopId '{shop.ShopId}' is used by more than one ShopDefinition.", shop);
+            else if (!StableIdPattern.IsMatch(shop.ShopId))
+                report.Error(path, $"shopId '{shop.ShopId}' does not match the stable ID convention.", shop);
+
+            if (shop.Stock.Count == 0)
+            {
+                report.Error(path, "stock must contain at least one entry.", shop);
+                continue;
+            }
+
+            var stockItemIds = new HashSet<string>(StringComparer.Ordinal);
+            for (int i = 0; i < shop.Stock.Count; i++)
+            {
+                ShopStockEntry entry = shop.Stock[i];
+                if (entry == null || string.IsNullOrWhiteSpace(entry.ItemId))
+                {
+                    report.Error(path, $"stock[{i}] has an empty itemId.", shop);
+                    continue;
+                }
+
+                if (!stockItemIds.Add(entry.ItemId))
+                    report.Error(path, $"stock contains duplicate itemId '{entry.ItemId}'.", shop);
+                if (!knownItemIds.Contains(entry.ItemId))
+                    report.Error(path, $"stock itemId '{entry.ItemId}' does not exist in any ItemSO.", shop);
+                if (entry.Price < 0)
+                    report.Error(path, $"stock[{i}] ('{entry.ItemId}') price must not be negative.", shop);
+            }
+        }
+
+        List<ShopCatalog> shopCatalogs = LoadAssets<ShopCatalog>();
+        if (shopCatalogs.Count == 0 && shops.Count > 0)
+            report.Error("Assets", "No ShopCatalog asset exists even though ShopDefinition assets do.");
+
+        var catalogedShops = new HashSet<ShopDefinition>();
+        foreach (ShopCatalog catalog in shopCatalogs)
+        {
+            report.Check(catalog);
+            string path = AssetDatabase.GetAssetPath(catalog);
+            foreach (ShopDefinition shop in catalog.AllShops)
+            {
+                if (shop == null)
+                {
+                    report.Error(path, "shops entry is null.", catalog);
+                    continue;
+                }
+                if (!catalogedShops.Add(shop))
+                    report.Error(path, $"shop '{shop.name}' appears more than once across shop catalogs.", catalog);
+            }
+        }
+
+        foreach (ShopDefinition shop in shops)
+        {
+            if (!catalogedShops.Contains(shop))
+                report.Error(AssetDatabase.GetAssetPath(shop), "shop is missing from every ShopCatalog.", shop);
+        }
+    }
+
+    private static void ValidateRecipeDefinitions(ValidationReport report, HashSet<string> knownItemIds)
+    {
+        var recipeIds = new HashSet<string>(StringComparer.Ordinal);
+        List<RecipeDefinition> recipes = LoadAssets<RecipeDefinition>();
+
+        foreach (RecipeDefinition recipe in recipes)
+        {
+            report.Check(recipe);
+            string path = AssetDatabase.GetAssetPath(recipe);
+
+            if (string.IsNullOrWhiteSpace(recipe.RecipeId))
+                report.Error(path, "recipeId is empty.", recipe);
+            else if (!recipeIds.Add(recipe.RecipeId))
+                report.Error(path, $"recipeId '{recipe.RecipeId}' is used by more than one RecipeDefinition.", recipe);
+            else if (!StableIdPattern.IsMatch(recipe.RecipeId))
+                report.Error(path, $"recipeId '{recipe.RecipeId}' does not match the stable ID convention.", recipe);
+
+            if (recipe.Ingredients.Count == 0)
+            {
+                report.Error(path, "ingredients must contain at least one entry.", recipe);
+            }
+            else
+            {
+                var ingredientItemIds = new HashSet<string>(StringComparer.Ordinal);
+                for (int i = 0; i < recipe.Ingredients.Count; i++)
+                {
+                    RecipeIngredientEntry ingredient = recipe.Ingredients[i];
+                    if (ingredient == null || string.IsNullOrWhiteSpace(ingredient.ItemId))
+                    {
+                        report.Error(path, $"ingredients[{i}] has an empty itemId.", recipe);
+                        continue;
+                    }
+
+                    if (!ingredientItemIds.Add(ingredient.ItemId))
+                        report.Error(path, $"ingredients contains duplicate itemId '{ingredient.ItemId}'.", recipe);
+                    if (!knownItemIds.Contains(ingredient.ItemId))
+                        report.Error(path, $"ingredient itemId '{ingredient.ItemId}' does not exist in any ItemSO.", recipe);
+                    if (ingredient.Quantity <= 0)
+                        report.Error(path, $"ingredients[{i}] ('{ingredient.ItemId}') quantity must be greater than zero.", recipe);
+                }
+            }
+
+            if (string.IsNullOrWhiteSpace(recipe.OutputItemId))
+                report.Error(path, "outputItemId is empty.", recipe);
+            else if (!knownItemIds.Contains(recipe.OutputItemId))
+                report.Error(path, $"outputItemId '{recipe.OutputItemId}' does not exist in any ItemSO.", recipe);
+
+            if (recipe.OutputQuantity <= 0)
+                report.Error(path, "outputQuantity must be greater than zero.", recipe);
+        }
+
+        List<RecipeCatalog> recipeCatalogs = LoadAssets<RecipeCatalog>();
+        if (recipeCatalogs.Count == 0 && recipes.Count > 0)
+            report.Error("Assets", "No RecipeCatalog asset exists even though RecipeDefinition assets do.");
+
+        var catalogedRecipes = new HashSet<RecipeDefinition>();
+        foreach (RecipeCatalog catalog in recipeCatalogs)
+        {
+            report.Check(catalog);
+            string path = AssetDatabase.GetAssetPath(catalog);
+            foreach (RecipeDefinition recipe in catalog.AllRecipes)
+            {
+                if (recipe == null)
+                {
+                    report.Error(path, "recipes entry is null.", catalog);
+                    continue;
+                }
+                if (!catalogedRecipes.Add(recipe))
+                    report.Error(path, $"recipe '{recipe.name}' appears more than once across recipe catalogs.", catalog);
+            }
+        }
+
+        foreach (RecipeDefinition recipe in recipes)
+        {
+            if (!catalogedRecipes.Contains(recipe))
+                report.Error(AssetDatabase.GetAssetPath(recipe), "recipe is missing from every RecipeCatalog.", recipe);
         }
     }
 

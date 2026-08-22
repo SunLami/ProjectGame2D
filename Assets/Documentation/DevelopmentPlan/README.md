@@ -33,6 +33,8 @@ cập nhật tài liệu liên quan trước hoặc cùng lúc với code.
 12b. [Phase 3 Implementation Report](Phase3ImplementationReport.md): trạng thái New Game/Continue, SpawnRegistry và Player restore.
 12c. [Phase 4 Implementation Report](Phase4ImplementationReport.md): trạng thái Inventory/Equipment/Stat persistence.
 12d. [Phase 5 Implementation Report](Phase5ImplementationReport.md): trạng thái Input tutorial (TutorialManager, domain event, save/restore, AreaTriggerZone).
+12e. [Phase 6 Implementation Report](Phase6ImplementationReport.md): Quest backend (definitions, runtime, save, objective events, NPC service).
+12f. [Phase 7 Implementation Report](Phase7ImplementationReport.md): Shop/Crafting backend (ShopService, CraftingService, quest integration).
 13. [Typography Standard](Typography.md): Digital Disco là font family chuẩn, TMP default và attribution bắt buộc.
 12. [Service Ownership and Lifecycle](ServiceOwnershipLifecycle.md): inventory singleton, scene reference và lifecycle đích.
 13. [Input System Inventory](InputSystemInventory.md): action maps, scene bindings và migration gate cho MainMenu.
