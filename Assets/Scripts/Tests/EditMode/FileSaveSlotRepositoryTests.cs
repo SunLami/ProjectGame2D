@@ -167,4 +167,58 @@ public sealed class FileSaveSlotRepositoryTests
         Assert.Throws<ArgumentOutOfRangeException>(() => _repository.GetSlotInfo(0));
         Assert.Throws<ArgumentOutOfRangeException>(() => _repository.GetSlotInfo(4));
     }
+
+    [Test]
+    public void Metadata_MatchesPlayerSnapshot_AndDoesNotFabricateCharacterName()
+    {
+        GameSaveData data = MakeSave("save-with-player");
+        data.player = new PlayerSaveData
+        {
+            level = 7,
+            currentExperience = 55,
+            health = 42f,
+            location = new PlayerLocationSaveData { areaId = "area.town" }
+        };
+
+        _repository.WriteSave(1, data);
+
+        SaveSlotMetadata metadata = _repository.GetSlotInfo(1).Metadata;
+        Assert.AreEqual(7, metadata.characterLevel);
+        Assert.AreEqual("area.town", metadata.areaId);
+        Assert.IsTrue(string.IsNullOrEmpty(metadata.characterName),
+            "No character-naming domain exists yet; metadata must not fabricate a name.");
+        Assert.IsFalse(metadata.tutorialCompleted,
+            "No tutorial domain exists yet; metadata must not fabricate completion.");
+    }
+
+    [Test]
+    public void Metadata_LastSavedTimestamp_IsPersistedAndUpdatesOnEachWrite()
+    {
+        _repository.WriteSave(1, MakeSave("save-v1"));
+        long firstTicks = _repository.GetSlotInfo(1).Metadata.lastSavedUtcTicks;
+        Assert.Greater(firstTicks, 0, "lastSavedUtcTicks must be a real timestamp, not the unset default.");
+
+        System.Threading.Thread.Sleep(20);
+
+        _repository.WriteSave(1, MakeSave("save-v2"));
+        long secondTicks = _repository.GetSlotInfo(1).Metadata.lastSavedUtcTicks;
+        Assert.Greater(secondTicks, firstTicks, "A later write must produce a later timestamp.");
+    }
+
+    [Test]
+    public void Metadata_SlotsAreIsolated_DifferentPlayerDataPerSlot()
+    {
+        GameSaveData slot1Data = MakeSave("save-1");
+        slot1Data.player = new PlayerSaveData { level = 2, location = new PlayerLocationSaveData { areaId = "area.tutorial" } };
+        GameSaveData slot2Data = MakeSave("save-2");
+        slot2Data.player = new PlayerSaveData { level = 9, location = new PlayerLocationSaveData { areaId = "area.town" } };
+
+        _repository.WriteSave(1, slot1Data);
+        _repository.WriteSave(2, slot2Data);
+
+        Assert.AreEqual(2, _repository.GetSlotInfo(1).Metadata.characterLevel);
+        Assert.AreEqual("area.tutorial", _repository.GetSlotInfo(1).Metadata.areaId);
+        Assert.AreEqual(9, _repository.GetSlotInfo(2).Metadata.characterLevel);
+        Assert.AreEqual("area.town", _repository.GetSlotInfo(2).Metadata.areaId);
+    }
 }

@@ -38,6 +38,12 @@ public sealed class MainMenuController : MonoBehaviour
 
     public void RequestNewGame(int slotId)
     {
+        if (!CanStartRequest())
+        {
+            OnOperationFailed?.Invoke("A game session is already loading.");
+            return;
+        }
+
         GameSaveData saveData = NewGameFactory.CreateDefault();
 
         if (!GameSessionManager.Instance.TryStartNewGame(slotId, _gameplaySceneName, saveData))
@@ -52,6 +58,12 @@ public sealed class MainMenuController : MonoBehaviour
 
     public void RequestContinue(int slotId)
     {
+        if (!CanStartRequest())
+        {
+            OnOperationFailed?.Invoke("A game session is already loading.");
+            return;
+        }
+
         if (!GameSessionManager.Instance.SaveRepository.TryReadSave(slotId, out GameSaveData saveData))
         {
             OnOperationFailed?.Invoke("Save slot is empty or unreadable.");
@@ -67,6 +79,14 @@ public sealed class MainMenuController : MonoBehaviour
         if (!SceneFlowService.Instance.TryLoadGameplay(_gameplaySceneName))
             OnOperationFailed?.Invoke("Could not start loading the gameplay scene.");
     }
+
+    /// <summary>Guards against double-submit: TryStartNewGame/TryStartLoadedGame would otherwise
+    /// silently overwrite GameSessionManager.Current with a second GameSaveData while the first
+    /// scene load is still in flight, and the eventually-loaded scene would restore whichever
+    /// session happened to be current when it finished loading.</summary>
+    private static bool CanStartRequest() =>
+        SceneFlowService.Instance != null && !SceneFlowService.Instance.IsTransitioning
+        && GameSessionManager.Instance != null && !GameSessionManager.Instance.HasActiveSession;
 
     public void DeleteSlot(int slotId)
     {

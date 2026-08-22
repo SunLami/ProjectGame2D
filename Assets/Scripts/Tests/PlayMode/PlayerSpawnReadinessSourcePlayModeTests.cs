@@ -112,6 +112,44 @@ public sealed class PlayerSpawnReadinessSourcePlayModeTests
     }
 
     [UnityTest]
+    public IEnumerator CapturedSnapshot_RoundTripsThroughWriteAndContinueRestore()
+    {
+        // Simulates a real "leave with progress, come back" cycle: capture live state with
+        // PlayerSaveCapture (not a hand-built PlayerSaveData), persist it, then restore it into a
+        // fresh fixture the way Continue would.
+        var (captureRoot, captureStat, captureTransform, _) = BuildFixture(Vector3.zero);
+        captureStat.RestoreProgression(level: 6, currentExperience: 18, health: 30f);
+        captureTransform.position = new Vector3(8f, -6f, 0f);
+
+        PlayerSaveData captured = PlayerSaveCapture.Capture(
+            captureStat, captureTransform, "area.town", "spawn.town.gate");
+        GameSaveData saveData = new() { saveId = "captured-save", player = captured };
+        GameSessionManager.Instance.SaveRepository.WriteSave(3, saveData);
+
+        // PlayerStat is a static singleton; Object.Destroy() defers to end-of-frame, so building
+        // the second fixture before that frame ends would see captureStat still "alive" and
+        // self-destroy the new fixture instead. DestroyImmediate frees the singleton slot now.
+        Object.DestroyImmediate(captureRoot);
+
+        var (restoreRoot, restoreStat, restoreTransform, restoreRegistry) = BuildFixture(Vector3.zero);
+        Assert.IsTrue(GameSessionManager.Instance.TryStartLoadedGame(3, "TestScene", saveData));
+
+        GameObject sourceObject = new("PlayerSpawnReadinessSource");
+        PlayerSpawnReadinessSource source = sourceObject.AddComponent<PlayerSpawnReadinessSource>();
+        source.ConfigureForTests(restoreStat, restoreTransform, restoreRegistry);
+
+        yield return null;
+
+        Assert.AreEqual(6, restoreStat.Level);
+        Assert.AreEqual(18, restoreStat.CurrentExperience);
+        Assert.AreEqual(8f, restoreTransform.position.x, 0.001f);
+        Assert.AreEqual(-6f, restoreTransform.position.y, 0.001f);
+
+        Object.Destroy(restoreRoot);
+        Object.Destroy(sourceObject);
+    }
+
+    [UnityTest]
     public IEnumerator NoActiveSession_ReportsReadyWithoutTouchingPlayer()
     {
         var (root, stat, playerTransform, registry) = BuildFixture(new Vector3(9f, 9f, 0f));

@@ -36,16 +36,10 @@ public sealed class FileSaveSlotRepository : ISaveSlotRepository
             return new SaveSlotInfo(slotId, SaveSlotStatus.Empty, null);
 
         if (TryLoadValid(savePath, out GameSaveData data, out SaveSlotStatus primaryStatus))
-        {
-            SaveSlotMetadata metadata = BuildMetadata(slotId, data, ReadChecksum(savePath));
-            return new SaveSlotInfo(slotId, SaveSlotStatus.Valid, metadata);
-        }
+            return new SaveSlotInfo(slotId, SaveSlotStatus.Valid, ResolveMetadata(slotId, data, savePath));
 
         if (TryLoadValid(backupPath, out data, out SaveSlotStatus backupStatus))
-        {
-            SaveSlotMetadata metadata = BuildMetadata(slotId, data, ReadChecksum(backupPath));
-            return new SaveSlotInfo(slotId, SaveSlotStatus.Valid, metadata);
-        }
+            return new SaveSlotInfo(slotId, SaveSlotStatus.Valid, ResolveMetadata(slotId, data, backupPath));
 
         // Neither file yielded a usable save. Prefer whichever status is non-Empty (a file that
         // exists but failed to load), since "Empty" only means that particular file is absent.
@@ -186,12 +180,50 @@ public sealed class FileSaveSlotRepository : ISaveSlotRepository
         return true;
     }
 
+    /// <summary>
+    /// Prefers the metadata.json written alongside this save (has the real lastSavedUtcTicks) and
+    /// only falls back to reconstructing from the GameSaveData itself when metadata.json is
+    /// missing/stale/corrupted -- in that fallback path lastSavedUtcTicks is unrecoverable and
+    /// stays 0 ("unknown"), everything else is rebuilt from the save that was actually loaded.
+    /// </summary>
+    private SaveSlotMetadata ResolveMetadata(int slotId, GameSaveData data, string sourcePath)
+    {
+        string checksum = ComputeChecksum(File.ReadAllText(sourcePath, Encoding.UTF8));
+
+        SaveSlotMetadata persisted = TryReadPersistedMetadata(slotId);
+        if (persisted != null && persisted.saveId == data.saveId && persisted.contentChecksum == checksum)
+            return persisted;
+
+        return BuildMetadata(slotId, data, checksum);
+    }
+
+    private SaveSlotMetadata TryReadPersistedMetadata(int slotId)
+    {
+        string path = MetadataPath(slotId);
+        if (!File.Exists(path))
+            return null;
+
+        try
+        {
+            return JsonUtility.FromJson<SaveSlotMetadata>(File.ReadAllText(path, Encoding.UTF8));
+        }
+        catch
+        {
+            return null;
+        }
+    }
+
+    // characterName is intentionally never populated here -- there is no character-naming
+    // domain yet (D-013 is still Open) and fabricating one would be display fiction, not data.
+    // tutorialCompleted stays false until the tutorial domain (Phase 5) exists to report it.
     private static SaveSlotMetadata BuildMetadata(int slotId, GameSaveData data, string checksum) => new()
     {
         slotIndex = slotId,
         saveId = data.saveId,
         saveVersion = data.saveVersion,
         totalPlayTimeSeconds = data.totalPlayTimeSeconds,
+        characterLevel = data.player?.level ?? 0,
+        areaId = data.player?.location?.areaId,
         contentChecksum = checksum
     };
 
@@ -205,15 +237,6 @@ public sealed class FileSaveSlotRepository : ISaveSlotRepository
         if (File.Exists(path))
             File.Delete(path);
         File.Move(tempPath, path);
-    }
-
-    private string ReadChecksum(string savePath)
-    {
-        if (!File.Exists(savePath))
-            return null;
-
-        string json = File.ReadAllText(savePath, Encoding.UTF8);
-        return ComputeChecksum(json);
     }
 
     private static string ComputeChecksum(string content)

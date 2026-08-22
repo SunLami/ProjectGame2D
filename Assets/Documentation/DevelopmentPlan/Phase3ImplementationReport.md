@@ -83,10 +83,81 @@ thật — cả hai đều cần thiết cho verification.
   - `TryReturnToMainMenu()` sau đó: về `MainMenu`, `PlayerCount = 0`, `HasActiveSession = false`.
   - Console sạch trong toàn bộ kịch bản (sau khi sửa bug field initializer).
 
+## Codex UI integration — 2026-08-22
+
+- Đã dựng MainMenu scene-authored UI cho New Game/Continue với đúng ba slot, overwrite/delete confirm,
+  operation error và Loading input lock.
+- Landing bổ sung Settings và Quit; Main Menu Settings dùng chung `SettingsService` nhưng có navigation
+  riêng, không dùng gameplay menu state.
+- UI dùng project `UI` action map, có default focus và Cancel/back policy; toàn bộ TMP text dùng
+  `DigitalDisco SDF v3`.
+- MainMenu scene validator: 0 issue; script validation: 0 diagnostic; console acceptance flow sạch.
+- New Game → DemoScene → Return MainMenu → Continue chạy thành công với initial snapshot; Slot 1 test
+  save đã được xóa sau verify.
+- Chi tiết và backend gaps xem [Codex → Claude Handoff](Handoffs/CodexToClaude.md).
+
+## Backend gaps từ Codex — sửa 2026-08-22
+
+Codex báo 3 gap trong `Handoffs/CodexToClaude.md`. Xem [Claude → Codex Handoff](Handoffs/ClaudeToCodex.md)
+cho task tiếp theo thuộc Codex.
+
+1. **Root cause của `lastSavedUtcTicks = 0`:** `FileSaveSlotRepository.WriteSave` đã ghi đúng
+   `metadata.json` với timestamp thật, nhưng `GetSlotInfo` **chưa bao giờ đọc lại `metadata.json`** —
+   nó luôn tự dựng lại `SaveSlotMetadata` từ `save.json` (`BuildMetadata`), vốn không có timestamp.
+   `metadata.json` ghi ra chỉ để... không ai dùng. Đã sửa: `GetSlotInfo` giờ ưu tiên đọc
+   `metadata.json` (khớp `saveId` + `contentChecksum` với save đang đọc để tránh dùng metadata cũ/stale),
+   chỉ dựng lại từ `save.json` khi `metadata.json` mất/hỏng (lúc đó `lastSavedUtcTicks` đúng là không
+   thể phục hồi, giữ `0` = "unknown"). `BuildMetadata` cũng được bổ sung `characterLevel` (từ
+   `data.player.level`) và `areaId` (từ `data.player.location.areaId`). `characterName` **không** được
+   set (không có domain đặt tên nhân vật, D-013 vẫn Open) và `tutorialCompleted` **không** được set
+   (chưa có tutorial domain, Phase 5) — đúng yêu cầu "không tạo dữ liệu giả".
+2. **Player snapshot capture:** thêm `Assets/Scripts/Save/PlayerSaveCapture.cs` — pure C#,
+   `PlayerSaveCapture.Capture(PlayerStat, Transform, areaId, fallbackSpawnId)` đọc trực tiếp
+   level/XP/health từ `PlayerStat` và vị trí từ `Transform`, trả về `PlayerSaveData`. Đây là đường
+   DUY NHẤT được chấp nhận để biến live state thành save data — UI không được tự tạo/sửa `GameSaveData`.
+   Hàm này **chưa được gọi ở đâu** trong Phase 3 (xem điểm 3).
+3. **Không tự động save khi Return Main Menu:** xác nhận rõ — `PlayerSaveCapture` chỉ là capture API,
+   không tự wire vào `SceneFlowService.TryReturnToMainMenu` hay bất kỳ đâu. Việc quyết định NÊN gọi nó
+   khi nào (Save Game từ Pause Menu, hoặc dirty-session confirm khi Return Main Menu) thuộc D-017/Phase 9,
+   chưa được chấp thuận ở Phase 3. Vì vậy "Continue khớp đúng vị trí vừa rời" (gap #3 Codex nêu) vẫn chỉ
+   đúng với vị trí đã có sẵn trong snapshot — capture vị trí gameplay hiện tại là việc của Phase 9.
+4. **Double-submit thật (phát hiện thêm, không nằm trong 3 gap Codex báo):** `MainMenuController`
+   không có guard nào chống hai lần gọi `RequestNewGame`/`RequestContinue` liên tiếp trước khi scene
+   load xong — lần gọi thứ hai âm thầm ghi đè `GameSessionManager.Current` bằng một `GameSaveData` mới
+   trong khi lần đầu vẫn đang transition, khiến scene load xong sẽ restore nhầm session. Đã thêm guard
+   `CanStartRequest()` (`!SceneFlowService.IsTransitioning && !GameSessionManager.HasActiveSession`) ở
+   đầu cả hai method.
+
+### Tests mới (2026-08-22)
+
+- EditMode (20 tổng, 3 mới trong `FileSaveSlotRepositoryTests.cs`):
+  `Metadata_MatchesPlayerSnapshot_AndDoesNotFabricateCharacterName`,
+  `Metadata_LastSavedTimestamp_IsPersistedAndUpdatesOnEachWrite`,
+  `Metadata_SlotsAreIsolated_DifferentPlayerDataPerSlot`.
+- PlayMode (11 tổng, 3 mới):
+  `PlayerSaveCapturePlayModeTests.Capture_ReadsLiveStatAndTransform`,
+  `PlayerSpawnReadinessSourcePlayModeTests.CapturedSnapshot_RoundTripsThroughWriteAndContinueRestore`
+  (capture → write → Continue restore bằng `PlayerSaveCapture` thật, không phải `PlayerSaveData` tự
+  dựng tay), `MainMenuControllerPlayModeTests.DoubleSubmit_SecondRequestIsRejectedWithoutOverwritingSession`.
+- Toàn bộ suite: **EditMode 20/20 PASS, PlayMode 11/11 PASS**. Content Validation không đổi (0 error,
+  60 warning, 63 asset).
+- Verify thủ công Play Mode thật (temp save path, không đụng save thật): `RequestNewGame(1)` →
+  `GetSlotInfo(1).Metadata` có `lastSavedUtcTicks` thật (khác 0), `characterLevel = 1`,
+  `areaId = area.tutorial`, `characterName = ""`, `tutorialCompleted = false`. Double-submit
+  `RequestNewGame(2)` gọi hai lần liên tiếp: lần hai bị từ chối đúng 1 lần qua `OnOperationFailed`,
+  chỉ một session/scene load tiến hành, kết thúc ở `Playing` sạch console.
+
+### Sự cố tooling gặp phải khi verify (không phải lỗi code)
+
+Trong lúc thêm các fix trên, Unity Editor rơi vào trạng thái compile pipeline bị kẹt: file mới
+(`PlayerSaveCapture.cs`) không được đưa vào compile set của `ProjectGame2D.Runtime` dù `.meta` hợp lệ
+và asset đã import — biểu hiện là `CS0103` liên tục ở hai file test tham chiếu nó, ngay cả sau nhiều lần
+force-recompile, xóa cache `Library/ScriptAssemblies`, và `AssetDatabase.Refresh(ForceUpdate)`. Chỉ
+`Assets > Reimport All` mới thực sự khôi phục pipeline. Ghi lại để nếu gặp lại triệu chứng tương tự
+(file mới không được compiler nhận diện dù mọi thứ khác đúng), thử `Reimport All` trước khi nghi ngờ code.
+
 ## Chưa hoàn thành trong Phase 3 / để lại cho phase sau
 
-- **UI thật cho New Game/Continue slot selector** — `MainMenuController` đã sẵn contract, Codex cần dựng
-  Canvas/button và gọi đúng method (xem Codex UI Handoff).
 - Player vẫn là static singleton `DontDestroyOnLoad` cố định trong DemoScene — chưa refactor thành
   scene-spawned actor theo đích kiến trúc (quyết định phạm vi ở trên).
 - Overwrite confirm popup — `SlotRequiresOverwriteConfirm(slotId)` đã có, nhưng popup UI thuộc Phase
@@ -117,11 +188,12 @@ Unity MCP, field `_gameplaySceneName = "DemoScene"`). Không cần tạo lại.
 
 **State cần hiển thị theo `SaveSlotInfo.Status`:**
 - `Empty` → nút New Game "Create", nút Continue disabled.
-- `Valid` → hiển thị `Metadata.characterName`/`Level`/`areaId`/`totalPlayTimeSeconds`/`lastSavedUtcTicks`
-  (lưu ý: `characterName`, `characterLevel`, `areaId`, `tutorialCompleted` trong `SaveSlotMetadata` vẫn
-  đang ở giá trị mặc định — Phase 3 chưa populate các field này vào metadata, chỉ có trong
-  `GameSaveData.player` khi đọc full save; nếu UI cần hiển thị level/area ngay trên danh sách slot mà
-  không đọc full save, đây là việc cần làm thêm trước khi UI này hoàn thiện — báo lại nếu cần ưu tiên).
+- `Valid` → `Metadata.characterLevel`, `Metadata.areaId`, `Metadata.totalPlayTimeSeconds`,
+  `Metadata.lastSavedUtcTicks` giờ đều là dữ liệu thật (cập nhật 2026-08-22, xem mục "Backend gaps từ
+  Codex — sửa 2026-08-22" bên dưới) — có thể hiển thị trực tiếp trên danh sách slot mà không cần đọc
+  full save. `Metadata.characterName` vẫn luôn rỗng (chưa có domain đặt tên nhân vật, D-013 Open — đừng
+  hiển thị placeholder giả, ẩn field này hoặc dùng nhãn kiểu "Slot N") và `Metadata.tutorialCompleted`
+  vẫn luôn `false` (chưa có tutorial domain, Phase 5) — không coi đây là dữ liệu thật cho tới khi báo lại.
 - `Corrupted`/`IncompatibleVersion` → hiển thị rõ trạng thái, cho phép `DeleteSlot` để dọn.
 
 **Button enable/disable:**

@@ -44,13 +44,16 @@ Metadata có thể tái tạo từ `save.json` nếu bị mất, nhưng không �
 
 **Phase 2 implementation note (2026-08-22):** `contentChecksum` (SHA-256 hex của nội dung `save.json`
 đã ghi) được thêm vào contract để đáp ứng yêu cầu "checksum hoặc validation tối thiểu cho JSON" của
-Roadmap Phase 2. `characterName`, `characterLevel`, `areaId`, `tutorialCompleted` giữ giá trị mặc định
-cho tới khi Phase 3/4 capture dữ liệu player/tutorial thật; `FileSaveSlotRepository`/
-`InMemorySaveSlotRepository` (`Assets/Scripts/Save/`) hiện chỉ điền `slotIndex`, `saveId`,
-`saveVersion`, `totalPlayTimeSeconds`, `lastSavedUtcTicks`, `contentChecksum` từ `GameSaveData`.
-`GameSaveData` ở Phase 2 cũng chỉ có `saveVersion`, `saveId`, `totalPlayTimeSeconds` — các field
+Roadmap Phase 2. `GameSaveData` ở Phase 2 chỉ có `saveVersion`, `saveId`, `totalPlayTimeSeconds` — các field
 player/inventory/equipment/tutorial/quest/world sẽ được phase tương ứng thêm sau, bump
 `GameSaveData.CurrentSaveVersion` khi shape đổi.
+
+**Phase 3 fix (2026-08-22):** `FileSaveSlotRepository.GetSlotInfo` ban đầu không hề đọc lại
+`metadata.json` đã ghi (luôn dựng lại metadata từ `save.json`, bỏ qua `lastSavedUtcTicks` thật). Đã sửa
+để ưu tiên đọc `metadata.json` (khớp `saveId`+`contentChecksum` với save đang load), chỉ fallback dựng
+lại từ `GameSaveData` khi `metadata.json` mất/hỏng. `characterLevel`/`areaId` giờ lấy từ
+`GameSaveData.player`; `characterName`/`tutorialCompleted` vẫn cố định mặc định vì chưa có domain tương
+ứng — xem [Phase 3 Implementation Report](Phase3ImplementationReport.md).
 
 ## Root save contract
 
