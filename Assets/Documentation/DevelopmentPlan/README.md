@@ -29,6 +29,7 @@ cập nhật tài liệu liên quan trước hoặc cùng lúc với code.
 10. [GameStateManager Architecture](../GameStateManager.md): implementation state coordination hiện tại và migration đích.
 11. [Phase 0 Baseline Report](Phase0BaselineReport.md): snapshot kiểm tra DemoScene, Build Settings và các việc còn lại.
 12. [Phase 1 Implementation Report](Phase1ImplementationReport.md): trạng thái triển khai bootstrap, state, session và scene flow.
+12a. [Phase 2 Implementation Report](Phase2ImplementationReport.md): trạng thái triển khai save slot repository/file foundation.
 13. [Typography Standard](Typography.md): Digital Disco là font family chuẩn, TMP default và attribution bắt buộc.
 12. [Service Ownership and Lifecycle](ServiceOwnershipLifecycle.md): inventory singleton, scene reference và lifecycle đích.
 13. [Input System Inventory](InputSystemInventory.md): action maps, scene bindings và migration gate cho MainMenu.
