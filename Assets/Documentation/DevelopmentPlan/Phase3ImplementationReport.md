@@ -1,7 +1,34 @@
 # Phase 3 Implementation Report
 
 Ngày bắt đầu: 2026-08-22
-Trạng thái: **In progress**
+Trạng thái: **PARTIAL — code/backend/UI hoàn tất và đã verify; chỉ còn 1 blocker ngoài phạm vi code**
+(xem "Chốt Phase 3" bên dưới)
+
+## Chốt Phase 3 — 2026-08-22
+
+Re-run toàn bộ validation sau khi Codex hoàn tất UI + automated gamepad simulation
+(`Handoffs/CodexToClaude.md`, status `VERIFIED`):
+
+- Compile: `PASS` — 0 Error/0 Warning.
+- EditMode tests: `PASS` — 20/20.
+- PlayMode tests: `PASS` — 11/11.
+- Content Validation: `PASS` — 0 error, 60 warning (baseline legacy-ID không đổi), 63 asset.
+- MainMenu scene validator: `PASS` — 0 issue.
+- DemoScene scene validator: `PASS` — 0 issue.
+- Windows x64 Development Build: `PASS` — succeeded 49,19s, 581,98 MB, 0 Error/0 Warning
+  (`Builds/Phase3Closure/ProjectGame2D.exe`, build này stale từ Phase 1 trước khi chốt nên đã build lại).
+- Runtime launch độc lập Editor: `PASS` — process sống/`Responding=True`, `Player.log` không có
+  NullReference/MissingReference/UnassignedReference/exception/crash (chỉ có init log chuẩn + 1
+  `Curl error 35` non-gameplay đã ghi nhận từ Phase 0/1).
+- Automated virtual-gamepad UI Navigate/Submit/Cancel (Codex): `PASS` — có evidence trong
+  `InputSystemInventory.md` mục "MainMenu automated gamepad simulation".
+- **Manual physical gamepad:** `BLOCKED_MANUAL_TEST` — chưa có người thao tác controller thật. Đây là
+  blocker duy nhất còn lại, và nó là external/manual-only (không phải code/backend blocker) — không
+  suy đoán PASS, không tự động chuyển trạng thái này.
+
+**Kết luận:** không còn blocker code/backend nào chặn Phase 4. Phase 3 được coi là đóng ở mức
+implementation, chỉ treo lại `BLOCKED_MANUAL_TEST` cho gamepad vật lý — mục này sẽ được xác nhận khi có
+người dùng thật thao tác, không gate việc bắt đầu Phase 4.
 
 ## Quyết định phạm vi trước khi triển khai
 
