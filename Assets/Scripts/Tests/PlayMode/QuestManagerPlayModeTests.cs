@@ -136,6 +136,34 @@ public sealed class QuestManagerPlayModeTests
     }
 
     [Test]
+    public void TryGetProgress_ReflectsLiveStateAndReturnsADefensiveCopy()
+    {
+        QuestDefinition quest = MakeDefinition("quest.progress", new[]
+        {
+            MakeObjective(QuestObjectiveType.Kill, "enemy.slime.green", targetCount: 3),
+            MakeObjective(QuestObjectiveType.Kill, "enemy.slime.blue"),
+        });
+        _manager.ConfigureForTests(MakeCatalog(quest));
+
+        Assert.IsFalse(_manager.TryGetProgress("quest.progress", out _), "No runtime entry yet -- Available quest has no progress to report.");
+
+        _manager.TryAcceptQuest("quest.progress");
+        Assert.IsTrue(_manager.TryGetProgress("quest.progress", out QuestProgressSnapshot snapshot));
+        Assert.AreEqual(QuestStatus.Active, snapshot.Status);
+        Assert.AreEqual(0, snapshot.CurrentObjectiveIndex);
+        Assert.AreEqual(0, snapshot.ObjectiveCounters[0]);
+
+        // Mutating the returned counters must never reach QuestRuntimeState.
+        ((int[])snapshot.ObjectiveCounters)[0] = 999;
+        QuestDomainEvents.RaiseEnemyKilled("enemy.slime.green", null);
+        _manager.TryGetProgress("quest.progress", out QuestProgressSnapshot afterKill);
+        Assert.AreEqual(1, afterKill.ObjectiveCounters[0], "Snapshot mutation must not leak into runtime state.");
+
+        Assert.IsFalse(_manager.TryGetProgress("quest.unknown", out _));
+        Assert.IsFalse(_manager.TryGetProgress(null, out _));
+    }
+
+    [Test]
     public void EachObjectiveType_ProgressesOnlyFromItsOwnMatchingEvent()
     {
         QuestDefinition quest = MakeDefinition("quest.all_types", new[]

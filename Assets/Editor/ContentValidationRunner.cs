@@ -369,6 +369,9 @@ public static class ContentValidationRunner
         if (objective.TargetCount <= 0)
             report.Error(path, $"objectives[{index}] targetCount must be greater than zero.", quest);
 
+        if (string.IsNullOrWhiteSpace(objective.Description))
+            report.Error(path, $"objectives[{index}] ({objective.Type}) has an empty description -- required presentation field for Quest UI.", quest);
+
         if (objective.Type is QuestObjectiveType.Talk or QuestObjectiveType.Obtain
             or QuestObjectiveType.Craft or QuestObjectiveType.Purchase)
         {

@@ -188,3 +188,20 @@ Manual verification). Cả 6 loại đều có PlayMode test dùng producer/fake
 ## Codex UI Handoff
 
 Xem [ClaudeToCodex.md](Handoffs/ClaudeToCodex.md), đánh dấu `READY_FOR_CODEX_UI`.
+
+## Update 2026-08-22 — Gap response sau khi Codex dựng UI
+
+Codex dựng `QuestUIRoot`/`TownElderNPC` (xem `CodexToClaude.md` mục "Phase 6 Quest UI → Claude
+Follow-up") và báo lại 2 gap, cả hai đã xử lý:
+
+1. `QuestManager.TryGetProgress(string questId, out QuestProgressSnapshot snapshot)` +
+   `QuestProgressSnapshot` (`Assets/Scripts/Quest/QuestProgressSnapshot.cs`, `readonly struct`) --
+   presentation read-model cho objective index/counters, `ObjectiveCounters` là defensive copy
+   (`Clone()`), không leak mutable runtime collection ra UI.
+2. Author `Description` cho toàn bộ objective của `quest.tutorial.crafting.001`/`quest.main.001`;
+   `ContentValidationRunner` giờ báo Error cho objective description rỗng (required presentation
+   field).
+
+EditMode 42/42, PlayMode 48/48 (+1 test cho `TryGetProgress`), Content Validation 0 error/60
+warning/69 asset. Verify sống trong DemoScene qua `execute_code`. Chi tiết contract chính xác nằm
+trong `ClaudeToCodex.md` mục Update. Status handoff: `READY_FOR_CODEX_UI_BINDING`.

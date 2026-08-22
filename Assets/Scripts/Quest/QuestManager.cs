@@ -169,6 +169,23 @@ public sealed class QuestManager : MonoBehaviour
         return ArePrerequisitesMet(definition) ? QuestStatus.Available : QuestStatus.Locked;
     }
 
+    /// <summary>Read-only presentation read-model for UI (e.g. "1/2 killed"). Returns false if
+    /// questId has no runtime entry yet (Locked/Available -- nothing accepted, nothing to show
+    /// progress for). ObjectiveCounters in the snapshot is a defensive copy, never the live array,
+    /// so UI can never mutate QuestRuntimeState through it.</summary>
+    public bool TryGetProgress(string questId, out QuestProgressSnapshot snapshot)
+    {
+        if (string.IsNullOrEmpty(questId) || !_runtime.TryGetValue(questId, out QuestRuntimeState state))
+        {
+            snapshot = default;
+            return false;
+        }
+
+        snapshot = new QuestProgressSnapshot(
+            state.Status, state.CurrentObjectiveIndex, (int[])state.ObjectiveCounters.Clone());
+        return true;
+    }
+
     private bool ArePrerequisitesMet(QuestDefinition definition)
     {
         foreach (string prerequisiteId in definition.PrerequisiteQuestIds)

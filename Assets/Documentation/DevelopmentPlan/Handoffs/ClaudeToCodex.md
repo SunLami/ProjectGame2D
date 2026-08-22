@@ -1,9 +1,70 @@
 # Claude → Codex Handoff
 
-Status: `READY_FOR_CODEX_UI`
+Status: `READY_FOR_CODEX_UI_BINDING`
 
 Ngày: 2026-08-22
 Feature: Phase 6 — Quest backend (Quest Log/Tracker/NPC UI cần Codex dựng tiếp)
+
+## Update 2026-08-22 — Trả lời 2 gap trong `CodexToClaude.md` (`BACKEND_GAP_FOUND`)
+
+Đã xử lý cả hai gap Codex báo lại sau khi dựng `QuestUIRoot`/`TownElderNPC`. Không đổi
+`QuestUIRoot`, `TownElderNPC` prefab, Tutorial UI, Inventory UI hay bất kỳ layout/font nào.
+
+### 1. Presentation API cho objective progress
+
+Thêm `QuestManager.TryGetProgress` (không đổi `ToSaveData`, không cần reflection):
+
+```csharp
+public bool TryGetProgress(string questId, out QuestProgressSnapshot snapshot);
+```
+
+`QuestProgressSnapshot` (`Assets/Scripts/Quest/QuestProgressSnapshot.cs`) là `readonly struct`:
+
+```csharp
+public QuestStatus Status { get; }
+public int CurrentObjectiveIndex { get; }
+public IReadOnlyList<int> ObjectiveCounters { get; }   // đồng bộ index với QuestDefinition.Objectives
+```
+
+- Trả `false` (snapshot mặc định) nếu quest chưa có runtime entry -- tức đang `Locked`/`Available`,
+  chưa accept lần nào, không có gì để hiển thị progress.
+- `ObjectiveCounters` là **bản copy tại thời điểm gọi** (`Clone()` trên array runtime), không phải
+  live reference -- sửa mảng trả về không ảnh hưởng `QuestRuntimeState` thật, và gọi lại
+  `TryGetProgress` sau khi có event mới sẽ ra snapshot mới đúng dữ liệu. Không expose mutable
+  collection ra ngoài Definition/Runtime/Save boundary.
+- Dùng cùng `CurrentObjectiveIndex` để index vào `QuestDefinition.Objectives[index].Description`/
+  `.TargetCount` cho instruction text + target hiện tại; `ObjectiveCounters[index]` là progress số
+  (`counters[i]` ứng với `Objectives[i]`, kể cả objective đã qua).
+- Ví dụ hiển thị "1/2 killed" cho objective Kill đang active:
+  `int current = snapshot.ObjectiveCounters[snapshot.CurrentObjectiveIndex]; int target =
+  quest.Objectives[snapshot.CurrentObjectiveIndex].TargetCount;`
+
+Verify sống trong DemoScene (Play Mode thật): accept `quest.tutorial.crafting.001` →
+`TryGetProgress` = true, `counters = [0,0]`; sau 1 `RaiseEnemyKilled` khớp objective 0 →
+`counters = [1,0]`. Trước khi accept, `TryGetProgress` = false đúng như spec.
+
+### 2. Description rỗng cho objective + validator
+
+Đã author `Description` cho toàn bộ objective của cả hai quest hiện có
+(`Assets/Quests/Definitions/Quest_TutorialCrafting001.asset`,
+`Assets/Quests/Definitions/Quest_Main001.asset`) -- không còn objective nào rỗng text.
+
+`ContentValidationRunner.ValidateQuestObjective` giờ báo **Error** (không phải Warning) cho
+objective có `Description` rỗng/whitespace -- coi đây là required presentation field, đúng nguyên
+tắc "Handoff phải cung cấp read-model/contract public ổn định, không tự chế display data cho UI"
+(Roadmap Phase 6 Boundary). Content Validation chạy lại: **0 error, 60 warning (không đổi), 69
+asset checked**.
+
+### Test
+
+- EditMode: 42/42 PASS (không đổi số lượng file mới -- chỉ patch content).
+- PlayMode: 48/48 PASS (+1: `QuestManagerPlayModeTests.TryGetProgress_ReflectsLiveStateAndReturnsADefensiveCopy`
+  -- verify false khi chưa accept, đúng status/index/counters sau accept + progress, và mutate bản
+  copy trả về không leak vào runtime state thật).
+- Play Mode smoke test qua Unity MCP `execute_code` trên DemoScene thật (không chỉ test giả lập):
+  xác nhận `TryGetProgress` hoạt động đúng trên `QuestManager.Instance` thật, console sạch.
+
+Không có thay đổi nào khác tới contract Phase 6 gốc (event/status semantics/NPC service không đổi).
 
 ## Bối cảnh
 
