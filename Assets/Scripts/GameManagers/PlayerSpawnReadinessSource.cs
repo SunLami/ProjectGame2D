@@ -104,6 +104,14 @@ public sealed class PlayerSpawnReadinessSource : MonoBehaviour, IGameplayReadine
 
         // 6. Finalize health against the final MaxHealth (not the live-equip delta formula).
         _playerStat?.RestoreHealth(playerData.health);
+
+        // 7. Tutorial progress -- does not gate Playing (input tutorial is a prompt, not a lock);
+        // restored via RestoreState so it never fires OnStepChanged/OnTutorialCompleted.
+        if (TutorialManager.Instance != null && session.SaveData.tutorial != null)
+        {
+            TutorialManager.Instance.RestoreState(
+                session.SaveData.tutorial.currentStepId, session.SaveData.tutorial.completed);
+        }
     }
 
     private void RestorePosition(PlayerLocationSaveData location)
@@ -142,6 +150,8 @@ public sealed class PlayerSpawnReadinessSource : MonoBehaviour, IGameplayReadine
             snapshot.inventory = InventoryManager.Instance.ToSaveData();
         if (EquipmentManager.Instance != null)
             snapshot.equipment = EquipmentManager.Instance.ToSaveData();
+        if (TutorialManager.Instance != null)
+            snapshot.tutorial = TutorialManager.Instance.ToSaveData();
 
         SaveOperationResult result = repository.WriteSave(session.SlotId, snapshot);
         if (!result.Success)

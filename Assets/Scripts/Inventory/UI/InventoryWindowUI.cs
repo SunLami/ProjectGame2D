@@ -1,7 +1,10 @@
+using System;
 using UnityEngine;
 
 public class InventoryWindowUI : MonoBehaviour
 {
+    public static event Action InventoryOpened;
+
     [SerializeField] private GameObject _windowRoot;
 
     private void OnEnable()
@@ -25,6 +28,7 @@ public class InventoryWindowUI : MonoBehaviour
     public void OpenWindow()
     {
         GameStateManager.Instance.OpenMenu(GameplayMenuPage.Inventory);
+        InventoryOpened?.Invoke();
     }
 
     private bool IsInventoryOpen() =>

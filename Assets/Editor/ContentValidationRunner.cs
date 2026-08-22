@@ -22,6 +22,7 @@ public static class ContentValidationRunner
         ValidateEquipmentCatalogs(equipment, report);
         ValidateItemDatabases(report);
         ValidateTileData(report);
+        ValidateTutorialDefinitions(report);
 
         string summary = $"Content validation finished: {report.ErrorCount} error(s), "
             + $"{report.WarningCount} warning(s), {report.CheckedAssetCount} asset(s) checked.";
@@ -223,6 +224,47 @@ public static class ContentValidationRunner
                 {
                     tileOwners[tile] = tileData;
                 }
+            }
+        }
+    }
+
+    private static void ValidateTutorialDefinitions(ValidationReport report)
+    {
+        var tutorialIds = new HashSet<string>(StringComparer.Ordinal);
+
+        foreach (TutorialDefinition tutorial in LoadAssets<TutorialDefinition>())
+        {
+            report.Check(tutorial);
+            string path = AssetDatabase.GetAssetPath(tutorial);
+
+            if (string.IsNullOrWhiteSpace(tutorial.TutorialId))
+                report.Error(path, "tutorialId is empty.", tutorial);
+            else if (!tutorialIds.Add(tutorial.TutorialId))
+                report.Error(path, $"tutorialId '{tutorial.TutorialId}' is used by more than one TutorialDefinition.", tutorial);
+
+            if (tutorial.Steps == null || tutorial.Steps.Count == 0)
+            {
+                report.Error(path, "steps must contain at least one step.", tutorial);
+                continue;
+            }
+
+            var stepIds = new HashSet<string>(StringComparer.Ordinal);
+            for (int i = 0; i < tutorial.Steps.Count; i++)
+            {
+                TutorialStepDefinition step = tutorial.Steps[i];
+                if (step == null)
+                {
+                    report.Error(path, $"steps[{i}] is null.", tutorial);
+                    continue;
+                }
+
+                if (string.IsNullOrWhiteSpace(step.StepId))
+                    report.Error(path, $"steps[{i}] has an empty stepId.", tutorial);
+                else if (!stepIds.Add(step.StepId))
+                    report.Error(path, $"steps[{i}] stepId '{step.StepId}' duplicates another step in this tutorial.", tutorial);
+
+                if (step.Type == TutorialStepType.ReachArea && string.IsNullOrWhiteSpace(step.TargetAreaId))
+                    report.Error(path, $"steps[{i}] ('{step.StepId}') is ReachArea but has no targetAreaId.", tutorial);
             }
         }
     }

@@ -195,7 +195,17 @@ sống (live) đúng một lần cho New Game rồi capture lại vào initial s
 Restore order thật (`PlayerSpawnReadinessSource`): progression (không health) → position → inventory
 (seed nếu NewGame, else `LoadFromSaveData` qua resolver) → equipment (`RestoreEquipped` per slot, không
 qua `Equip()` UI path) → `RecalculateStats()` đúng một lần → `RestoreHealth()` cuối cùng (clamp theo
-MaxHealth cuối cùng sau equipment, không dùng công thức delta của `ApplyEquipmentModifiers`).
+MaxHealth cuối cùng sau equipment, không dùng công thức delta của `ApplyEquipmentModifiers`) → tutorial
+(`TutorialManager.RestoreState`, không phát `OnStepChanged`/`OnTutorialCompleted`).
+
+**Phase 5 hiện trạng (2026-08-22):** thêm `GameSaveData.tutorial` (`TutorialSaveData` —
+`currentStepId`, `completed`). Bump `CurrentSaveVersion` 3 → 4. Chỉ phần **Input tutorial**
+(Move/Sprint/Attack/OpenInventory/EquipItem/ReachArea) — Tutorial Quest chain là Phase 6, cần
+NPC/Quest system chưa tồn tại. `currentStepId = null` + `completed = false` nghĩa là "bắt đầu step
+đầu tiên" khi restore. `TutorialManager` (`Assets/Scripts/Tutorial/`) subscribe domain event
+(`Player.PlayerMoved/PlayerSprinted/PlayerAttacked`, `InventoryWindowUI.InventoryOpened`,
+`EquipmentManager.ItemEquipped`, `AreaTriggerZone.PlayerEnteredArea`) — không đọc phím cụ thể, remap
+vẫn hoàn thành được tutorial.
 
 ## Inventory/equipment persistence
 

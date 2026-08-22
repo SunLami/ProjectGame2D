@@ -1,8 +1,13 @@
+using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
 public partial class Player
 {
+    public static event Action PlayerAttacked;
+
+    internal static void RaiseAttackedForTests() => PlayerAttacked?.Invoke();
+
     private static readonly int AttackHash = Animator.StringToHash("Attack");
 
     [Header("Attack Hitbox")]
@@ -24,6 +29,7 @@ public partial class Player
             UpdateDirectionToMouse();
 
         _animator.SetTrigger(AttackHash);
+        PlayerAttacked?.Invoke();
     }
 
     public void FinishAttack()

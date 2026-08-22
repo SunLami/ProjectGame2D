@@ -58,6 +58,10 @@ public class EquipmentManager : MonoBehaviour
 
     public event Action OnEquipmentChanged;
 
+    /// <summary>Fired only on a successful Equip() (not Unequip, not RestoreEquipped) so tutorial/
+    /// domain systems can react to "the player equipped something" specifically.</summary>
+    public static event Action<EquipmentItemSO> ItemEquipped;
+
     private void Awake()
     {
         if (Instance == null)
@@ -136,6 +140,7 @@ public class EquipmentManager : MonoBehaviour
         InventoryManager.Instance.NotifyChanged();
         RefreshPlayerStats();
         OnEquipmentChanged?.Invoke();
+        ItemEquipped?.Invoke(item);
         return true;
     }
 
