@@ -3,66 +3,80 @@
 Status: `READY_FOR_CODEX`
 
 Ngày: 2026-08-22
-Feature: Phase 3 backend gaps từ `CodexToClaude.md`
+Feature: Phase 5 — UI hiển thị Input Tutorial (instruction prompt + skip)
 
-## Đã xử lý 3 backend gap Codex báo
+## Bối cảnh
 
-1. **`lastSavedUtcTicks = 0`** — root cause: `FileSaveSlotRepository.GetSlotInfo` chưa bao giờ đọc lại
-   `metadata.json` (luôn tự dựng lại metadata từ `save.json`, bỏ timestamp thật). Đã sửa để đọc
-   `metadata.json` khi còn khớp với save đang load. `Metadata.characterLevel` và `Metadata.areaId`
-   giờ cũng là dữ liệu thật (lấy từ `GameSaveData.player`). **`Metadata.characterName` vẫn luôn rỗng**
-   (không có domain đặt tên nhân vật, D-013 còn Open) và **`Metadata.tutorialCompleted` vẫn luôn
-   `false`** (chưa có tutorial domain, Phase 5) — đây là quyết định có chủ đích, không phải bug còn sót.
-   UI có thể hiển thị `characterLevel`/`areaId`/`totalPlayTimeSeconds`/`lastSavedUtcTicks` thật ngay
-   trên danh sách slot mà không cần đọc full save nữa.
-2. **Player snapshot capture** — thêm `PlayerSaveCapture.Capture(PlayerStat, Transform, areaId,
-   fallbackSpawnId)` (`Assets/Scripts/Save/PlayerSaveCapture.cs`), pure C#, là đường DUY NHẤT được
-   chấp nhận để biến live state thành `PlayerSaveData`. UI không tự tạo/sửa `GameSaveData`.
-3. **Save-on-return** — xác nhận: không tự động save khi Return Main Menu ở Phase 3. `PlayerSaveCapture`
-   tồn tại nhưng chưa được gọi ở đâu; quyết định gọi nó khi nào (Save Game từ Pause Menu, dirty-session
-   confirm khi Return Main Menu) thuộc D-017/Phase 9, chưa được chấp thuận. Vì vậy acceptance "Continue
-   khớp đúng vị trí vừa rời gameplay" vẫn chưa chứng minh được bằng vị trí live — chỉ chứng minh được với
-   vị trí đã có sẵn trong snapshot (test `PlayerSpawnReadinessSourcePlayModeTests.
-   CapturedSnapshot_RoundTripsThroughWriteAndContinueRestore` chứng minh capture → write → restore
-   round-trip đúng, nhưng capture đó được gọi thủ công trong test, không phải từ gameplay thật).
+Phase 5 backend (`TutorialManager`, domain event, save/restore, `AreaTriggerZone`) đã hoàn tất, tự
+vận hành đúng (28/28 EditMode, 32/32 PlayMode PASS) nhưng **chưa có UI nào hiển thị cho người chơi
+thấy**. Chi tiết kiến trúc đầy đủ: [Phase5ImplementationReport.md](../Phase5ImplementationReport.md).
 
-Ngoài 3 gap trên, phát hiện thêm một double-submit thật (không nằm trong báo cáo của Codex):
-`MainMenuController.RequestNewGame`/`RequestContinue` trước đây không có guard chống gọi hai lần liên
-tiếp trước khi scene load xong — lần gọi thứ hai âm thầm ghi đè session đang transition. Đã thêm guard
-`CanStartRequest()`. Không đổi field/event nào của `MainMenuController` — signature các method public
-giữ nguyên, UI không cần rebind gì.
+Việc cần Codex làm: dựng một overlay nhỏ trong DemoScene hiển thị `InstructionText` của step tutorial
+hiện tại, và nút Skip có confirm. Đây thuần là UI/Canvas — không cần đổi gameplay logic.
 
-## File thay đổi
+## Contract phía Claude cung cấp (đã có sẵn, không cần đổi)
 
-- `Assets/Scripts/Save/FileSaveSlotRepository.cs` — đọc lại `metadata.json`, populate
-  `characterLevel`/`areaId`.
-- `Assets/Scripts/Save/PlayerSaveCapture.cs` (mới) — capture API.
-- `Assets/Scripts/GameManagers/MainMenuController.cs` — double-submit guard.
-- Tests mới: `FileSaveSlotRepositoryTests.cs` (+3), `PlayerSaveCapturePlayModeTests.cs` (mới),
-  `PlayerSpawnReadinessSourcePlayModeTests.cs` (+1), `MainMenuControllerPlayModeTests.cs` (mới).
-- Docs: `Phase3ImplementationReport.md`, `SaveAndWorldPersistence.md`.
+`TutorialManager` (`Assets/Scripts/Tutorial/TutorialManager.cs`), truy cập qua
+`TutorialManager.Instance` (persistent singleton, luôn tồn tại trong gameplay scene sau khi
+`PlayerSpawnReadinessSource` restore xong):
 
-## Verification
+```csharp
+public TutorialStepDefinition CurrentStep { get; }   // null nếu đã completed hoặc chưa có definition
+public bool IsCompleted { get; }
+public event Action<TutorialStepDefinition> OnStepChanged;   // fire khi qua step mới
+public event Action OnTutorialCompleted;                     // fire đúng 1 lần khi xong step cuối
+public void Skip();                                           // nhảy thẳng completed, không phát OnStepChanged
+```
 
-- EditMode: 20/20 PASS. PlayMode: 11/11 PASS. Content Validation: 0 error, 60 warning (baseline
-  không đổi).
-- Play Mode thật (temp save path, không đụng save thật): `RequestNewGame(1)` → metadata đọc lại có
-  `lastSavedUtcTicks` thật, `characterLevel = 1`, `areaId = area.tutorial`. Double-submit
-  `RequestNewGame` gọi hai lần liên tiếp: lần hai bị từ chối, chỉ một session/scene load tiến hành.
-- Không có contract field/event nào của `MainMenuController` thay đổi — không cần Codex rebind UI.
+`TutorialStepDefinition` có field đọc được: `StepId` (string), `Type` (enum, không cần hiển thị),
+`InstructionText` (string — đây là nội dung để show lên UI).
 
-## Task tiếp theo thuộc Codex
+## UI cần dựng
 
-- Nếu muốn: cập nhật slot view để hiển thị `characterLevel`/`areaId` thật (giờ đã có sẵn trong
-  `Metadata`), thay vì chỉ total play time/last saved đã có từ trước. Không bắt buộc ngay — tùy độ ưu
-  tiên hiển thị.
-- Không cần đổi gì về overwrite/delete confirm hay double-submit lock phía UI — guard double-submit đã
-  nằm ở backend (`MainMenuController`), UI hiện tại (khóa `CanvasGroup` khi `Loading`) đã đủ, hai lớp
-  bảo vệ độc lập nhau là hợp lý.
-- Chưa cần làm gì cho save-on-return/Phase 9 — đó không phải việc của Codex bây giờ.
+1. **Panel instruction** (góc màn hình, ví dụ top-center hoặc top-left, không che HUD/inventory hiện
+   có) — hiển thị `CurrentStep.InstructionText`.
+   - Ẩn hoàn toàn nếu `TutorialManager.Instance == null` hoặc `CurrentStep == null` (đã completed
+     hoặc chưa init xong).
+   - Subscribe `OnStepChanged` để đổi text khi qua step mới.
+   - Subscribe `OnTutorialCompleted` để ẩn panel (kèm hiệu ứng nhẹ nếu muốn, không bắt buộc).
+   - Khi UI vừa `OnEnable`/mở game giữa chừng (ví dụ Continue), đọc luôn `CurrentStep` hiện tại để
+     hiển thị đúng ngay lập tức — không đợi event đầu tiên.
+2. **Nút Skip** trên panel đó, có **popup confirm** trước khi gọi (theo D-008 — skip tutorial phải có
+   xác nhận, không skip ngay khi bấm 1 lần). Sau khi user xác nhận: gọi
+   `TutorialManager.Instance.Skip()`.
+3. Panel này là **gameplay overlay thuần túy** giống Inventory/Pause hiện có — không đi qua
+   `GameStateManager` state machine (tutorial không pause game, không chặn input), chỉ là Canvas hiển
+   thị/ẩn theo event ở trên.
+
+## Việc Codex KHÔNG cần làm
+
+- Không cần đổi `TutorialManager`, domain event, hay bất kỳ script nào trong
+  `Assets/Scripts/Tutorial/`, `Assets/Scripts/GameManagers/AreaTriggerZone.cs` — nếu thấy cần đổi field
+  gì ở đó (ví dụ thêm icon cho step, thêm field mới trong `TutorialStepDefinition`), báo lại Claude
+  qua `CodexToClaude.md` thay vì tự sửa (đây là ScriptableObject data contract, đổi ẩu có thể vỡ save
+  cũ hoặc content asset đã tạo).
+- Không cần lo về restore/save — `TutorialManager.RestoreState()` (backend) đã đảm bảo UI mở lên giữa
+  chừng vẫn thấy đúng step hiện tại qua `CurrentStep`.
+- Chưa cần làm UI cho `AreaTrigger_Town`/`ReachArea` riêng — step đó cũng chỉ là một `InstructionText`
+  bình thường như các step khác, panel dùng chung.
+
+## Nội dung step hiện có (để tham khảo hiển thị, đọc thật từ asset, đừng hardcode text trong UI script)
+
+6 step trong `Assets/Tutorial/Tutorial_TutorialArea.asset`: Move → Sprint → Attack → OpenInventory →
+EquipItem → ReachArea (`area.town`, placeholder position `(10,0,0)` trong DemoScene, sẽ dời khi có Town
+thật). `InstructionText` hiện tại là placeholder — nếu cần văn bản hiển thị đẹp hơn, có thể tự sửa nội
+dung field đó trực tiếp trên asset qua Unity Editor (đây là content, không phải code, Codex có thể sửa
+tự do), không cần hỏi lại Claude cho việc đổi text thuần túy.
+
+## Test cần có phía Codex (nếu theo đúng quy trình Quality Strategy)
+
+- Manual: New Game → panel hiện đúng step Move → đi bộ → panel đổi sang Sprint → ... → sau step cuối
+  panel ẩn.
+- Manual: bấm Skip → confirm popup hiện → xác nhận → panel ẩn ngay, không đi qua step trung gian.
+- Manual: Continue game đã có tutorial dở dang → panel hiện đúng step đã lưu ngay khi vào scene.
 
 ## Phạm vi Claude không chỉnh trực tiếp
 
-Không đụng `Assets/Scenes/MainMenu.unity` hierarchy/layout/font/color, không đụng
-`Assets/Scripts/UI/MainMenuSaveSlotsUI.cs`. Toàn bộ thay đổi trong handoff này là backend
-(`Assets/Scripts/Save/`, `Assets/Scripts/GameManagers/MainMenuController.cs`) và docs.
+Toàn bộ Canvas/hierarchy/layout/font/màu cho panel này thuộc Codex. Khi xong, cập nhật
+`CodexToClaude.md` để Claude biết UI đã sẵn sàng (không cần thay đổi gì phía backend trừ khi phát sinh
+gap mới).
