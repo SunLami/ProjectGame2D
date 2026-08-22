@@ -1,6 +1,6 @@
 # Codex → Claude Handoff
 
-Status: `READY_FOR_CLAUDE`
+Status: `VERIFIED`
 
 Ngày: 2026-08-22  
 Feature: Phase 3 MainMenu New Game/Continue UI
@@ -13,8 +13,8 @@ Feature: Phase 3 MainMenu New Game/Continue UI
 - New Game/Continue dùng chung selector đúng ba slot.
 - Slot view hiển thị trạng thái `Empty`, `Valid`, `Corrupted`, `IncompatibleVersion` bằng chữ; không chỉ
   dùng màu.
-- Slot hợp lệ chỉ hiển thị dữ liệu backend hiện có thật: total play time và last-saved local time.
-  Không tự chế character name, level, area hoặc tutorial state.
+- Slot hợp lệ hiển thị dữ liệu backend thật: level, stable area ID, total play time và last-saved local
+  time. Không hiển thị `characterName` hoặc `tutorialCompleted` vì hai domain này chưa tồn tại.
 - Overwrite và delete luôn có confirm chỉ rõ slot; Quit có confirm.
 - Operation failure có modal thân thiện.
 - Khi `GameState.Loading`, `CanvasGroup` khóa interact/raycast và bỏ focus để chống double-submit.
@@ -50,28 +50,27 @@ Feature: Phase 3 MainMenu New Game/Continue UI
 
 Ảnh evidence nằm trong `Assets/Documentation/DevelopmentPlan/Verification/`.
 
-## Backend gaps phát hiện
+## Backend handoff đã xác nhận
 
-1. `SaveSlotMetadata.characterName`, `characterLevel`, `areaId`, `tutorialCompleted` vẫn là giá trị mặc
-   định, đúng như Phase 3 report. UI hiện không hiển thị dữ liệu giả. Nếu muốn list slot hiển thị level,
-   area hoặc tutorial thật, Claude cần populate metadata từ snapshot thật.
-2. Initial New Game save được đọc lại thành công nhưng `lastSavedUtcTicks` hiện là `0`, nên UI hiển thị
-   `Unknown`. Claude cần xác nhận repository/factory owner nào phải cập nhật timestamp trước atomic write.
-3. Phase 3 chưa có in-game save/capture current Player position khi rời. Vì vậy acceptance “Continue
-   khớp vị trí ngay trước khi rời” chỉ chứng minh được với vị trí đã tồn tại trong snapshot, không phải
-   transform vừa thay đổi trong gameplay. Đây thuộc save capture/Phase 9 hoặc một scope backend được
-   chấp thuận riêng; UI không tự ghi DTO.
+- Commit `5b83d1a7` đã sửa metadata readback và thêm Player capture foundation.
+- UI verify end-to-end từ save mới: `LEVEL 1`, `AREA area.tutorial`, play time thật và timestamp local
+  khác `0` đều lấy từ `RefreshSlots()`/`SaveSlotInfo`.
+- `characterName` và `tutorialCompleted` vẫn được ẩn đúng chủ đích; không hiển thị placeholder giả.
+- Save-on-return vẫn thuộc D-017/Phase 9; UI không gọi `PlayerSaveCapture` và không tự ghi DTO.
+- Slot 1 test được tạo để verify metadata rồi xóa qua UI; ba slot trở lại trạng thái trống.
+- Screenshot mới: `Verification/MainMenu_UI_Metadata_Final.png`.
 
-## Task tiếp theo thuộc Claude
+## Remaining verification
 
-- Quyết định và triển khai metadata population thật (ít nhất `lastSavedUtcTicks`; level/area nếu muốn
-  hiển thị trong Phase 3).
-- Xác nhận scope save-current-position trước Return Main Menu; không để UI tự sở hữu capture/write.
-- Thêm automated PlayMode coverage cho `MainMenuSaveSlotsUI` contract nếu Phase 3 yêu cầu toàn bộ UI
-  integration được gate tự động.
+- Automated virtual gamepad PASS cho MainMenu `Navigate`, `Submit`, `Cancel`. Trong lần test này phát
+  hiện và sửa deferred default-focus sau frame đầu; console sạch.
+- Manual physical gamepad vẫn `BLOCKED_MANUAL_TEST`; gameplay controls chưa được đánh dấu PASS.
+- Responsive alternate-aspect test: `NOT RUN` — `Screen.SetResolution` trong Editor không thay đổi Game
+  View capture thật, nên không dùng screenshot đó làm evidence.
+- Area hiện hiển thị stable ID thật. Khi có Area catalog/display-name resolver, backend cần cung cấp
+  presentation value hoặc read model; UI không tự biến ID thành tên giả.
 
 ## Phạm vi Claude không nên chỉnh trực tiếp
 
 - Không chỉnh hierarchy/layout/colors/font của `MainMenuRoot`.
 - Nếu contract field/event thay đổi, cập nhật handoff để Codex rebind bằng Unity MCP.
-

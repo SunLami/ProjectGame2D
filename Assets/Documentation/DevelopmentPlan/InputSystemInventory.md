@@ -88,6 +88,19 @@ template binding tồn tại.
 - [x] PlayerInput Unity Events giữ nguyên action ID/callback và serialized display name đã đổi sang
   `Gameplay/...`.
 
+### MainMenu automated gamepad simulation — 2026-08-22
+
+- Thêm virtual `Gamepad` bằng Input System trong Play Mode; đây là automated simulation, không phải
+  physical manual test.
+- `UI/Navigate`: D-pad di chuyển focus qua Landing selectables.
+- `UI/Submit`: button South mở Settings và focus chuyển đúng sang `SfxSlider`.
+- `UI/Cancel`: button East đóng Settings, trở lại Landing và focus về `NewGameButton`.
+- Phát hiện focus có thể là `None` ở frame khởi động nếu EventSystem chưa sẵn trong `OnEnable`; đã sửa
+  `MainMenuSaveSlotsUI` bằng deferred first-frame focus.
+- Console: 0 error, 0 warning.
+- Checkbox Gamepad phía trên vẫn để mở vì gameplay controls và physical controller chưa được người thật
+  kiểm tra đầy đủ.
+
 ## Trạng thái Phase 0
 
 Inventory và target boundary đã hoàn tất. Chưa sửa Input Actions asset hoặc scene binding trong Phase 0

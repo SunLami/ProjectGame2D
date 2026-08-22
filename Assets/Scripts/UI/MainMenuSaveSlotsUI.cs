@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -108,6 +109,14 @@ public sealed class MainMenuSaveSlotsUI : MonoBehaviour
         SetLoading(GameStateManager.Instance != null && GameStateManager.Instance.CurrentState == GameState.Loading);
         ShowLanding();
         RebuildSlots(_controller.RefreshSlots());
+    }
+
+    private IEnumerator Start()
+    {
+        yield return null;
+
+        if (!_isLoading && _landingPage.activeSelf)
+            Select(_newGameButton);
     }
 
     private void OnDisable()
@@ -387,6 +396,10 @@ public sealed class MainMenuSaveSlotsUI : MonoBehaviour
             ? new DateTime(metadata.lastSavedUtcTicks, DateTimeKind.Utc).ToLocalTime().ToString("yyyy-MM-dd  HH:mm")
             : "Unknown";
 
-        return $"PLAY TIME  {playTime.TotalHours:00}:{playTime.Minutes:00}:{playTime.Seconds:00}\nLAST SAVE  {savedAt}";
+        string areaId = string.IsNullOrWhiteSpace(metadata.areaId) ? "Unknown" : metadata.areaId;
+
+        return $"LEVEL  {metadata.characterLevel}\nAREA  {areaId}"
+            + $"\nPLAY TIME  {playTime.TotalHours:00}:{playTime.Minutes:00}:{playTime.Seconds:00}"
+            + $"\nLAST SAVE  {savedAt}";
     }
 }
