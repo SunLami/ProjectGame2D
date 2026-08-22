@@ -11,16 +11,22 @@ public enum GameSessionKind
 
 public readonly struct GameSession
 {
-    public GameSession(GameSessionKind kind, int slotId, string gameplaySceneName)
+    public GameSession(GameSessionKind kind, int slotId, string gameplaySceneName, GameSaveData saveData = null)
     {
         Kind = kind;
         SlotId = slotId;
         GameplaySceneName = gameplaySceneName;
+        SaveData = saveData;
     }
 
     public GameSessionKind Kind { get; }
     public int SlotId { get; }
     public string GameplaySceneName { get; }
+
+    /// <summary>Save payload to restore once the gameplay scene loads. Null for Development
+    /// sessions and for callers still using the legacy TryStartNewGame/TryStartLoadedGame
+    /// overloads without a GameSaveData argument.</summary>
+    public GameSaveData SaveData { get; }
     public bool IsActive => Kind != GameSessionKind.None;
 }
 
@@ -34,6 +40,10 @@ public sealed class GameSessionManager : MonoBehaviour
 
     public GameSession Current { get; private set; }
     public bool HasActiveSession => Current.IsActive;
+
+    /// <summary>File-backed by default; tests substitute an in-memory repository via
+    /// SetSaveRepositoryForTests so they never touch a real player save.</summary>
+    public ISaveSlotRepository SaveRepository { get; private set; }
 
     public event Action<GameSession> SessionChanged;
 
@@ -56,13 +66,20 @@ public sealed class GameSessionManager : MonoBehaviour
 
         Instance = this;
         DontDestroyOnLoad(gameObject);
+        SaveRepository = new FileSaveSlotRepository();
     }
 
     public bool TryStartNewGame(int slotId, string gameplaySceneName) =>
-        TryStartSlotSession(GameSessionKind.NewGame, slotId, gameplaySceneName);
+        TryStartSlotSession(GameSessionKind.NewGame, slotId, gameplaySceneName, null);
+
+    public bool TryStartNewGame(int slotId, string gameplaySceneName, GameSaveData saveData) =>
+        TryStartSlotSession(GameSessionKind.NewGame, slotId, gameplaySceneName, saveData);
 
     public bool TryStartLoadedGame(int slotId, string gameplaySceneName) =>
-        TryStartSlotSession(GameSessionKind.LoadedGame, slotId, gameplaySceneName);
+        TryStartSlotSession(GameSessionKind.LoadedGame, slotId, gameplaySceneName, null);
+
+    public bool TryStartLoadedGame(int slotId, string gameplaySceneName, GameSaveData saveData) =>
+        TryStartSlotSession(GameSessionKind.LoadedGame, slotId, gameplaySceneName, saveData);
 
     public bool TryStartDevelopment(string gameplaySceneName)
     {
@@ -75,7 +92,9 @@ public sealed class GameSessionManager : MonoBehaviour
 
     public void ClearSession() => SetSession(default);
 
-    private bool TryStartSlotSession(GameSessionKind kind, int slotId, string gameplaySceneName)
+    internal void SetSaveRepositoryForTests(ISaveSlotRepository repository) => SaveRepository = repository;
+
+    private bool TryStartSlotSession(GameSessionKind kind, int slotId, string gameplaySceneName, GameSaveData saveData)
     {
         if (slotId < MinimumSlotId || slotId > MaximumSlotId
             || string.IsNullOrWhiteSpace(gameplaySceneName))
@@ -83,7 +102,7 @@ public sealed class GameSessionManager : MonoBehaviour
             return false;
         }
 
-        SetSession(new GameSession(kind, slotId, gameplaySceneName));
+        SetSession(new GameSession(kind, slotId, gameplaySceneName, saveData));
         return true;
     }
 

@@ -159,6 +159,16 @@ MainMenu: choose valid slot
 → GameState.Playing
 ```
 
+**Phase 3 implementation note (2026-08-22):** `MainMenuController` (non-visual, `_SceneContext` trong
+`MainMenu.unity`) implement New Game/Continue bằng `NewGameFactory` + `GameSessionManager.SaveRepository`
+(`ISaveSlotRepository`, mặc định `FileSaveSlotRepository`) + `SceneFlowService.TryLoadGameplay`.
+`PlayerSpawnReadinessSource` (một `IGameplayReadinessSource` cắm vào `GameplayReadinessGate` có sẵn từ
+Phase 1) restore `PlayerStat` progression và vị trí qua `SpawnRegistry`, rồi ghi initial save đúng một
+lần cho New Game (D-011). Chưa có: inventory/tutorial restore, camera bind riêng (camera hiện tại đã
+theo Player sẵn), migrate save version cũ (chưa có save cũ nào tồn tại). Camera/UI bind và
+inventory/tutorial restore là extension point còn lại cho Phase 4/5 cắm thêm
+`IGameplayReadinessSource` vào cùng Gate.
+
 ### Return to Main Menu
 
 Ở Phase 1 chưa có dirty-session/save repository nên Pause Menu đi thẳng vào Loading. Bước

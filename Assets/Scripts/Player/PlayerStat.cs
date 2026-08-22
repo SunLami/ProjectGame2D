@@ -143,6 +143,19 @@ public class PlayerStat : MonoBehaviour
         OnHealthChanged?.Invoke(_health, MaxHealth);
     }
 
+    /// <summary>Applies saved progression without firing OnLevelUp/reward-adjacent events.
+    /// health &lt; 0 restores to full MaxHealth (fresh New Game character).</summary>
+    public void RestoreProgression(int level, int currentExperience, float health)
+    {
+        _level = Mathf.Max(1, level);
+        _currentExperience = Mathf.Max(0, currentExperience);
+        _health = health < 0f ? MaxHealth : Mathf.Clamp(health, 0f, MaxHealth);
+
+        OnStatsChanged?.Invoke();
+        OnHealthChanged?.Invoke(_health, MaxHealth);
+        OnExperienceChanged?.Invoke(_currentExperience, ExperienceToNextLevel);
+    }
+
     public void ApplyEquipmentModifiers(PlayerStatModifiers modifiers)
     {
         float previousMaxHealth = MaxHealth;

@@ -9290,6 +9290,37 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1600375131}
   m_CullTransparentMesh: 1
+--- !u!1 &1601450430
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1601450431}
+  m_Layer: 0
+  m_Name: PlayerSpawn_TutorialStart
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1601450431
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1601450430}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2049915538}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1604989151
 GameObject:
   m_ObjectHideFlags: 0
@@ -9816,6 +9847,8 @@ GameObject:
   - component: {fileID: 1657573688}
   - component: {fileID: 1657573690}
   - component: {fileID: 1657573689}
+  - component: {fileID: 1657573692}
+  - component: {fileID: 1657573691}
   m_Layer: 0
   m_Name: _SceneContext
   m_TagString: Untagged
@@ -9898,6 +9931,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: ProjectGame2D.Runtime::GameplayReadinessGate
   _readinessSources:
   - {fileID: 1657573690}
+  - {fileID: 1657573691}
   _timeoutSeconds: 10
 --- !u!114 &1657573690
 MonoBehaviour:
@@ -9915,6 +9949,37 @@ MonoBehaviour:
   _requiredDependencies:
   - {fileID: 1570954194}
   - {fileID: 337776062}
+--- !u!114 &1657573691
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1657573684}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 84de6d4625b7f984c90bb1602aceee14, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ProjectGame2D.Runtime::PlayerSpawnReadinessSource
+  _sourceId: PlayerSpawn
+  _playerStat: {fileID: 1570954203}
+  _playerTransform: {fileID: 1570954195}
+  _spawnRegistry: {fileID: 1657573692}
+--- !u!114 &1657573692
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1657573684}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cb0a7c9adea9f9b418e5c9bae6ec9aa2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ProjectGame2D.Runtime::SpawnRegistry
+  _entries:
+  - spawnId: spawn.tutorial.start
+    point: {fileID: 1601450431}
 --- !u!1 &1687745304
 GameObject:
   m_ObjectHideFlags: 0
@@ -12248,6 +12313,7 @@ Transform:
   - {fileID: 310493549}
   - {fileID: 613306530}
   - {fileID: 2074144851}
+  - {fileID: 1601450431}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2053909803

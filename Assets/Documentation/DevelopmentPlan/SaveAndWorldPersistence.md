@@ -173,6 +173,16 @@ chấp nhận `saveVersion == GameSaveData.CurrentSaveVersion`; mọi version kh
 báo `SaveSlotStatus.IncompatibleVersion` thay vì cố load một phần, đúng nguyên tắc "không load/overwrite
 âm thầm" ở trên.
 
+**Phase 3 hiện trạng (2026-08-22):** thêm `PlayerSaveData` (`level`, `currentExperience`, `health`,
+`location`) và `PlayerLocationSaveData` (`sceneId`, `areaId`, `positionX`, `positionY`,
+`fallbackSpawnId`) vào `GameSaveData.player`; bump `CurrentSaveVersion` 1 → 2 vì shape đổi. `health < 0`
+là sentinel "dùng MaxHealth hiện tại" cho New Game. `positionX`/`positionY` là `NaN` khi chưa có vị trí
+đã lưu (New Game) — restore đọc `HasSavedPosition`, nếu false thì resolve `fallbackSpawnId` qua
+`SpawnRegistry` đúng theo load policy đã mô tả. `NewGameFactory.CreateDefault()` (pure C#,
+`Assets/Scripts/Save/NewGameFactory.cs`) tạo snapshot mặc định với `areaId = area.tutorial`,
+`fallbackSpawnId = spawn.tutorial.start`. Chưa có inventory/equipment/tutorial/quest/world trong
+`GameSaveData` — sẽ thêm ở phase tương ứng.
+
 ## Inventory/equipment persistence
 
 - Serialize item bằng stable `itemId`, không serialize ScriptableObject reference.
