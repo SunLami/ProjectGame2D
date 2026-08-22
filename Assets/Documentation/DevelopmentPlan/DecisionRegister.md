@@ -19,7 +19,7 @@ tiếp tục thiết kế; phải đổi thành `Accepted` trước phase implem
 | D-012 | Autosave | Proposed | Chưa có ở foundation; manual save trước | Phase 9/10 |
 | D-013 | Character creation scope | Open | Tối thiểu character name; appearance nếu hệ thống sẵn sàng | Phase 3 |
 | D-014 | Obtain objective semantics | **Accepted — 2026-08-22** | `ObtainObjectiveMode` field trên từng `QuestObjectiveDefinition`: `CountAcquired` (counter cộng dồn, không giảm khi dùng) hoặc `RequirePossession` (kiểm tra sở hữu hiện tại >= targetCount, không phải counter). Không có rule ngầm định toàn cục. | Phase 6 |
-| D-015 | Resource respawn clock | Proposed | Lưu in-game/world timestamp; offline passage chưa áp dụng | Phase 8 |
+| D-015 | Resource respawn clock | **Accepted — 2026-08-23** | `nextRespawnUtcTicks` lưu `DateTime.UtcNow.Ticks` tuyệt đối tại thời điểm harvest + respawn duration; `IsAvailable` so sánh trực tiếp với `DateTime.UtcNow.Ticks` hiện tại, không polling. Elapsed thời gian thật (kể cả lúc app đóng) tự nhiên được tính vì dùng UTC tuyệt đối, không phải in-game playtime tích lũy; chưa có catch-up/rate-limit/batch simulation đặc biệt cho khoảng offline dài. | Phase 8 |
 | D-016 | Save format | Proposed | JSON versioned + backup; cân nhắc compression/encryption sau | Phase 2 |
 | D-017 | Return Main Menu dirty state | Proposed | Prompt Save / Leave Without Saving / Cancel | Phase 9 |
 | D-018 | Settings ownership | Accepted kiến trúc | Shared SettingsService, hai navigation UI riêng | Phase 1 |
@@ -87,6 +87,21 @@ khong co field cau hinh ro" -- field tuong minh de designer chon dung y muon tun
 Claude tu quyet dinh mot rule chung.
 Anh huong: Assets/Scripts/Quest/ObtainObjectiveMode.cs, QuestObjectiveDefinition.cs,
 QuestManager.HandleObtain, InventoryManager.HasItemId (moi, additive).
+```
+
+## Chi tiết quyết định Phase 8 — 2026-08-23
+
+```text
+D-015 — Accepted — 2026-08-23 — Claude (Phase 8 baseline)
+ResourceNodeInteractable luu nextRespawnUtcTicks = DateTime.UtcNow.Ticks + respawnDuration tai thoi
+diem harvest. IsAvailable so sanh truc tiep saved ticks voi DateTime.UtcNow.Ticks hien tai -- khong
+Update()/polling moi frame, khong tick nen tang. Vi dung UTC tuyet doi (khong phai playtime tich luy
+trong game), thoi gian thuc troi qua ke ca luc ung dung dong deu tu nhien duoc tinh vao respawn --
+day la lua chon don gian nhat thoa man "khong lam save phinh", khong phai gia dinh ngam ve balance.
+Chua co catch-up/rate-limit/batch simulation cho truong hop offline rat dai (vi du hang tram node
+respawn dong loat) -- de lai cho phase sau neu game design can gioi han.
+Anh huong: Assets/Scripts/World/ResourceNodeInteractable.cs, WorldObjectState.NextRespawnUtcTicks,
+WorldObjectSaveData.nextRespawnUtcTicks.
 ```
 
 ## Những quyết định không được hard-code trước khi chốt

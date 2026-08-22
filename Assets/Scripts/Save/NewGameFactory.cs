@@ -36,7 +36,9 @@ public static class NewGameFactory
             tutorial = new TutorialSaveData(),
             // Empty -- nothing accepted yet. Locked/Available are derived from prerequisites at
             // restore, not baked into this default snapshot.
-            quests = new QuestSaveData()
+            quests = new QuestSaveData(),
+            // Empty -- every persistent world object starts at its scene-authored default state.
+            world = new WorldSaveData()
         };
     }
 }

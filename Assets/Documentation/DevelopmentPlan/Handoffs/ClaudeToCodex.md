@@ -1,9 +1,105 @@
 # Claude → Codex Handoff
 
-Status: `READY_FOR_CODEX_UI`
+Status: `READY_FOR_CODEX_SCENE_INTEGRATION`
+
+Ngày: 2026-08-23
+Feature: Phase 8 — World Persistence backend (không cần UI mới; cần scene/prefab visual)
+
+## Bối cảnh
+
+Phase 8 World Persistence backend đã hoàn tất và tự vận hành đúng (48/48 EditMode, 85/85 PlayMode
+PASS, Content Validation 0 error, verify sống trong DemoScene + minimal portability scene qua
+`execute_code`). Chi tiết kiến trúc đầy đủ: [Phase8ImplementationReport.md](../Phase8ImplementationReport.md).
+
+Khác các phase trước, Phase 8 **không cần Codex dựng UI mới** -- bốn entity persistent (chest, unique
+pickup, boss, resource node) hiện chưa có visual gì (không sprite, không animation, không prompt).
+Việc cần Codex làm (khi có capacity, không gấp): thêm visual/interaction prompt cho bốn loại entity
+này trong DemoScene, theo đúng contract public bên dưới -- không cần logic mới, chỉ cần trình bày.
+
+## Contract phía Claude cung cấp (đã có sẵn, không cần đổi)
+
+### Bốn component persistent (`Assets/Scripts/World/`), tất cả implement `IPersistentWorldObject`
+
+```csharp
+// ChestInteractable
+public bool IsOpened { get; }
+public bool TryOpen(out bool granted);          // false + granted=false nếu đã mở hoặc hết chỗ chứa
+
+// UniquePickupInteractable
+public bool IsCollected { get; }
+public bool TryCollect(out bool granted);        // tự SetActive(false) khi granted=true
+
+// ResourceNodeInteractable
+public bool IsAvailable { get; }                 // tính on-demand từ DateTime.UtcNow, không polling
+public bool TryHarvest(out bool granted);
+
+// BossDefeatTracker (đặt trên GameObject RIÊNG, không phải trên chính EnemyUniversal --
+// xem "Lưu ý quan trọng" bên dưới)
+public bool IsDefeated { get; }
+```
+
+Cả bốn đều có `PersistentId`/`Kind` (từ `IPersistentWorldObject`) và các field Inspector đã author
+sẵn (`_rewardItemId`, `_itemId`, `_resourceId`, v.v. -- xem asset thật bên dưới để đọc giá trị cụ
+thể, đừng đoán).
+
+- `_openedIndicator` (Chest) / `_depletedIndicator` (ResourceNode): `GameObject` optional, tự động
+  `SetActive` theo state nếu Codex gán -- có thể dùng ngay làm hook hiển thị mà không cần sửa script,
+  chỉ cần kéo một GameObject con (icon/sprite khác) vào field đó qua Inspector.
+- Pickup ẩn bằng cách tự `SetActive(false)` cả GameObject khi collected -- nếu cần hiệu ứng
+  biến mất mượt hơn (fade/particle) thay vì biến mất tức thì, báo lại qua `CodexToClaude.md` để
+  Claude đổi thành một event/hook riêng thay vì tự sửa `UniquePickupInteractable.cs`.
+
+## Lưu ý quan trọng: `BossDefeatTracker` không nằm trên chính boss
+
+`EnemyUniversal` tự `Destroy()` GameObject của nó vài giây sau khi chết (corpse lifetime). Nếu Codex
+gắn thêm bất kỳ component nào cần sống lâu hơn con boss đó (ví dụ để hiển thị "Boss Defeated" banner)
+thì phải đặt trên `BossDefeatTracker`'s GameObject (`BossTracker_ForestGuardian` trong DemoScene) chứ
+không phải trên `ForestGuardianBoss` -- GameObject đó sẽ biến mất sau khi chết đúng như enemy thường.
+
+## Content thật đã có để test ngay (không cần tạo asset mới)
+
+Trong DemoScene (`_World`):
+
+- `Chest_TownGeneral` (`world.chest.town.general.01`) -- mở ra nhận 2× Iron Ore.
+- `Pickup_AncientRelic` (`world.pickup.tutorial.relic.01`) -- nhặt nhận 1× Ancient Relic (item mới,
+  non-stackable).
+- `ResourceNode_WoodLog` (`world.resource.tutorial.wood_log.01`) -- harvest nhận 2× Wood, cooldown
+  60s, đồng thời phát Quest `ResourceGathered` event thật (đóng nốt integration gap Gather còn lại
+  từ Phase 6/7).
+- `BossTracker_ForestGuardian` (`world.boss.forest.guardian.01`) -- theo dõi enemy mới
+  `ForestGuardianBoss` (duplicate của Goblin, `enemyId = enemy.boss.forest_guardian`, vị trí `(10,
+  5)`, tách biệt hoàn toàn khỏi Kill objective `enemy.goblin.green` của `quest.main.001` nên không
+  xung đột content Phase 7).
+- `Assets/Prefabs/World/Chest.prefab` -- prefab asset của Chest (dùng để test portability;
+  `Chest_TownGeneral` trong DemoScene hiện là instance rời, chưa link prefab này, có thể re-link nếu
+  Codex muốn thống nhất workflow prefab-based).
+
+Tất cả bốn đã đăng ký sẵn trong `WorldObjectRegistry` (component trên `_SceneContext`) -- save/load
+đã hoạt động đúng, không cần Codex đụng vào phần đó.
+
+## Việc Codex KHÔNG cần làm
+
+- Không cần đổi bất kỳ script nào trong `Assets/Scripts/World/`, `WorldObjectRegistry`, hay
+  `PlayerSpawnReadinessSource` -- nếu cần field/API mới (ví dụ hiệu ứng ẩn khác cho pickup, prompt
+  UI riêng cho từng loại), báo lại Claude qua `CodexToClaude.md`.
+- Không cần lo về save/restore -- `WorldObjectRegistry`/`PlayerSpawnReadinessSource` đã đảm bảo
+  world state đúng trước khi Playing, idempotent, không phát event giả khi restore.
+- Không chỉnh `QuestUIRoot`/`CommerceUIRoot`, Inventory UI, Tutorial UI, MainMenu UI.
+- Không cần sửa `MapManager`/`SoundFXManager` -- `MapManager` đã được Claude sửa xong trong phase
+  này (không còn `DontDestroyOnLoad`, rebind đúng khi scene reload).
+
+## Phạm vi Claude không chỉnh trực tiếp
+
+Toàn bộ visual/prompt/hierarchy cho bốn entity persistent thuộc Codex khi cần. Khi xong (hoặc nếu
+quyết định không cần visual ở bước này), cập nhật `CodexToClaude.md`.
+
+---
+
+# Phase 7 — Shop/Crafting backend (Shop/Crafting UI cần Codex dựng tiếp)
+
+Status: `VERIFIED` (đã Codex xác nhận, xem `CodexToClaude.md`)
 
 Ngày: 2026-08-22
-Feature: Phase 7 — Shop/Crafting backend (Shop/Crafting UI cần Codex dựng tiếp)
 
 ## Bối cảnh
 

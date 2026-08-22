@@ -26,6 +26,7 @@ public static class ContentValidationRunner
         ValidateQuestDefinitions(report);
         ValidateShopDefinitions(report, knownItemIds);
         ValidateRecipeDefinitions(report, knownItemIds);
+        ValidatePersistentWorldObjects(report);
 
         string summary = $"Content validation finished: {report.ErrorCount} error(s), "
             + $"{report.WarningCount} warning(s), {report.CheckedAssetCount} asset(s) checked.";
@@ -594,6 +595,80 @@ public static class ContentValidationRunner
                 report.Error(AssetDatabase.GetAssetPath(recipe), "recipe is missing from every RecipeCatalog.", recipe);
         }
     }
+
+    // Persistent world objects are scene MonoBehaviours, not project assets, so this scans
+    // currently loaded scene(s) instead of AssetDatabase (SaveAndWorldPersistence.md "ID trung
+    // trong DemoScene, world scene hoac prefab placement"). Only checks whatever scene(s) are open
+    // when the validator runs -- typically DemoScene during normal authoring workflow.
+    private static void ValidatePersistentWorldObjects(ValidationReport report)
+    {
+        var byId = new Dictionary<string, Component>(StringComparer.Ordinal);
+        var allObjects = new List<(string persistentId, Component component)>();
+
+        CollectPersistentIds(FindSceneObjects<ChestInteractable>(), c => c.PersistentId, allObjects);
+        CollectPersistentIds(FindSceneObjects<UniquePickupInteractable>(), c => c.PersistentId, allObjects);
+        CollectPersistentIds(FindSceneObjects<BossDefeatTracker>(), c => c.PersistentId, allObjects);
+        CollectPersistentIds(FindSceneObjects<ResourceNodeInteractable>(), c => c.PersistentId, allObjects);
+
+        foreach ((string persistentId, Component component) in allObjects)
+        {
+            report.Check(component);
+            string path = component.gameObject.scene.name ?? "(unloaded scene)";
+
+            if (string.IsNullOrWhiteSpace(persistentId))
+            {
+                report.Error(path, $"'{component.gameObject.name}' ({component.GetType().Name}) has an empty persistentId.", component);
+                continue;
+            }
+
+            if (byId.TryGetValue(persistentId, out Component duplicate))
+            {
+                report.Error(path,
+                    $"persistentId '{persistentId}' on '{component.gameObject.name}' duplicates "
+                    + $"'{duplicate.gameObject.name}' in scene '{duplicate.gameObject.scene.name}'.", component);
+            }
+            else
+            {
+                byId.Add(persistentId, component);
+            }
+
+            if (!StableIdPattern.IsMatch(persistentId))
+                report.Error(path, $"persistentId '{persistentId}' on '{component.gameObject.name}' does not match the stable ID convention.", component);
+        }
+
+        var registeredIds = new HashSet<string>(StringComparer.Ordinal);
+        foreach (WorldObjectRegistry registry in FindSceneObjects<WorldObjectRegistry>())
+        {
+            report.Check(registry);
+            if (registry.Entries == null)
+                continue;
+
+            foreach (MonoBehaviour entry in registry.Entries)
+            {
+                if (entry is IPersistentWorldObject obj && !string.IsNullOrEmpty(obj.PersistentId))
+                    registeredIds.Add(obj.PersistentId);
+            }
+        }
+
+        foreach ((string persistentId, Component component) in allObjects)
+        {
+            if (!string.IsNullOrWhiteSpace(persistentId) && !registeredIds.Contains(persistentId))
+            {
+                report.Error(component.gameObject.scene.name, $"'{component.gameObject.name}' (persistentId '{persistentId}') "
+                    + "is not registered in any WorldObjectRegistry in this scene.", component);
+            }
+        }
+    }
+
+    private static void CollectPersistentIds<T>(
+        IReadOnlyList<T> components, Func<T, string> getId, List<(string, Component)> into) where T : Component
+    {
+        foreach (T component in components)
+            into.Add((getId(component), component));
+    }
+
+    private static List<T> FindSceneObjects<T>() where T : UnityEngine.Object =>
+        new(UnityEngine.Object.FindObjectsByType<T>(FindObjectsInactive.Include, FindObjectsSortMode.None));
 
     private static void ValidateRequiredArray<T>(
         string path,

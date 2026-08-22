@@ -19,6 +19,7 @@ public sealed class PlayerSpawnReadinessSource : MonoBehaviour, IGameplayReadine
     [SerializeField] private Transform _playerTransform;
     [SerializeField] private SpawnRegistry _spawnRegistry;
     [SerializeField] private InventorySeeder _inventorySeeder;
+    [SerializeField] private WorldObjectRegistry _worldRegistry;
 
     public string SourceId => _sourceId;
     public bool IsReady { get; private set; }
@@ -27,12 +28,13 @@ public sealed class PlayerSpawnReadinessSource : MonoBehaviour, IGameplayReadine
 
     internal void ConfigureForTests(
         PlayerStat playerStat, Transform playerTransform, SpawnRegistry spawnRegistry,
-        InventorySeeder inventorySeeder = null)
+        InventorySeeder inventorySeeder = null, WorldObjectRegistry worldRegistry = null)
     {
         _playerStat = playerStat;
         _playerTransform = playerTransform;
         _spawnRegistry = spawnRegistry;
         _inventorySeeder = inventorySeeder;
+        _worldRegistry = worldRegistry;
     }
 
     private void Start()
@@ -119,6 +121,21 @@ public sealed class PlayerSpawnReadinessSource : MonoBehaviour, IGameplayReadine
         {
             QuestManager.Instance.RestoreState(session.SaveData.quests);
         }
+
+        // 9. World persistence -- chest/pickup/boss/resource-node state, restored before Playing
+        // is reached (this class is itself an IGameplayReadinessSource). No reward is granted and
+        // no gameplay event fires here; unknown/removed persistentIds are reported, not thrown.
+        if (_worldRegistry != null && session.SaveData.world != null)
+        {
+            List<string> missingWorldIds = new();
+            _worldRegistry.RestoreState(session.SaveData.world, missingWorldIds);
+            if (missingWorldIds.Count > 0)
+            {
+                Debug.LogWarning(
+                    $"PlayerSpawnReadinessSource: {missingWorldIds.Count} world object(s) not found "
+                    + $"in this scene and were skipped: {string.Join(", ", missingWorldIds)}", this);
+            }
+        }
     }
 
     private void RestorePosition(PlayerLocationSaveData location)
@@ -161,6 +178,8 @@ public sealed class PlayerSpawnReadinessSource : MonoBehaviour, IGameplayReadine
             snapshot.tutorial = TutorialManager.Instance.ToSaveData();
         if (QuestManager.Instance != null)
             snapshot.quests = QuestManager.Instance.ToSaveData();
+        if (_worldRegistry != null)
+            snapshot.world = _worldRegistry.ToSaveData();
 
         SaveOperationResult result = repository.WriteSave(session.SlotId, snapshot);
         if (!result.Success)

@@ -3,6 +3,11 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
+// Scene service (ServiceOwnershipLifecycle.md), not an application service: intentionally NOT
+// DontDestroyOnLoad. It must live and die with the scene that owns _tilemap/_player, so a scene
+// reload (e.g. Return Main Menu -> re-enter gameplay) always rebinds fresh scene references
+// instead of a persisted instance surviving with a Tilemap/Player from an already-unloaded scene.
+// _player/_tilemap are bound via the Inspector -- no Find/FindAnyObjectByType at runtime.
 public class MapManager : MonoBehaviour
 {
     public static MapManager Instance;
@@ -13,16 +18,13 @@ public class MapManager : MonoBehaviour
 
     private void Awake()
     {
-        if (Instance == null)
-        {
-            Instance = this;
-            _player = FindAnyObjectByType<Player>();
-            DontDestroyOnLoad(gameObject);
-        }
-        else
-        {
-            Destroy(gameObject);
-        }
+        Instance = this;
+    }
+
+    private void OnDestroy()
+    {
+        if (Instance == this)
+            Instance = null;
     }
 
     private void Start()

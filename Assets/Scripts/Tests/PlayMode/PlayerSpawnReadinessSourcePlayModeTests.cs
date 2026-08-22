@@ -342,6 +342,82 @@ public sealed class PlayerSpawnReadinessSourcePlayModeTests
     }
 
     [UnityTest]
+    public IEnumerator NewGame_CapturesWorldRegistryIntoInitialSave()
+    {
+        var (root, stat, playerTransform, registry) = BuildFixture(Vector3.zero);
+
+        GameObject worldRoot = new("WorldObjectRegistryFixture");
+        WorldObjectRegistry worldRegistry = worldRoot.AddComponent<WorldObjectRegistry>();
+        GameObject chestGo = new("Chest");
+        ChestInteractable chest = chestGo.AddComponent<ChestInteractable>();
+        chest.ConfigureForTests("world.chest.town.01", "item.reward.gem", 1, new ResourcesItemResolver());
+        worldRegistry.ConfigureForTests(new IPersistentWorldObject[] { chest });
+
+        GameSaveData saveData = NewGameFactory.CreateDefault();
+        Assert.IsTrue(GameSessionManager.Instance.TryStartNewGame(1, "TestScene", saveData));
+
+        GameObject sourceObject = new("PlayerSpawnReadinessSource");
+        PlayerSpawnReadinessSource source = sourceObject.AddComponent<PlayerSpawnReadinessSource>();
+        source.ConfigureForTests(stat, playerTransform, registry, worldRegistry: worldRegistry);
+
+        yield return null;
+
+        Assert.IsTrue(source.IsReady);
+        Assert.IsTrue(GameSessionManager.Instance.SaveRepository.TryReadSave(1, out GameSaveData written));
+        Assert.IsNotNull(written.world, "Initial save must capture world state alongside the other domains.");
+        Assert.AreEqual(1, written.world.objects.Count);
+        Assert.AreEqual("world.chest.town.01", written.world.objects[0].persistentId);
+
+        Object.Destroy(root);
+        Object.Destroy(worldRoot);
+        Object.Destroy(chestGo);
+        Object.Destroy(sourceObject);
+    }
+
+    [UnityTest]
+    public IEnumerator Continue_RestoresWorldStateBeforeReady_WithoutGrantingRewardsOrThrowingOnUnknownId()
+    {
+        var (root, stat, playerTransform, registry) = BuildFixture(Vector3.zero);
+
+        GameObject worldRoot = new("WorldObjectRegistryFixture");
+        WorldObjectRegistry worldRegistry = worldRoot.AddComponent<WorldObjectRegistry>();
+        GameObject chestGo = new("Chest");
+        ChestInteractable chest = chestGo.AddComponent<ChestInteractable>();
+        var resolver = new ResourcesItemResolver();
+        chest.ConfigureForTests("world.chest.town.01", "item.reward.gem", 1, resolver);
+        worldRegistry.ConfigureForTests(new IPersistentWorldObject[] { chest });
+
+        GameSaveData saveData = new()
+        {
+            saveId = "save-with-world",
+            player = new PlayerSaveData { level = 1, location = new PlayerLocationSaveData { areaId = "area.tutorial" } },
+            world = new WorldSaveData()
+        };
+        saveData.world.objects.Add(new WorldObjectSaveData { persistentId = "world.chest.town.01", kind = WorldObjectKind.Chest, flag = true });
+        saveData.world.objects.Add(new WorldObjectSaveData { persistentId = "world.chest.removed_content", kind = WorldObjectKind.Chest, flag = true });
+
+        Assert.IsTrue(GameSessionManager.Instance.TryStartLoadedGame(2, "TestScene", saveData));
+
+        GameObject sourceObject = new("PlayerSpawnReadinessSource");
+        PlayerSpawnReadinessSource source = sourceObject.AddComponent<PlayerSpawnReadinessSource>();
+        source.ConfigureForTests(stat, playerTransform, registry, worldRegistry: worldRegistry);
+
+        LogAssert.Expect(LogType.Warning, new System.Text.RegularExpressions.Regex("world.chest.removed_content"));
+
+        yield return null;
+
+        Assert.IsTrue(source.IsReady, "Restore must complete (world restore is part of the readiness gate).");
+        Assert.IsTrue(chest.IsOpened, "Chest state must be restored before Playing is reached.");
+        Assert.IsFalse(chest.TryOpen(out bool granted), "Restored-open chest must not be openable again.");
+        Assert.IsFalse(granted);
+
+        Object.Destroy(root);
+        Object.Destroy(worldRoot);
+        Object.Destroy(chestGo);
+        Object.Destroy(sourceObject);
+    }
+
+    [UnityTest]
     public IEnumerator NoActiveSession_ReportsReadyWithoutTouchingPlayer()
     {
         var (root, stat, playerTransform, registry) = BuildFixture(new Vector3(9f, 9f, 0f));
