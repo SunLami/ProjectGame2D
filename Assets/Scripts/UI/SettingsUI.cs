@@ -1,14 +1,9 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-// Settings window: SFX/Music volume, Full Screen vs Window Mode (mutually exclusive via ToggleGroup).
-// Save persists to PlayerPrefs and closes; Decline reverts any unsaved live-preview changes and closes.
+// Gameplay settings presentation. Persistence and runtime application belong to SettingsService.
 public class SettingsUI : MonoBehaviour
 {
-    private const string SfxVolumeKey = "Settings_SfxVolume";
-    private const string MusicVolumeKey = "Settings_MusicVolume";
-    private const string FullScreenKey = "Settings_FullScreen";
-
     [SerializeField] private GameObject _windowRoot;
     [SerializeField] private Slider _sfxSlider;
     [SerializeField] private Slider _musicSlider;
@@ -19,106 +14,118 @@ public class SettingsUI : MonoBehaviour
     [SerializeField] private Sprite _checkedSprite;
     [SerializeField] private Sprite _uncheckedSprite;
 
-    private float _savedSfxVolume;
-    private float _savedMusicVolume;
-    private bool _savedFullScreen;
+    private SettingsSnapshot _openSnapshot;
 
     public bool IsOpen => _windowRoot != null && _windowRoot.activeSelf;
 
     private void Awake()
     {
-        LoadSettings();
-        ApplyToUIWithoutNotify();
+        ApplyToUIWithoutNotify(SettingsService.Instance.Current);
     }
 
-    private void Start()
+    private void OnEnable()
     {
-        // Deferred to Start so other manager singletons (SoundFXManager, MusicManager) have
-        // finished their own Awake before we push volume values into them.
-        ApplyToGame();
+        GameStateManager.Instance.StateChanged += HandleStateChanged;
+        SettingsService.Instance.Changed += HandleSettingsChanged;
+        ApplyToUIWithoutNotify(SettingsService.Instance.Current);
+        RefreshVisibility();
+    }
+
+    private void OnDisable()
+    {
+        if (GameStateManager.Instance != null)
+            GameStateManager.Instance.StateChanged -= HandleStateChanged;
+
+        if (SettingsService.Instance != null)
+            SettingsService.Instance.Changed -= HandleSettingsChanged;
     }
 
     public void OpenWindow()
     {
-        _savedSfxVolume = _sfxSlider.value;
-        _savedMusicVolume = _musicSlider.value;
-        _savedFullScreen = _fullScreenToggle.isOn;
-        _windowRoot.SetActive(true);
+        _openSnapshot = SettingsService.Instance.Current;
+        ApplyToUIWithoutNotify(_openSnapshot);
+        GameStateManager.Instance.OpenMenu(GameplayMenuPage.Settings);
     }
 
     public void CloseWindow()
     {
-        _windowRoot.SetActive(false);
+        if (_windowRoot != null)
+            _windowRoot.SetActive(false);
+
+        if (GameStateManager.Instance.CurrentState == GameState.GameplayMenu
+            && GameStateManager.Instance.CurrentMenuPage == GameplayMenuPage.Settings)
+        {
+            GameStateManager.Instance.ReturnToPreviousState();
+        }
     }
 
     public void OnSfxSliderChanged(float value)
     {
-        SoundFXManager.SetVolume(value);
+        SettingsService.Instance.SetSfxVolume(value);
     }
 
     public void OnMusicSliderChanged(float value)
     {
-        MusicManager.SetVolume(value);
+        SettingsService.Instance.SetMusicVolume(value);
     }
 
     public void OnFullScreenToggled(bool isOn)
     {
-        _fullScreenToggleImage.sprite = isOn ? _checkedSprite : _uncheckedSprite;
+        RefreshToggleImages();
         if (isOn)
-            Screen.fullScreen = true;
+            SettingsService.Instance.SetFullScreen(true);
     }
 
     public void OnWindowModeToggled(bool isOn)
     {
-        _windowModeToggleImage.sprite = isOn ? _checkedSprite : _uncheckedSprite;
+        RefreshToggleImages();
         if (isOn)
-            Screen.fullScreen = false;
+            SettingsService.Instance.SetFullScreen(false);
     }
 
     public void OnSaveClicked()
     {
-        PlayerPrefs.SetFloat(SfxVolumeKey, _sfxSlider.value);
-        PlayerPrefs.SetFloat(MusicVolumeKey, _musicSlider.value);
-        PlayerPrefs.SetInt(FullScreenKey, _fullScreenToggle.isOn ? 1 : 0);
-        PlayerPrefs.Save();
+        SettingsService.Instance.Save();
         CloseWindow();
     }
 
     public void OnDeclineClicked()
     {
-        _sfxSlider.value = _savedSfxVolume;
-        _musicSlider.value = _savedMusicVolume;
-        _fullScreenToggle.isOn = _savedFullScreen;
-        _windowModeToggle.isOn = !_savedFullScreen;
-
-        SoundFXManager.SetVolume(_savedSfxVolume);
-        MusicManager.SetVolume(_savedMusicVolume);
-        Screen.fullScreen = _savedFullScreen;
-
+        SettingsService.Instance.Restore(_openSnapshot);
         CloseWindow();
     }
 
-    private void LoadSettings()
+    private void HandleSettingsChanged(SettingsSnapshot snapshot)
     {
-        _savedSfxVolume = PlayerPrefs.GetFloat(SfxVolumeKey, 1f);
-        _savedMusicVolume = PlayerPrefs.GetFloat(MusicVolumeKey, 1f);
-        _savedFullScreen = PlayerPrefs.GetInt(FullScreenKey, Screen.fullScreen ? 1 : 0) == 1;
+        ApplyToUIWithoutNotify(snapshot);
     }
 
-    private void ApplyToUIWithoutNotify()
+    private void ApplyToUIWithoutNotify(SettingsSnapshot snapshot)
     {
-        _sfxSlider.SetValueWithoutNotify(_savedSfxVolume);
-        _musicSlider.SetValueWithoutNotify(_savedMusicVolume);
-        _fullScreenToggle.SetIsOnWithoutNotify(_savedFullScreen);
-        _windowModeToggle.SetIsOnWithoutNotify(!_savedFullScreen);
-        _fullScreenToggleImage.sprite = _savedFullScreen ? _checkedSprite : _uncheckedSprite;
-        _windowModeToggleImage.sprite = !_savedFullScreen ? _checkedSprite : _uncheckedSprite;
+        _sfxSlider.SetValueWithoutNotify(snapshot.SfxVolume);
+        _musicSlider.SetValueWithoutNotify(snapshot.MusicVolume);
+        _fullScreenToggle.SetIsOnWithoutNotify(snapshot.FullScreen);
+        _windowModeToggle.SetIsOnWithoutNotify(!snapshot.FullScreen);
+        RefreshToggleImages();
     }
 
-    private void ApplyToGame()
+    private void RefreshToggleImages()
     {
-        SoundFXManager.SetVolume(_savedSfxVolume);
-        MusicManager.SetVolume(_savedMusicVolume);
-        Screen.fullScreen = _savedFullScreen;
+        _fullScreenToggleImage.sprite = _fullScreenToggle.isOn ? _checkedSprite : _uncheckedSprite;
+        _windowModeToggleImage.sprite = _windowModeToggle.isOn ? _checkedSprite : _uncheckedSprite;
+    }
+
+    private void HandleStateChanged(GameStateChange change)
+    {
+        RefreshVisibility();
+    }
+
+    private void RefreshVisibility()
+    {
+        bool shouldBeOpen = GameStateManager.Instance.CurrentState == GameState.GameplayMenu
+            && GameStateManager.Instance.CurrentMenuPage == GameplayMenuPage.Settings;
+
+        if (_windowRoot != null && _windowRoot.activeSelf != shouldBeOpen)
+            _windowRoot.SetActive(shouldBeOpen);
     }
 }

@@ -1,0 +1,200 @@
+# Save, Slots and World Persistence Plan
+
+Save contract tuân theo mô hình Definition/Runtime/Save và stable ID trong
+[Data-Driven Development Guide](DataDrivenDevelopment.md). Save không phải bản sao của ScriptableObject catalog.
+
+## Save layout
+
+Khuyến nghị lưu trong `Application.persistentDataPath/Saves`:
+
+```text
+Saves/
+├─ Slot1/
+│  ├─ metadata.json
+│  ├─ save.json
+│  └─ save.backup.json
+├─ Slot2/
+└─ Slot3/
+```
+
+Không dùng `PlayerPrefs` cho game save. PlayerPrefs chỉ phù hợp settings nhỏ như volume/display.
+
+## Metadata contract
+
+Metadata dùng để render slot mà không deserialize toàn bộ world:
+
+```csharp
+[Serializable]
+public sealed class SaveSlotMetadata
+{
+    public int slotIndex;
+    public string saveId;
+    public int saveVersion;
+    public string characterName;
+    public int characterLevel;
+    public long totalPlayTimeSeconds;
+    public string areaId;
+    public long lastSavedUtcTicks;
+    public bool tutorialCompleted;
+}
+```
+
+Metadata có thể tái tạo từ `save.json` nếu bị mất, nhưng không được là nguồn dữ liệu progression duy nhất.
+
+## Root save contract
+
+```csharp
+[Serializable]
+public sealed class GameSaveData
+{
+    public int saveVersion;
+    public string saveId;
+    public PlayerSaveData player;
+    public InventorySaveData inventory;
+    public EquipmentSaveData equipment;
+    public TutorialSaveData tutorial;
+    public QuestSaveData quests;
+    public WorldSaveData world;
+    public TimeSaveData time;
+    public long totalPlayTimeSeconds;
+}
+```
+
+Mỗi domain tự capture/restore DTO của mình qua interface hẹp; SaveManager không đọc private runtime
+field của tất cả manager.
+
+```csharp
+public interface ISaveParticipant<TData>
+{
+    TData CaptureSaveData();
+    void RestoreSaveData(TData data, SaveRestoreContext context);
+}
+```
+
+Trong implementation thực tế có thể dùng coordinator explicit thay vì registry generic nếu registry
+làm dependency/order khó nhìn. Restore order phải được code rõ và test.
+
+## New Game defaults
+
+Default snapshot phải được tạo bởi `NewGameFactory`, không lấy từ state ngẫu nhiên trong scene:
+
+- Stable `saveId` mới.
+- `areaId = tutorial_area`.
+- `spawnId = tutorial_start` hoặc default position tương ứng.
+- Level/base stats mặc định.
+- Starter inventory chính xác một lần.
+- Equipment mặc định.
+- Tutorial step đầu.
+- Quest lists sạch; Tutorial Quest chưa tự nhận nếu design yêu cầu nói chuyện NPC.
+- World state sạch và seed/version nếu cần.
+
+Default data cần test độc lập để designer đổi starter content không tạo save invalid.
+
+## Player location
+
+Lưu cả area và position:
+
+```csharp
+[Serializable]
+public sealed class PlayerLocationSaveData
+{
+    public string sceneId;
+    public string areaId;
+    public float positionX;
+    public float positionY;
+    public string fallbackSpawnId;
+}
+```
+
+Load policy:
+
+1. Resolve scene bằng stable `sceneId` hoặc scene mapping của area.
+2. Nếu area hợp lệ và position nằm trong playable bounds, dùng saved position.
+3. Nếu position invalid, dùng `fallbackSpawnId` của area.
+4. Nếu scene/area mất, dùng global safe spawn và ghi recovery warning.
+
+Không save khi player đang ở transitional trigger hoặc ngoài bounds nếu chưa normalize vị trí an toàn.
+
+## Atomic save transaction
+
+```text
+Capture immutable snapshot on main thread
+→ validate snapshot
+→ serialize to temp file
+→ flush/close temp
+→ validate temp can be read
+→ rotate current save to backup
+→ atomically replace current with temp
+→ update metadata last
+```
+
+Nếu bất kỳ bước nào fail:
+
+- Không xóa save hợp lệ trước đó.
+- Không đánh dấu metadata bằng timestamp mới.
+- Return GameState về state trước trong `finally`.
+- Trả error code có thể hiển thị, không chỉ `Debug.Log`.
+
+Chỉ cho một write operation trên một slot tại một thời điểm.
+
+## Validation và versioning
+
+Validation tối thiểu:
+
+- `saveVersion` nằm trong supported range.
+- `saveId` không rỗng và khớp metadata.
+- DTO required không null.
+- Numeric values finite và trong bounds.
+- Quantity/level/currency không âm.
+- Item/quest IDs được resolve hoặc đưa vào recovery report.
+- Duplicate persistent IDs trong save được reject/merge theo policy rõ.
+
+Migration chạy theo chuỗi:
+
+```text
+V1 → V2 → V3 → Current
+```
+
+Không viết migration `V1 → Current` riêng cho mỗi version vì dễ thiếu đường nâng cấp.
+
+## Inventory/equipment persistence
+
+- Serialize item bằng stable `itemId`, không serialize ScriptableObject reference.
+- Equipment save theo `EquipSlot → itemId`.
+- Restore inventory trước equipment hoặc dùng DTO tách rõ ownership để không nhân đôi item.
+- Recalculate stat sau khi equipment hoàn tất.
+- Không gọi gameplay `Equip()` thông thường nếu method đó di chuyển item/phát event; cần restore API riêng.
+- Item resolver là dependency explicit; backend Resources hiện tại không được rò vào SaveManager.
+
+## Quest/tutorial persistence
+
+- Lưu objective counter và quest status, không lưu UI state.
+- Restore không phát reward hoặc objective-completed event.
+- Tutorial lưu step hiện tại và completed flag.
+- Main Quest unlock phải suy ra/validate từ prerequisite hoặc lưu story flag có reconciliation.
+
+## World persistence policy
+
+Không serialize mọi GameObject. Chia ba nhóm:
+
+1. **Persistent unique:** chest, unique pickup, boss, story switch.
+2. **Persistent timed:** resource node với next respawn timestamp.
+3. **Rule-based transient:** enemy thường, VFX, projectile, dropped temporary object.
+
+Mỗi object persistent có ID ổn định không phụ thuộc GameObject name/hierarchy. Editor validator phải phát hiện:
+
+- ID rỗng.
+- ID trùng trong DemoScene, world scene hoặc prefab placement.
+- Prefab duplicate vô tình giữ cùng instance ID.
+
+World DTO nên là danh sách record theo ID và payload nhỏ. Khi content bị xóa ở version mới, record không
+resolve được được bỏ qua kèm warning thay vì làm hỏng toàn save.
+
+## Save triggers phiên bản đầu
+
+- Manual Save từ Pause Menu vào active slot.
+- Initial save sau New Game restore thành công.
+- Optional save khi Return Main Menu nếu người chơi xác nhận.
+
+Chưa triển khai autosave định kỳ ở phase đầu. Khi thêm autosave, dùng cùng transaction/repository và
+không ghi đè manual backup mà không có policy riêng.

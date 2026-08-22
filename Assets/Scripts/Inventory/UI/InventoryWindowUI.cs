@@ -1,25 +1,41 @@
 using UnityEngine;
-using UnityEngine.InputSystem;
 
 public class InventoryWindowUI : MonoBehaviour
 {
     [SerializeField] private GameObject _windowRoot;
 
-    private void Update()
+    private void OnEnable()
     {
-        if (Keyboard.current != null && Keyboard.current.iKey.wasPressedThisFrame)
-        {
-            _windowRoot.SetActive(!_windowRoot.activeSelf);
-        }
+        GameStateManager.Instance.StateChanged += HandleStateChanged;
+        Refresh();
+    }
+
+    private void OnDisable()
+    {
+        if (GameStateManager.Instance != null)
+            GameStateManager.Instance.StateChanged -= HandleStateChanged;
     }
 
     public void CloseWindow()
     {
-        _windowRoot.SetActive(false);
+        if (IsInventoryOpen())
+            GameStateManager.Instance.ReturnToPreviousState();
     }
 
     public void OpenWindow()
     {
-        _windowRoot.SetActive(true);
+        GameStateManager.Instance.OpenMenu(GameplayMenuPage.Inventory);
+    }
+
+    private bool IsInventoryOpen() =>
+        GameStateManager.Instance.CurrentState == GameState.GameplayMenu
+        && GameStateManager.Instance.CurrentMenuPage == GameplayMenuPage.Inventory;
+
+    private void HandleStateChanged(GameStateChange change) => Refresh();
+
+    private void Refresh()
+    {
+        if (_windowRoot != null)
+            _windowRoot.SetActive(IsInventoryOpen());
     }
 }

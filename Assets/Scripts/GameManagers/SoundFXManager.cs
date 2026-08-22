@@ -1,39 +1,28 @@
-using MCPForUnity.Editor.Tools;
-using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.UI;
 
+[RequireComponent(typeof(AudioSource))]
 public class SoundFXManager : MonoBehaviour
 {
     public static SoundFXManager Instance;
+
     [SerializeField] private Transform _playerFootPos;
+
     private static AudioSource _audioSource;
-    private static SoundFXLibrary _soundFXLibrary;
-    [SerializeField] private Slider _masterSoundSlider;
 
     private void Awake()
     {
-        if (Instance == null)
-        {
-            Instance = this;
-            _audioSource = GetComponent<AudioSource>();
-            //_soundFXLibrary = GetComponent<SoundFXLibrary>();
-            DontDestroyOnLoad(gameObject);
-        }
-        else
+        if (Instance != null && Instance != this)
         {
             Destroy(gameObject);
+            return;
         }
-    }
-    void Start()
-    {
-        _masterSoundSlider.onValueChanged.AddListener(delegate { OnValueChanged(); });
-    }
 
-    // Update is called once per frame
-    void Update()
-    {
+        Instance = this;
+        _audioSource = GetComponent<AudioSource>();
+        DontDestroyOnLoad(gameObject);
 
+        if (SettingsService.Instance != null)
+            SettingsService.Instance.ApplyAudioSettings();
     }
 
     public static void PlayFootSteps(float volumeScale)
@@ -41,24 +30,21 @@ public class SoundFXManager : MonoBehaviour
         AudioClip clip = MapManager.Instance.GetCurrentTileAudioClip(Instance._playerFootPos.position);
 
         if (clip != null)
-        {
             _audioSource.PlayOneShot(clip, volumeScale);
-        }
     }
 
     public static void SetVolume(float volume)
     {
         if (_audioSource != null)
-        {
             _audioSource.volume = volume;
-        }
     }
 
-    public void OnValueChanged()
+    private void OnDestroy()
     {
-        if (_masterSoundSlider != null)
-        {
-            SetVolume(_masterSoundSlider.value);
-        }
+        if (Instance != this)
+            return;
+
+        Instance = null;
+        _audioSource = null;
     }
 }

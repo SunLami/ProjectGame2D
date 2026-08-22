@@ -13,7 +13,8 @@ public partial class Player
 
     public void OnAttack(InputAction.CallbackContext context)
     {
-        if (!context.started || _isAttacking || _isHit || _isDead)
+        if (!context.started || _isAttacking || _isHit || _isDead
+            || !GameStateManager.AllowsGameplayInput)
             return;
 
         _isAttacking = true;
