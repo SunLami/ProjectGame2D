@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Linq;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
@@ -147,6 +148,197 @@ public sealed class PlayerSpawnReadinessSourcePlayModeTests
 
         Object.Destroy(restoreRoot);
         Object.Destroy(sourceObject);
+    }
+
+    // Real resolvable assets under Assets/Resources/Items -- restore goes through
+    // ResourcesItemResolver internally, so integration tests need real, resolvable itemIds.
+    // The ring is used for equip-slot tests specifically because Ring has no ApplyVisual/
+    // SpriteLibrary wiring, unlike Head/Body/Weapon which would NRE without a scene SpriteLibrary.
+    private const string RealItemId = "sword_lvl1";
+    private const string RealRingItemId = "ring_lvl1";
+
+    private static (GameObject root, PlayerStat stat, Transform playerTransform, SpawnRegistry spawnRegistry,
+        InventorySeeder seeder) BuildFixtureWithInventory(Vector3 spawnPosition, ItemDatabase seedDatabase)
+    {
+        var (root, stat, playerTransform, registry) = BuildFixture(spawnPosition);
+        root.AddComponent<InventoryManager>();
+        root.AddComponent<EquipmentManager>();
+
+        InventorySeeder seeder = root.AddComponent<InventorySeeder>();
+        typeof(InventorySeeder)
+            .GetField("_database", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)
+            .SetValue(seeder, seedDatabase);
+
+        return (root, stat, playerTransform, registry, seeder);
+    }
+
+    [UnityTest]
+    public IEnumerator NewGame_SeedsStartingInventoryOnceAndCapturesItIntoInitialSave()
+    {
+        ItemSO realSword = ResolveRealItem();
+        ItemDatabase database = ScriptableObject.CreateInstance<ItemDatabase>();
+        database.items = new[] { new ItemDatabase.Entry { item = realSword, amount = 2 } };
+
+        GameObject root = null;
+        GameObject sourceObject = null;
+        try
+        {
+            var fixture = BuildFixtureWithInventory(Vector3.zero, database);
+            root = fixture.root;
+            PlayerStat stat = fixture.stat;
+            Transform playerTransform = fixture.playerTransform;
+            SpawnRegistry registry = fixture.spawnRegistry;
+
+            GameSaveData saveData = NewGameFactory.CreateDefault();
+            Assert.IsTrue(GameSessionManager.Instance.TryStartNewGame(1, "TestScene", saveData));
+
+            sourceObject = new GameObject("PlayerSpawnReadinessSource");
+            PlayerSpawnReadinessSource source = sourceObject.AddComponent<PlayerSpawnReadinessSource>();
+            source.ConfigureForTests(stat, playerTransform, registry, root.GetComponent<InventorySeeder>());
+
+            yield return null;
+
+            Assert.IsTrue(InventoryManager.Instance.HasItem(realSword, 2), "Starting loadout must be seeded once.");
+
+            Assert.IsTrue(GameSessionManager.Instance.SaveRepository.TryReadSave(1, out GameSaveData written));
+            Assert.IsNotNull(written.inventory);
+            int totalSeeded = written.inventory.slots.Where(s => s.itemId == RealItemId).Sum(s => s.quantity);
+            Assert.AreEqual(2, totalSeeded,
+                "Initial save must capture the seeded inventory (non-stackable equipment occupies "
+                + "one slot per unit), not an empty snapshot.");
+        }
+        finally
+        {
+            if (root != null) Object.DestroyImmediate(root);
+            if (sourceObject != null) Object.Destroy(sourceObject);
+            Object.Destroy(database);
+        }
+    }
+
+    [UnityTest]
+    public IEnumerator Continue_RestoresInventoryEquipmentAndGold_WithoutSeeding()
+    {
+        ItemSO realSword = ResolveRealItem();
+        GameObject root = null;
+        GameObject sourceObject = null;
+        try
+        {
+            var fixture = BuildFixtureWithInventory(Vector3.zero, null);
+            root = fixture.root;
+            PlayerStat stat = fixture.stat;
+            Transform playerTransform = fixture.playerTransform;
+            SpawnRegistry registry = fixture.spawnRegistry;
+
+            GameSaveData saveData = new()
+            {
+                saveId = "save-with-loadout",
+                player = new PlayerSaveData { level = 1, location = new PlayerLocationSaveData { areaId = "area.tutorial" } },
+                inventory = new InventorySaveData { gold = 77 },
+                equipment = new EquipmentSaveData()
+            };
+            IItemResolver resolver = new ResourcesItemResolver();
+            Assert.IsTrue(resolver.TryResolve(RealRingItemId, out ItemSO realRing));
+
+            saveData.inventory.slots.Add(new InventorySaveData.SlotData { itemId = RealItemId, quantity = 1 });
+            saveData.equipment.slots.Add(new EquipmentSaveData.SlotData { slot = EquipSlot.Ring, itemId = RealRingItemId });
+
+            Assert.IsTrue(GameSessionManager.Instance.TryStartLoadedGame(2, "TestScene", saveData));
+
+            sourceObject = new GameObject("PlayerSpawnReadinessSource");
+            PlayerSpawnReadinessSource source = sourceObject.AddComponent<PlayerSpawnReadinessSource>();
+            source.ConfigureForTests(stat, playerTransform, registry, root.GetComponent<InventorySeeder>());
+
+            yield return null;
+
+            Assert.AreEqual(77, InventoryManager.Instance.Gold);
+            Assert.IsTrue(InventoryManager.Instance.HasItem(realSword, 1));
+            Assert.AreEqual(realRing, EquipmentManager.Instance.GetEquipped(EquipSlot.Ring));
+        }
+        finally
+        {
+            if (root != null) Object.DestroyImmediate(root);
+            if (sourceObject != null) Object.Destroy(sourceObject);
+        }
+    }
+
+    [UnityTest]
+    public IEnumerator LoadSlotA_ThenSlotB_DoesNotLeakInventoryBetweenSessions()
+    {
+        ItemSO realSword = ResolveRealItem();
+        GameObject rootA = null;
+        GameObject sourceA = null;
+        GameObject rootB = null;
+        GameObject sourceB = null;
+        try
+        {
+            var fixtureA = BuildFixtureWithInventory(Vector3.zero, null);
+            rootA = fixtureA.root;
+            PlayerStat statA = fixtureA.stat;
+            Transform transformA = fixtureA.playerTransform;
+            SpawnRegistry registryA = fixtureA.spawnRegistry;
+            GameSaveData saveA = new()
+            {
+                saveId = "slot-a",
+                player = new PlayerSaveData { level = 1, location = new PlayerLocationSaveData { areaId = "area.tutorial" } },
+                inventory = new InventorySaveData(),
+                equipment = new EquipmentSaveData()
+            };
+            saveA.inventory.slots.Add(new InventorySaveData.SlotData { itemId = RealItemId, quantity = 3 });
+            Assert.IsTrue(GameSessionManager.Instance.TryStartLoadedGame(1, "TestScene", saveA));
+
+            sourceA = new GameObject("PlayerSpawnReadinessSourceA");
+            sourceA.AddComponent<PlayerSpawnReadinessSource>()
+                .ConfigureForTests(statA, transformA, registryA, rootA.GetComponent<InventorySeeder>());
+
+            yield return null;
+
+            Assert.IsTrue(InventoryManager.Instance.HasItem(realSword, 3));
+
+            // Simulate a fresh scene load for a different slot: destroy the old singletons first
+            // (GameplaySceneLifetime does this via scene unload in production) and start over.
+            Object.DestroyImmediate(rootA);
+            rootA = null;
+            Object.Destroy(sourceA);
+            sourceA = null;
+            GameSessionManager.Instance.ClearSession();
+
+            var fixtureB = BuildFixtureWithInventory(Vector3.zero, null);
+            rootB = fixtureB.root;
+            PlayerStat statB = fixtureB.stat;
+            Transform transformB = fixtureB.playerTransform;
+            SpawnRegistry registryB = fixtureB.spawnRegistry;
+            GameSaveData saveB = new()
+            {
+                saveId = "slot-b",
+                player = new PlayerSaveData { level = 1, location = new PlayerLocationSaveData { areaId = "area.tutorial" } },
+                inventory = new InventorySaveData(),
+                equipment = new EquipmentSaveData()
+            };
+            Assert.IsTrue(GameSessionManager.Instance.TryStartLoadedGame(2, "TestScene", saveB));
+
+            sourceB = new GameObject("PlayerSpawnReadinessSourceB");
+            sourceB.AddComponent<PlayerSpawnReadinessSource>()
+                .ConfigureForTests(statB, transformB, registryB, rootB.GetComponent<InventorySeeder>());
+
+            yield return null;
+
+            Assert.IsFalse(InventoryManager.Instance.HasItem(realSword, 1),
+                "Slot B's fresh InventoryManager must not carry over Slot A's items.");
+        }
+        finally
+        {
+            if (rootA != null) Object.DestroyImmediate(rootA);
+            if (sourceA != null) Object.Destroy(sourceA);
+            if (rootB != null) Object.DestroyImmediate(rootB);
+            if (sourceB != null) Object.Destroy(sourceB);
+        }
+    }
+
+    private static ItemSO ResolveRealItem()
+    {
+        IItemResolver resolver = new ResourcesItemResolver();
+        Assert.IsTrue(resolver.TryResolve(RealItemId, out ItemSO item), $"Test relies on real asset '{RealItemId}' existing under Resources/Items.");
+        return item;
     }
 
     [UnityTest]

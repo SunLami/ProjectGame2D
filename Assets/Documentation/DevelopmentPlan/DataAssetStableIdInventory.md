@@ -141,7 +141,13 @@ trong save không được tái sử dụng hoặc đổi mà không có alias/m
 - [x] Kiểm tra catalog completeness và missing GUID.
 - [x] Ghi stable ID namespace cho domain ban đầu.
 - [x] Editor/catalog validator tồn tại; chạy qua `Tools/Project Game/Validate Content`.
-- [ ] Legacy item ID mapping được chốt và áp dụng.
-- [ ] Catalog/resolver là dependency explicit.
-- [ ] New Game loadout tách khỏi toàn bộ item catalog.
+- [x] Legacy item ID mapping được chốt (D-022, 2026-08-22): giữ nguyên nguyên trạng làm stable ID
+  chính thức thay vì rename; xem [Decision Register](DecisionRegister.md).
+- [x] Catalog/resolver là dependency explicit: `IItemResolver`/`ResourcesItemResolver`
+  (`Assets/Scripts/Inventory/`), dùng bởi `InventoryManager.LoadFromSaveData` và
+  `PlayerSpawnReadinessSource` (Phase 4).
+- [ ] New Game loadout tách khỏi toàn bộ item catalog — **chưa làm**: `ItemDatabase.asset` hiện vẫn
+  chứa cả 60 equipment (amount 1 mỗi loại), đúng như baseline đã ghi nhận là demo fixture. Phase 4
+  chỉ sửa kiến trúc (seed đúng một lần cho New Game, không seed lại khi Continue) — nội dung
+  `ItemDatabase.asset` là quyết định thiết kế/nội dung, để lại cho người dùng/phase sau curate.
 - [ ] Enemy/Quest/Tutorial/Recipe/Shop/NPC/World definitions được tạo ở đúng phase.

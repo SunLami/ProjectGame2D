@@ -25,7 +25,12 @@ public static class NewGameFactory
                     positionY = float.NaN,
                     fallbackSpawnId = TutorialStartSpawnId
                 }
-            }
+            },
+            // Empty on creation -- the restore-ready path seeds the starting loadout live (once,
+            // for this NewGame session) and re-captures it into the just-written initial save
+            // rather than baking a loadout into this factory.
+            inventory = new InventorySaveData(),
+            equipment = new EquipmentSaveData()
         };
     }
 }

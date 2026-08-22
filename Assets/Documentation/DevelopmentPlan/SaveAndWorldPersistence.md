@@ -186,6 +186,17 @@ là sentinel "dùng MaxHealth hiện tại" cho New Game. `positionX`/`positionY
 `fallbackSpawnId = spawn.tutorial.start`. Chưa có inventory/equipment/tutorial/quest/world trong
 `GameSaveData` — sẽ thêm ở phase tương ứng.
 
+**Phase 4 hiện trạng (2026-08-22):** thêm `GameSaveData.inventory` (`InventorySaveData` — đã tồn tại
+thử nghiệm từ trước, nay bổ sung `gold`) và `GameSaveData.equipment` (`EquipmentSaveData` mới —
+`List<{EquipSlot slot; string itemId;}>`, chỉ lưu slot đang có item). Bump `CurrentSaveVersion` 2 → 3.
+`IItemResolver`/`ResourcesItemResolver` (D-020) là cầu nối itemId ↔ `ItemSO` cho cả capture lẫn
+restore. `NewGameFactory.CreateDefault()` để `inventory`/`equipment` rỗng — starting loadout được seed
+sống (live) đúng một lần cho New Game rồi capture lại vào initial save, không bake sẵn trong factory.
+Restore order thật (`PlayerSpawnReadinessSource`): progression (không health) → position → inventory
+(seed nếu NewGame, else `LoadFromSaveData` qua resolver) → equipment (`RestoreEquipped` per slot, không
+qua `Equip()` UI path) → `RecalculateStats()` đúng một lần → `RestoreHealth()` cuối cùng (clamp theo
+MaxHealth cuối cùng sau equipment, không dùng công thức delta của `ApplyEquipmentModifiers`).
+
 ## Inventory/equipment persistence
 
 - Serialize item bằng stable `itemId`, không serialize ScriptableObject reference.

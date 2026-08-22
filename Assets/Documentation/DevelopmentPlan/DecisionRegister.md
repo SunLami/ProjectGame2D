@@ -24,8 +24,9 @@ tiếp tục thiết kế; phải đổi thành `Accepted` trước phase implem
 | D-017 | Return Main Menu dirty state | Proposed | Prompt Save / Leave Without Saving / Cancel | Phase 9 |
 | D-018 | Settings ownership | Accepted kiến trúc | Shared SettingsService, hai navigation UI riêng | Phase 1 |
 | D-019 | Production world scene topology | Open | Chưa chốt một hay nhiều scene; save luôn dùng area/scene ID ổn định | Trước production world |
-| D-020 | Data loading backend | Proposed | Domain phụ thuộc Resolver interface; Resources chỉ là backend migration ban đầu | Phase 4 |
-| D-021 | Definition authoring reference | Proposed | Typed asset reference trong Inspector, stable ID tại save/runtime boundary | Phase 4–7 |
+| D-020 | Data loading backend | **Accepted — 2026-08-22** | Domain phụ thuộc `IItemResolver`; `ResourcesItemResolver` là backend migration ban đầu | Phase 4 |
+| D-021 | Definition authoring reference | **Accepted — 2026-08-22** | Typed asset reference trong Inspector (`ItemSO`/`EquipmentItemSO`), stable `itemId` tại save/runtime boundary | Phase 4–7 |
+| D-022 | Legacy item ID convention | **Accepted — 2026-08-22** | Giữ nguyên 60 legacy underscore itemId hiện có (`sword_lvl1`, `body_lvl9`, ...) làm stable ID chính thức cho content hiện có; **không** bulk rename. Convention dot-namespace (`item.weapon.sword.001`) chỉ áp dụng cho item MỚI thêm sau Phase 4. Validator tiếp tục báo Warning (không phải Error) cho các legacy ID này. | Phase 4 |
 
 ## Quy tắc cập nhật
 
@@ -43,6 +44,33 @@ D-005 — Accepted — 2026-xx-xx
 Manual save bị khóa khi player đang trong combat hoặc trong danger area.
 Lý do: tránh restore enemy/projectile transient state phức tạp ở version đầu.
 Ảnh hưởng: CombatState query, Pause save button disabled reason, QA save matrix.
+```
+
+## Chi tiết quyết định Phase 4 — 2026-08-22
+
+```text
+D-020 — Accepted — 2026-08-22 — Claude (Phase 4 baseline, người dùng xác nhận)
+Domain code (InventoryManager/EquipmentManager/PlayerSpawnReadinessSource) chỉ biết
+IItemResolver.TryResolve(itemId, out item); ResourcesItemResolver (Resources.LoadAll) là
+implementation duy nhất hiện có. Lý do: tách domain khỏi cơ chế load cụ thể, cho phép đổi backend
+(Addressables, catalog asset) sau này mà không sửa domain logic.
+Ảnh hưởng: Assets/Scripts/Inventory/IItemResolver.cs, ResourcesItemResolver.cs;
+InventoryManager.LoadFromSaveData(resolver overload); PlayerSpawnReadinessSource.
+
+D-021 — Accepted — 2026-08-22 — Claude (Phase 4 baseline, người dùng xác nhận)
+Authoring tiếp tục dùng typed asset reference (ItemSO/EquipmentItemSO) trong Inspector
+(ItemDatabase.Entry.item, EquipmentCatalog arrays); ranh giới save/runtime chuyển sang stable
+itemId (string) qua resolver. Không đổi gì ở authoring layer hiện có.
+Ảnh hưởng: không có thay đổi asset/authoring; chỉ xác nhận pattern đã tồn tại là đúng hướng.
+
+D-022 — Accepted — 2026-08-22 — Claude + người dùng (đã hỏi trực tiếp trước khi code)
+Lý do: 60 itemId hiện tại (dạng sword_lvl1) chưa theo convention dot-namespace trong
+DataAssetStableIdInventory.md, nhưng bulk-rename 60 asset là rủi ro cao (có thể vỡ
+ItemDatabase/EquipmentCatalog reference) và không phải "thay đổi nhỏ nhất có thể kiểm chứng".
+Chưa có save nào release nên không có migration cần thiết — chỉ cần chốt rằng dạng legacy này
+CHÍNH THỨC là stable ID hợp lệ.
+Ảnh hưởng: ContentValidation.md giữ nguyên legacy ID ở mức Warning; DataAssetStableIdInventory.md
+migration gate "chốt mapping" coi như đã hoàn tất bằng quyết định này, không phải bằng rename.
 ```
 
 ## Những quyết định không được hard-code trước khi chốt

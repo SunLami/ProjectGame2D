@@ -8,10 +8,12 @@ using System;
 [Serializable]
 public sealed class GameSaveData
 {
-    public const int CurrentSaveVersion = 2;
+    public const int CurrentSaveVersion = 3;
 
     public int saveVersion = CurrentSaveVersion;
     public string saveId;
     public long totalPlayTimeSeconds;
     public PlayerSaveData player;
+    public InventorySaveData inventory;
+    public EquipmentSaveData equipment;
 }
