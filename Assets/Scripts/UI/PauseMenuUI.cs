@@ -1,7 +1,6 @@
 using UnityEngine;
-using UnityEngine.InputSystem;
 
-// Esc-triggered pause/main menu window (Resume/Settings/Inventory/Shop/Craft/Quit).
+// Pause/gameplay menu window (Resume/Settings/Inventory/Shop/Craft/Main Menu).
 // Settings/Shop/Craft buttons are wired up but left non-interactable until those systems exist.
 public class PauseMenuUI : MonoBehaviour
 {
@@ -10,35 +9,26 @@ public class PauseMenuUI : MonoBehaviour
 
     public bool IsOpen => _windowRoot != null && _windowRoot.activeSelf;
 
-    private void Awake()
+    private void OnEnable()
     {
-        // Guard against a stuck Time.timeScale (e.g. left at 0 from Editor testing) leaking
-        // into a fresh play session and making the game look paused before Esc is ever pressed.
-        if (!IsOpen)
-            Time.timeScale = 1f;
+        GameStateManager.Instance.StateChanged += HandleStateChanged;
+        Refresh();
     }
 
-    private void Update()
+    private void OnDisable()
     {
-        if (Keyboard.current != null && Keyboard.current.escapeKey.wasPressedThisFrame)
-        {
-            if (IsOpen)
-                CloseMenu();
-            else
-                OpenMenu();
-        }
+        if (GameStateManager.Instance != null)
+            GameStateManager.Instance.StateChanged -= HandleStateChanged;
     }
 
     public void OpenMenu()
     {
-        _windowRoot.SetActive(true);
-        Time.timeScale = 0f;
+        GameStateManager.Instance.Pause();
     }
 
     public void CloseMenu()
     {
-        _windowRoot.SetActive(false);
-        Time.timeScale = 1f;
+        GameStateManager.Instance.Resume();
     }
 
     public void OnResumeClicked()
@@ -48,16 +38,22 @@ public class PauseMenuUI : MonoBehaviour
 
     public void OnInventoryClicked()
     {
-        CloseMenu();
         if (_inventoryWindow != null)
             _inventoryWindow.OpenWindow();
     }
 
-    public void OnQuitClicked()
+    public void OnReturnToMainMenuClicked()
     {
-        Application.Quit();
-#if UNITY_EDITOR
-        UnityEditor.EditorApplication.isPlaying = false;
-#endif
+        if (!SceneFlowService.Instance.TryReturnToMainMenu())
+            Debug.LogWarning("Return to Main Menu was ignored because a scene transition is already running.", this);
+    }
+
+
+    private void HandleStateChanged(GameStateChange change) => Refresh();
+
+    private void Refresh()
+    {
+        if (_windowRoot != null)
+            _windowRoot.SetActive(GameStateManager.Instance.CurrentState == GameState.Paused);
     }
 }

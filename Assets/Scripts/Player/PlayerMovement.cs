@@ -29,16 +29,23 @@ public partial class Player
 
     private void FixedUpdate()
     {
-        if (_isHit || _isDead)
+        if (_isHit || _isDead || !GameStateManager.AllowsGameplayInput)
+        {
+            if (!GameStateManager.AllowsGameplayInput)
+                _rigidbody.linearVelocity = Vector2.zero;
             return;
+        }
 
         _rigidbody.linearVelocity = _moveInput * CurrentMoveSpeed;
     }
 
     public void OnMove(InputAction.CallbackContext context)
     {
-        if (_isDead)
+        if (_isDead || !GameStateManager.AllowsGameplayInput)
+        {
+            StopMovement();
             return;
+        }
 
         _moveInput = context.ReadValue<Vector2>();
         _animator.SetFloat(InputXHash, _moveInput.x);
@@ -51,8 +58,11 @@ public partial class Player
 
     public void OnSprint(InputAction.CallbackContext context)
     {
-        if (_isDead)
+        if (_isDead || !GameStateManager.AllowsGameplayInput)
+        {
+            SetRunning(false);
             return;
+        }
 
         if (context.started)
             SetRunning(true);
