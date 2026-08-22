@@ -18,7 +18,7 @@ tiếp tục thiết kế; phải đổi thành `Accepted` trước phase implem
 | D-011 | Initial save timing | Proposed | Ghi save sau New Game restore thành công | Phase 3 |
 | D-012 | Autosave | Proposed | Chưa có ở foundation; manual save trước | Phase 9/10 |
 | D-013 | Character creation scope | Open | Tối thiểu character name; appearance nếu hệ thống sẵn sàng | Phase 3 |
-| D-014 | Obtain objective semantics | Open | Chốt per objective: lifetime acquired hoặc possess-at-turn-in | Phase 6 |
+| D-014 | Obtain objective semantics | **Accepted — 2026-08-22** | `ObtainObjectiveMode` field trên từng `QuestObjectiveDefinition`: `CountAcquired` (counter cộng dồn, không giảm khi dùng) hoặc `RequirePossession` (kiểm tra sở hữu hiện tại >= targetCount, không phải counter). Không có rule ngầm định toàn cục. | Phase 6 |
 | D-015 | Resource respawn clock | Proposed | Lưu in-game/world timestamp; offline passage chưa áp dụng | Phase 8 |
 | D-016 | Save format | Proposed | JSON versioned + backup; cân nhắc compression/encryption sau | Phase 2 |
 | D-017 | Return Main Menu dirty state | Proposed | Prompt Save / Leave Without Saving / Cancel | Phase 9 |
@@ -71,6 +71,22 @@ Chưa có save nào release nên không có migration cần thiết — chỉ c�
 CHÍNH THỨC là stable ID hợp lệ.
 Ảnh hưởng: ContentValidation.md giữ nguyên legacy ID ở mức Warning; DataAssetStableIdInventory.md
 migration gate "chốt mapping" coi như đã hoàn tất bằng quyết định này, không phải bằng rename.
+```
+
+## Chi tiết quyết định Phase 6 — 2026-08-22
+
+```text
+D-014 — Accepted — 2026-08-22 — Claude (Phase 6 baseline)
+Obtain objective hỗ trợ hai semantics tách biệt qua field ObtainObjectiveMode trên
+QuestObjectiveDefinition thay vì một rule ngầm định áp cho toàn hệ thống Quest:
+- CountAcquired: counter tăng theo InventoryItemAdded, không giảm khi item bị dùng/bán/equip.
+- RequirePossession: không dùng counter; kiểm tra InventoryManager.HasItemId(itemId, targetCount)
+  mỗi khi có InventoryItemAdded khớp target, hoàn thành objective ngay khi đang sở hữu đủ.
+Ly do: TutorialAndQuestProgression.md yeu cau ro "khong tron hai semantics trong cung type ma
+khong co field cau hinh ro" -- field tuong minh de designer chon dung y muon tung quest thay vi
+Claude tu quyet dinh mot rule chung.
+Anh huong: Assets/Scripts/Quest/ObtainObjectiveMode.cs, QuestObjectiveDefinition.cs,
+QuestManager.HandleObtain, InventoryManager.HasItemId (moi, additive).
 ```
 
 ## Những quyết định không được hard-code trước khi chốt

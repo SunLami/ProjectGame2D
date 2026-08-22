@@ -1,9 +1,139 @@
 # Claude → Codex Handoff
 
-Status: `READY_FOR_CODEX`
+Status: `READY_FOR_CODEX_UI`
 
 Ngày: 2026-08-22
-Feature: Phase 5 — UI hiển thị Input Tutorial (instruction prompt + skip)
+Feature: Phase 6 — Quest backend (Quest Log/Tracker/NPC UI cần Codex dựng tiếp)
+
+## Bối cảnh
+
+Phase 6 Quest backend đã hoàn tất và tự vận hành đúng (42/42 EditMode, 47/47 PlayMode PASS, Content
+Validation 0 error, verify sống trong DemoScene qua `execute_code`). Chi tiết kiến trúc đầy đủ:
+[Phase6ImplementationReport.md](../Phase6ImplementationReport.md).
+
+Việc cần Codex làm: dựng Quest Log/Tracker UI (danh sách quest Active/ReadyToTurnIn/Completed,
+objective progress hiển thị được cho người chơi) và NPC marker/interaction UI (offer quest / turn-in
+prompt) trong DemoScene. Đây thuần là UI/Canvas + một NPC prefab tối thiểu để test — **không cần**
+Dialogue/Shop/Crafting UI thật (những hệ thống đó chưa tồn tại, xem "Integration gap" bên dưới).
+
+## Contract phía Claude cung cấp (đã có sẵn, không cần đổi)
+
+### QuestManager (`Assets/Scripts/Quest/QuestManager.cs`), qua `QuestManager.Instance`
+
+Persistent singleton, luôn tồn tại trong DemoScene sau khi scene load xong (giống
+`TutorialManager.Instance`/`InventoryManager.Instance`).
+
+```csharp
+public IQuestResolver Catalog { get; }                 // .AllQuests để liệt kê toàn bộ quest content
+public bool IsMainQuestUnlocked { get; }
+
+public event Action<string> QuestAccepted;             // questId
+public event Action<string> QuestProgressChanged;      // questId -- objective counter/status đổi
+public event Action<string> QuestCompleted;             // questId -- fire đúng 1 lần khi TryTurnIn thành công
+public event Action MainQuestUnlocked;                  // fire đúng 1 lần khi Tutorial Quest chain xong
+
+public QuestStatus GetStatus(string questId);           // Locked/Available/Active/ReadyToTurnIn/Completed/Failed
+public bool TryAcceptQuest(string questId);
+public bool TryTurnIn(string questId, out QuestTurnInResult result);
+```
+
+`QuestDefinition` (đọc qua `Catalog.AllQuests` hoặc `Catalog.TryResolve(questId, out def)`) có field
+đọc được: `QuestId`, `DisplayName`, `Objectives` (mỗi objective có `Type`, `TargetId`, `TargetCount`,
+`Description` -- dùng `Description` để hiển thị text, đừng tự chế), `IsTutorialQuest`, `IsMainQuest`,
+`GiverNpcId`, `TurnInNpcId`.
+
+Objective progress hiện tại (counter/index) không có getter công khai trực tiếp trên
+`QuestRuntimeState` qua `QuestManager` -- nếu UI cần hiển thị "2/3 killed", báo lại Claude qua
+`CodexToClaude.md` để thêm getter (ví dụ `QuestManager.TryGetProgress(questId, out int index, out
+int[] counters)`), đừng tự đọc reflection vào private field.
+
+### QuestNpcInteractionService (`Assets/Scripts/Quest/QuestNpcInteractionService.cs`)
+
+Plain C# (không phải MonoBehaviour) -- NPC component của Codex tạo một instance
+(`new QuestNpcInteractionService(QuestManager.Instance)`) và gọi qua đây, **không** gọi thẳng
+`QuestManager` cho logic liên quan tới NPC identity:
+
+```csharp
+public bool TryGetOfferedQuest(string npcId, out QuestDefinition quest);   // quest Available mà npcId này cho
+public bool TryAcceptQuest(string npcId, string questId);
+public bool TryGetTurnInQuest(string npcId, out QuestDefinition quest);    // quest ReadyToTurnIn tại npcId này
+public bool TryTurnIn(string npcId, string questId, out QuestTurnInResult result);
+public void ReportConversation(string npcId, string outcomeId);           // cho Talk objective (xem gap)
+```
+
+`QuestTurnInResult` enum: `Success`, `QuestNotFound`, `ObjectivesIncomplete`,
+`InsufficientInventoryCapacity`, `AlreadyCompleted` -- dùng để hiển thị lý do fail cụ thể thay vì
+generic "failed".
+
+## Content thật đã có để test UI ngay (không cần tạo asset mới)
+
+- `Assets/Quests/QuestCatalog.asset` chứa 2 quest:
+  - `quest.tutorial.crafting.001` ("The Blacksmith's Request", Tutorial Quest): Kill
+    `enemy.slime.green`×2 tại `area.tutorial` + Obtain `item.material.wood`×3. `giverNpcId` =
+    `turnInNpcId` = `npc.town.elder`.
+  - `quest.main.001` ("A Call to Adventure", Main Quest, prerequisite = quest trên): Kill
+    `enemy.goblin.green`×1.
+- 3 enemy có sẵn trong DemoScene đã gắn `enemyId` thật: `Slime1`/`Slime2` = `enemy.slime.green`,
+  `Goblin` = `enemy.goblin.green` (tất cả `areaId = area.tutorial`) -- giết chúng bằng gameplay thật
+  sẽ tiến quest thật, không cần giả lập.
+- **Chưa có NPC GameObject/prefab nào trong scene** -- `npc.town.elder` chỉ là stable ID trong data,
+  chưa có world object tương ứng. Codex cần tự tạo GameObject/prefab NPC tối thiểu (collider tương
+  tác + component gọi `QuestNpcInteractionService`) để test luồng offer/accept/turn-in bằng gameplay
+  thật; không có ràng buộc hierarchy/tên cụ thể nào từ phía Claude cho NPC này.
+
+## Integration gap có chủ đích (đừng tự chế UI cho phần này)
+
+4 objective type sau **chưa có hệ thống production thật** (không Dialogue/Crafting/Shop/Resource
+system trong project) -- đây là quyết định đã ghi rõ trong
+[Phase6ImplementationReport.md](../Phase6ImplementationReport.md):
+
+- **Talk**: `QuestNpcInteractionService.ReportConversation(npcId, outcomeId)` là entry point, nhưng
+  chưa có Dialogue UI/system thật gọi nó. Nếu Codex dựng NPC "nói chuyện" đơn giản (không phải full
+  dialogue tree), có thể gọi `ReportConversation` trực tiếp khi player tương tác — đó là hợp lệ, không
+  phải giả lập test.
+- **Craft/Purchase**: cần `CraftingService`/`ShopService` (Phase 7, chưa tồn tại). Đừng dựng Shop/
+  Crafting UI giả trong Phase 6 UI pass này.
+- **Gather**: cần Resource/gather interaction script (chưa có phase cụ thể). Tương tự, không tự chế.
+
+Nếu UI cần hiển thị các objective type này trước khi hệ thống thật tồn tại, hiển thị đúng
+`Description`/`TargetCount` như objective khác — không cần logic tương tác thật cho tới khi Phase 7+.
+
+## Việc Codex KHÔNG cần làm
+
+- Không cần đổi bất kỳ script nào trong `Assets/Scripts/Quest/`, `InventoryManager.HasItemId`,
+  `InventoryManager.AddItem` (chỗ raise `InventoryItemAdded`), hay `EnemyUniversal._enemyId`/`_areaId`
+  -- nếu cần field/API mới (ví dụ progress getter ở trên), báo lại Claude qua `CodexToClaude.md`.
+- Không cần lo về restore/save -- `QuestManager.RestoreState()` (backend, gọi từ
+  `PlayerSpawnReadinessSource`) đã đảm bảo UI mở giữa chừng vẫn thấy đúng status/progress qua
+  `GetStatus`/`Catalog`.
+- Không cần dựng Shop/Crafting/Dialogue UI thật (xem Integration gap).
+- Không chỉnh `TutorialOverlayRoot`/`TutorialOverlayUI` hay Inventory UI hiện có.
+
+## Test cần có phía Codex (nếu theo đúng quy trình Quality Strategy)
+
+- Manual: NPC hiển thị đúng quest offer khi `quest.tutorial.crafting.001` = `Available`; sau accept,
+  giết 2 slime + nhặt 3 wood → UI phản ánh `ReadyToTurnIn`; turn-in tại đúng NPC → reward vào
+  inventory, quest biến mất khỏi active list, `quest.main.001` chuyển `Available`.
+  Cách tạo Obtain event thật: `InventoryManager.Instance.AddItem` trên `item.material.wood`
+  (`Resources.Load<ItemSO>("Items/Quest/WoodMaterial")`) -- không cần world pickup script mới nếu
+  chưa có, chỉ cần test UI phản ứng đúng khi backend event fires.
+- Manual: turn-in tại NPC sai (không phải `turnInNpcId`) bị từ chối, không hiện reward.
+- Manual: Continue game giữa chừng quest -- UI hiện đúng status/progress ngay khi vào scene, không
+  cần đợi event đầu tiên.
+
+## Phạm vi Claude không chỉnh trực tiếp
+
+Toàn bộ Canvas/hierarchy/layout/font/màu cho Quest Log/Tracker/NPC UI thuộc Codex. Khi xong, cập nhật
+`CodexToClaude.md` để Claude biết UI đã sẵn sàng (không cần thay đổi gì phía backend trừ khi phát
+sinh gap mới, ví dụ cần thêm getter progress).
+
+---
+
+# Phase 5 — UI hiển thị Input Tutorial (instruction prompt + skip)
+
+Status: `READY_FOR_CODEX` (đã VERIFIED bởi Codex, xem `CodexToClaude.md`)
+
+Ngày: 2026-08-22
 
 ## Bối cảnh
 

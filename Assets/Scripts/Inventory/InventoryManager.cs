@@ -47,6 +47,8 @@ public class InventoryManager : MonoBehaviour
     {
         if (item == null || amount <= 0) return false;
 
+        int requested = amount;
+
         if (item.isStackable)
         {
             foreach (InventorySlot slot in _slots)
@@ -61,6 +63,7 @@ public class InventoryManager : MonoBehaviour
                 if (amount <= 0)
                 {
                     OnInventoryChanged?.Invoke();
+                    QuestDomainEvents.RaiseInventoryItemAdded(item.itemId, requested);
                     return true;
                 }
             }
@@ -80,7 +83,25 @@ public class InventoryManager : MonoBehaviour
         }
 
         OnInventoryChanged?.Invoke();
-        return addedAny && amount <= 0;
+        bool succeeded = addedAny && amount <= 0;
+        if (succeeded)
+            QuestDomainEvents.RaiseInventoryItemAdded(item.itemId, requested);
+        return succeeded;
+    }
+
+    // Stable-itemId possession check for Obtain(RequirePossession) objectives -- no ItemSO/resolver
+    // needed since this only needs to compare the id already carried on each slot's item.
+    public bool HasItemId(string itemId, int amount = 1)
+    {
+        if (string.IsNullOrEmpty(itemId)) return false;
+
+        int total = 0;
+        foreach (InventorySlot slot in _slots)
+        {
+            if (!slot.IsEmpty && slot.item.itemId == itemId) total += slot.quantity;
+        }
+
+        return total >= amount;
     }
 
     public bool RemoveItem(ItemSO item, int amount = 1)

@@ -207,6 +207,19 @@ NPC/Quest system chưa tồn tại. `currentStepId = null` + `completed = false`
 `EquipmentManager.ItemEquipped`, `AreaTriggerZone.PlayerEnteredArea`) — không đọc phím cụ thể, remap
 vẫn hoàn thành được tutorial.
 
+**Phase 6 hiện trạng (2026-08-22):** thêm `GameSaveData.quests` (`QuestSaveData` — danh sách
+`QuestProgressSaveData { questId, status, currentObjectiveIndex, objectiveCounters }`). Bump
+`CurrentSaveVersion` 4 → 5. Chỉ quest đã Active/ReadyToTurnIn/Completed được lưu; `Locked`/
+`Available` luôn derive lại từ `prerequisiteQuestIds` lúc load (không lưu, đúng nguyên tắc "không
+tin một bool duy nhất" của Main Quest gate). `QuestManager.RestoreState` set state trực tiếp qua
+`QuestRuntimeState.RestoreProgress`, không phát `QuestAccepted`/`QuestProgressChanged`/
+`QuestCompleted`/`MainQuestUnlocked`. `MainQuestUnlocked` (cached bool trên `QuestManager`) được
+reconciliation lại mỗi lần `RestoreState`/`TryTurnIn` chạy bằng cách quét toàn bộ quest
+`isTutorialQuest` trong catalog và kiểm tra `Completed`, không chỉ đọc lại giá trị cache cũ. Quest
+không resolve được qua `QuestCatalog` (content bị xoá/đổi ID) bị drop kèm `Debug.LogWarning`, không
+crash toàn save. `PlayerSpawnReadinessSource` thêm bước restore quest sau tutorial (bước 8) và ghi
+`quests` vào initial save của New Game giống các domain khác.
+
 ## Inventory/equipment persistence
 
 - Serialize item bằng stable `itemId`, không serialize ScriptableObject reference.
@@ -222,6 +235,9 @@ vẫn hoàn thành được tutorial.
 - Restore không phát reward hoặc objective-completed event.
 - Tutorial lưu step hiện tại và completed flag.
 - Main Quest unlock phải suy ra/validate từ prerequisite hoặc lưu story flag có reconciliation.
+
+**Phase 6 implementation:** đúng theo các nguyên tắc trên — xem chi tiết contract, event và test
+matrix trong [ClaudeToCodex.md](Handoffs/ClaudeToCodex.md) và `Assets/Scripts/Quest/`.
 
 ## World persistence policy
 

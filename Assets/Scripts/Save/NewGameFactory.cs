@@ -33,7 +33,10 @@ public static class NewGameFactory
             equipment = new EquipmentSaveData(),
             // null currentStepId + completed=false means "start at the first step" once restored
             // against whatever TutorialDefinition is wired in the gameplay scene.
-            tutorial = new TutorialSaveData()
+            tutorial = new TutorialSaveData(),
+            // Empty -- nothing accepted yet. Locked/Available are derived from prerequisites at
+            // restore, not baked into this default snapshot.
+            quests = new QuestSaveData()
         };
     }
 }

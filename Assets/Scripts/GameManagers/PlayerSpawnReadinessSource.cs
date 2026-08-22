@@ -112,6 +112,13 @@ public sealed class PlayerSpawnReadinessSource : MonoBehaviour, IGameplayReadine
             TutorialManager.Instance.RestoreState(
                 session.SaveData.tutorial.currentStepId, session.SaveData.tutorial.completed);
         }
+
+        // 8. Quest progress -- restored via RestoreState so it never fires QuestAccepted/
+        // QuestProgressChanged/QuestCompleted/MainQuestUnlocked as if it were fresh progression.
+        if (QuestManager.Instance != null)
+        {
+            QuestManager.Instance.RestoreState(session.SaveData.quests);
+        }
     }
 
     private void RestorePosition(PlayerLocationSaveData location)
@@ -152,6 +159,8 @@ public sealed class PlayerSpawnReadinessSource : MonoBehaviour, IGameplayReadine
             snapshot.equipment = EquipmentManager.Instance.ToSaveData();
         if (TutorialManager.Instance != null)
             snapshot.tutorial = TutorialManager.Instance.ToSaveData();
+        if (QuestManager.Instance != null)
+            snapshot.quests = QuestManager.Instance.ToSaveData();
 
         SaveOperationResult result = repository.WriteSave(session.SlotId, snapshot);
         if (!result.Success)

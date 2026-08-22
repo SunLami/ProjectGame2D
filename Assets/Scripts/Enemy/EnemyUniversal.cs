@@ -62,6 +62,14 @@ public sealed class EnemyUniversal : MonoBehaviour, IDamageable
     [SerializeField] private Animator _animator;
     [SerializeField] private GameObject _player;
 
+    [Header("Quest Identity")]
+    [Tooltip("Stable enemyId for Kill objectives (e.g. 'enemy.slime.green'). Empty means this " +
+        "instance never satisfies a Kill objective.")]
+    [SerializeField] private string _enemyId;
+    [Tooltip("Optional stable areaId this instance counts as being in for Kill objectives that " +
+        "require a specific area. Empty matches an objective with no area requirement.")]
+    [SerializeField] private string _areaId;
+
     [Header("Stats")]
     [SerializeField, Min(1f)] private float _maxHealth = 100f;
     [SerializeField, Min(0f)] private float _patrolSpeed = 1f;
@@ -440,6 +448,8 @@ public sealed class EnemyUniversal : MonoBehaviour, IDamageable
         if (state != State.Dead) return;
 
         GrantExperience();
+        if (!string.IsNullOrEmpty(_enemyId))
+            QuestDomainEvents.RaiseEnemyKilled(_enemyId, _areaId);
 
         if (_hurtRoutine != null)
         {

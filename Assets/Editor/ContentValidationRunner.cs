@@ -23,6 +23,7 @@ public static class ContentValidationRunner
         ValidateItemDatabases(report);
         ValidateTileData(report);
         ValidateTutorialDefinitions(report);
+        ValidateQuestDefinitions(report);
 
         string summary = $"Content validation finished: {report.ErrorCount} error(s), "
             + $"{report.WarningCount} warning(s), {report.CheckedAssetCount} asset(s) checked.";
@@ -266,6 +267,175 @@ public static class ContentValidationRunner
                 if (step.Type == TutorialStepType.ReachArea && string.IsNullOrWhiteSpace(step.TargetAreaId))
                     report.Error(path, $"steps[{i}] ('{step.StepId}') is ReachArea but has no targetAreaId.", tutorial);
             }
+        }
+    }
+
+    private static void ValidateQuestDefinitions(ValidationReport report)
+    {
+        List<QuestDefinition> quests = LoadAssets<QuestDefinition>();
+        var byId = new Dictionary<string, QuestDefinition>(StringComparer.Ordinal);
+
+        foreach (QuestDefinition quest in quests)
+        {
+            report.Check(quest);
+            string path = AssetDatabase.GetAssetPath(quest);
+
+            if (string.IsNullOrWhiteSpace(quest.QuestId))
+            {
+                report.Error(path, "questId is empty.", quest);
+            }
+            else
+            {
+                string id = quest.QuestId.Trim();
+                if (byId.TryGetValue(id, out QuestDefinition duplicate))
+                    report.Error(path, $"questId '{id}' duplicates '{AssetDatabase.GetAssetPath(duplicate)}'.", quest);
+                else
+                    byId.Add(id, quest);
+
+                if (!StableIdPattern.IsMatch(id))
+                    report.Error(path, $"questId '{id}' does not match the stable ID convention.", quest);
+            }
+
+            if (quest.Objectives.Count == 0)
+            {
+                report.Error(path, "objectives must contain at least one entry.", quest);
+            }
+            else
+            {
+                for (int i = 0; i < quest.Objectives.Count; i++)
+                    ValidateQuestObjective(path, quest, i, quest.Objectives[i], report);
+            }
+
+            ValidateQuestRewards(path, quest, report);
+
+            if (quest.IsMainQuest && quest.PrerequisiteQuestIds.Count == 0)
+                report.Warning(path, "isMainQuest quest has no prerequisiteQuestIds -- Main Quest gate expects a Tutorial Quest chain.", quest);
+        }
+
+        foreach (QuestDefinition quest in quests)
+        {
+            string path = AssetDatabase.GetAssetPath(quest);
+            foreach (string prerequisiteId in quest.PrerequisiteQuestIds)
+            {
+                if (string.IsNullOrWhiteSpace(prerequisiteId))
+                    report.Error(path, "prerequisiteQuestIds contains an empty entry.", quest);
+                else if (!byId.ContainsKey(prerequisiteId))
+                    report.Error(path, $"prerequisiteQuestIds references unknown questId '{prerequisiteId}'.", quest);
+            }
+        }
+
+        DetectQuestPrerequisiteCycles(quests, byId, report);
+
+        List<QuestCatalog> catalogs = LoadAssets<QuestCatalog>();
+        if (catalogs.Count == 0 && quests.Count > 0)
+            report.Error("Assets", "No QuestCatalog asset exists even though QuestDefinition assets do.");
+
+        var cataloged = new HashSet<QuestDefinition>();
+        foreach (QuestCatalog catalog in catalogs)
+        {
+            report.Check(catalog);
+            string path = AssetDatabase.GetAssetPath(catalog);
+            foreach (QuestDefinition quest in catalog.AllQuests)
+            {
+                if (quest == null)
+                {
+                    report.Error(path, "quests entry is null.", catalog);
+                    continue;
+                }
+                if (!cataloged.Add(quest))
+                    report.Error(path, $"quest '{quest.name}' appears more than once across quest catalogs.", catalog);
+            }
+        }
+
+        foreach (QuestDefinition quest in quests)
+        {
+            if (!cataloged.Contains(quest))
+                report.Error(AssetDatabase.GetAssetPath(quest), "quest is missing from every QuestCatalog.", quest);
+        }
+    }
+
+    private static void ValidateQuestObjective(
+        string path, QuestDefinition quest, int index, QuestObjectiveDefinition objective, ValidationReport report)
+    {
+        if (objective == null)
+        {
+            report.Error(path, $"objectives[{index}] is null.", quest);
+            return;
+        }
+
+        if (string.IsNullOrWhiteSpace(objective.TargetId))
+            report.Error(path, $"objectives[{index}] ({objective.Type}) has an empty target ID.", quest);
+
+        if (objective.TargetCount <= 0)
+            report.Error(path, $"objectives[{index}] targetCount must be greater than zero.", quest);
+
+        if (objective.Type is QuestObjectiveType.Talk or QuestObjectiveType.Obtain
+            or QuestObjectiveType.Craft or QuestObjectiveType.Purchase)
+        {
+            if (!string.IsNullOrWhiteSpace(objective.TargetAreaId))
+                report.Warning(path, $"objectives[{index}] ({objective.Type}) sets targetAreaId, which is only read by Gather/Kill.", quest);
+        }
+    }
+
+    private static void ValidateQuestRewards(string path, QuestDefinition quest, ValidationReport report)
+    {
+        if (quest.Rewards == null)
+            return;
+
+        foreach (QuestRewardItemEntry entry in quest.Rewards.Items)
+        {
+            if (entry == null || string.IsNullOrWhiteSpace(entry.ItemId))
+                report.Error(path, "rewards contains an item entry with an empty itemId.", quest);
+            else if (entry.Quantity <= 0)
+                report.Error(path, $"reward item '{entry.ItemId}' quantity must be greater than zero.", quest);
+        }
+
+        if (quest.Rewards.Gold < 0)
+            report.Error(path, "rewards.gold must not be negative.", quest);
+        if (quest.Rewards.Experience < 0)
+            report.Error(path, "rewards.experience must not be negative.", quest);
+    }
+
+    private static void DetectQuestPrerequisiteCycles(
+        List<QuestDefinition> quests,
+        IReadOnlyDictionary<string, QuestDefinition> byId,
+        ValidationReport report)
+    {
+        var state = new Dictionary<string, int>(StringComparer.Ordinal); // 0 unvisited, 1 in-progress, 2 done
+        var reported = new HashSet<string>(StringComparer.Ordinal);
+
+        foreach (QuestDefinition quest in quests)
+        {
+            if (string.IsNullOrWhiteSpace(quest.QuestId))
+                continue;
+            Visit(quest.QuestId, new List<string>());
+        }
+
+        void Visit(string questId, List<string> chain)
+        {
+            if (!byId.TryGetValue(questId, out QuestDefinition quest))
+                return;
+            if (state.TryGetValue(questId, out int visitState))
+            {
+                if (visitState == 1 && reported.Add(questId))
+                {
+                    report.Error(
+                        AssetDatabase.GetAssetPath(quest),
+                        $"prerequisite cycle detected: {string.Join(" -> ", chain)} -> {questId}.",
+                        quest);
+                }
+                return;
+            }
+
+            state[questId] = 1;
+            chain.Add(questId);
+            foreach (string prerequisiteId in quest.PrerequisiteQuestIds)
+            {
+                if (!string.IsNullOrWhiteSpace(prerequisiteId))
+                    Visit(prerequisiteId, chain);
+            }
+            chain.RemoveAt(chain.Count - 1);
+            state[questId] = 2;
         }
     }
 
