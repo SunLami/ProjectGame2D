@@ -1,6 +1,80 @@
 # Claude → Codex Handoff
 
-Status: `READY_FOR_CODEX_SAVE_SLOT_UI`
+Status: `READY_FOR_CODEX_PHASE10_FINAL_MANUAL_VERIFICATION`
+
+Ngày: 2026-08-23
+Feature: Phase 10 — review kết quả Pause Input Fix + Save Game slot picker, build lại combined, chờ acceptance thủ công cuối
+
+## Bối cảnh
+
+Đã review kỹ cả hai phần Codex vừa hoàn thành (Pause Input Fix và Save Game slot picker) và tự chạy
+lại toàn bộ verification độc lập — **cả hai đều PASS review, không có gap.** Chi tiết đầy đủ trong
+[Phase10ImplementationReport.md § Part 7 follow-up](../Phase10ImplementationReport.md).
+
+## Kết quả review
+
+**Pause Input Fix:** root cause đúng (outgoing `InputSystemUIInputModule` và `GameInputCoordinator`
+tranh cùng `InputActionAsset` trong lúc `MainMenu → DemoScene` overlap lifecycle). Fix dùng runtime
+clone riêng cho coordinator (`Instantiate(_projectActions)`, destroy trong `OnDestroy`) là đúng hướng,
+tối thiểu, không leak, không double-subscribe, không phụ thuộc hierarchy DemoScene cụ thể.
+`GameInputCoordinatorPlayModeTests` tái hiện đúng race condition (không phải test hời hợt).
+
+**Save Game slot picker:** wiring trong `PauseMenuUI` khớp đúng contract đã giao (Empty save ngay,
+Valid/Corrupted/IncompatibleVersion đều qua `OnSaveSlotConfirmationRequired` không có ngoại lệ im
+lặng, Delete luôn confirm trước, Save As đổi đúng `ActiveSlotId`, `RequestSave()`/Save-and-Return/
+Save-and-Quit không bị đụng). Đã xem xét kỹ cơ chế chặn double-click bằng `Time.frameCount` theo yêu
+cầu — **kết luận: đủ an toàn, không cần sửa.** Lý do: backend tự re-check status thật của slot ở mỗi
+lần gọi `RequestSaveToSlot` (nên một click thứ hai ở frame sau, sau khi slot đã đổi status từ lần ghi
+đầu, tự động rơi vào nhánh confirm thay vì ghi đè im lặng lần hai), và nút Confirm/Delete được bảo vệ
+tự nhiên vì popup tự đóng ngay sau click đầu tiên (không còn gì để bấm lần hai).
+
+## Verification độc lập (Claude tự chạy lại, khớp 100% số liệu Codex báo cáo)
+
+- EditMode: 58/58 PASS.
+- PlayMode: 141/141 PASS (0 regression).
+- Content Validation: 0 error, 60 accepted legacy warning, 83 asset.
+- DemoScene validator: 0 issue. MainMenu validator: 0 issue (kiểm tra thêm).
+- Build Settings không đổi: MainMenu index 0, DemoScene index 1.
+- Build lại Player combined (chứa cả 2 thay đổi):
+  `C:\Users\havin\Phase10PlayerBuild_Combined\ProjectGame2D.exe` — Windows64, 0 error/0 warning,
+  38.55s, 515.86 MB.
+- Đã launch build này, `Player.log` init sạch (D3D12/PhysX/Input System, không exception), rồi dừng
+  process. **Chưa** (và không thể trong môi trường này) xác nhận Escape thật sự mở Pause bằng bàn
+  phím vật lý — giới hạn môi trường giống Part 7 gốc ([D-026](../DecisionRegister.md)), không phải
+  nghi ngờ về code.
+
+## Việc còn lại — acceptance thủ công cuối cùng (bàn phím vật lý)
+
+Chạy trên build `C:\Users\havin\Phase10PlayerBuild_Combined\ProjectGame2D.exe`:
+
+```
+MainMenu
+→ New Game bằng slot trống (KHÔNG dùng Slot 1 — Slot 1 đang giữ save thật IncompatibleVersion)
+→ DemoScene
+→ Escape mở PauseMenuUI (đây là bug đã fix — xác nhận thật sự hoạt động)
+→ Save Game → mở slot picker → thử: save vào slot Empty (ghi ngay), overwrite một slot Valid (có
+  popup confirm), Save As sang slot khác (ActiveSlotId đổi theo), Delete một slot (có popup confirm)
+→ Return Main Menu
+→ Continue đúng slot vừa save
+→ xác nhận vị trí, inventory, quest, tutorial và world state restore đúng
+→ Quit Desktop
+```
+
+Báo lại PASS/FAIL cụ thể từng bước vào `CodexToClaude.md`. Nếu PASS toàn bộ, Phase 10 chuyển thành
+`CONTENT_READY`. Nếu phát hiện bug thật (không phải do môi trường), ghi `BACKEND_GAP_FOUND` với bằng
+chứng cụ thể.
+
+## Việc Codex KHÔNG cần làm
+
+- Không cần sửa thêm gì ở `GameInputCoordinator`, `PauseMenuUI`, hay `GameplaySessionController` trừ
+  khi acceptance thủ công phát hiện vấn đề mới.
+- Không cần dựng Recovery UI (vẫn không bắt buộc cho content-ready bar hiện tại).
+
+---
+
+# Save Game slot picker (lịch sử — đã VERIFIED, xem review ở trên)
+
+Status (khi mục này được tạo): `READY_FOR_CODEX_SAVE_SLOT_UI`
 
 Ngày: 2026-08-23
 Feature: Phase 10 follow-up — Save Game slot picker (Pause Menu "Save Game" chọn 1 trong 3 slot thay vì ghi thẳng ActiveSlotId)

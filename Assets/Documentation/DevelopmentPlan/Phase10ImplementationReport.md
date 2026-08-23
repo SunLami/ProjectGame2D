@@ -9,6 +9,65 @@ itself is done and verified; only the manual click-through remains, and it needs
 where the built `.exe`'s window can actually be observed/interacted with (i.e., the user's own
 session, not this remote automation environment).
 
+## Part 7 follow-up — Pause Menu input bug + Save Game slot picker (2026-08-23)
+
+The first real manual click-through attempt (by the user, on their own machine, using the Part 7
+build) found a genuine bug: Escape did not open `PauseMenuUI` in the Player build, blocking the rest
+of the required walk-through. Separately, a new requirement landed for a Save Game slot picker (save
+to any of the 3 slots, not just the active one). Both are now implemented, reviewed, and re-verified:
+
+**Pause input fix (Codex, root-caused and fixed):** `MainMenu`'s outgoing `InputSystemUIInputModule`
+and `DemoScene`'s incoming `GameInputCoordinator` both operated on the same serialized
+`InputActionAsset`. During the `MainMenu → DemoScene` `LoadSceneMode.Single` transition the two
+scenes' lifecycles briefly overlap; the outgoing module could disable the shared asset's `UI/Cancel`
+action *after* the incoming coordinator had already enabled it, silently leaving Cancel disabled for
+the rest of the session. Direct Play of `DemoScene` alone never reproduces this (no outgoing MainMenu
+module to race against), which is why it was invisible until a real MainMenu→DemoScene Player-build
+transition exercised it. Fix: `GameInputCoordinator.Awake()` now `Instantiate()`s a private runtime
+clone of `_projectActions` and only enables/disables `UI/Cancel` on that clone (destroyed in
+`OnDestroy`); `EventSystem`/`PlayerInput` keep owning what they already owned. I independently
+reviewed `GameInputCoordinator.cs` and confirm: the clone is genuinely private per-instance (no
+cross-scene sharing), destroyed on teardown (no leak), event subscribe/unsubscribe stays correctly
+paired in `OnEnable`/`OnDisable` (no double-subscribe), and nothing about the fix depends on
+`DemoScene`'s specific hierarchy. `GameInputCoordinatorPlayModeTests.cs` directly reproduces the race
+(disables the *shared* asset after the coordinator's clone already enabled Cancel, confirms Cancel
+still works) and a disable/enable double-subscribe check — both are correct, targeted regression
+tests, not incidental coverage.
+
+**Save Game slot picker (Codex, built against the Part-2-of-this-session backend contract):**
+`PauseMenuUI`'s "Save Game" button now reuses the existing three-slot overlay component (shared with
+Load Game, no duplicated presentation) and wires it to `RequestSaveToSlot`/`ConfirmOverwriteAndSave`/
+`CancelSaveToSlot`/`DeleteSlot` per the contract in `Handoffs/ClaudeToCodex.md`. I reviewed the wiring
+line by line against every contract requirement (Empty saves directly, Valid/Corrupted/
+IncompatibleVersion all gate on `OnSaveSlotConfirmationRequired` with no silent-overwrite exception,
+Delete requires its own confirm before calling the backend, Save As correctly follows `ActiveSlotId`,
+`RequestSave()`/Save-and-Return/Save-and-Quit are untouched) and confirm it matches. The
+`Time.frameCount`-based double-submit guard on the slot Save button only blocks a second invocation
+*within the same frame* — I traced through why this is sufficient rather than a gap: the backend
+re-evaluates each slot's real status on every `RequestSaveToSlot` call (so a second, later-frame click
+after the first write already changed the slot's status is naturally routed to the confirm path, never
+a silent second write), and the Confirm/Delete popup buttons are protected by the popup deactivating
+itself synchronously on the first click (a second click has nothing left to click). No change needed.
+
+**Independent re-verification (all matched Codex's reported numbers exactly):** EditMode 58/58,
+PlayMode 141/141 (18 new `GameplaySessionController` tests from this session + 2 new
+`GameInputCoordinatorPlayModeTests` + 4 new `PauseMenuUISaveSlot` presentation tests, all passing, zero
+regressions), Content Validation 0 error / 60 accepted-legacy warnings / 83 assets, `DemoScene` and
+`MainMenu` scene validators both 0 issues, Build Settings unchanged (MainMenu index 0, DemoScene index
+1). Rebuilt a fresh combined Player (`C:\Users\havin\Phase10PlayerBuild_Combined\ProjectGame2D.exe`,
+Windows64, 0 errors/0 warnings, 38.55 s, 515.86 MB) containing both fixes; launched it directly and
+confirmed a clean `Player.log` init (D3D12/PhysX/Input System, no exceptions) before stopping it — the
+same GUI-observability limitation from the original Part 7 attempt (see [D-026](DecisionRegister.md))
+still applies in this environment, so the actual Escape-press-and-full-walkthrough acceptance still
+needs a physical keyboard on the user's own machine. Status is **not** `CONTENT_READY` yet — see the
+updated Codex handoff for the exact remaining walk-through.
+
+An unrelated engine-level `Assert: "Access version should be odd when acquiring lock"` message
+appeared repeatedly in the Editor console during this verification pass. It has no stack trace, no
+file/line, is not tied to any specific test name, and did not cause a single test failure across two
+independent full-suite runs (this session's and the one before it) — treated as Editor/Burst-internal
+noise, not a defect introduced by either change, and not investigated further per scope.
+
 ## Part 1 — Baseline audit (Phase 0–9)
 
 Full EditMode + PlayMode regression run at the start of Phase 10 (before any Phase 10 code changes):
@@ -224,8 +283,12 @@ current backend surface.
 
 ## Remaining tasks for Codex / user
 
-- Run the Part 7 manual click-through on a machine where the built `.exe` window is visible, using an
-  empty save slot (not slot 1). Report pass/fail back.
+- Run the full manual click-through on `C:\Users\havin\Phase10PlayerBuild_Combined\ProjectGame2D.exe`
+  using a physical keyboard: Launch → MainMenu → New Game (an empty slot, **not** slot 1) → DemoScene
+  → **Escape opens PauseMenuUI** → Save Game (exercise the new slot picker: save to Empty, overwrite a
+  Valid slot after confirm, Save As to a different slot, Delete a slot after confirm) → Return to Main
+  Menu → Continue (correct slot) → verify position/inventory/quest/tutorial/world state → Quit
+  Desktop. Report pass/fail back.
 - No Recovery UI is required to be built by Codex for the current acceptance bar (Part 6 concluded no
   new backend surface is needed) — if a future phase wants dedicated Corrupted/Incompatible recovery
   screens, the contract in Part 6 is what to build against.
@@ -234,11 +297,12 @@ current backend surface.
 ## Go/No-Go
 
 **BLOCKED_MANUAL_BUILD_TEST.** Every other Phase 10 acceptance criterion is met: mandatory automated
-tests pass (58 EditMode + 119 PlayMode, zero regressions), save migration/recovery pass with real
-coverage, soak testing actually ran with real recorded numbers, profiling produced real (not
-fabricated) measurements, the Recovery UX backend contract is confirmed complete without new code,
-authoring documentation is complete and sufficient for a content designer to build a new Tutorial
-Quest without touching manager core, and the Player build itself succeeded cleanly. The single
-remaining gate is the manual in-build click-through, which this environment's tooling could not
-complete — not a defect, a verification step that needs to happen on a machine where the window is
-actually observable.
+tests pass (58 EditMode + 141 PlayMode, zero regressions after the Pause-input fix and Save Game slot
+picker), save migration/recovery pass with real coverage, soak testing actually ran with real recorded
+numbers, profiling produced real (not fabricated) measurements, the Recovery UX backend contract is
+confirmed complete without new code, authoring documentation is complete and sufficient for a content
+designer to build a new Tutorial Quest without touching manager core, and the Player build itself
+succeeded cleanly (twice — the original build and the combined-fixes rebuild). The single remaining
+gate is the manual in-build click-through with a physical keyboard, which this environment's tooling
+still cannot complete (Part 7 follow-up) — not a defect, a verification step that needs to happen on
+the user's own machine.
