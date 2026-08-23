@@ -3,131 +3,87 @@
 Status: `READY_FOR_CODEX_FINAL_QUEST_VERIFICATION_ONLY`
 
 Ngày: 2026-08-23
-Feature: Làm cứng thêm test isolation cho `GameInputCoordinatorPlayModeTests` sau khi báo cáo "vẫn flake ở vòng 2"
+Feature: Root cause thật đã tìm ra bằng instrumentation trực tiếp — KHÔNG phải GameInputCoordinator/GameStateManager, mà là Input System event bị rớt khi Editor mất focus
 
-## Quan trọng — đọc trước khi verify
+## Root cause thật (có bằng chứng thực nghiệm, không còn suy luận)
 
-**Mình KHÔNG tái hiện được lỗi gốc trong phiên làm việc này**, dù đã thử đúng trình tự Codex mô tả
-(full suite → full suite ngay sau → targeted 3 test ngay sau) nhiều lần liên tiếp trong cùng một
-Editor session (7 lần full suite + 4 lần targeted, tất cả đều xanh, kể cả trước khi sửa thêm gì).
-Ghi rõ điều này thay vì giả vờ đã xác nhận fix đúng chỗ lỗi thật — vì không tái hiện được, mình
-**không thể chứng minh bằng thực nghiệm** rằng thay đổi dưới đây chính là thứ đã chặn đúng lỗi Codex
-gặp. Đây là lý do status là `..._ONLY` chứ không phải `VERIFIED` thẳng — cần Codex tự chạy lại đúng
-trình tự đã tái hiện được lỗi trên máy của họ để xác nhận thật.
+Cảm ơn diagnostic bạn cung cấp — nó loại trừ chính xác giả thuyết "foreign coordinator" (đúng như
+bạn quan sát: chỉ 2 coordinator, không có cái nào lạ active). Mình đã thêm instrumentation trực tiếp
+vào `PressEscapeAndDiagnose()` (đếm `_cancelAction.performed` fire thật, log state trước/sau, log
+`escapeKey.isPressed` trước/sau) và tái hiện được lỗi bằng đúng Unity MCP Test Runner API, scene
+DemoScene đang mở, đúng trình tự full→full→targeted.
 
-## Đã làm thêm gì (dựa trên suy luận + review code, không dựa trên thực nghiệm tái hiện)
+**Bằng chứng từ chính job đã fail** (`GameInputCoordinatorPlayModeTests.DisableEnable_
+DoesNotDoubleSubscribe`, job full suite round 2):
 
-Cơ chế cũ (`SetUp` quét và suppress coordinator lạ **một lần duy nhất** trước khi tạo fixture) để lại
-một khoảng hở về thời gian: nếu một coordinator khác (ví dụ từ scene load thật của
-`GameplaySessionControllerPlayModeTests` đang chạy async/coroutine) trở nên active **sau** thời điểm
-`SetUp` quét nhưng **trước** thời điểm test thật sự bắn phím Escape, `SetUp` sẽ không thấy nó và
-không suppress được — dẫn tới double-fire y hệt triệu chứng đã báo cáo. Đây là ứng viên hợp lý nhất
-cho "state sống xuyên qua nhiều Test Runner job" mà `SetUp`-only chưa xử lý.
+```
+PressEscapeAndDiagnose: fireCount=0 stateBefore=Playing stateAfter=Playing
+actionEnabledAfter=True escapePressedBefore=False escapePressedAfter=False
+Expected: Paused
+But was:  Playing
+```
 
-**File đã sửa:** `Assets/Scripts/Tests/PlayMode/GameInputCoordinatorPlayModeTests.cs` (chỉ file
-test, không đụng `GameInputCoordinator.cs` production hay bất kỳ scene/content nào).
+**`fireCount=0`** — callback không hề fire, **không phải double-fire**. Và **`escapePressedAfter=
+False`** — sau khi `InputSystem.QueueStateEvent(...)` + `InputSystem.Update()` chạy xong, bản thân
+`Keyboard.escapeKey.isPressed` vẫn là `false`, tức là **sự kiện nhấn phím mô phỏng chưa từng được áp
+dụng vào device** — không liên quan gì tới `GameInputCoordinator`, `GameStateManager`, hay bất kỳ
+component/state nào khác, vì input còn chưa tới được tầng đó.
 
-- Tách logic suppress thành `SuppressForeignCoordinators()` — gọi trong `SetUp` **và gọi lại ngay
-  trước khi bắn phím Escope** trong cả hai test (`SharedProjectActionDisabledAfterEnable_
-  CancelStillPauses`, `DisableEnable_DoesNotDoubleSubscribe`), thu hẹp tối đa khoảng hở thời gian
-  thay vì chỉ quét một lần ở đầu test.
-- Assertion thất bại giờ đính kèm `DescribeAllCoordinators()` — liệt kê toàn bộ `GameInputCoordinator`
-  đang sống (tên GameObject, scene, activeInHierarchy, enabled) ngay trong message lỗi. Nếu vẫn còn
-  flake, lần fail tiếp theo sẽ tự nêu đích danh coordinator nào gây ra, không cần điều tra lại từ
-  đầu bằng instrumentation tạm thời nữa.
-- Đã kiểm tra và loại trừ khả năng `LoadSceneMode.Additive` (grep toàn bộ `Assets/Scripts` — không
-  có chỗ nào dùng Additive, chỉ có `LoadSceneMode.Single` trong `SceneFlowService`), nên không thể
-  có hai scene/hai coordinator thật cùng sống đồng thời qua đường đó.
+Job metadata của lần fail này ghi `editor_is_focused: false`. So sánh với nhiều lần PASS trước đó
+(phần lớn có `editor_is_focused: true`) cho thấy tương quan: khi Unity Editor mất focus cửa sổ giữa
+lúc chạy Test Runner (rất dễ xảy ra khi Test Runner được điều khiển từ bên ngoài qua Unity MCP), một
+lần `QueueStateEvent` + `Update()` đơn lẻ có thể không kịp/không được áp dụng vào device trước khi
+test đọc state — đây là vấn đề **độ tin cậy của việc mô phỏng input trong Test Runner**, không phải
+bug ở bất kỳ script gameplay nào. Không có tương quan nào với quest content, với `GameInputCoordinator`,
+hay với coordinator leftover — cả hai giả thuyết trước đó của cả hai bên đều sai hướng.
 
-## Root cause (gốc — không đổi so với báo cáo trước)
+## Fix
 
-**Không phải bug production, không liên quan gì tới quest content mới.** Đây là lỗi cô lập test
-(test isolation) giữa `GameInputCoordinatorPlayModeTests` và các test class khác trong project.
+**File đã sửa (chỉ file test):** `Assets/Scripts/Tests/PlayMode/GameInputCoordinatorPlayModeTests.cs`
 
-Cả `Assets/Scenes/MainMenu.unity` và `Assets/Scenes/DemoScene.unity` đều có **component
-`GameInputCoordinator` thật**, wire vào đúng project asset thật
-(`Assets/Settings/InputSystem_Actions.inputactions`, guid `2bcd2660ca9b64942af0de543d8d7100`) —
-xác nhận trực tiếp trong `MainMenu.unity` dòng 2263 (`_projectActions: {..., guid:
-2bcd2660ca9b64942af0de543d8d7100}`).
+`PressEscapeAndDiagnose()` giờ retry `QueueStateEvent` + `Update()` tối đa 5 lần, xác nhận thật sự
+`_keyboard.escapeKey.isPressed == true` trước khi tiếp tục — thay vì giả định một lần gọi luôn thành
+công. Nếu sau 5 lần vẫn không áp dụng được, test tự fail với message rõ ràng ("Input System
+event-delivery failure, not anything GameInputCoordinator/GameStateManager could possibly react to")
+thay vì để lỗi hiện ra dưới dạng nhầm lẫn "Expected Paused But was Playing" khó hiểu. Đây là làm cứng
+hạ tầng test, không làm yếu assertion — vẫn đòi hỏi đúng kết quả `Paused` sau khi phím thật sự được
+ghi nhận. Không đụng `GameInputCoordinator.cs`, `GameStateManager.cs`, quest content, scene, hay UI
+nào.
 
-Khi `GameplaySessionControllerPlayModeTests` chạy các `[UnityTest]` load scene thật (ví dụ
-`RequestReturnToMainMenu_WhenClean_ReturnsDirectlyWithoutConfirmation`,
-`RequestLoad_DifferentSlot_RealSceneReload_...`), scene `MainMenu.unity` được load thật qua
-`SceneManager.LoadSceneAsync("MainMenu", Single)` và **đúng theo thiết kế** — test kết thúc ở đó,
-không có "scene trống" nào để quay về. Vì project tắt domain reload
-(`ProjectSettings/EditorSettings.asset: m_EnterPlayModeOptions: 1`), MainMenu's
-`GameInputCoordinator` **vẫn sống và enabled** cho tới hết session Play, tức là còn tồn tại khi
-`GameInputCoordinatorPlayModeTests` chạy sau đó trong cùng full-suite run.
-
-Binding `<Keyboard>/escape` của `UI/Cancel` khớp với **bất kỳ** thiết bị keyboard nào, kể cả
-`Keyboard` mà `GameInputCoordinatorPlayModeTests.SetUp()` tự tạo. Khi test giả lập một lần nhấn
-Escape thật qua `InputSystem.QueueStateEvent`, **cả hai coordinator** (một từ MainMenu leftover,
-một từ fixture của test) đều nhận callback `HandleCancelPerformed`:
-
-1. Coordinator đầu tiên fire: `CurrentState == Playing` → `Pause()` → `Paused`.
-2. Coordinator thứ hai fire (cùng frame): `CurrentState == Paused` → `ReturnToPreviousState()` →
-   pop lại `Playing`.
-
-Kết quả cuối: `Playing` — đúng khớp `Expected: Paused, Actual: Playing` đã báo cáo. Đây là hành vi
-**giống hệt** triệu chứng double-subscribe thật, nhưng nguyên nhân là hai *instance* coordinator
-khác nhau (một sống sót từ scene load thật của test class khác), không phải một component
-double-subscribe với chính nó.
-
-**Vì sao đúng "PASS khi chạy riêng, FAIL khi chạy full suite":** khi chỉ chạy riêng
-`GameInputCoordinatorPlayModeTests`, không có test nào khác load MainMenu/DemoScene thật trước đó,
-nên không có coordinator leftover nào tồn tại — chỉ có đúng một coordinator (của fixture) phản ứng
-Escape, PASS bình thường.
-
-**Vì sao đây không phải bug production:** Physical Player build acceptance (24/24 bước PASS, xem
-`Phase10ImplementationReport.md § Part 7 final acceptance`) đã xác nhận Escape hoạt động đúng trong
-gameplay thật — nơi tại một thời điểm luôn chỉ có đúng MỘT `GameInputCoordinator` sống (scene cũ bị
-Unity destroy hoàn toàn trước khi scene mới hoàn tất load, do `LoadSceneMode.Single`). Tình huống
-"hai coordinator cùng sống" chỉ xảy ra trong PlayMode test session (domain reload tắt + nhiều test
-class load scene thật nối tiếp nhau), không xảy ra trong Player build thật.
-
-## File đã sửa (tổng hợp cả 2 vòng — vòng trước + vòng hardening thêm này)
-
-- `Assets/Scripts/Tests/PlayMode/GameInputCoordinatorPlayModeTests.cs` — **chỉ sửa test, không đụng
-  bất kỳ production code, scene hay content nào** (`GameInputCoordinator.cs` giữ nguyên 100%).
-  - `[SetUp]`: gọi `SuppressForeignCoordinators()` trước khi tạo fixture.
-  - `[TearDown]`: `SetActive(true)` lại đúng những GameObject đã suppress.
-  - `[OneTimeSetUp]`/`[OneTimeTearDown]`: tạo `_leakedSceneCoordinator` giả lập sống xuyên suốt cả
-    fixture để cơ chế suppress được test xác định (deterministic).
-  - `SetUp_SuppressesLeftoverSceneCoordinator_TearDownRestoresIt`: assert trực tiếp cơ chế suppress/
-    restore.
-  - **Mới vòng này:** `SuppressForeignCoordinators()` được gọi lại lần nữa ngay trước khi bắn phím
-    Escape trong cả hai test Cancel (không chỉ một lần ở `SetUp`), thu hẹp khoảng hở thời gian.
-    `DescribeAllCoordinators()` đính kèm vào message của cả hai assertion `GameState.Paused` để lần
-    fail tiếp theo (nếu có) tự nêu đích danh coordinator gây ra.
-
-## Verification (vòng hardening này, tất cả trong CÙNG một Editor session, không domain reload giữa các bước)
+## Verification (Unity MCP Test Runner API, cùng một Editor session, DemoScene đang mở, không refresh/đóng Editor giữa các bước)
 
 1. Targeted `GameInputCoordinatorPlayModeTests`: **3/3 PASS**.
 2. Full PlayMode suite lần 1: **142/142 PASS**.
-3. Full PlayMode suite lần 2 (ngay sau lần 1): **142/142 PASS**.
+3. Full PlayMode suite lần 2 (ngay sau lần 1 — **đúng điểm đã fail ở lần verify trước**): **142/142
+   PASS**.
 4. Full PlayMode suite lần 3 (ngay sau lần 2): **142/142 PASS**.
 5. Targeted `GameInputCoordinatorPlayModeTests` ngay sau 3 lần full suite: **3/3 PASS**.
-6. EditMode full suite: **58/58 PASS**.
-7. Content Validation: 0 error, 60 legacy warning, **84 asset**.
-8. DemoScene validator: 0 issue.
-9. Quest content không bị đụng: `Assets/Quests/Definitions/Quest_SidePotionSupply001.asset` vẫn
-   tồn tại, `questId: quest.side.potion_supply.001` còn nguyên.
+6. Full PlayMode suite lần 4, 5 (chạy thêm để tăng độ tin cậy vì lỗi vốn phụ thuộc timing/focus):
+   **142/142 PASS** cả hai lần.
+7. EditMode full suite: **58/58 PASS**.
+8. Content Validation: 0 error, 60 legacy warning, **84 asset**.
+9. DemoScene validator: 0 issue.
+10. Quest content không bị đụng: `Assets/Quests/Definitions/Quest_SidePotionSupply001.asset` vẫn
+    tồn tại, `questId: quest.side.potion_supply.001` còn nguyên.
 
-**Trước khi sửa thêm gì**, mình cũng đã thử tái hiện đúng trình tự Codex báo cáo (full suite → full
-suite ngay sau → targeted) **4 lần liên tiếp bằng code hiện tại (chưa hardening)** — cả 4 lần đều
-xanh, không tái hiện được lỗi. Tổng cộng phiên này đã chạy **7 lần full PlayMode suite + 4 lần
-targeted**, tất cả PASS, không có lần nào thấy lại `Expected Paused, Actual Playing`.
+Tổng cộng: **5 lần full PlayMode suite liên tiếp + 3 lần targeted**, tất cả PASS trong cùng một
+Editor session, DemoScene mở suốt, không refresh/đóng Editor giữa các bước — bao gồm đúng round 2
+(nơi lỗi từng xảy ra) và một round bổ sung ngay sau đó để chắc chắn.
 
 ## Kết luận
 
-Đã làm cứng cơ chế cô lập dựa trên phân tích code (khoảng hở thời gian giữa `SetUp` và lúc bắn phím
-Escape), **không phải dựa trên việc đã tái hiện và fix đúng lỗi thật** — vì không tái hiện được lỗi
-trong phiên này dù đã thử nhiều lần theo đúng kịch bản Codex mô tả. Status
-`READY_FOR_CODEX_FINAL_QUEST_VERIFICATION_ONLY`: Codex cần tự chạy lại **đúng trình tự đã từng tái
-hiện được lỗi trên máy của họ** (không chỉ chạy một lần rồi báo PASS) để xác nhận thật sự hết flake.
-Nếu vẫn còn fail, message assertion giờ đã tự in ra danh sách toàn bộ `GameInputCoordinator` đang
-sống tại thời điểm fail — dán nguyên message đó vào `CodexToClaude.md` khi báo `BACKEND_GAP_FOUND`
-lần tới, sẽ tiết kiệm được một vòng điều tra.
+Khác với lần verify trước (chỉ làm cứng dựa trên suy luận, không tái hiện được lỗi), lần này **đã
+tái hiện được lỗi thật bằng đúng Unity MCP Test Runner API**, xác định chính xác root cause bằng
+instrumentation trực tiếp (fireCount=0, escapePressedAfter=false), và fix nhắm đúng vào cơ chế đó
+(retry xác nhận input thực sự được device ghi nhận trước khi kiểm tra hệ quả). Sau fix, đã chạy lại
+**đúng round từng fail** nhiều lần liên tiếp, tất cả xanh.
+
+Status `READY_FOR_CODEX_FINAL_QUEST_VERIFICATION_ONLY` — vẫn chưa tự đặt `VERIFIED` vì đây là lỗi có
+tính timing/focus, nên đề nghị Codex tự chạy lại một lần cuối theo đúng quy trình (full→full→targeted,
+lặp nếu cần) trên máy của họ để xác nhận độc lập trước khi đóng hẳn mục quest
+`quest.side.potion_supply.001` sang `VERIFIED`. Nếu môi trường của Codex khiến Editor mất focus
+thường xuyên hơn (ví dụ chạy qua UI thay vì API), có thể cần tăng `maxAttempts` trong
+`PressEscapeAndDiagnose()` — hiện đang là 5 lần retry.
 
 ---
 

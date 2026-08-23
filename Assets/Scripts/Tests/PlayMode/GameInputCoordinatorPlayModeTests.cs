@@ -157,12 +157,9 @@ public sealed class GameInputCoordinatorPlayModeTests
         _projectActions.Disable();
 
         SuppressForeignCoordinators();
-        _keyboard.MakeCurrent();
-        InputSystem.QueueStateEvent(_keyboard, new KeyboardState(Key.Escape));
-        InputSystem.Update();
-        yield return null;
+        yield return PressEscapeAndDiagnose();
 
-        Assert.AreEqual(GameState.Paused, GameStateManager.Instance.CurrentState, DescribeAllCoordinators());
+        Assert.AreEqual(GameState.Paused, GameStateManager.Instance.CurrentState, DescribeAllCoordinators() + LastPressDiagnostic);
     }
 
     [UnityTest]
@@ -172,14 +169,75 @@ public sealed class GameInputCoordinatorPlayModeTests
         _fixture.SetActive(true);
 
         SuppressForeignCoordinators();
-        _keyboard.MakeCurrent();
-        InputSystem.QueueStateEvent(_keyboard, new KeyboardState(Key.Escape));
-        InputSystem.Update();
-        yield return null;
+        yield return PressEscapeAndDiagnose();
 
-        Assert.AreEqual(GameState.Paused, GameStateManager.Instance.CurrentState, DescribeAllCoordinators());
+        Assert.AreEqual(GameState.Paused, GameStateManager.Instance.CurrentState, DescribeAllCoordinators() + LastPressDiagnostic);
         Assert.IsTrue(GameStateManager.Instance.CanReturn,
             "One Cancel press must leave exactly the normal Pause return path available.");
+    }
+
+    private string LastPressDiagnostic;
+
+    /// <summary>Presses Escape on _keyboard while independently counting how many times the
+    /// fixture's own _cancelAction.performed actually fires (bypassing GameInputCoordinator
+    /// entirely -- this tells us whether the underlying InputAction is even seeing 1 edge, 0, or 2,
+    /// which GameState alone cannot distinguish: 0 fires and 2 fires both end up looking like
+    /// "nothing happened"/"flipped back" from the outside). Also snapshots GameStateManager's state
+    /// and Keyboard/escape control state right before and after, and explicitly releases Escape
+    /// afterward so a held key never survives into the next test/job.</summary>
+    private IEnumerator PressEscapeAndDiagnose()
+    {
+        GameInputCoordinator coordinator = _fixture.GetComponent<GameInputCoordinator>();
+        InputAction cancelAction = (InputAction)typeof(GameInputCoordinator)
+            .GetField("_cancelAction", PrivateInstance).GetValue(coordinator);
+
+        int fireCount = 0;
+        void OnPerformed(InputAction.CallbackContext ctx) => fireCount++;
+        cancelAction.performed += OnPerformed;
+
+        GameState stateBefore = GameStateManager.Instance.CurrentState;
+        bool pressedBefore = _keyboard.escapeKey.isPressed;
+
+        // Diagnosed 2026-08-23: InputSystem.QueueStateEvent + a single Update() can silently fail
+        // to land on the device when the Editor loses window focus mid-suite (observed
+        // editor_is_focused=false on the exact job that reproduced fireCount=0,
+        // escapePressedAfter=false -- the simulated press never reached the device at all, not a
+        // double-fire). Retry a few times, actually confirming the device registered the press
+        // before relying on it, instead of assuming one QueueStateEvent+Update always lands.
+        const int maxAttempts = 5;
+        int attempt;
+        for (attempt = 1; attempt <= maxAttempts; attempt++)
+        {
+            _keyboard.MakeCurrent();
+            InputSystem.QueueStateEvent(_keyboard, new KeyboardState(Key.Escape));
+            InputSystem.Update();
+            if (_keyboard.escapeKey.isPressed)
+                break;
+        }
+        yield return null;
+
+        GameState stateAfter = GameStateManager.Instance.CurrentState;
+        bool pressedAfter = _keyboard.escapeKey.isPressed;
+        bool actionEnabledAfter = cancelAction.enabled;
+
+        cancelAction.performed -= OnPerformed;
+
+        // Release Escape and flush before this test/job ends -- a held key surviving into the next
+        // device/job would otherwise be a second, independent source of missed presses.
+        InputSystem.QueueStateEvent(_keyboard, new KeyboardState());
+        InputSystem.Update();
+
+        LastPressDiagnostic = "\nPressEscapeAndDiagnose: fireCount=" + fireCount
+            + " attempts=" + attempt + " stateBefore=" + stateBefore + " stateAfter=" + stateAfter
+            + " actionEnabledAfter=" + actionEnabledAfter
+            + " keyboardId=" + _keyboard.deviceId
+            + " escapePressedBefore=" + pressedBefore + " escapePressedAfter=" + pressedAfter;
+        Debug.Log(LastPressDiagnostic);
+
+        Assert.IsTrue(pressedAfter,
+            "The simulated Escape press never reached the Keyboard device after " + maxAttempts +
+            " attempts (isPressed still false) -- this is an Input System event-delivery failure, " +
+            "not anything GameInputCoordinator/GameStateManager could possibly react to.");
     }
 
     [Test]
