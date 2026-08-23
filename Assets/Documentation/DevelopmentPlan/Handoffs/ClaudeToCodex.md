@@ -1,6 +1,49 @@
 # Claude → Codex Handoff
 
-Status: `READY_FOR_CODEX_PHASE10_FINAL_MANUAL_VERIFICATION`
+Status: `CONTENT_READY`
+
+Ngày: 2026-08-23
+Feature: Phase 10 — Hardening và content-ready milestone — **ĐÃ ĐÓNG**
+
+## Kết luận cuối
+
+Owner đã chạy physical acceptance thật (bàn phím/chuột vật lý) trên
+`C:\Users\havin\Phase10PlayerBuild_Combined\ProjectGame2D.exe` và toàn bộ 24 bước **PASS** (chi tiết
+từng bước trong `CodexToClaude.md § Phase 10 Final Physical Player Acceptance`). Đối chiếu với 4
+acceptance criteria của Phase 10 trong `Roadmap.md`:
+
+- Test matrix bắt buộc đều pass: EditMode 58/58, PlayMode 141/141. ✓
+- Không có P0/P1 known issue trong save/progression/item transaction: xác nhận, không có. ✓
+- Content designer có thể tạo Tutorial Quest mới không sửa manager core: `ContentAuthoringGuide.md`
+  đủ, đã xác nhận ở Phase 10 Part 8. ✓
+- Build player chạy đúng New Game và Continue trên máy sạch: **xác nhận bằng physical acceptance
+  24/24 bước PASS**, bao gồm cả Save Game slot picker mới (Empty/Overwrite/Save As/Delete) và Pause
+  Menu Escape fix. ✓
+
+Cả 4 tiêu chí đều đạt → **Phase 10 chính thức `CONTENT_READY`.** Đã cập nhật
+`Phase10ImplementationReport.md`, `Roadmap.md` và `README.md` với kết luận này.
+
+Không còn task nào chờ Codex ở Phase 10. Cảm ơn về việc root-cause chính xác Pause input bug, dựng
+đúng Save Game slot picker theo contract, và chạy physical acceptance đầy đủ, chi tiết từng bước —
+đúng chuẩn chất lượng dự án cần.
+
+## Việc tiếp theo (không thuộc Phase 10, chỉ ghi chú tham khảo)
+
+Roadmap nền tảng không có Phase 11. Bước tiếp theo hợp lý là sản xuất content thật (quest/item/shop/
+world entity) theo `ContentAuthoringGuide.md`, hoặc chốt các decision còn `Open`/`Proposed` trong
+`DecisionRegister.md` (D-010 player death, D-013 character creation, D-019 production world topology)
+nếu muốn mở rộng nền tảng trước. Sẽ có prompt riêng khi có yêu cầu cụ thể tiếp theo.
+
+## Gamepad manual verification — vẫn còn mở, không chặn CONTENT_READY
+
+Chưa từng có gamepad vật lý test xuyên suốt mọi phase (kể cả physical acceptance vừa rồi chỉ dùng
+bàn phím/chuột). Đây là action item không blocking, có thể làm bất cứ lúc nào có gamepad thật.
+
+---
+
+# Phase 10 review (lịch sử — đã xác nhận PASS, xem kết luận cuối ở trên)
+
+Status (khi mục này được tạo): `READY_FOR_CODEX_PHASE10_FINAL_MANUAL_VERIFICATION`
 
 Ngày: 2026-08-23
 Feature: Phase 10 — review kết quả Pause Input Fix + Save Game slot picker, build lại combined, chờ acceptance thủ công cuối

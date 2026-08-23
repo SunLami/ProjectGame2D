@@ -1,13 +1,9 @@
 # Phase 10 Implementation Report — Hardening và Content-Ready Milestone
 
-Status: **BLOCKED_MANUAL_BUILD_TEST**
+Status: **CONTENT_READY**
 
-Every acceptance criterion in [Roadmap.md § Phase 10](Roadmap.md) is met except the final one
-("Build player chạy đúng New Game và Continue trên máy sạch"), which could not be verified end-to-end
-in this environment (see Part 7). No P0/P1 issue is open. Everything up to and including the build
-itself is done and verified; only the manual click-through remains, and it needs to run on a machine
-where the built `.exe`'s window can actually be observed/interacted with (i.e., the user's own
-session, not this remote automation environment).
+All four Roadmap.md § Phase 10 acceptance criteria are met, including physical acceptance of the
+final manual click-through (see "Part 7 final acceptance" below). No P0/P1 issue is open.
 
 ## Part 7 follow-up — Pause Menu input bug + Save Game slot picker (2026-08-23)
 
@@ -58,15 +54,42 @@ regressions), Content Validation 0 error / 60 accepted-legacy warnings / 83 asse
 Windows64, 0 errors/0 warnings, 38.55 s, 515.86 MB) containing both fixes; launched it directly and
 confirmed a clean `Player.log` init (D3D12/PhysX/Input System, no exceptions) before stopping it — the
 same GUI-observability limitation from the original Part 7 attempt (see [D-026](DecisionRegister.md))
-still applies in this environment, so the actual Escape-press-and-full-walkthrough acceptance still
-needs a physical keyboard on the user's own machine. Status is **not** `CONTENT_READY` yet — see the
-updated Codex handoff for the exact remaining walk-through.
+still applies in this environment, so the actual Escape-press-and-full-walkthrough acceptance needed a
+physical keyboard on the user's own machine (done next, see below).
 
 An unrelated engine-level `Assert: "Access version should be odd when acquiring lock"` message
 appeared repeatedly in the Editor console during this verification pass. It has no stack trace, no
 file/line, is not tied to any specific test name, and did not cause a single test failure across two
 independent full-suite runs (this session's and the one before it) — treated as Editor/Burst-internal
 noise, not a defect introduced by either change, and not investigated further per scope.
+
+## Part 7 final acceptance — physical Player walk-through (2026-08-23, owner's own machine)
+
+The owner ran the full acceptance walk-through with a real keyboard/mouse against
+`C:\Users\havin\Phase10PlayerBuild_Combined\ProjectGame2D.exe` — the combined build from the follow-up
+above. **All 24 steps PASS**, reported step-by-step (not a single rolled-up claim) in
+`Handoffs/CodexToClaude.md § Phase 10 Final Physical Player Acceptance`:
+
+Launch → MainMenu display; New Game on an empty slot (never Slot 1); MainMenu→DemoScene transition;
+Escape opens `PauseMenuUI`; Escape closes/reopens it repeatedly; Save Game opens the three-slot
+picker; saving an Empty slot writes immediately with no extra popup and updates the timestamp;
+selecting a Valid slot shows the correct `OVERWRITE THE SAVE IN SLOT n?` popup; Cancel leaves the old
+save untouched; Confirm actually overwrites; Save As to a different slot moves `ActiveSlotId` (the
+target slot visibly shows `ACTIVE`); Delete shows its own irreversible-action popup; Cancel leaves the
+save, Confirm actually deletes; Return to Main Menu; Continue on the correct slot; character position,
+inventory (items + gold), quest state, tutorial state and persistent world state (chest/pickup/boss/
+resource node) all restore correctly; no loss/duplication/cross-slot leak observed anywhere in the
+run; Quit Desktop exits cleanly with no hang.
+
+Slots used for testing: Slot 2 and Slot 3. **Slot 1 (the machine's real pre-Phase-6 save) was never
+selected, overwritten, or deleted**, confirming the safety constraint held throughout. No UI issue and
+no backend/contract gap was found during physical acceptance.
+
+This closes the one remaining gap from the original Part 7 attempt: the Player build now has a
+confirmed, physically-verified New Game → Save → Return → Continue → restore → Quit walk-through, not
+just a clean launch log. Combined with the independent review and re-verification in the follow-up
+section above (same build, same commit set), **all four Roadmap.md § Phase 10 acceptance criteria are
+now met** and Phase 10 is `CONTENT_READY`.
 
 ## Part 1 — Baseline audit (Phase 0–9)
 
@@ -272,37 +295,38 @@ current backend surface.
 ## Known limitations
 
 - Gamepad manual verification remains unverified in every phase including this one (no gamepad
-  hardware in this automation environment) — a recurring, accepted limitation.
+  hardware ever used in physical acceptance either) — a recurring, accepted, non-blocking limitation.
+  Keyboard/mouse physical acceptance is complete (see Part 7 final acceptance).
 - GC allocation figures for the save pipeline are not reliably measurable in this Editor/Mono runtime
   (Part 5) — reported as unavailable rather than approximated.
-- The Player build's GUI click-through (Part 7) is unverified in this environment and needs to be run
-  manually.
 - `SaveSoakTestRunner` does not exercise live-scene event-subscriber counts or `GameState`/`timeScale`
   stability under repeated cycling (Part 4 scope note) — those remain covered once each by the
   existing PlayMode suite, not hundreds of times.
 
 ## Remaining tasks for Codex / user
 
-- Run the full manual click-through on `C:\Users\havin\Phase10PlayerBuild_Combined\ProjectGame2D.exe`
-  using a physical keyboard: Launch → MainMenu → New Game (an empty slot, **not** slot 1) → DemoScene
-  → **Escape opens PauseMenuUI** → Save Game (exercise the new slot picker: save to Empty, overwrite a
-  Valid slot after confirm, Save As to a different slot, Delete a slot after confirm) → Return to Main
-  Menu → Continue (correct slot) → verify position/inventory/quest/tutorial/world state → Quit
-  Desktop. Report pass/fail back.
-- No Recovery UI is required to be built by Codex for the current acceptance bar (Part 6 concluded no
-  new backend surface is needed) — if a future phase wants dedicated Corrupted/Incompatible recovery
+- Gamepad manual verification remains an open, non-blocking action item, same as every prior phase —
+  can be picked up whenever gamepad hardware is available; does not block `CONTENT_READY`.
+- No Recovery UI is required to be built for the current acceptance bar (Part 6 concluded no new
+  backend surface is needed) — if a future phase wants dedicated Corrupted/Incompatible recovery
   screens, the contract in Part 6 is what to build against.
-- Gamepad manual verification remains an open, non-blocking action item, same as every prior phase.
+- No other Phase 10 follow-up remains. Next work is real content production (see Go/No-Go below).
 
 ## Go/No-Go
 
-**BLOCKED_MANUAL_BUILD_TEST.** Every other Phase 10 acceptance criterion is met: mandatory automated
-tests pass (58 EditMode + 141 PlayMode, zero regressions after the Pause-input fix and Save Game slot
-picker), save migration/recovery pass with real coverage, soak testing actually ran with real recorded
-numbers, profiling produced real (not fabricated) measurements, the Recovery UX backend contract is
-confirmed complete without new code, authoring documentation is complete and sufficient for a content
-designer to build a new Tutorial Quest without touching manager core, and the Player build itself
-succeeded cleanly (twice — the original build and the combined-fixes rebuild). The single remaining
-gate is the manual in-build click-through with a physical keyboard, which this environment's tooling
-still cannot complete (Part 7 follow-up) — not a defect, a verification step that needs to happen on
-the user's own machine.
+**CONTENT_READY.** All four Roadmap.md § Phase 10 acceptance criteria are met: mandatory automated
+tests pass (58 EditMode + 141 PlayMode, zero regressions across the whole phase including the
+Pause-input fix and Save Game slot picker), save migration/recovery pass with real coverage, soak
+testing actually ran with real recorded numbers, profiling produced real (not fabricated)
+measurements, the Recovery UX backend contract is confirmed complete without new code, authoring
+documentation is complete and sufficient for a content designer to build a new Tutorial Quest without
+touching manager core, the Player build succeeded cleanly, and the full physical New Game → Save →
+Return → Continue → restore → Quit walk-through passed all 24 steps on a real machine with a real
+keyboard (Part 7 final acceptance). No P0/P1 issue is open.
+
+Phase 10 is the last phase in [Roadmap.md](Roadmap.md)'s foundation sequence — there is no Phase 11.
+The reasonable next step is real content production (quests/items/shops/world entities) following
+[ContentAuthoringGuide.md](ContentAuthoringGuide.md), or resolving the platform decisions still marked
+`Open`/`Proposed` in [DecisionRegister.md](DecisionRegister.md) (D-010 player death, D-013 character
+creation scope, D-019 production world scene topology, and others) if further foundation work is
+wanted before content production begins at scale.

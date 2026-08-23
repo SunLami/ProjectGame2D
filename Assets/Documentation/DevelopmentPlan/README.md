@@ -66,8 +66,16 @@ cập nhật tài liệu liên quan trước hoặc cùng lúc với code.
   MainMenu/DemoScene và khóa gameplay input theo state.
 - Return Main Menu từ Pause Menu đã load qua SceneFlowService, clear session và teardown gameplay roots
   được đăng ký trong DemoScene `_SceneContext`.
-- Save hiện mới có DTO inventory thử nghiệm, chưa phải hệ thống save slot hoàn chỉnh.
+- Save đã là hệ thống save slot hoàn chỉnh: 3 slot, atomic write/backup, migration V1→Current, Save
+  Game slot picker (Empty/Overwrite/Save As/Delete) trong Pause Menu. Chi tiết:
+  [SaveAndWorldPersistence.md](SaveAndWorldPersistence.md).
 - Build Settings hiện dùng `MainMenu` index 0 và `DemoScene` index 1.
+- **Phase 10 (phase cuối của roadmap nền tảng này) đã `CONTENT_READY` — 2026-08-23.** Toàn bộ nền
+  tảng (state machine, scene flow, save/load, inventory/equipment, tutorial, quest, shop/crafting,
+  world persistence, hardening) đã qua automated test + physical Player build acceptance. Bước tiếp
+  theo là sản xuất content thật theo [ContentAuthoringGuide.md](ContentAuthoringGuide.md); xem
+  [Phase10ImplementationReport.md](Phase10ImplementationReport.md) và
+  [Roadmap.md](Roadmap.md) cho chi tiết đầy đủ.
 
 ## Ngoài phạm vi nền tảng này
 
