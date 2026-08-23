@@ -69,13 +69,7 @@ public sealed class GameInputCoordinatorPlayModeTests
     {
         GameStateManager.Instance.ResetToPlaying();
         _keyboard = InputSystem.AddDevice<Keyboard>();
-
-        foreach (GameInputCoordinator leftover in Object.FindObjectsByType<GameInputCoordinator>(
-            FindObjectsInactive.Exclude, FindObjectsSortMode.None))
-        {
-            leftover.gameObject.SetActive(false);
-            _suppressedCoordinators.Add(leftover.gameObject);
-        }
+        SuppressForeignCoordinators();
 
         _projectActions = ScriptableObject.CreateInstance<InputActionAsset>();
         InputActionMap ui = _projectActions.AddActionMap("UI");
@@ -109,6 +103,44 @@ public sealed class GameInputCoordinatorPlayModeTests
         _suppressedCoordinators.Clear();
     }
 
+    /// <summary>Disables every enabled GameInputCoordinator that isn't this fixture's own. Called
+    /// from SetUp, and again immediately before every simulated Escape press -- SetUp alone leaves a
+    /// window between it and the actual key-press simulation in which another test's real scene
+    /// transition (e.g. GameplaySessionControllerPlayModeTests' async scene-load UnityTests running
+    /// concurrently-scheduled coroutines) could activate a fresh coordinator that SetUp never saw.
+    /// Idempotent and cheap -- finding zero foreign coordinators is the common case.</summary>
+    private void SuppressForeignCoordinators()
+    {
+        foreach (GameInputCoordinator candidate in Object.FindObjectsByType<GameInputCoordinator>(
+            FindObjectsInactive.Exclude, FindObjectsSortMode.None))
+        {
+            GameObject go = candidate.gameObject;
+            if (go == _fixture || _suppressedCoordinators.Contains(go))
+                continue;
+
+            go.SetActive(false);
+            _suppressedCoordinators.Add(go);
+        }
+    }
+
+    /// <summary>Diagnostic dump of every GameInputCoordinator (active or not) for an assertion
+    /// failure message -- if this ever flakes again, the failure itself names exactly which
+    /// GameObject/scene fired a second time instead of requiring another investigation pass.</summary>
+    private static string DescribeAllCoordinators()
+    {
+        var sb = new System.Text.StringBuilder("Live GameInputCoordinator instances:");
+        foreach (GameInputCoordinator c in Object.FindObjectsByType<GameInputCoordinator>(
+            FindObjectsInactive.Include, FindObjectsSortMode.None))
+        {
+            GameObject go = c.gameObject;
+            sb.Append("\n- ").Append(go.name)
+                .Append(" scene=").Append(go.scene.name)
+                .Append(" activeInHierarchy=").Append(go.activeInHierarchy)
+                .Append(" enabled=").Append(c.enabled);
+        }
+        return sb.ToString();
+    }
+
     [UnityTest]
     public IEnumerator SharedProjectActionDisabledAfterEnable_CancelStillPauses()
     {
@@ -124,12 +156,13 @@ public sealed class GameInputCoordinatorPlayModeTests
         _projectActions.Enable();
         _projectActions.Disable();
 
+        SuppressForeignCoordinators();
         _keyboard.MakeCurrent();
         InputSystem.QueueStateEvent(_keyboard, new KeyboardState(Key.Escape));
         InputSystem.Update();
         yield return null;
 
-        Assert.AreEqual(GameState.Paused, GameStateManager.Instance.CurrentState);
+        Assert.AreEqual(GameState.Paused, GameStateManager.Instance.CurrentState, DescribeAllCoordinators());
     }
 
     [UnityTest]
@@ -138,12 +171,13 @@ public sealed class GameInputCoordinatorPlayModeTests
         _fixture.SetActive(false);
         _fixture.SetActive(true);
 
+        SuppressForeignCoordinators();
         _keyboard.MakeCurrent();
         InputSystem.QueueStateEvent(_keyboard, new KeyboardState(Key.Escape));
         InputSystem.Update();
         yield return null;
 
-        Assert.AreEqual(GameState.Paused, GameStateManager.Instance.CurrentState);
+        Assert.AreEqual(GameState.Paused, GameStateManager.Instance.CurrentState, DescribeAllCoordinators());
         Assert.IsTrue(GameStateManager.Instance.CanReturn,
             "One Cancel press must leave exactly the normal Pause return path available.");
     }
