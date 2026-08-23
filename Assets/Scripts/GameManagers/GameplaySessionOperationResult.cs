@@ -8,5 +8,6 @@ public enum GameplaySessionOperationResult
     SlotNotValid,
     ReadFailed,
     WriteFailed,
-    TransitionFailed
+    TransitionFailed,
+    InvalidSlot
 }

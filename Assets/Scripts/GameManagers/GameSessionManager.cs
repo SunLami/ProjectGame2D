@@ -148,6 +148,21 @@ public sealed class GameSessionManager : MonoBehaviour
 
     internal void SetSaveRepositoryForTests(ISaveSlotRepository repository) => SaveRepository = repository;
 
+    /// <summary>Repoints the active session at a different slot id after a successful "Save As"
+    /// write -- everything else about the session (Kind, GameplaySceneName, dirty/restoring state,
+    /// play-time base) is left untouched. No-op if there is no active session. Unlike SetSession,
+    /// this deliberately does not fire a fresh "new session" reset (IsDirty/IsRestoring/play-time
+    /// base) -- saving to a different slot does not start a new session, it just relabels the
+    /// current one.</summary>
+    internal void SetActiveSlotId(int slotId)
+    {
+        if (!Current.IsActive || Current.SlotId == slotId)
+            return;
+
+        Current = new GameSession(Current.Kind, slotId, Current.GameplaySceneName, Current.SaveData);
+        SessionChanged?.Invoke(Current);
+    }
+
     private bool TryStartSlotSession(GameSessionKind kind, int slotId, string gameplaySceneName, GameSaveData saveData)
     {
         if (slotId < MinimumSlotId || slotId > MaximumSlotId

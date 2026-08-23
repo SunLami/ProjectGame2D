@@ -1,6 +1,108 @@
 # Claude → Codex Handoff
 
-Status: `READY_FOR_CODEX_VERIFICATION`
+Status: `READY_FOR_CODEX_SAVE_SLOT_UI`
+
+Ngày: 2026-08-23
+Feature: Phase 10 follow-up — Save Game slot picker (Pause Menu "Save Game" chọn 1 trong 3 slot thay vì ghi thẳng ActiveSlotId)
+
+## Bối cảnh
+
+Yêu cầu mới: bấm "Save Game" từ Pause Menu phải mở một overlay chọn slot (giống Load Game overlay đã
+có), cho phép save vào slot trống, ghi đè slot đã có (sau confirm), "Save As" sang slot khác (đổi
+`ActiveSlotId`), và xóa slot (sau confirm). Toàn bộ logic/validation/atomic write đã có sẵn trong
+`GameplaySessionController` (`Assets/Scripts/GameManagers/GameplaySessionController.cs`) — Codex chỉ
+cần dựng UI overlay gọi đúng API dưới đây, không tự capture save data, không tự đụng
+`ISaveSlotRepository`. Xem [D-027](../DecisionRegister.md) cho quyết định semantics đầy đủ.
+
+`RequestSave()` (không tham số, ghi thẳng vào `ActiveSlotId`) **vẫn giữ nguyên** — dùng cho luồng
+Save-and-Return/Save-and-Quit hiện có trong `PauseMenuUI`, không đổi gì ở đó.
+
+## Contract phía Claude cung cấp (mới, thêm vào GameplaySessionController — không đổi API cũ)
+
+```csharp
+// Slot picker cho nút "Save Game" mới trong Pause Menu.
+public bool CanSaveToSlot(int slotId);              // gate hiển thị/enable từng nút slot trong overlay
+public bool SlotRequiresOverwriteConfirm(int slotId); // true nếu slot đã có data (Valid/Corrupted/IncompatibleVersion)
+
+public void RequestSaveToSlot(int slotId);   // slot Empty: ghi ngay. Slot khác: fire OnSaveSlotConfirmationRequired, KHÔNG ghi
+public void ConfirmOverwriteAndSave();        // ghi slot đang pending sau khi user xác nhận overwrite
+public void CancelSaveToSlot();               // đóng popup overwrite, không ghi gì, không đổi ActiveSlotId
+
+public bool DeleteSlot(int slotId);           // UI PHẢI tự hỏi xác nhận trước khi gọi -- method này xóa luôn, không hỏi lại
+```
+
+Event mới:
+
+```csharp
+// (slotId, status của slot đó) -- status quyết định text popup ("Ghi đè save đã có" vs "Save này bị
+// hỏng, xóa và ghi đè?" vs "Save này từ phiên bản không tương thích, xóa và ghi đè?")
+public event Action<int, SaveSlotStatus> OnSaveSlotConfirmationRequired;
+```
+
+Event cũ vẫn dùng lại nguyên như Load Game overlay đã dùng: `OnSaveSlotListChanged` (gọi
+`RefreshSlots()` để lấy `SaveSlotInfo[]` cho cả 3 slot), `OnSaveSucceeded`, `OnOperationFailed`
+(`GameplaySessionOperationResult` có thêm giá trị mới `InvalidSlot` cho slotId ngoài phạm vi 1..3).
+
+## Luồng UI đề xuất
+
+```text
+Pause → "Save Game" → mở Save Slot Overlay (RefreshSlots() để hiển thị 3 slot, dùng đúng UI đã
+  dựng cho Load Game overlay, chỉ đổi hành vi click)
+
+Click slot:
+  CanSaveToSlot(slotId) == false → disable nút đó (đang IsBusy hoặc không có active session)
+  SlotRequiresOverwriteConfirm(slotId) == false (Empty) → gọi RequestSaveToSlot(slotId) ngay,
+    không cần popup phụ
+  SlotRequiresOverwriteConfirm(slotId) == true → gọi RequestSaveToSlot(slotId), chờ
+    OnSaveSlotConfirmationRequired(slotId, status) → hiển thị popup 2 lựa chọn (Overwrite/Cancel),
+    text theo status:
+      Valid → "Ghi đè save đã có ở Slot {n}?"
+      Corrupted → "Save ở Slot {n} bị hỏng. Xóa và ghi đè bằng save hiện tại?"
+      IncompatibleVersion → "Save ở Slot {n} không tương thích phiên bản này. Xóa và ghi đè?"
+    → Overwrite: gọi ConfirmOverwriteAndSave()
+    → Cancel: gọi CancelSaveToSlot(), đóng popup, quay lại Save Slot Overlay
+
+Nút Delete cạnh mỗi slot (không phải Empty):
+  Click → popup xác nhận riêng ("Xóa save ở Slot {n}? Không thể hoàn tác.")
+  → Confirm: gọi DeleteSlot(slotId), overlay tự refresh qua OnSaveSlotListChanged
+  → Cancel: đóng popup, không gọi gì
+
+Save thành công (OnSaveSucceeded) → đóng toàn bộ overlay, quay lại Paused, hiển thị timestamp mới
+  (đọc lại từ SaveSlotInfo của ActiveSlotId sau RefreshSlots()).
+```
+
+## Việc Codex KHÔNG cần làm
+
+- Không tự capture `GameSaveData` hay đụng `ISaveSlotRepository` -- mọi write đi qua
+  `RequestSaveToSlot`/`ConfirmOverwriteAndSave`.
+- Không thay đổi `RequestSave()` (không tham số) hay luồng Save-and-Return/Save-and-Quit hiện có.
+- Không thay đổi layout Load Game overlay đã có -- tái sử dụng cùng component hiển thị slot, chỉ đổi
+  handler khi click.
+- Không sửa Quest/Tutorial/Commerce/Inventory/world persistence.
+
+## Test cần có phía Codex (theo Quality Strategy, cho phần UI)
+
+- Click slot Empty → save ngay, không có popup phụ nào xuất hiện.
+- Click slot Valid/Corrupted/IncompatibleVersion → đúng text popup theo status.
+- Cancel popup overwrite → overlay giữ nguyên, không đổi gì.
+- Double-click nút Save trong lúc `IsBusy` → nút đã disable, không gửi request thứ hai.
+
+## Verification đã chạy phía Claude
+
+- 58/58 EditMode, **137/137 PlayMode** (18 test mới cho slot picker: Empty save, Save As đổi
+  ActiveSlotId, Valid/Corrupted/IncompatibleVersion đều yêu cầu confirm, Cancel không đổi gì,
+  double-click bị chặn, Delete thường/active-slot/không rò slot khác, write-failure giữ nguyên save
+  cũ) -- 0 regression.
+- Content Validation 0 error, DemoScene validator 0 issue.
+
+Sau khi dựng UI xong, cập nhật `CodexToClaude.md` với kết quả test/manual verify và trạng thái phù hợp
+(README/Roadmap/QualityStrategy không cần đổi thêm trừ khi Codex phát hiện gap).
+
+---
+
+# Phase 10 — Hardening và content-ready milestone (không có UI mới cần dựng; chỉ cần verification thủ công)
+
+Status (khi phase này bắt đầu): `READY_FOR_CODEX_VERIFICATION`
 
 Ngày: 2026-08-23
 Feature: Phase 10 — Hardening và content-ready milestone (không có UI mới cần dựng; chỉ cần verification thủ công)

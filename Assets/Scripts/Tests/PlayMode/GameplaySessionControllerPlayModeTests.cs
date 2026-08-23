@@ -30,10 +30,29 @@ public sealed class GameplaySessionControllerPlayModeTests
     private sealed class FakeSaveSlotRepository : ISaveSlotRepository
     {
         private readonly InMemorySaveSlotRepository _inner = new();
+        private readonly Dictionary<int, SaveSlotStatus> _statusOverride = new();
         public bool FailNextWrite;
 
-        public SaveSlotInfo GetSlotInfo(int slotId) => _inner.GetSlotInfo(slotId);
-        public SaveSlotInfo[] GetAllSlotInfo() => _inner.GetAllSlotInfo();
+        /// <summary>Forces GetSlotInfo(slotId) to report Corrupted/IncompatibleVersion regardless of
+        /// what _inner actually holds -- InMemorySaveSlotRepository only ever knows Empty/Valid, so
+        /// this is the only way tests can exercise the "don't silently overwrite" paths for those
+        /// two statuses without standing up a real FileSaveSlotRepository.</summary>
+        public void ForceStatus(int slotId, SaveSlotStatus status) => _statusOverride[slotId] = status;
+
+        public SaveSlotInfo GetSlotInfo(int slotId) =>
+            _statusOverride.TryGetValue(slotId, out SaveSlotStatus forced)
+                ? new SaveSlotInfo(slotId, forced, null)
+                : _inner.GetSlotInfo(slotId);
+
+        public SaveSlotInfo[] GetAllSlotInfo()
+        {
+            int count = GameSessionManager.MaximumSlotId - GameSessionManager.MinimumSlotId + 1;
+            SaveSlotInfo[] result = new SaveSlotInfo[count];
+            for (int i = 0; i < count; i++)
+                result[i] = GetSlotInfo(GameSessionManager.MinimumSlotId + i);
+            return result;
+        }
+
         public bool TryReadSave(int slotId, out GameSaveData data) => _inner.TryReadSave(slotId, out data);
 
         public SaveOperationResult WriteSave(int slotId, GameSaveData data)
@@ -43,10 +62,17 @@ public sealed class GameplaySessionControllerPlayModeTests
                 FailNextWrite = false;
                 return SaveOperationResult.Failure("Simulated write failure.");
             }
-            return _inner.WriteSave(slotId, data);
+            SaveOperationResult result = _inner.WriteSave(slotId, data);
+            if (result.Success)
+                _statusOverride.Remove(slotId);
+            return result;
         }
 
-        public SaveOperationResult DeleteSlot(int slotId) => _inner.DeleteSlot(slotId);
+        public SaveOperationResult DeleteSlot(int slotId)
+        {
+            _statusOverride.Remove(slotId);
+            return _inner.DeleteSlot(slotId);
+        }
     }
 
     private sealed class FakeApplicationQuitter : IApplicationQuitter
@@ -176,6 +202,334 @@ public sealed class GameplaySessionControllerPlayModeTests
         Assert.AreEqual(GameplaySessionOperationResult.AlreadyBusy, failure);
 
         GameStateManager.Instance.ReturnToPreviousState();
+        Object.DestroyImmediate(playerRoot);
+        Object.Destroy(controllerObject);
+    }
+
+    // ---- Save Game -- slot picker (RequestSaveToSlot / Save As / Delete) ----
+
+    [Test]
+    public void RequestSaveToSlot_EmptySlot_WritesImmediatelyWithoutConfirmation()
+    {
+        BeginPausedSession(1, MakeActiveSave());
+        var (playerRoot, stat, transform) = BuildPlayerFixture();
+        GameplaySessionController controller = BuildController(stat, transform, null, out GameObject controllerObject);
+
+        int confirmationCount = 0;
+        controller.OnSaveSlotConfirmationRequired += (_, _) => confirmationCount++;
+        int succeededCount = 0;
+        controller.OnSaveSucceeded += () => succeededCount++;
+
+        controller.RequestSaveToSlot(2); // slot 2 was never written -- Empty
+
+        Assert.AreEqual(0, confirmationCount, "An Empty slot must save directly, no confirm.");
+        Assert.AreEqual(1, succeededCount);
+        Assert.AreEqual(SaveSlotStatus.Valid, controller.RefreshSlots()[1].Status);
+
+        Object.DestroyImmediate(playerRoot);
+        Object.Destroy(controllerObject);
+    }
+
+    [Test]
+    public void RequestSaveToSlot_SaveAs_DifferentSlot_MovesActiveSlotId()
+    {
+        BeginPausedSession(1, MakeActiveSave());
+        var (playerRoot, stat, transform) = BuildPlayerFixture();
+        GameplaySessionController controller = BuildController(stat, transform, null, out GameObject controllerObject);
+
+        Assert.AreEqual(1, controller.ActiveSlotId);
+
+        controller.RequestSaveToSlot(3); // Empty -> writes directly
+
+        Assert.AreEqual(3, controller.ActiveSlotId, "Saving into a different (Empty) slot must be a Save As -- ActiveSlotId follows the write.");
+        Assert.AreEqual(SaveSlotStatus.Valid, _fakeRepository.GetSlotInfo(3).Status);
+
+        Object.DestroyImmediate(playerRoot);
+        Object.Destroy(controllerObject);
+    }
+
+    [Test]
+    public void RequestSaveToSlot_SaveAs_DoesNotTouchOtherSlots()
+    {
+        _fakeRepository.WriteSave(2, MakeActiveSave("slot-2-untouched"));
+        BeginPausedSession(1, MakeActiveSave("slot-1-original"));
+        var (playerRoot, stat, transform) = BuildPlayerFixture();
+        GameplaySessionController controller = BuildController(stat, transform, null, out GameObject controllerObject);
+
+        controller.RequestSaveToSlot(3); // Save As into a third, Empty slot
+
+        Assert.IsTrue(_fakeRepository.TryReadSave(1, out GameSaveData slot1));
+        Assert.AreEqual("slot-1-original", slot1.saveId, "Saving into slot 3 must never touch slot 1's file.");
+        Assert.IsTrue(_fakeRepository.TryReadSave(2, out GameSaveData slot2));
+        Assert.AreEqual("slot-2-untouched", slot2.saveId, "Saving into slot 3 must never touch slot 2's file.");
+
+        Object.DestroyImmediate(playerRoot);
+        Object.Destroy(controllerObject);
+    }
+
+    [Test]
+    public void RequestSaveToSlot_ValidSlot_RequestsConfirmation_DoesNotWriteYet()
+    {
+        BeginPausedSession(1, MakeActiveSave());
+        _fakeRepository.WriteSave(2, MakeActiveSave("slot-2-existing"));
+        var (playerRoot, stat, transform) = BuildPlayerFixture();
+        GameplaySessionController controller = BuildController(stat, transform, null, out GameObject controllerObject);
+
+        (int slotId, SaveSlotStatus status)? pending = null;
+        controller.OnSaveSlotConfirmationRequired += (slotId, status) => pending = (slotId, status);
+        int succeededCount = 0;
+        controller.OnSaveSucceeded += () => succeededCount++;
+
+        controller.RequestSaveToSlot(2);
+
+        Assert.AreEqual((2, SaveSlotStatus.Valid), pending);
+        Assert.AreEqual(0, succeededCount, "Must not write until ConfirmOverwriteAndSave is called.");
+        Assert.IsTrue(_fakeRepository.TryReadSave(2, out GameSaveData stillOriginal));
+        Assert.AreEqual("slot-2-existing", stillOriginal.saveId, "The existing slot 2 save must be untouched before confirmation.");
+
+        Object.DestroyImmediate(playerRoot);
+        Object.Destroy(controllerObject);
+    }
+
+    [Test]
+    public void ConfirmOverwriteAndSave_WritesThePendingSlotAndMovesActiveSlotId()
+    {
+        BeginPausedSession(1, MakeActiveSave());
+        _fakeRepository.WriteSave(2, MakeActiveSave("slot-2-existing"));
+        var (playerRoot, stat, transform) = BuildPlayerFixture();
+        GameplaySessionController controller = BuildController(stat, transform, null, out GameObject controllerObject);
+
+        controller.RequestSaveToSlot(2);
+        int succeededCount = 0;
+        controller.OnSaveSucceeded += () => succeededCount++;
+
+        controller.ConfirmOverwriteAndSave();
+
+        Assert.AreEqual(1, succeededCount);
+        Assert.AreEqual(2, controller.ActiveSlotId);
+        Assert.IsTrue(_fakeRepository.TryReadSave(2, out GameSaveData overwritten));
+        Assert.AreNotEqual("slot-2-existing", overwritten.saveId, "Confirmed overwrite must actually replace the old save.");
+
+        Object.DestroyImmediate(playerRoot);
+        Object.Destroy(controllerObject);
+    }
+
+    [Test]
+    public void CancelSaveToSlot_LeavesPendingSlotUntouched()
+    {
+        BeginPausedSession(1, MakeActiveSave());
+        _fakeRepository.WriteSave(2, MakeActiveSave("slot-2-existing"));
+        var (playerRoot, stat, transform) = BuildPlayerFixture();
+        GameplaySessionController controller = BuildController(stat, transform, null, out GameObject controllerObject);
+        controller.RequestSaveToSlot(2);
+        int succeededCount = 0;
+        controller.OnSaveSucceeded += () => succeededCount++;
+
+        controller.CancelSaveToSlot();
+        controller.ConfirmOverwriteAndSave(); // must now be a no-op -- nothing pending anymore
+
+        Assert.AreEqual(0, succeededCount);
+        Assert.AreEqual(1, controller.ActiveSlotId, "Cancel must never move ActiveSlotId.");
+        Assert.IsTrue(_fakeRepository.TryReadSave(2, out GameSaveData stillOriginal));
+        Assert.AreEqual("slot-2-existing", stillOriginal.saveId);
+
+        Object.DestroyImmediate(playerRoot);
+        Object.Destroy(controllerObject);
+    }
+
+    [Test]
+    public void RequestSaveToSlot_CorruptedSlot_RequestsConfirmation_NeverSilentlyOverwritten()
+    {
+        BeginPausedSession(1, MakeActiveSave());
+        _fakeRepository.ForceStatus(2, SaveSlotStatus.Corrupted);
+        var (playerRoot, stat, transform) = BuildPlayerFixture();
+        GameplaySessionController controller = BuildController(stat, transform, null, out GameObject controllerObject);
+
+        (int slotId, SaveSlotStatus status)? pending = null;
+        controller.OnSaveSlotConfirmationRequired += (slotId, status) => pending = (slotId, status);
+
+        controller.RequestSaveToSlot(2);
+
+        Assert.AreEqual((2, SaveSlotStatus.Corrupted), pending, "A Corrupted slot must still ask for confirmation, never write silently.");
+
+        Object.DestroyImmediate(playerRoot);
+        Object.Destroy(controllerObject);
+    }
+
+    [Test]
+    public void RequestSaveToSlot_IncompatibleVersionSlot_RequestsConfirmation_NeverSilentlyOverwritten()
+    {
+        BeginPausedSession(1, MakeActiveSave());
+        _fakeRepository.ForceStatus(2, SaveSlotStatus.IncompatibleVersion);
+        var (playerRoot, stat, transform) = BuildPlayerFixture();
+        GameplaySessionController controller = BuildController(stat, transform, null, out GameObject controllerObject);
+
+        (int slotId, SaveSlotStatus status)? pending = null;
+        controller.OnSaveSlotConfirmationRequired += (slotId, status) => pending = (slotId, status);
+
+        controller.RequestSaveToSlot(2);
+
+        Assert.AreEqual((2, SaveSlotStatus.IncompatibleVersion), pending, "An IncompatibleVersion slot must still ask for confirmation, never write silently.");
+
+        Object.DestroyImmediate(playerRoot);
+        Object.Destroy(controllerObject);
+    }
+
+    [Test]
+    public void DoubleClickSaveToSlot_SecondCallRejectedWhileFirstInFlight()
+    {
+        BeginPausedSession(1, MakeActiveSave());
+        var (playerRoot, stat, transform) = BuildPlayerFixture();
+        GameplaySessionController controller = BuildController(stat, transform, null, out GameObject controllerObject);
+
+        GameStateManager.Instance.PushState(GameState.Saving);
+        Assert.IsTrue(controller.IsBusy);
+
+        GameplaySessionOperationResult? failure = null;
+        controller.OnOperationFailed += (result, _) => failure = result;
+        controller.RequestSaveToSlot(2);
+        Assert.AreEqual(GameplaySessionOperationResult.AlreadyBusy, failure);
+        Assert.AreEqual(SaveSlotStatus.Empty, _fakeRepository.GetSlotInfo(2).Status, "A rejected double-submit must not write anything.");
+
+        GameStateManager.Instance.ReturnToPreviousState();
+        Object.DestroyImmediate(playerRoot);
+        Object.Destroy(controllerObject);
+    }
+
+    [Test]
+    public void RequestSaveToSlot_InvalidSlotId_Rejected()
+    {
+        BeginPausedSession(1, MakeActiveSave());
+        var (playerRoot, stat, transform) = BuildPlayerFixture();
+        GameplaySessionController controller = BuildController(stat, transform, null, out GameObject controllerObject);
+
+        GameplaySessionOperationResult? failure = null;
+        controller.OnOperationFailed += (result, _) => failure = result;
+
+        controller.RequestSaveToSlot(0);
+        Assert.AreEqual(GameplaySessionOperationResult.InvalidSlot, failure);
+
+        Object.DestroyImmediate(playerRoot);
+        Object.Destroy(controllerObject);
+    }
+
+    [Test]
+    public void RequestSaveToSlot_WriteFailure_KeepsOldSaveAndActiveSlotUnchanged()
+    {
+        BeginPausedSession(1, MakeActiveSave());
+        var (playerRoot, stat, transform) = BuildPlayerFixture();
+        GameplaySessionController controller = BuildController(stat, transform, null, out GameObject controllerObject);
+        _fakeRepository.FailNextWrite = true;
+
+        GameplaySessionOperationResult? failure = null;
+        controller.OnOperationFailed += (result, _) => failure = result;
+
+        controller.RequestSaveToSlot(2); // Empty slot -- writes immediately, but the write fails
+
+        Assert.AreEqual(GameplaySessionOperationResult.WriteFailed, failure);
+        Assert.AreEqual(1, controller.ActiveSlotId, "A failed Save As must never move ActiveSlotId.");
+        Assert.AreEqual(SaveSlotStatus.Empty, _fakeRepository.GetSlotInfo(2).Status, "A failed write must leave the target slot exactly as it was.");
+
+        Object.DestroyImmediate(playerRoot);
+        Object.Destroy(controllerObject);
+    }
+
+    [Test]
+    public void DeleteSlot_EmptiesTheSlotAndRefreshesList()
+    {
+        _fakeRepository.WriteSave(2, MakeActiveSave("slot-2"));
+        BeginPausedSession(1, MakeActiveSave());
+        var (playerRoot, stat, transform) = BuildPlayerFixture();
+        GameplaySessionController controller = BuildController(stat, transform, null, out GameObject controllerObject);
+
+        SaveSlotInfo[] refreshed = null;
+        controller.OnSaveSlotListChanged += slots => refreshed = slots;
+
+        Assert.IsTrue(controller.DeleteSlot(2));
+
+        Assert.AreEqual(SaveSlotStatus.Empty, _fakeRepository.GetSlotInfo(2).Status);
+        Assert.IsNotNull(refreshed);
+        Assert.AreEqual(SaveSlotStatus.Empty, refreshed[1].Status);
+
+        Object.DestroyImmediate(playerRoot);
+        Object.Destroy(controllerObject);
+    }
+
+    [Test]
+    public void DeleteSlot_ActiveSlot_SessionKeepsPlaying_NextSaveTreatsItAsEmpty()
+    {
+        BeginPausedSession(1, MakeActiveSave());
+        var (playerRoot, stat, transform) = BuildPlayerFixture();
+        GameplaySessionController controller = BuildController(stat, transform, null, out GameObject controllerObject);
+
+        Assert.IsTrue(controller.DeleteSlot(1)); // delete the slot the live session is currently in
+
+        Assert.IsTrue(GameSessionManager.Instance.HasActiveSession, "Deleting the active slot's file must not tear down the live session.");
+        Assert.AreEqual(1, controller.ActiveSlotId, "DeleteSlot must never itself change which slot is active.");
+        Assert.IsFalse(controller.SlotRequiresOverwriteConfirm(1), "Slot 1 must now look Empty to a fresh save.");
+
+        int succeededCount = 0;
+        controller.OnSaveSucceeded += () => succeededCount++;
+        controller.RequestSaveToSlot(1);
+
+        Assert.AreEqual(1, succeededCount, "A save to the just-deleted active slot must go straight through as an Empty-slot save, not silently target a stale file.");
+
+        Object.DestroyImmediate(playerRoot);
+        Object.Destroy(controllerObject);
+    }
+
+    [Test]
+    public void DeleteSlot_DoesNotAffectOtherSlots()
+    {
+        _fakeRepository.WriteSave(2, MakeActiveSave("slot-2"));
+        _fakeRepository.WriteSave(3, MakeActiveSave("slot-3"));
+        BeginPausedSession(1, MakeActiveSave());
+        var (playerRoot, stat, transform) = BuildPlayerFixture();
+        GameplaySessionController controller = BuildController(stat, transform, null, out GameObject controllerObject);
+
+        Assert.IsTrue(controller.DeleteSlot(2));
+
+        Assert.AreEqual(SaveSlotStatus.Empty, _fakeRepository.GetSlotInfo(2).Status);
+        Assert.AreEqual(SaveSlotStatus.Valid, _fakeRepository.GetSlotInfo(3).Status, "Deleting slot 2 must never touch slot 3.");
+        Assert.IsTrue(_fakeRepository.TryReadSave(3, out GameSaveData slot3));
+        Assert.AreEqual("slot-3", slot3.saveId);
+
+        Object.DestroyImmediate(playerRoot);
+        Object.Destroy(controllerObject);
+    }
+
+    [Test]
+    public void DeleteSlot_WhileBusy_Rejected()
+    {
+        BeginPausedSession(1, MakeActiveSave());
+        var (playerRoot, stat, transform) = BuildPlayerFixture();
+        GameplaySessionController controller = BuildController(stat, transform, null, out GameObject controllerObject);
+        GameStateManager.Instance.PushState(GameState.Saving);
+
+        GameplaySessionOperationResult? failure = null;
+        controller.OnOperationFailed += (result, _) => failure = result;
+
+        Assert.IsFalse(controller.DeleteSlot(1));
+        Assert.AreEqual(GameplaySessionOperationResult.AlreadyBusy, failure);
+
+        GameStateManager.Instance.ReturnToPreviousState();
+        Object.DestroyImmediate(playerRoot);
+        Object.Destroy(controllerObject);
+    }
+
+    [Test]
+    public void CanSaveToSlot_And_SlotRequiresOverwriteConfirm_ReflectRealStatus()
+    {
+        _fakeRepository.WriteSave(2, MakeActiveSave("slot-2"));
+        BeginPausedSession(1, MakeActiveSave());
+        var (playerRoot, stat, transform) = BuildPlayerFixture();
+        GameplaySessionController controller = BuildController(stat, transform, null, out GameObject controllerObject);
+
+        Assert.IsTrue(controller.CanSaveToSlot(3));
+        Assert.IsFalse(controller.CanSaveToSlot(0), "Out-of-range slot ids are never saveable.");
+        Assert.IsFalse(controller.SlotRequiresOverwriteConfirm(3), "Slot 3 is Empty -- no confirm needed.");
+        Assert.IsTrue(controller.SlotRequiresOverwriteConfirm(2), "Slot 2 already holds data -- confirm needed.");
+
         Object.DestroyImmediate(playerRoot);
         Object.Destroy(controllerObject);
     }
