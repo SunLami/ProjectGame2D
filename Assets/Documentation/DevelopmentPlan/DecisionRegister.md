@@ -21,7 +21,8 @@ tiếp tục thiết kế; phải đổi thành `Accepted` trước phase implem
 | D-014 | Obtain objective semantics | **Accepted — 2026-08-22** | `ObtainObjectiveMode` field trên từng `QuestObjectiveDefinition`: `CountAcquired` (counter cộng dồn, không giảm khi dùng) hoặc `RequirePossession` (kiểm tra sở hữu hiện tại >= targetCount, không phải counter). Không có rule ngầm định toàn cục. | Phase 6 |
 | D-015 | Resource respawn clock | **Accepted — 2026-08-23** | `nextRespawnUtcTicks` lưu `DateTime.UtcNow.Ticks` tuyệt đối tại thời điểm harvest + respawn duration; `IsAvailable` so sánh trực tiếp với `DateTime.UtcNow.Ticks` hiện tại, không polling. Elapsed thời gian thật (kể cả lúc app đóng) tự nhiên được tính vì dùng UTC tuyệt đối, không phải in-game playtime tích lũy; chưa có catch-up/rate-limit/batch simulation đặc biệt cho khoảng offline dài. | Phase 8 |
 | D-016 | Save format | Proposed | JSON versioned + backup; cân nhắc compression/encryption sau | Phase 2 |
-| D-017 | Return Main Menu dirty state | Proposed | Prompt Save / Leave Without Saving / Cancel | Phase 9 |
+| D-017 | Return Main Menu dirty state | **Accepted — 2026-08-23** | Đúng theo proposed default: `GameplaySessionController.OnConfirmationRequired` khi dirty → Save and Return / Return Without Saving / Cancel; clean session Return trực tiếp không hỏi. | Phase 9 |
+| D-024 | Dirty-session event contract | **Accepted — 2026-08-23** | `SessionDirtyTracker` (scene service) đánh dấu dirty qua: `InventoryManager.OnInventoryChanged`, `EquipmentManager.OnEquipmentChanged`, `PlayerStat.OnLevelUp`/`OnExperienceChanged`, `TutorialManager.OnStepChanged`/`OnTutorialCompleted`, `QuestManager.QuestAccepted`/`QuestProgressChanged`/`QuestCompleted`/`MainQuestUnlocked`, `WorldDomainEvents.WorldObjectChanged` (mới). Player position/di chuyển đơn thuần **không** làm dirty. `GameSessionManager.MarkDirty()` tự no-op khi `IsRestoring == true` nên toàn bộ restore path (kể cả seed New Game) không bao giờ dirty giả. | Phase 9 |
 | D-018 | Settings ownership | Accepted kiến trúc | Shared SettingsService, hai navigation UI riêng | Phase 1 |
 | D-019 | Production world scene topology | Open | Chưa chốt một hay nhiều scene; save luôn dùng area/scene ID ổn định | Trước production world |
 | D-020 | Data loading backend | **Accepted — 2026-08-22** | Domain phụ thuộc `IItemResolver`; `ResourcesItemResolver` là backend migration ban đầu | Phase 4 |
@@ -103,6 +104,38 @@ respawn dong loat) -- de lai cho phase sau neu game design can gioi han.
 Anh huong: Assets/Scripts/World/ResourceNodeInteractable.cs, WorldObjectState.NextRespawnUtcTicks,
 WorldObjectSaveData.nextRespawnUtcTicks.
 ```
+
+## Chi tiết quyết định Phase 9 — 2026-08-23
+
+```text
+D-017 — Accepted — 2026-08-23 — Claude (Phase 9 baseline)
+Prompt xac nhan chi hien khi GameSessionManager.IsDirty == true. GameplaySessionController.
+RequestReturnToMainMenu()/RequestQuit() fire OnConfirmationRequired(kind) va khong tu lam gi khac --
+UI hien popup roi goi ConfirmSaveAndReturn/ConfirmReturnWithoutSaving/CancelReturnToMainMenu (hoac
+ban Quit tuong ung). Cancel khong doi GameState (dung "popup xac nhan la UI navigation con" cua
+UIAndInteractionFlows.md). Save-and-X chi thuc su chuyen scene/quit sau khi ghi file thanh cong;
+that bai giu nguyen Paused va bao OnOperationFailed.
+Anh huong: Assets/Scripts/GameManagers/GameplaySessionController.cs,
+GameplaySessionConfirmationKind.cs, GameplaySessionOperationResult.cs.
+
+D-024 — Accepted — 2026-08-23 — Claude (Phase 9 baseline)
+Ly do: RuntimeArchitecture.md "Event rules" da de nghi pattern IsRestoring nhung chua co
+implementation cu the cho dirty-tracking; task Phase 9 yeu cau de xuat contract toi thieu neu chua
+chot. Field/gameplay progression that su moi lam dirty; di chuyen don thuan khong dirty vi muc dich
+dirty-flag la canh bao "co the mat tien do chua luu khi roi gameplay", khong phai theo doi moi thay
+doi vi tri.
+Anh huong: Assets/Scripts/GameManagers/GameSessionManager.cs (IsDirty/IsRestoring/MarkDirty/
+ClearDirty/BeginRestore/EndRestore), SessionDirtyTracker.cs (moi), Assets/Scripts/World/
+WorldDomainEvents.cs (moi), PlayerSpawnReadinessSource.cs (boc RestoreAll trong BeginRestore/
+EndRestore).
+```
+
+**D-005 (Save khi combat) và D-012 (Autosave) vẫn `Proposed`, KHÔNG triển khai ở Phase 9:**
+project hiện chưa có khái niệm "combat state"/"danger area" nào trong `GameStateManager` hay domain
+khác để D-005 có thể bám vào (không có state/flag nào đánh dấu "đang combat"); D-012 (autosave) nằm
+ngoài phạm vi Phase 9 theo đúng ghi chú "Chưa có ở foundation; manual save trước" — Phase 9 chỉ làm
+manual Save Game. Không tự chế một cơ chế combat-lock để "xong" D-005 vì sẽ là quyết định gameplay
+chưa được xác nhận; để lại nguyên trạng cho phase sau khi có combat state thật.
 
 ## Những quyết định không được hard-code trước khi chốt
 

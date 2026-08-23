@@ -171,14 +171,18 @@ inventory/tutorial restore là extension point còn lại cho Phase 4/5 cắm th
 
 ### Return to Main Menu
 
-Ở Phase 1 chưa có dirty-session/save repository nên Pause Menu đi thẳng vào Loading. Bước
-`confirm save/leave choice` và optional Saving chỉ được bật khi Phase 9 triển khai D-017; không được
-tự động ghi đè save trước khi người chơi xác nhận.
+**Phase 9 implementation note (2026-08-23):** `GameplaySessionController.RequestReturnToMainMenu()`
+đi thẳng vào Loading nếu `GameSessionManager.IsDirty == false`; nếu dirty, fire
+`OnConfirmationRequired(ReturnToMainMenu)` và **không** đổi GameState (popup xác nhận là UI
+navigation con, không phải confirm-then-auto-Loading). UI gọi `ConfirmSaveAndReturn()` (chỉ
+Loading sau khi ghi save thành công), `ConfirmReturnWithoutSaving()` (Loading ngay) hoặc
+`CancelReturnToMainMenu()` (không đổi gì). Không tự động ghi đè save trước khi người chơi xác nhận,
+đúng D-017.
 
 ```text
 Paused
-→ confirm save/leave choice
-→ optional Saving
+→ confirm save/leave choice (chỉ hiện nếu session dirty; session clean bỏ qua bước này)
+→ optional Saving (chỉ khi chọn Save and Return)
 → GameState.Loading
 → close gameplay overlays and clear state history
 → unload active gameplay scene

@@ -261,6 +261,13 @@ resolve được được bỏ qua kèm warning thay vì làm hỏng toàn save.
 - Manual Save từ Pause Menu vào active slot.
 - Initial save sau New Game restore thành công.
 - Optional save khi Return Main Menu nếu người chơi xác nhận.
+- Optional save khi Quit Desktop nếu người chơi xác nhận.
 
 Chưa triển khai autosave định kỳ ở phase đầu. Khi thêm autosave, dùng cùng transaction/repository và
 không ghi đè manual backup mà không có policy riêng.
+
+**Phase 9 implementation note (2026-08-23):** cả 4 trigger trên đều đi qua cùng một điểm capture
+(`GameplaySessionController` → `PlayerSaveCapture` + từng domain `ToSaveData()` →
+`ISaveSlotRepository.WriteSave`), không có "hệ thống save thứ hai". Dirty-session tracking
+(`GameSessionManager.IsDirty`, xem D-024) quyết định khi nào Return/Quit cần hỏi xác nhận; save
+thành công luôn `ClearDirty()`. Chi tiết đầy đủ: [Phase9ImplementationReport.md](Phase9ImplementationReport.md).

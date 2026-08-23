@@ -65,6 +65,7 @@ public sealed class ResourceNodeInteractable : MonoBehaviour, IPersistentWorldOb
         _nextRespawnUtcTicks = DateTime.UtcNow.Ticks + TimeSpan.FromSeconds(_respawnSeconds).Ticks;
         ApplyVisual();
         granted = true;
+        WorldDomainEvents.RaiseWorldObjectChanged();
         return true;
     }
 

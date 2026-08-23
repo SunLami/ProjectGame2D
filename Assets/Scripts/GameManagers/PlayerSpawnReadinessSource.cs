@@ -45,7 +45,18 @@ public sealed class PlayerSpawnReadinessSource : MonoBehaviour, IGameplayReadine
 
         if (session.SaveData?.player != null)
         {
-            RestoreAll(session);
+            // SessionDirtyTracker (Phase 9) must never see a freshly restored session as dirty --
+            // RestoreProgression/RestoreEquipped/LoadFromSaveData/RestoreState all fire the same
+            // change events real gameplay does, so GameSessionManager.MarkDirty() checks IsRestoring.
+            GameSessionManager.Instance.BeginRestore();
+            try
+            {
+                RestoreAll(session);
+            }
+            finally
+            {
+                GameSessionManager.Instance.EndRestore();
+            }
 
             if (session.Kind == GameSessionKind.NewGame)
                 WriteInitialSave(session);
@@ -182,7 +193,9 @@ public sealed class PlayerSpawnReadinessSource : MonoBehaviour, IGameplayReadine
             snapshot.world = _worldRegistry.ToSaveData();
 
         SaveOperationResult result = repository.WriteSave(session.SlotId, snapshot);
-        if (!result.Success)
+        if (result.Success)
+            GameSessionManager.Instance.ClearDirty();
+        else
             Debug.LogError($"PlayerSpawnReadinessSource: initial save write failed: {result.ErrorMessage}", this);
     }
 

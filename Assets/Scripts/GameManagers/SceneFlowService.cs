@@ -89,13 +89,18 @@ public sealed class SceneFlowService : MonoBehaviour
         GameStateManager.Instance.ReplaceState(GameState.Loading);
 
         if (enterMainMenu)
-        {
             GameSessionManager.Instance.ClearSession();
 
-            GameplaySceneLifetime lifetime = FindAnyObjectByType<GameplaySceneLifetime>(FindObjectsInactive.Include);
-            if (lifetime != null)
-                lifetime.ReleaseForSceneExit();
-        }
+        // Always release any already-loaded gameplay scene's persistent singletons before loading
+        // the next scene -- required both for Return to Main Menu and for reloading gameplay
+        // in-place (Phase 9 Load Game slot switch: TryLoadGameplay called again while a gameplay
+        // scene, and its DontDestroyOnLoad managers, are already active). Without this, the new
+        // scene's own InventoryManager/etc. would self-destroy in Awake() because Instance is
+        // still the *previous* session's manager, leaking slot A's state into slot B. No-op when
+        // no gameplay scene was previously loaded (e.g. first load from MainMenu).
+        GameplaySceneLifetime lifetime = FindAnyObjectByType<GameplaySceneLifetime>(FindObjectsInactive.Include);
+        if (lifetime != null)
+            lifetime.ReleaseForSceneExit();
 
         AsyncOperation operation;
         try

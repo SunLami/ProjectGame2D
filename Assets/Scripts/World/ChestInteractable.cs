@@ -50,6 +50,7 @@ public sealed class ChestInteractable : MonoBehaviour, IPersistentWorldObject
         _opened = true;
         ApplyVisual();
         granted = true;
+        WorldDomainEvents.RaiseWorldObjectChanged();
         return true;
     }
 

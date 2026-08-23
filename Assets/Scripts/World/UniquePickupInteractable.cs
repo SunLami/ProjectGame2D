@@ -45,6 +45,7 @@ public sealed class UniquePickupInteractable : MonoBehaviour, IPersistentWorldOb
         _collected = true;
         ApplyVisual();
         granted = true;
+        WorldDomainEvents.RaiseWorldObjectChanged();
         return true;
     }
 

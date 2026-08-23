@@ -44,7 +44,11 @@ public sealed class BossDefeatTracker : MonoBehaviour, IPersistentWorldObject
             _boss.Died -= HandleDied;
     }
 
-    private void HandleDied() => _defeated = true;
+    private void HandleDied()
+    {
+        _defeated = true;
+        WorldDomainEvents.RaiseWorldObjectChanged();
+    }
 
     public WorldObjectState CaptureState() => new(_defeated, 0);
 

@@ -41,11 +41,29 @@ public sealed class GameSessionManager : MonoBehaviour
     public GameSession Current { get; private set; }
     public bool HasActiveSession => Current.IsActive;
 
+    /// <summary>True once real gameplay mutated session state since the last successful save (or
+    /// since the session started). Set by SessionDirtyTracker subscribing to domain events;
+    /// GameSessionManager itself does not know about Inventory/Quest/World -- see
+    /// ServiceOwnershipLifecycle.md "GameSessionManager | ... dirty/play time".</summary>
+    public bool IsDirty { get; private set; }
+
+    /// <summary>True while PlayerSpawnReadinessSource is applying a save snapshot to the scene.
+    /// Domain restore APIs (RestoreState/RestoreProgression/etc.) legitimately fire the same
+    /// change events real gameplay does; dirty-tracking must ignore them while this is true so a
+    /// freshly loaded/New Game session never starts dirty (RuntimeArchitecture.md "Event rules").</summary>
+    public bool IsRestoring { get; private set; }
+
     /// <summary>File-backed by default; tests substitute an in-memory repository via
     /// SetSaveRepositoryForTests so they never touch a real player save.</summary>
     public ISaveSlotRepository SaveRepository { get; private set; }
 
     public event Action<GameSession> SessionChanged;
+
+    /// <summary>Fires only on an actual Dirty/Clean transition, not on every mutation.</summary>
+    public event Action<bool> DirtyStateChanged;
+
+    private double _sessionStartRealtimeSeconds;
+    private long _sessionBaseTotalPlayTimeSeconds;
 
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
     private static void Bootstrap()
@@ -92,6 +110,42 @@ public sealed class GameSessionManager : MonoBehaviour
 
     public void ClearSession() => SetSession(default);
 
+    /// <summary>Marks the active session as having unsaved gameplay changes. Idempotent -- calling
+    /// it while already dirty is a no-op and does not re-fire DirtyStateChanged.</summary>
+    public void MarkDirty()
+    {
+        if (IsDirty || IsRestoring)
+            return;
+
+        IsDirty = true;
+        DirtyStateChanged?.Invoke(true);
+    }
+
+    /// <summary>Call after a successful save write. Idempotent.</summary>
+    public void ClearDirty()
+    {
+        if (!IsDirty)
+            return;
+
+        IsDirty = false;
+        DirtyStateChanged?.Invoke(false);
+    }
+
+    /// <summary>Wraps PlayerSpawnReadinessSource's restore pass so dirty-tracking (and any other
+    /// restore-sensitive listener) can tell "this change came from applying a save" apart from
+    /// real gameplay. Always pair with EndRestore in a try/finally at the call site.</summary>
+    public void BeginRestore() => IsRestoring = true;
+    public void EndRestore() => IsRestoring = false;
+
+    /// <summary>Total play time for the active session: whatever the loaded save already carried
+    /// (0 for New Game) plus real elapsed seconds since this session began. Recomputed on demand,
+    /// not ticked every frame.</summary>
+    public long GetTotalPlayTimeSeconds()
+    {
+        double elapsed = Time.realtimeSinceStartupAsDouble - _sessionStartRealtimeSeconds;
+        return _sessionBaseTotalPlayTimeSeconds + (long)Math.Max(0d, elapsed);
+    }
+
     internal void SetSaveRepositoryForTests(ISaveSlotRepository repository) => SaveRepository = repository;
 
     private bool TryStartSlotSession(GameSessionKind kind, int slotId, string gameplaySceneName, GameSaveData saveData)
@@ -109,6 +163,10 @@ public sealed class GameSessionManager : MonoBehaviour
     private void SetSession(GameSession session)
     {
         Current = session;
+        IsDirty = false;
+        IsRestoring = false;
+        _sessionBaseTotalPlayTimeSeconds = session.SaveData?.totalPlayTimeSeconds ?? 0;
+        _sessionStartRealtimeSeconds = Time.realtimeSinceStartupAsDouble;
         SessionChanged?.Invoke(Current);
     }
 

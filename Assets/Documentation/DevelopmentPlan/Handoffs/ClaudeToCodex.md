@@ -1,9 +1,128 @@
 # Claude → Codex Handoff
 
-Status: `READY_FOR_CODEX_SCENE_INTEGRATION`
+Status: `READY_FOR_CODEX_UI`
 
 Ngày: 2026-08-23
-Feature: Phase 8 — World Persistence backend (không cần UI mới; cần scene/prefab visual)
+Feature: Phase 9 — Save/Load/Return/Quit backend (Pause Menu Save/Load/Return/Quit UI cần Codex dựng)
+
+## Bối cảnh
+
+Phase 9 Save/Load/Return/Quit backend đã hoàn tất và tự vận hành đúng (48/48 EditMode, 118/118
+PlayMode PASS, Content Validation 0 error, DemoScene validator 0 issue, verify sống end-to-end qua
+`execute_code` bao gồm reload `DemoScene` thật hai lần liên tiếp để chứng minh không rò dữ liệu giữa
+slot). Chi tiết kiến trúc đầy đủ: [Phase9ImplementationReport.md](../Phase9ImplementationReport.md).
+
+Việc cần Codex làm: thêm nút/UI Save Game, Load Game, Return Main Menu và Quit Desktop vào
+`PauseMenuUI` hiện có (`Assets/Scripts/UI/PauseMenuUI.cs`), cùng slot overlay cho Load Game và popup
+3 lựa chọn cho Return/Quit khi dirty. Toàn bộ logic/state/file I/O đã có sẵn qua
+`GameplaySessionController`.
+
+## Contract phía Claude cung cấp (đã có sẵn, không cần đổi)
+
+### GameplaySessionController (`Assets/Scripts/GameManagers/GameplaySessionController.cs`)
+
+Đã gắn sẵn trên `_SceneContext` trong DemoScene, không cần tạo GameObject mới.
+
+```csharp
+public int ActiveSlotId { get; }
+public bool IsDirty { get; }
+public bool IsBusy { get; }   // true khi GameState là Saving hoặc Loading -- disable mọi nút Save/Load/Return/Quit khi true
+
+public SaveSlotInfo[] RefreshSlots();   // đọc lại cả 3 slot, cũng tự fire OnSaveSlotListChanged
+public bool CanLoad(int slotId);        // true chỉ khi slot đó Status == Valid
+
+public bool RequestSave();
+public bool RequestLoad(int slotId);
+
+public void RequestReturnToMainMenu();          // clean -> return ngay; dirty -> fire OnConfirmationRequired, KHÔNG tự làm gì khác
+public void ConfirmSaveAndReturn();             // chỉ Return sau khi save thật thành công
+public void ConfirmReturnWithoutSaving();
+public void CancelReturnToMainMenu();           // đóng popup, không đổi gì khác
+
+public void RequestQuit();                      // clean -> quit ngay; dirty -> fire OnConfirmationRequired
+public void ConfirmSaveAndQuit();
+public void ConfirmQuitWithoutSaving();
+public void CancelQuit();
+```
+
+Event/read-model:
+
+```csharp
+public event Action<SaveSlotInfo[]> OnSaveSlotListChanged;
+public event Action OnSaveSucceeded;                                          // đã refresh slot xong khi fire
+public event Action<GameplaySessionOperationResult, string> OnOperationFailed; // (lý do, message hiển thị được)
+public event Action<GameplaySessionConfirmationKind> OnConfirmationRequired;   // ReturnToMainMenu hoặc Quit
+```
+
+`GameplaySessionOperationResult`: `Success`, `NoActiveSession`, `AlreadyBusy`, `SlotNotValid`,
+`ReadFailed`, `WriteFailed`, `TransitionFailed` -- map từng giá trị sang message UI nếu muốn custom
+hơn string mặc định đi kèm (string thứ hai trong `OnOperationFailed` đã là message thân thiện sẵn
+dùng được luôn, không bắt buộc phải tự viết theo enum).
+
+`GameplaySessionConfirmationKind`: `ReturnToMainMenu`, `Quit` -- dùng để chọn đúng popup 3 nút hiện
+(nội dung khác nhau: "Save and Return"/"Return Without Saving"/"Cancel" vs "Save and Quit"/"Quit
+Without Saving"/"Cancel"), gọi đúng `Confirm*`/`Cancel*` method tương ứng.
+
+**Quan trọng**: `OnConfirmationRequired` **không** đổi `GameState` -- lúc này vẫn `Paused`. Popup chỉ
+là UI navigation con (đúng `UIAndInteractionFlows.md`), không tạo `GameplayMenuPage` mới nếu không
+cần. `Cancel*` cũng không đổi gì backend, chỉ cần đóng popup phía UI.
+
+## Slot presentation dùng chung với MainMenu
+
+`SaveSlotInfo`/`SaveSlotStatus`/`SaveSlotMetadata` là đúng type Codex đã dùng để dựng
+`MainMenuSaveSlotsUI.cs` ở Phase 3 -- Load Game overlay trong gameplay có thể tái dùng cùng
+presentation logic (Empty/Valid/Corrupted/IncompatibleVersion, level/area/playtime/last-saved) thay
+vì tự viết lại. Điểm khác duy nhất: `GameplaySessionController.ActiveSlotId` cho biết slot nào đang
+active để UI hiển thị rõ (theo `UIAndInteractionFlows.md`: "Load Game hiển thị ba slot nhưng phân
+biệt rõ active slot").
+
+## Việc Codex KHÔNG cần làm
+
+- Không cần đổi bất kỳ script nào trong `Assets/Scripts/GameManagers/GameplaySessionController.cs`,
+  `SessionDirtyTracker.cs`, `GameSessionManager.cs`, `SceneFlowService.cs` -- nếu cần API/field mới,
+  báo lại Claude qua `CodexToClaude.md`.
+- Không cần tự capture save data hay gọi `ISaveSlotRepository` trực tiếp -- `RequestSave()` đã làm
+  toàn bộ, UI chỉ gọi và lắng nghe event.
+- Không cần tự theo dõi dirty state bằng tay -- đọc `controller.IsDirty` hoặc lắng nghe
+  `GameSessionManager.Instance.DirtyStateChanged` nếu muốn hiển thị icon "unsaved changes" trong
+  Pause Menu.
+- Không cần lo về việc rò dữ liệu giữa các slot khi Load -- `SceneFlowService` đã được sửa để luôn
+  teardown session cũ trước khi load session mới, verify sống bằng scene reload thật.
+- Không gọi `Application.Quit()` trực tiếp -- không cần, `RequestQuit()`/`Confirm*Quit` đã dùng
+  `IApplicationQuitter` nội bộ đúng yêu cầu testability.
+- Không chỉnh `QuestUIRoot`, `CommerceUIRoot`, Inventory UI, Tutorial UI, MainMenu UI, hay layout/
+  hierarchy hiện có của `PauseMenuUI` ngoài phần thêm mới cho Save/Load/Return/Quit.
+
+## Test cần có phía Codex (nếu theo đúng quy trình Quality Strategy)
+
+- Manual: mở Pause → Save Game → thông báo thành công, timestamp/metadata cập nhật (kiểm tra lại
+  qua Load Game overlay hoặc MainMenu).
+- Manual: mở Pause → Load Game → chọn slot khác → xác nhận scene load lại, state cũ (inventory/
+  quest/world) đúng của slot mới, không dính state slot cũ.
+- Manual: chọn slot Corrupted/Empty trong Load Game overlay → bị disable hoặc hiện lỗi rõ, không
+  crash.
+- Manual: thay đổi gì đó (nhặt item, giết enemy, mở chest...) → `IsDirty == true` → bấm Return Main
+  Menu → popup 3 lựa chọn hiện đúng. Test cả ba nhánh (Save and Return, Return Without Saving,
+  Cancel).
+- Manual: tương tự cho Quit Desktop (không cần thật sự quit app khi test bằng Editor Play Mode --
+  `Application.Quit()` không có tác dụng trong Editor, chỉ log; đây là hành vi Unity bình thường,
+  không phải bug).
+- Manual: spam Save/Load/Return/Quit trong lúc `IsBusy == true` → chỉ một operation chạy, các lần
+  bấm thêm bị từ chối êm (không crash, không double transition).
+
+## Phạm vi Claude không chỉnh trực tiếp
+
+Toàn bộ Canvas/hierarchy/layout/font/màu cho Save/Load/Return/Quit UI trong Pause Menu thuộc Codex.
+Khi xong, cập nhật `CodexToClaude.md` để Claude biết UI đã sẵn sàng (không cần thay đổi gì phía
+backend trừ khi phát sinh gap mới).
+
+---
+
+# Phase 8 — World Persistence backend (không cần UI mới; cần scene/prefab visual)
+
+Status: `READY_FOR_CODEX_SCENE_INTEGRATION` (đã `VERIFIED` bởi Codex, xem `CodexToClaude.md`)
+
+Ngày: 2026-08-23
 
 ## Bối cảnh
 
