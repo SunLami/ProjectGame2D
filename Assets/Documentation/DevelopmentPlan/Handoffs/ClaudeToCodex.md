@@ -1,6 +1,98 @@
 # Claude → Codex Handoff
 
-Status: `CONTENT_READY`
+Status: `READY_FOR_CODEX_FINAL_QUEST_VERIFICATION`
+
+Ngày: 2026-08-23
+Feature: Fix PlayMode test isolation cho `GameInputCoordinatorPlayModeTests` (2 test FAIL trong full suite khi có quest content mới)
+
+## Root cause
+
+**Không phải bug production, không liên quan gì tới quest content mới.** Đây là lỗi cô lập test
+(test isolation) giữa `GameInputCoordinatorPlayModeTests` và các test class khác trong project.
+
+Cả `Assets/Scenes/MainMenu.unity` và `Assets/Scenes/DemoScene.unity` đều có **component
+`GameInputCoordinator` thật**, wire vào đúng project asset thật
+(`Assets/Settings/InputSystem_Actions.inputactions`, guid `2bcd2660ca9b64942af0de543d8d7100`) —
+xác nhận trực tiếp trong `MainMenu.unity` dòng 2263 (`_projectActions: {..., guid:
+2bcd2660ca9b64942af0de543d8d7100}`).
+
+Khi `GameplaySessionControllerPlayModeTests` chạy các `[UnityTest]` load scene thật (ví dụ
+`RequestReturnToMainMenu_WhenClean_ReturnsDirectlyWithoutConfirmation`,
+`RequestLoad_DifferentSlot_RealSceneReload_...`), scene `MainMenu.unity` được load thật qua
+`SceneManager.LoadSceneAsync("MainMenu", Single)` và **đúng theo thiết kế** — test kết thúc ở đó,
+không có "scene trống" nào để quay về. Vì project tắt domain reload
+(`ProjectSettings/EditorSettings.asset: m_EnterPlayModeOptions: 1`), MainMenu's
+`GameInputCoordinator` **vẫn sống và enabled** cho tới hết session Play, tức là còn tồn tại khi
+`GameInputCoordinatorPlayModeTests` chạy sau đó trong cùng full-suite run.
+
+Binding `<Keyboard>/escape` của `UI/Cancel` khớp với **bất kỳ** thiết bị keyboard nào, kể cả
+`Keyboard` mà `GameInputCoordinatorPlayModeTests.SetUp()` tự tạo. Khi test giả lập một lần nhấn
+Escape thật qua `InputSystem.QueueStateEvent`, **cả hai coordinator** (một từ MainMenu leftover,
+một từ fixture của test) đều nhận callback `HandleCancelPerformed`:
+
+1. Coordinator đầu tiên fire: `CurrentState == Playing` → `Pause()` → `Paused`.
+2. Coordinator thứ hai fire (cùng frame): `CurrentState == Paused` → `ReturnToPreviousState()` →
+   pop lại `Playing`.
+
+Kết quả cuối: `Playing` — đúng khớp `Expected: Paused, Actual: Playing` đã báo cáo. Đây là hành vi
+**giống hệt** triệu chứng double-subscribe thật, nhưng nguyên nhân là hai *instance* coordinator
+khác nhau (một sống sót từ scene load thật của test class khác), không phải một component
+double-subscribe với chính nó.
+
+**Vì sao đúng "PASS khi chạy riêng, FAIL khi chạy full suite":** khi chỉ chạy riêng
+`GameInputCoordinatorPlayModeTests`, không có test nào khác load MainMenu/DemoScene thật trước đó,
+nên không có coordinator leftover nào tồn tại — chỉ có đúng một coordinator (của fixture) phản ứng
+Escape, PASS bình thường.
+
+**Vì sao đây không phải bug production:** Physical Player build acceptance (24/24 bước PASS, xem
+`Phase10ImplementationReport.md § Part 7 final acceptance`) đã xác nhận Escape hoạt động đúng trong
+gameplay thật — nơi tại một thời điểm luôn chỉ có đúng MỘT `GameInputCoordinator` sống (scene cũ bị
+Unity destroy hoàn toàn trước khi scene mới hoàn tất load, do `LoadSceneMode.Single`). Tình huống
+"hai coordinator cùng sống" chỉ xảy ra trong PlayMode test session (domain reload tắt + nhiều test
+class load scene thật nối tiếp nhau), không xảy ra trong Player build thật.
+
+## File đã sửa
+
+- `Assets/Scripts/Tests/PlayMode/GameInputCoordinatorPlayModeTests.cs` — **chỉ sửa test, không đụng
+  bất kỳ production code nào** (`GameInputCoordinator.cs` giữ nguyên 100% so với lần review trước).
+  - `[SetUp]`: quét `Object.FindObjectsByType<GameInputCoordinator>(FindObjectsInactive.Exclude, ...)`
+    trước khi tạo fixture; tạm `SetActive(false)` mọi coordinator đang sống tìm thấy (leftover từ
+    scene thật của test class khác), lưu lại trong `_suppressedCoordinators`.
+  - `[TearDown]`: `SetActive(true)` lại đúng những GameObject đã suppress, không để chúng bị vô hiệu
+    hoá vĩnh viễn cho các test chạy sau.
+  - Thêm `[OneTimeSetUp]`/`[OneTimeTearDown]`: tạo một `_leakedSceneCoordinator` giả lập (một
+    `GameInputCoordinator` sống xuyên suốt cả fixture, y hệt leftover thật) để cơ chế suppress được
+    test xác định (deterministic), không còn phụ thuộc vào việc test class khác có tình cờ chạy
+    trước hay không.
+  - Test mới: `SetUp_SuppressesLeftoverSceneCoordinator_TearDownRestoresIt` — assert trực tiếp cơ
+    chế suppress/restore hoạt động đúng, thay vì chỉ suy luận gián tiếp qua hai test kia có pass hay
+    không.
+
+## Verification
+
+- `GameInputCoordinatorPlayModeTests` chạy riêng: **3/3 PASS** (2 test cũ + 1 test mới).
+- EditMode full suite: **58/58 PASS**.
+- PlayMode full suite: **142/142 PASS** — chạy **hai lần liên tiếp** để đối chứng đúng cách Codex đã
+  tái hiện lỗi (báo cáo gốc nói lỗi lặp lại ở 2 lần chạy) — cả hai lần đều xanh, không còn flake.
+- Content Validation: 0 error, 60 legacy warning (không đổi), **84 asset** (khớp số Codex báo cáo
+  sau khi thêm quest mới).
+- DemoScene validator: 0 issue.
+- Xác nhận quest content không bị đụng: `Assets/Quests/Definitions/Quest_SidePotionSupply001.asset`
+  vẫn tồn tại, `questId: quest.side.potion_supply.001` còn nguyên trong file.
+- Không tự chạy lại physical Player build test (không cần thiết — không có gì thay đổi trong
+  production code/scene/Pause behavior, chỉ sửa test isolation).
+
+## Kết luận
+
+Fix đã đóng gap. Status `READY_FOR_CODEX_FINAL_QUEST_VERIFICATION` — theo đúng yêu cầu, Codex chạy
+lại full regression một lần nữa phía mình rồi đổi mục quest `quest.side.potion_supply.001` từ
+`BACKEND_GAP_FOUND` sang `VERIFIED` trong `CodexToClaude.md`.
+
+---
+
+# Phase 10 — Hardening và content-ready milestone (lịch sử — đã CONTENT_READY, xem mục review Save Game slot picker bên dưới)
+
+Status (khi mục này được tạo): `CONTENT_READY`
 
 Ngày: 2026-08-23
 Feature: Phase 10 — Hardening và content-ready milestone — **ĐÃ ĐÓNG**
