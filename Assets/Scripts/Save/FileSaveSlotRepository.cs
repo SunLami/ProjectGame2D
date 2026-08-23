@@ -169,10 +169,14 @@ public sealed class FileSaveSlotRepository : ISaveSlotRepository
 
         if (parsed.saveVersion < GameSaveData.CurrentSaveVersion)
         {
-            // No migration pipeline yet (Phase 10); treat older shapes as incompatible rather
-            // than silently loading a partially-understood save.
-            status = SaveSlotStatus.IncompatibleVersion;
-            return false;
+            if (!SaveMigration.CanMigrate(parsed.saveVersion))
+            {
+                // Older than any version this pipeline understands -- do not guess at its shape.
+                status = SaveSlotStatus.IncompatibleVersion;
+                return false;
+            }
+
+            parsed = SaveMigration.Migrate(parsed);
         }
 
         data = parsed;

@@ -1,6 +1,60 @@
 # Claude → Codex Handoff
 
-Status: `READY_FOR_CODEX_UI`
+Status: `READY_FOR_CODEX_VERIFICATION`
+
+Ngày: 2026-08-23
+Feature: Phase 10 — Hardening và content-ready milestone (không có UI mới cần dựng; chỉ cần verification thủ công)
+
+## Bối cảnh
+
+Phase 10 là audit/hardening, **không phải feature phase** — không có UI mới nào cần Codex dựng. Toàn
+bộ chi tiết: [Phase10ImplementationReport.md](../Phase10ImplementationReport.md).
+
+Đã hoàn tất và verify:
+- Save migration pipeline (V1→Current, mọi save cũ được nâng cấp an toàn khi load, không rewrite file
+  cho tới lần save thật tiếp theo).
+- Soak test thật (120 chu kỳ save/load cùng slot, A→B→C, world snapshot 60 object, teardown/recreate)
+  — tất cả PASS, kết quả số liệu thật trong report.
+- Profiling baseline thật cho từng giai đoạn save pipeline (serialize/write/read/migration riêng biệt).
+- Recovery UX backend contract: **đã đủ, không cần Codex build UI mới.** `MainMenuController` +
+  `SaveSlotInfo.Status` (`Empty`/`Valid`/`Corrupted`/`IncompatibleVersion`) đã cung cấp mọi thứ cần để
+  UI phân biệt corrupted/incompatible/empty và gọi `DeleteSlot`/`RefreshSlots` — xem Part 6 trong report
+  nếu muốn build màn hình recovery đẹp hơn sau này, nhưng không bắt buộc cho content-ready.
+- 6 tài liệu authoring content (item/quest/shop-recipe/persistent world entity/area-spawn/scene
+  integration): [ContentAuthoringGuide.md](../ContentAuthoringGuide.md).
+- Full regression: 58/58 EditMode, 119/119 PlayMode, Content Validation 0 error, DemoScene validator
+  0 issue.
+- Player build (Windows64): **build thành công, 0 error/0 warning**, nhưng click-through smoke test
+  (New Game→DemoScene→Save→Return→Continue→Quit) **chưa verify được** trong môi trường automation này
+  (cửa sổ game không capture/điều khiển được qua remote automation ở đây — không phải lỗi build/code,
+  xem Part 7 trong report).
+
+## Việc cần Codex/user làm (chỉ verification thủ công, không phải code mới)
+
+1. Chạy build đã có sẵn tại `C:\Users\havin\Phase10PlayerBuild\ProjectGame2D.exe` trên máy thật (không
+   phải qua remote automation), hoặc build lại từ Build Settings hiện tại (MainMenu index 0, DemoScene
+   index 1 — không đổi).
+2. Click-through: Launch → MainMenu → New Game (chọn slot **trống**, không phải Slot 1 — Slot 1 trên
+   máy dev hiện đang giữ save thật `IncompatibleVersion` từ trước Phase 6, không được ghi đè) →
+   DemoScene → Save → Return Main Menu → Continue (đúng slot vừa save) → xác nhận vị trí/inventory/
+   quest/tutorial/world state đúng → (tuỳ chọn) Load một slot khác nếu có fixture an toàn → Quit
+   Desktop.
+3. Báo lại kết quả PASS/FAIL. Nếu PASS, Phase 10 chuyển thành `CONTENT_READY`.
+4. Gamepad manual verification vẫn là action item tồn đọng từ mọi phase trước — không mới ở Phase 10.
+
+## Việc Codex KHÔNG cần làm
+
+- Không cần dựng Recovery UI mới (Corrupted/Incompatible screens) — không bắt buộc cho content-ready
+  bar hiện tại; contract đã sẵn sàng nếu muốn làm sau.
+- Không cần sửa `PauseMenuUI`, `QuestUIRoot`, `CommerceUIRoot`, Inventory UI, Tutorial UI hay bất kỳ
+  world visual nào — Phase 10 không chạm layout của bất kỳ UI nào trong số này.
+- Không cần thêm gameplay feature mới.
+
+---
+
+# Phase 9 — Save/Load/Return/Quit backend (Pause Menu Save/Load/Return/Quit UI cần Codex dựng)
+
+Status (khi phase này bắt đầu): `READY_FOR_CODEX_UI`
 
 Ngày: 2026-08-23
 Feature: Phase 9 — Save/Load/Return/Quit backend (Pause Menu Save/Load/Return/Quit UI cần Codex dựng)

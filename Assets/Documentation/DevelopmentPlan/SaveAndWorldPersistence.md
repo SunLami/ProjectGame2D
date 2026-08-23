@@ -171,10 +171,16 @@ V1 → V2 → V3 → Current
 
 Không viết migration `V1 → Current` riêng cho mỗi version vì dễ thiếu đường nâng cấp.
 
-**Phase 2 hiện trạng:** chưa có migration pipeline (thuộc Phase 10). `FileSaveSlotRepository` hiện chỉ
-chấp nhận `saveVersion == GameSaveData.CurrentSaveVersion`; mọi version khác (cũ hơn hoặc mới hơn) đều
-báo `SaveSlotStatus.IncompatibleVersion` thay vì cố load một phần, đúng nguyên tắc "không load/overwrite
-âm thầm" ở trên.
+**Phase 10 hiện trạng (2026-08-23):** migration pipeline đã tồn tại — `ISaveMigrationStep`/
+`SaveMigration` (`Assets/Scripts/Save/`) chạy chuỗi N→N+1 additive-default cho mọi version từ
+`SaveMigration.MinimumSupportedVersion` (hiện = 1) đến `GameSaveData.CurrentSaveVersion`. Mỗi step chỉ
+điền default kiểu `NewGameFactory.CreateDefault()` cho field null, không đụng field đã có sẵn.
+`FileSaveSlotRepository.TryLoadValid` gọi `SaveMigration.CanMigrate`/`Migrate` khi
+`saveVersion < CurrentSaveVersion`; nếu `CanMigrate` false (cũ hơn `MinimumSupportedVersion`) hoặc
+`saveVersion > CurrentSaveVersion`, vẫn báo `SaveSlotStatus.IncompatibleVersion` chứ không đoán shape —
+nguyên tắc "không load/overwrite âm thầm" giữ nguyên. Migration chỉ chạy in-memory tại thời điểm đọc,
+**không** rewrite file trên đĩa; chỉ một lần ghi save thật (New Game/Save Game) mới nâng version đã lưu
+trên đĩa. Xem [D-025](DecisionRegister.md) và [Phase10ImplementationReport.md](Phase10ImplementationReport.md).
 
 **Phase 3 hiện trạng (2026-08-22):** thêm `PlayerSaveData` (`level`, `currentExperience`, `health`,
 `location`) và `PlayerLocationSaveData` (`sceneId`, `areaId`, `positionX`, `positionY`,

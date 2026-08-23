@@ -37,6 +37,8 @@ cập nhật tài liệu liên quan trước hoặc cùng lúc với code.
 12f. [Phase 7 Implementation Report](Phase7ImplementationReport.md): Shop/Crafting backend (ShopService, CraftingService, quest integration).
 12g. [Phase 8 Implementation Report](Phase8ImplementationReport.md): World persistence backend (WorldObjectRegistry, persistent chest/pickup/boss/resource node, save/restore, MapManager rebind).
 12h. [Phase 9 Implementation Report](Phase9ImplementationReport.md): Save/Load/Return/Quit backend (GameplaySessionController, dirty-session tracking, SceneFlowService slot-leak fix).
+12i. [Phase 10 Implementation Report](Phase10ImplementationReport.md): Hardening và content-ready audit (save migration pipeline, soak test, profiling, recovery contract, build verification, authoring docs).
+12j. [Content Authoring Guide](ContentAuthoringGuide.md): hướng dẫn thao tác cụ thể thêm item/quest/shop/recipe/world entity/area-spawn mà không sửa manager core.
 13. [Typography Standard](Typography.md): Digital Disco là font family chuẩn, TMP default và attribution bắt buộc.
 12. [Service Ownership and Lifecycle](ServiceOwnershipLifecycle.md): inventory singleton, scene reference và lifecycle đích.
 13. [Input System Inventory](InputSystemInventory.md): action maps, scene bindings và migration gate cho MainMenu.

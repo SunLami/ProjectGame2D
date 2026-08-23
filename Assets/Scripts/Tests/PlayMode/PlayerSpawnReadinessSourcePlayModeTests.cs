@@ -418,6 +418,34 @@ public sealed class PlayerSpawnReadinessSourcePlayModeTests
     }
 
     [UnityTest]
+    public IEnumerator MigratedV1Save_RestoresWithoutThrowing_AndSpawnsAtTutorialDefault()
+    {
+        var (root, stat, playerTransform, registry) = BuildFixture(new Vector3(9f, 9f, 0f));
+
+        // A real Phase 2-era save: only saveVersion/saveId/totalPlayTimeSeconds ever existed.
+        GameSaveData legacy = new() { saveVersion = 1, saveId = "legacy-v1", totalPlayTimeSeconds = 30 };
+        GameSaveData migrated = SaveMigration.Migrate(legacy);
+
+        Assert.IsTrue(GameSessionManager.Instance.TryStartLoadedGame(1, "TestScene", migrated));
+
+        GameObject sourceObject = new("PlayerSpawnReadinessSource");
+        PlayerSpawnReadinessSource source = sourceObject.AddComponent<PlayerSpawnReadinessSource>();
+        source.ConfigureForTests(stat, playerTransform, registry);
+
+        yield return null;
+
+        Assert.IsTrue(source.IsReady, "A migrated legacy save must still complete restore, not stall the readiness gate.");
+        Assert.AreEqual(1, stat.Level, "Migrated defaults match NewGameFactory -- level 1.");
+        // BuildFixture registered NewGameFactory.TutorialStartSpawnId at (9,9,0); migration's
+        // synthesized location has no saved position (NaN), so restore must fall back to it.
+        Assert.AreEqual(9f, playerTransform.position.x, 0.001f);
+        Assert.AreEqual(9f, playerTransform.position.y, 0.001f);
+
+        Object.Destroy(root);
+        Object.Destroy(sourceObject);
+    }
+
+    [UnityTest]
     public IEnumerator NoActiveSession_ReportsReadyWithoutTouchingPlayer()
     {
         var (root, stat, playerTransform, registry) = BuildFixture(new Vector3(9f, 9f, 0f));

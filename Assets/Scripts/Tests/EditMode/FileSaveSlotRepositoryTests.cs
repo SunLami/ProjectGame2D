@@ -150,6 +150,55 @@ public sealed class FileSaveSlotRepositoryTests
     }
 
     [Test]
+    public void OlderSupportedSaveVersion_MigratesAndLoadsAsValid()
+    {
+        string slotDir = Path.Combine(_rootPath, "Slot1");
+        Directory.CreateDirectory(slotDir);
+        // A real Phase 2-era save: only saveVersion/saveId/totalPlayTimeSeconds existed.
+        File.WriteAllText(Path.Combine(slotDir, "save.json"),
+            "{\"saveVersion\":1,\"saveId\":\"legacy-save\",\"totalPlayTimeSeconds\":77}");
+
+        SaveSlotInfo info = _repository.GetSlotInfo(1);
+        Assert.AreEqual(SaveSlotStatus.Valid, info.Status, "A save from a supported older version must load, not be treated as incompatible.");
+        Assert.AreEqual("legacy-save", info.Metadata.saveId);
+
+        Assert.IsTrue(_repository.TryReadSave(1, out GameSaveData data));
+        Assert.AreEqual(GameSaveData.CurrentSaveVersion, data.saveVersion);
+        Assert.AreEqual(77, data.totalPlayTimeSeconds);
+        Assert.IsNotNull(data.player, "Migration must synthesize a default player instead of leaving restore with nothing to work from.");
+        Assert.IsNotNull(data.inventory);
+        Assert.IsNotNull(data.world);
+    }
+
+    [Test]
+    public void OlderSaveVersion_DoesNotRewriteTheFileOnDisk()
+    {
+        string slotDir = Path.Combine(_rootPath, "Slot1");
+        Directory.CreateDirectory(slotDir);
+        string original = "{\"saveVersion\":1,\"saveId\":\"legacy-save\",\"totalPlayTimeSeconds\":0}";
+        File.WriteAllText(Path.Combine(slotDir, "save.json"), original);
+
+        _repository.GetSlotInfo(1);
+        _repository.TryReadSave(1, out _);
+
+        Assert.AreEqual(original, File.ReadAllText(Path.Combine(slotDir, "save.json")),
+            "Merely reading/migrating in memory must never rewrite the player's save file; only an explicit save write should persist the upgraded shape.");
+    }
+
+    [Test]
+    public void BelowMinimumSupportedVersion_ReturnsIncompatibleAndDoesNotLoad()
+    {
+        string slotDir = Path.Combine(_rootPath, "Slot1");
+        Directory.CreateDirectory(slotDir);
+        File.WriteAllText(Path.Combine(slotDir, "save.json"),
+            "{\"saveVersion\":0,\"saveId\":\"too-old\",\"totalPlayTimeSeconds\":0}");
+
+        SaveSlotInfo info = _repository.GetSlotInfo(1);
+        Assert.AreEqual(SaveSlotStatus.IncompatibleVersion, info.Status);
+        Assert.IsFalse(_repository.TryReadSave(1, out _));
+    }
+
+    [Test]
     public void WriteFailure_DoesNotDestroyExistingValidSave()
     {
         _repository.WriteSave(1, MakeSave("save-good"));
