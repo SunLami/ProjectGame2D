@@ -29,6 +29,16 @@ cập nhật tài liệu liên quan trước hoặc cùng lúc với code.
 10. [GameStateManager Architecture](../GameStateManager.md): implementation state coordination hiện tại và migration đích.
 11. [Phase 0 Baseline Report](Phase0BaselineReport.md): snapshot kiểm tra DemoScene, Build Settings và các việc còn lại.
 12. [Phase 1 Implementation Report](Phase1ImplementationReport.md): trạng thái triển khai bootstrap, state, session và scene flow.
+12a. [Phase 2 Implementation Report](Phase2ImplementationReport.md): trạng thái triển khai save slot repository/file foundation.
+12b. [Phase 3 Implementation Report](Phase3ImplementationReport.md): trạng thái New Game/Continue, SpawnRegistry và Player restore.
+12c. [Phase 4 Implementation Report](Phase4ImplementationReport.md): trạng thái Inventory/Equipment/Stat persistence.
+12d. [Phase 5 Implementation Report](Phase5ImplementationReport.md): trạng thái Input tutorial (TutorialManager, domain event, save/restore, AreaTriggerZone).
+12e. [Phase 6 Implementation Report](Phase6ImplementationReport.md): Quest backend (definitions, runtime, save, objective events, NPC service).
+12f. [Phase 7 Implementation Report](Phase7ImplementationReport.md): Shop/Crafting backend (ShopService, CraftingService, quest integration).
+12g. [Phase 8 Implementation Report](Phase8ImplementationReport.md): World persistence backend (WorldObjectRegistry, persistent chest/pickup/boss/resource node, save/restore, MapManager rebind).
+12h. [Phase 9 Implementation Report](Phase9ImplementationReport.md): Save/Load/Return/Quit backend (GameplaySessionController, dirty-session tracking, SceneFlowService slot-leak fix).
+12i. [Phase 10 Implementation Report](Phase10ImplementationReport.md): Hardening và content-ready audit (save migration pipeline, soak test, profiling, recovery contract, build verification, authoring docs).
+12j. [Content Authoring Guide](ContentAuthoringGuide.md): hướng dẫn thao tác cụ thể thêm item/quest/shop/recipe/world entity/area-spawn mà không sửa manager core.
 13. [Typography Standard](Typography.md): Digital Disco là font family chuẩn, TMP default và attribution bắt buộc.
 12. [Service Ownership and Lifecycle](ServiceOwnershipLifecycle.md): inventory singleton, scene reference và lifecycle đích.
 13. [Input System Inventory](InputSystemInventory.md): action maps, scene bindings và migration gate cho MainMenu.
@@ -56,8 +66,16 @@ cập nhật tài liệu liên quan trước hoặc cùng lúc với code.
   MainMenu/DemoScene và khóa gameplay input theo state.
 - Return Main Menu từ Pause Menu đã load qua SceneFlowService, clear session và teardown gameplay roots
   được đăng ký trong DemoScene `_SceneContext`.
-- Save hiện mới có DTO inventory thử nghiệm, chưa phải hệ thống save slot hoàn chỉnh.
+- Save đã là hệ thống save slot hoàn chỉnh: 3 slot, atomic write/backup, migration V1→Current, Save
+  Game slot picker (Empty/Overwrite/Save As/Delete) trong Pause Menu. Chi tiết:
+  [SaveAndWorldPersistence.md](SaveAndWorldPersistence.md).
 - Build Settings hiện dùng `MainMenu` index 0 và `DemoScene` index 1.
+- **Phase 10 (phase cuối của roadmap nền tảng này) đã `CONTENT_READY` — 2026-08-23.** Toàn bộ nền
+  tảng (state machine, scene flow, save/load, inventory/equipment, tutorial, quest, shop/crafting,
+  world persistence, hardening) đã qua automated test + physical Player build acceptance. Bước tiếp
+  theo là sản xuất content thật theo [ContentAuthoringGuide.md](ContentAuthoringGuide.md); xem
+  [Phase10ImplementationReport.md](Phase10ImplementationReport.md) và
+  [Roadmap.md](Roadmap.md) cho chi tiết đầy đủ.
 
 ## Ngoài phạm vi nền tảng này
 

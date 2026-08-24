@@ -1,0 +1,41 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2a7a75faac2e50c44ac9f79fb2dfa85e, type: 3}
+  m_Name: Quest_TutorialCrafting001
+  m_EditorClassIdentifier: ProjectGame2D.Runtime::QuestDefinition
+  _questId: quest.tutorial.crafting.001
+  _displayName: The Blacksmith's Request
+  _prerequisiteQuestIds: []
+  _objectives:
+  - _type: 5
+    _targetId: enemy.slime.green
+    _targetAreaId: area.tutorial
+    _targetCount: 2
+    _obtainMode: 0
+    _description: Defeat 2 Green Slimes in the Tutorial Area to prove you can handle
+      yourself in a fight.
+  - _type: 1
+    _targetId: item.material.wood
+    _targetAreaId: 
+    _targetCount: 3
+    _obtainMode: 0
+    _description: Gather 3 Wood Logs and bring them back for the blacksmith.
+  _rewards:
+    _items:
+    - _itemId: item.quest.tutorial_badge
+      _quantity: 1
+    _gold: 25
+    _experience: 15
+  _isTutorialQuest: 1
+  _isMainQuest: 0
+  _giverNpcId: npc.town.elder
+  _turnInNpcId: npc.town.elder

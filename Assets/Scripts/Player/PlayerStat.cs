@@ -143,6 +143,35 @@ public class PlayerStat : MonoBehaviour
         OnHealthChanged?.Invoke(_health, MaxHealth);
     }
 
+    /// <summary>Applies saved progression without firing OnLevelUp/reward-adjacent events.
+    /// health &lt; 0 restores to full MaxHealth (fresh New Game character).</summary>
+    public void RestoreProgression(int level, int currentExperience, float health)
+    {
+        RestoreProgression(level, currentExperience);
+        RestoreHealth(health);
+    }
+
+    /// <summary>Restores level/experience only, without touching health. Use this before
+    /// restoring equipment (so MaxHealth reflects final modifiers), then call RestoreHealth
+    /// afterward to clamp the saved health against the final MaxHealth.</summary>
+    public void RestoreProgression(int level, int currentExperience)
+    {
+        _level = Mathf.Max(1, level);
+        _currentExperience = Mathf.Max(0, currentExperience);
+
+        OnStatsChanged?.Invoke();
+        OnExperienceChanged?.Invoke(_currentExperience, ExperienceToNextLevel);
+    }
+
+    /// <summary>Sets health directly against the current MaxHealth (health &lt; 0 means full).
+    /// Unlike ApplyEquipmentModifiers, this does not add a live-equip delta -- it sets the exact
+    /// saved value, which is what restore needs.</summary>
+    public void RestoreHealth(float health)
+    {
+        _health = health < 0f ? MaxHealth : Mathf.Clamp(health, 0f, MaxHealth);
+        OnHealthChanged?.Invoke(_health, MaxHealth);
+    }
+
     public void ApplyEquipmentModifiers(PlayerStatModifiers modifiers)
     {
         float previousMaxHealth = MaxHealth;

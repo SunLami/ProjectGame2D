@@ -159,16 +159,30 @@ MainMenu: choose valid slot
 → GameState.Playing
 ```
 
+**Phase 3 implementation note (2026-08-22):** `MainMenuController` (non-visual, `_SceneContext` trong
+`MainMenu.unity`) implement New Game/Continue bằng `NewGameFactory` + `GameSessionManager.SaveRepository`
+(`ISaveSlotRepository`, mặc định `FileSaveSlotRepository`) + `SceneFlowService.TryLoadGameplay`.
+`PlayerSpawnReadinessSource` (một `IGameplayReadinessSource` cắm vào `GameplayReadinessGate` có sẵn từ
+Phase 1) restore `PlayerStat` progression và vị trí qua `SpawnRegistry`, rồi ghi initial save đúng một
+lần cho New Game (D-011). Chưa có: inventory/tutorial restore, camera bind riêng (camera hiện tại đã
+theo Player sẵn), migrate save version cũ (chưa có save cũ nào tồn tại). Camera/UI bind và
+inventory/tutorial restore là extension point còn lại cho Phase 4/5 cắm thêm
+`IGameplayReadinessSource` vào cùng Gate.
+
 ### Return to Main Menu
 
-Ở Phase 1 chưa có dirty-session/save repository nên Pause Menu đi thẳng vào Loading. Bước
-`confirm save/leave choice` và optional Saving chỉ được bật khi Phase 9 triển khai D-017; không được
-tự động ghi đè save trước khi người chơi xác nhận.
+**Phase 9 implementation note (2026-08-23):** `GameplaySessionController.RequestReturnToMainMenu()`
+đi thẳng vào Loading nếu `GameSessionManager.IsDirty == false`; nếu dirty, fire
+`OnConfirmationRequired(ReturnToMainMenu)` và **không** đổi GameState (popup xác nhận là UI
+navigation con, không phải confirm-then-auto-Loading). UI gọi `ConfirmSaveAndReturn()` (chỉ
+Loading sau khi ghi save thành công), `ConfirmReturnWithoutSaving()` (Loading ngay) hoặc
+`CancelReturnToMainMenu()` (không đổi gì). Không tự động ghi đè save trước khi người chơi xác nhận,
+đúng D-017.
 
 ```text
 Paused
-→ confirm save/leave choice
-→ optional Saving
+→ confirm save/leave choice (chỉ hiện nếu session dirty; session clean bỏ qua bước này)
+→ optional Saving (chỉ khi chọn Save and Return)
 → GameState.Loading
 → close gameplay overlays and clear state history
 → unload active gameplay scene

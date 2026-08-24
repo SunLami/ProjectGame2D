@@ -47,6 +47,8 @@ public class InventoryManager : MonoBehaviour
     {
         if (item == null || amount <= 0) return false;
 
+        int requested = amount;
+
         if (item.isStackable)
         {
             foreach (InventorySlot slot in _slots)
@@ -61,6 +63,7 @@ public class InventoryManager : MonoBehaviour
                 if (amount <= 0)
                 {
                     OnInventoryChanged?.Invoke();
+                    QuestDomainEvents.RaiseInventoryItemAdded(item.itemId, requested);
                     return true;
                 }
             }
@@ -80,7 +83,25 @@ public class InventoryManager : MonoBehaviour
         }
 
         OnInventoryChanged?.Invoke();
-        return addedAny && amount <= 0;
+        bool succeeded = addedAny && amount <= 0;
+        if (succeeded)
+            QuestDomainEvents.RaiseInventoryItemAdded(item.itemId, requested);
+        return succeeded;
+    }
+
+    // Stable-itemId possession check for Obtain(RequirePossession) objectives -- no ItemSO/resolver
+    // needed since this only needs to compare the id already carried on each slot's item.
+    public bool HasItemId(string itemId, int amount = 1)
+    {
+        if (string.IsNullOrEmpty(itemId)) return false;
+
+        int total = 0;
+        foreach (InventorySlot slot in _slots)
+        {
+            if (!slot.IsEmpty && slot.item.itemId == itemId) total += slot.quantity;
+        }
+
+        return total >= amount;
     }
 
     public bool RemoveItem(ItemSO item, int amount = 1)
@@ -102,6 +123,36 @@ public class InventoryManager : MonoBehaviour
 
         OnInventoryChanged?.Invoke();
         return true;
+    }
+
+    // Read-only capacity check: would AddItem(item, amount) fully succeed right now? Lets callers
+    // (e.g. equip/unequip transactions) verify capacity before mutating anything else, so a full
+    // inventory fails the whole operation instead of losing the item mid-transaction.
+    public bool HasCapacityFor(ItemSO item, int amount)
+    {
+        if (item == null || amount <= 0) return false;
+
+        int remaining = amount;
+        if (item.isStackable)
+        {
+            foreach (InventorySlot slot in _slots)
+            {
+                if (slot.item != item || slot.quantity >= item.maxStackSize) continue;
+
+                remaining -= item.maxStackSize - slot.quantity;
+                if (remaining <= 0) return true;
+            }
+        }
+
+        foreach (InventorySlot slot in _slots)
+        {
+            if (!slot.IsEmpty) continue;
+
+            remaining -= item.isStackable ? item.maxStackSize : 1;
+            if (remaining <= 0) return true;
+        }
+
+        return remaining <= 0;
     }
 
     public bool HasItem(ItemSO item, int amount = 1)
@@ -153,7 +204,7 @@ public class InventoryManager : MonoBehaviour
     // asset) so it can be written to a per-player save file later.
     public InventorySaveData ToSaveData()
     {
-        var data = new InventorySaveData();
+        var data = new InventorySaveData { gold = _gold };
         foreach (InventorySlot slot in _slots)
         {
             data.slots.Add(new InventorySaveData.SlotData
@@ -197,6 +248,49 @@ public class InventoryManager : MonoBehaviour
             _slots[i].quantity = slotData.quantity;
         }
 
+        _gold = Mathf.Max(0, data.gold);
+        OnInventoryChanged?.Invoke();
+    }
+
+    // Same restore contract as the dictionary overload above, but resolves through the
+    // IItemResolver abstraction (D-020) instead of a pre-built dictionary. Unresolved item IDs are
+    // appended to missingItemIds (if provided) as a recovery report instead of throwing.
+    public void LoadFromSaveData(InventorySaveData data, IItemResolver resolver, List<string> missingItemIds = null)
+    {
+        if (data == null || data.slots == null || resolver == null) return;
+
+        if (data.slots.Count > _slots.Count)
+        {
+            AddSlots(data.slots.Count - _slots.Count);
+        }
+
+        for (int i = 0; i < _slots.Count; i++)
+        {
+            if (i >= data.slots.Count)
+            {
+                _slots[i].Clear();
+                continue;
+            }
+
+            InventorySaveData.SlotData slotData = data.slots[i];
+            if (string.IsNullOrEmpty(slotData.itemId))
+            {
+                _slots[i].Clear();
+                continue;
+            }
+
+            if (!resolver.TryResolve(slotData.itemId, out ItemSO item))
+            {
+                _slots[i].Clear();
+                missingItemIds?.Add(slotData.itemId);
+                continue;
+            }
+
+            _slots[i].item = item;
+            _slots[i].quantity = Mathf.Max(0, slotData.quantity);
+        }
+
+        _gold = Mathf.Max(0, data.gold);
         OnInventoryChanged?.Invoke();
     }
 

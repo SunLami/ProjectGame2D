@@ -58,6 +58,10 @@ public class EquipmentManager : MonoBehaviour
 
     public event Action OnEquipmentChanged;
 
+    /// <summary>Fired only on a successful Equip() (not Unequip, not RestoreEquipped) so tutorial/
+    /// domain systems can react to "the player equipped something" specifically.</summary>
+    public static event Action<EquipmentItemSO> ItemEquipped;
+
     private void Awake()
     {
         if (Instance == null)
@@ -100,6 +104,18 @@ public class EquipmentManager : MonoBehaviour
 
         EquipmentItemSO previous = GetEquipped(item.slot);
 
+        // Decide up front where "previous" will end up. If it needs a different inventory slot
+        // (the source slot still has other stacked copies left), make sure that slot exists
+        // *before* mutating any state -- an equip that can't complete must not lose the item.
+        bool sourceSlotWillBeEmptyAfterTake = sourceSlot.quantity <= 1;
+        bool previousGoesToSourceSlot = previous != null && sourceSlotWillBeEmptyAfterTake;
+
+        if (previous != null && !previousGoesToSourceSlot
+            && !InventoryManager.Instance.HasCapacityFor(previous, 1))
+        {
+            return false;
+        }
+
         sourceSlot.quantity -= 1;
         if (sourceSlot.quantity <= 0) sourceSlot.Clear();
 
@@ -110,7 +126,7 @@ public class EquipmentManager : MonoBehaviour
         {
             // Put the replaced item back into the exact slot the new item came from,
             // so it doesn't jump to whatever the first empty slot happens to be.
-            if (sourceSlot.IsEmpty)
+            if (previousGoesToSourceSlot)
             {
                 sourceSlot.item = previous;
                 sourceSlot.quantity = 1;
@@ -124,6 +140,7 @@ public class EquipmentManager : MonoBehaviour
         InventoryManager.Instance.NotifyChanged();
         RefreshPlayerStats();
         OnEquipmentChanged?.Invoke();
+        ItemEquipped?.Invoke(item);
         return true;
     }
 
@@ -139,10 +156,18 @@ public class EquipmentManager : MonoBehaviour
         EquipmentItemSO item = GetEquipped(slot);
         if (item == null) return false;
 
+        bool useTargetSlot = targetSlot != null && targetSlot.IsEmpty;
+        if (!useTargetSlot
+            && (InventoryManager.Instance == null || !InventoryManager.Instance.HasCapacityFor(item, 1)))
+        {
+            // No room to receive the unequipped item anywhere -- abort before mutating anything.
+            return false;
+        }
+
         ClearVisual(slot);
         _equipped[slot] = null;
 
-        if (targetSlot != null && targetSlot.IsEmpty)
+        if (useTargetSlot)
         {
             targetSlot.item = item;
             targetSlot.quantity = 1;
@@ -150,12 +175,37 @@ public class EquipmentManager : MonoBehaviour
         }
         else
         {
-            InventoryManager.Instance?.AddItem(item, 1);
+            InventoryManager.Instance.AddItem(item, 1);
         }
 
         RefreshPlayerStats();
         OnEquipmentChanged?.Invoke();
         return true;
+    }
+
+    /// <summary>Sets equipped state/visual directly from a save, bypassing inventory entirely --
+    /// restored equipment did not come from and must not consume an inventory slot. Call
+    /// RecalculateStats() once after every slot has been restored, not per-call.</summary>
+    public void RestoreEquipped(EquipSlot slot, EquipmentItemSO item)
+    {
+        if (item == null) return;
+
+        _equipped[slot] = item;
+        ApplyVisual(item);
+    }
+
+    public void RecalculateStats() => RefreshPlayerStats();
+
+    public EquipmentSaveData ToSaveData()
+    {
+        var data = new EquipmentSaveData();
+        foreach (KeyValuePair<EquipSlot, EquipmentItemSO> pair in _equipped)
+        {
+            if (pair.Value == null) continue;
+            data.slots.Add(new EquipmentSaveData.SlotData { slot = pair.Key, itemId = pair.Value.itemId });
+        }
+
+        return data;
     }
 
     private void RefreshPlayerStats()

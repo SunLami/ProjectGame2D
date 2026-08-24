@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 952bb386fdb79454db60f7157c5b9e65, type: 3}
+  m_Name: HealthPotion
+  m_EditorClassIdentifier: ProjectGame2D.Runtime::ItemSO
+  itemId: item.consumable.health_potion
+  itemName: Health Potion
+  description: Restores health (placeholder icon; consumption effect not implemented
+    in this phase).
+  icon: {fileID: 5552222305880193392, guid: c7c7d7a73d7f29247b70bd55ea26d388, type: 3}
+  type: 3
+  isStackable: 1
+  maxStackSize: 20

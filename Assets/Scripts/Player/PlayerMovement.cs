@@ -1,8 +1,18 @@
+using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
 public partial class Player
 {
+    /// <summary>Fired whenever the player starts/continues moving under real input (not a raw key
+    /// check) so tutorial/remap-agnostic systems can react. Static: there is one Player per scene
+    /// and this is torn down with it, but subscribers must still unsubscribe symmetrically.</summary>
+    public static event Action PlayerMoved;
+    public static event Action PlayerSprinted;
+
+    internal static void RaiseMovedForTests() => PlayerMoved?.Invoke();
+    internal static void RaiseSprintedForTests() => PlayerSprinted?.Invoke();
+
     private static readonly int InputXHash = Animator.StringToHash("InputX");
     private static readonly int InputYHash = Animator.StringToHash("InputY");
     private static readonly int LastInputXHash = Animator.StringToHash("LastInputX");
@@ -52,8 +62,13 @@ public partial class Player
         _animator.SetFloat(InputYHash, _moveInput.y);
         SetMoving(!context.canceled && _moveInput != Vector2.zero);
 
-        if (_isMoving && !_isAttacking && !_isHit)
-            SetFacingDirection(_moveInput);
+        if (_isMoving)
+        {
+            if (!_isAttacking && !_isHit)
+                SetFacingDirection(_moveInput);
+
+            PlayerMoved?.Invoke();
+        }
     }
 
     public void OnSprint(InputAction.CallbackContext context)
@@ -65,9 +80,14 @@ public partial class Player
         }
 
         if (context.started)
+        {
             SetRunning(true);
+            PlayerSprinted?.Invoke();
+        }
         else if (context.canceled)
+        {
             SetRunning(false);
+        }
     }
 
     private void SetMoving(bool value)

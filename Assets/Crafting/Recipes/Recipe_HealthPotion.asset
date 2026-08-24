@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5c4387d48b7747d4d94eec80e9c65e5d, type: 3}
+  m_Name: Recipe_HealthPotion
+  m_EditorClassIdentifier: ProjectGame2D.Runtime::RecipeDefinition
+  _recipeId: recipe.consumable.health_potion
+  _displayName: Health Potion
+  _ingredients:
+  - _itemId: item.material.wood
+    _quantity: 2
+  - _itemId: item.material.iron
+    _quantity: 1
+  _outputItemId: item.consumable.health_potion
+  _outputQuantity: 1
+  _requiredStationTag: station.forge
+  _npcId: npc.town.elder

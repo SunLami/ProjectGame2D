@@ -8,6 +8,22 @@ Validator chỉ đọc asset và ghi kết quả vào Console. Nó không rename
 Baseline chạy ngày 2026-08-21: **0 Error, 60 Warning, 63 assets checked**. Toàn bộ Warning hiện tại
 là 60 legacy underscore item IDs đã được lên kế hoạch migration ở Phase 4.
 
+Phase 6 (2026-08-22): sau khi thêm QuestDefinition/QuestCatalog validator và hai quest content asset
+(`quest.tutorial.crafting.001`, `quest.main.001`) cùng hai item mới (`item.quest.tutorial_badge`,
+`item.material.wood`): **0 Error, 60 Warning (không đổi), 69 assets checked**.
+
+Phase 7 (2026-08-22): sau khi thêm ShopDefinition/ShopCatalog và RecipeDefinition/RecipeCatalog
+validator, một shop (`shop.town.general`, 2 stock entry) và hai recipe
+(`recipe.material.plank`, `recipe.consumable.health_potion`) cùng ba item mới
+(`item.material.iron`, `item.material.plank`, `item.consumable.health_potion`):
+**0 Error, 60 Warning (không đổi), 77 assets checked**.
+
+Phase 8 (2026-08-23): sau khi thêm persistent world object scene validator (Chest/UniquePickup/Boss/
+ResourceNode) và bốn instance thật trong DemoScene cùng một item mới
+(`item.unique.ancient_relic`): **0 Error, 60 Warning (không đổi), 83 assets checked**. Khác các
+validator trên (asset-based), phần này scan **scene đang mở**, xem mục "Persistent world object
+(scene-scoped)" bên dưới.
+
 ## Phạm vi hiện tại
 
 - Item ID rỗng, trùng và format stable ID.
@@ -17,6 +33,30 @@ là 60 legacy underscore item IDs đã được lên kế hoạch migration ở 
 - EquipmentCatalog null, duplicate, sai slot và thiếu item.
 - ItemDatabase null item, amount không hợp lệ và duplicate loadout entry.
 - TileData required tile/audio, null entry và tile thuộc nhiều surface definitions.
+- TutorialDefinition/TutorialStepDefinition ID rỗng/trùng, ReachArea thiếu targetAreaId.
+- QuestDefinition ID rỗng/trùng/format, objective target ID rỗng, targetCount <= 0, objective
+  description rỗng (required presentation field), reward item ID rỗng/quantity invalid,
+  prerequisite tham chiếu ID không tồn tại, prerequisite cycle (DFS trên toàn bộ đồ thị quest),
+  isMainQuest thiếu prerequisiteQuestIds (Warning), QuestCatalog thiếu/duplicate quest, quest
+  không nằm trong catalog nào.
+- ShopDefinition ID rỗng/trùng/format, stock rỗng, stock itemId rỗng/trùng/không tồn tại trong bất
+  kỳ ItemSO nào, stock price âm, ShopCatalog thiếu/duplicate shop.
+- RecipeDefinition ID rỗng/trùng/format, ingredients rỗng, ingredient itemId rỗng/trùng/không tồn
+  tại, ingredient quantity <= 0, outputItemId rỗng/không tồn tại, outputQuantity <= 0,
+  RecipeCatalog thiếu/duplicate recipe.
+
+### Persistent world object (scene-scoped)
+
+Khác các mục trên (quét toàn bộ `Assets/` qua `AssetDatabase`), phần này quét **scene đang mở** vì
+`ChestInteractable`/`UniquePickupInteractable`/`BossDefeatTracker`/`ResourceNodeInteractable` là
+MonoBehaviour scene instance, không phải project asset. Kiểm tra: persistentId rỗng, persistentId
+trùng (kể cả giữa nhiều scene loaded cùng lúc), format stable ID, và object có persistentId nhưng
+không được đăng ký trong bất kỳ `WorldObjectRegistry` nào trong scene đó (sẽ không bao giờ được
+save/restore). Chỉ validate scene(s) hiện đang loaded trong Editor -- chạy validator với DemoScene mở
+là quy trình chuẩn. Scene test tối giản không cần đầy đủ save-integration (ví dụ
+`Phase0PortabilityTest.unity`, chỉ chứng minh component hoạt động độc lập với `InventoryManager`)
+được phép có object persistent chưa đăng ký registry mà không coi là lỗi thiết kế -- nếu validator
+báo Error ở đó vì lý do này, đó là kỳ vọng đúng (scene đó không tham gia save/restore).
 
 ## Severity
 
@@ -36,7 +76,9 @@ Mỗi message gồm asset path và context object để có thể chọn asset t
 
 - Chưa có Editor Window/dashboard hoặc auto-fix.
 - Chưa hook build/CI.
-- Chưa validate Quest/Tutorial/Recipe/Shop/NPC/World vì các definition chưa tồn tại.
+- Chưa validate NPC vì definition chưa tồn tại.
+- World persistent object validator chỉ quét scene đang loaded trong Editor, không quét toàn bộ
+  scene trong Build Settings tự động (chưa có multi-scene batch validation).
 - Chưa đổi 60 legacy IDs hoặc tạo alias map.
 
 Khi domain mới được thêm, validator của domain đó phải được bổ sung cùng Definition/Catalog, không gom
