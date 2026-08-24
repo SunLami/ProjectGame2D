@@ -206,6 +206,11 @@ về MainMenu thay vì để game kẹt ở `Loading`. Đây là barrier có kh�
 Editor Direct-Play (`GameBootstrapMode.DevelopmentGameplay`) đã vào `Playing` trước khi Gate chạy nên Gate
 không can thiệp vào luồng đó.
 
+Khi scene activation hoàn tất, `Start` của readiness source/gate có thể chạy trước frame mà coroutine
+`SceneFlowService.TrackSceneLoad` kịp hạ cờ transition. `CompleteGameplayRestore()` vì vậy chấp nhận
+readiness trong cửa sổ activation này, kết thúc transition và vào `Playing` theo state/session guard;
+không được từ chối chỉ vì `IsTransitioning` vẫn còn `true` trong cùng frame.
+
 ## Restore order
 
 Thứ tự chuẩn tránh event chạy trên dữ liệu nửa hoàn chỉnh:
