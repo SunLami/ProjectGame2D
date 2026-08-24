@@ -43,6 +43,9 @@ public class PauseMenuUI : MonoBehaviour
     [Header("Load Slots")]
     [SerializeField] private GameObject _loadOverlay;
     [SerializeField] private TMP_Text _slotOverlayTitle;
+    [SerializeField] private Image _slotOverlayTitleBanner;
+    [SerializeField] private Sprite _saveSlotTitleBanner;
+    [SerializeField] private Sprite _loadSlotTitleBanner;
     [SerializeField] private LoadSlotView[] _loadSlots;
     [SerializeField] private Button _loadBackButton;
 
@@ -159,6 +162,8 @@ public class PauseMenuUI : MonoBehaviour
 
         _isSaveSlotMode = saveMode;
         _slotOverlayTitle.text = saveMode ? "SAVE GAME" : "LOAD GAME";
+        if (_slotOverlayTitleBanner != null)
+            _slotOverlayTitleBanner.sprite = saveMode ? _saveSlotTitleBanner : _loadSlotTitleBanner;
         _loadOverlay.SetActive(true);
         RebuildLoadSlots(_sessionController.RefreshSlots());
         SelectFirstSlotAction();
@@ -192,6 +197,7 @@ public class PauseMenuUI : MonoBehaviour
         _confirmationTitle.text = GetDeleteConfirmationText(slotId);
         _confirmationSaveLabel.text = "DELETE";
         _confirmationWithoutSaveButton.gameObject.SetActive(false);
+        LayoutConfirmationActions(false);
         _confirmationPopup.SetActive(true);
         Select(_confirmationCancelButton);
     }
@@ -288,6 +294,7 @@ public class PauseMenuUI : MonoBehaviour
         _confirmationSaveLabel.text = returning ? "SAVE AND RETURN" : "SAVE AND QUIT";
         _confirmationWithoutSaveLabel.text = returning ? "RETURN WITHOUT SAVING" : "QUIT WITHOUT SAVING";
         _confirmationWithoutSaveButton.gameObject.SetActive(true);
+        LayoutConfirmationActions(true);
         _confirmationPopup.SetActive(true);
         Select(_confirmationCancelButton);
     }
@@ -299,6 +306,7 @@ public class PauseMenuUI : MonoBehaviour
         _confirmationTitle.text = GetOverwriteConfirmationText(slotId, status);
         _confirmationSaveLabel.text = "OVERWRITE";
         _confirmationWithoutSaveButton.gameObject.SetActive(false);
+        LayoutConfirmationActions(false);
         _confirmationPopup.SetActive(true);
         Select(_confirmationCancelButton);
     }
@@ -327,6 +335,17 @@ public class PauseMenuUI : MonoBehaviour
         else if (kind == GameplaySessionConfirmationKind.Quit)
             _sessionController.ConfirmSaveAndQuit();
         Refresh();
+    }
+
+    private void LayoutConfirmationActions(bool showWithoutSave)
+    {
+        RectTransform saveRect = _confirmationSaveButton.GetComponent<RectTransform>();
+        RectTransform withoutSaveRect = _confirmationWithoutSaveButton.GetComponent<RectTransform>();
+        RectTransform cancelRect = _confirmationCancelButton.GetComponent<RectTransform>();
+
+        saveRect.anchoredPosition = new Vector2(0f, showWithoutSave ? 25f : 10f);
+        withoutSaveRect.anchoredPosition = new Vector2(0f, -40f);
+        cancelRect.anchoredPosition = new Vector2(0f, showWithoutSave ? -105f : -65f);
     }
 
     private void ConfirmWithoutSave()

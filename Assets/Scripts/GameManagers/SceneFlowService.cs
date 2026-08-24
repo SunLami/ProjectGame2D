@@ -57,9 +57,12 @@ public sealed class SceneFlowService : MonoBehaviour
 
     public void CompleteGameplayRestore()
     {
-        if (!IsTransitioning && GameStateManager.Instance.CurrentState == GameState.Loading
+        if (GameStateManager.Instance.CurrentState == GameState.Loading
             && GameSessionManager.Instance.HasActiveSession)
         {
+            // A gameplay scene's Start methods run before TrackSceneLoad resumes after scene
+            // activation. Readiness can therefore complete while this flag is still true.
+            IsTransitioning = false;
             GameStateManager.Instance.ResetToPlaying();
         }
         else

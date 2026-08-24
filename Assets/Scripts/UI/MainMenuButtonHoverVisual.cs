@@ -10,6 +10,7 @@ public sealed class MainMenuButtonHoverVisual : MonoBehaviour, IPointerEnterHand
     private Button _button;
     private Image _image;
     private Sprite _normalSprite;
+    private bool _pointerInside;
 
     private void Awake()
     {
@@ -20,11 +21,21 @@ public sealed class MainMenuButtonHoverVisual : MonoBehaviour, IPointerEnterHand
 
     private void OnDisable()
     {
+        _pointerInside = false;
         RestoreNormalSprite();
+    }
+
+    private void LateUpdate()
+    {
+        if (_pointerInside && _button.IsInteractable() && _hoverSprite != null)
+        {
+            _image.sprite = _hoverSprite;
+        }
     }
 
     public void OnPointerEnter(PointerEventData eventData)
     {
+        _pointerInside = true;
         if (_button.IsInteractable() && _hoverSprite != null)
         {
             _image.sprite = _hoverSprite;
@@ -33,6 +44,7 @@ public sealed class MainMenuButtonHoverVisual : MonoBehaviour, IPointerEnterHand
 
     public void OnPointerExit(PointerEventData eventData)
     {
+        _pointerInside = false;
         RestoreNormalSprite();
     }
 
