@@ -58,6 +58,16 @@ Không còn scene nào trong build flow dùng package `DefaultInputActions` làm
 Back/Pause. Coordinator activate `PlayerInput` chỉ khi `AllowsGameplayInput`; project `Gameplay` map bị
 disable trong MainMenu, còn `UI` tiếp tục active cho navigation.
 
+### Scene-transition ownership hardening — 2026-08-23
+
+`MainMenu` và `DemoScene` có thể overlap lifecycle trong một phần của `LoadSceneMode.Single`.
+`InputSystemUIInputModule` của scene cũ và scene mới đều quản lý action trên project asset dùng chung;
+vì vậy presentation module scene cũ có thể disable `UI/Cancel` sau khi coordinator scene mới vừa
+enable nó. `GameInputCoordinator` hiện tạo và sở hữu một runtime copy riêng của project asset cho
+application Back/Pause. EventSystem tiếp tục sở hữu project asset cho UI navigation, còn PlayerInput
+tiếp tục sở hữu action copy gameplay của nó. Mỗi owner enable/disable đúng copy của mình, nên thứ tự
+unload/load scene không còn làm mất Escape/gamepad Cancel.
+
 ## Control schemes
 
 Asset khai báo năm schemes: Keyboard&Mouse, Gamepad, Touch, Joystick và XR. Gameplay hiện mới được

@@ -14,6 +14,7 @@ public sealed class GameInputCoordinator : MonoBehaviour
 
     private InputAction _inventoryAction;
     private InputAction _cancelAction;
+    private InputActionAsset _runtimeActions;
 
     private void Awake()
     {
@@ -23,8 +24,12 @@ public sealed class GameInputCoordinator : MonoBehaviour
         _inventoryAction = _playerInput != null
             ? _playerInput.actions.FindAction(GameplayMapName + "/" + InventoryActionName, false)
             : null;
-        _cancelAction = _projectActions != null
-            ? _projectActions.FindAction(UiCancelActionPath, false)
+        // EventSystems in adjacent scenes briefly overlap during a Single scene transition. Their
+        // InputSystemUIInputModules enable/disable the shared project asset, so the coordinator must
+        // own a runtime copy or an outgoing module can disable Cancel after this component enables it.
+        _runtimeActions = _projectActions != null ? Instantiate(_projectActions) : null;
+        _cancelAction = _runtimeActions != null
+            ? _runtimeActions.FindAction(UiCancelActionPath, false)
             : null;
     }
 
@@ -63,6 +68,12 @@ public sealed class GameInputCoordinator : MonoBehaviour
             _playerInput.DeactivateInput();
     }
 
+    private void OnDestroy()
+    {
+        if (_runtimeActions != null)
+            Destroy(_runtimeActions);
+    }
+
     private void HandleStateChanged(GameStateChange change)
     {
         RefreshGameplayInput();
@@ -71,8 +82,8 @@ public sealed class GameInputCoordinator : MonoBehaviour
     private void RefreshGameplayInput()
     {
         // EventSystem needs only the shared UI map. PlayerInput owns its gameplay action copy.
-        if (_projectActions != null)
-            _projectActions.FindActionMap(GameplayMapName, false)?.Disable();
+        if (_runtimeActions != null)
+            _runtimeActions.FindActionMap(GameplayMapName, false)?.Disable();
 
         if (_playerInput == null)
             return;

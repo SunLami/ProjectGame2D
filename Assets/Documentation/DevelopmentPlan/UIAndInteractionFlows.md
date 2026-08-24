@@ -17,6 +17,11 @@ Main Landing
 Main Menu Settings có thể dùng chung `SettingsService` với Gameplay Settings nhưng không dùng
 `GameplayMenuPage.Settings` và không push gameplay state history.
 
+MainMenu dùng video pixel-art 16:9 làm background presentation: phát không tiếng, loop liên tục và
+cover theo aspect ratio màn hình. Ảnh keyframe tĩnh được giữ làm fallback cho tới khi frame video đầu
+tiên sẵn sàng hoặc khi thiết bị không phát được video; background không nhận raycast và không sở hữu
+navigation/state.
+
 ### DemoScene/world scene overlay UI
 
 ```text
