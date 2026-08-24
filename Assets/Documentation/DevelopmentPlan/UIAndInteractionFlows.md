@@ -22,6 +22,43 @@ cover theo aspect ratio màn hình. Ảnh keyframe tĩnh được giữ làm fal
 tiên sẵn sàng hoặc khi thiết bị không phát được video; background không nhận raycast và không sở hữu
 navigation/state.
 
+### MainMenu visual direction
+
+- Art direction là **Light Fantasy bình minh**, kể khoảnh khắc nhân vật rời cổng làng để bắt đầu hành
+  trình; không dùng palette đêm/gothic cho landing page.
+- Static fallback chuẩn hiện tại là `mainmenu_new_journey_dawn_v8.png`; video loop phải giữ cùng bố
+  cục để UI bên trái không bị tranh chấp thị giác.
+- Logo, landing board và button dùng chung ngôn ngữ vật liệu: gỗ sồi ấm, vải/xanh hoàng gia, viền vàng
+  bình minh và pixel edge sắc. Button label vẫn là TMP/Digital Disco, không bake chữ vào sprite nền;
+  slogan landing là wordmark sprite có outline riêng để giữ độ tương phản trên video sáng.
+- Cụm landing được anchor theo 25% chiều ngang Canvas để giữ vùng trái ổn định khi đổi aspect ratio;
+  các background graphic không nhận raycast.
+- Landing button giữ sprite xanh dương ở Normal/keyboard-selected; chỉ pointer hover mới đổi sang sprite
+  xanh lá, và phải khôi phục xanh dương khi pointer rời nút hoặc UI bị disable.
+- `SlotPage` dùng thẻ hồ sơ dọc đồng bộ landing: khung gỗ sồi, nẹp vàng, nền xanh hoàng gia và huy hiệu
+  ở đầu thẻ. Metadata save vẫn là TMP/Digital Disco để dữ liệu động không bị bake vào asset; primary/Back
+  dùng button xanh, còn Delete dùng cùng hình học với palette đỏ cảnh báo. Reskin không thay đổi binding,
+  confirm flow hoặc save-slot contract.
+- Tiêu đề mode của `SlotPage` (`NEW GAME`/`CONTINUE`) và nhãn cố định `SLOT 1–3` dùng wordmark/badge
+  sprite để khóa căn chỉnh và art direction; status, metadata và action label vẫn dùng TMP vì là dữ liệu động.
+- `SettingsPage` dùng settings board gỗ sồi/xanh hoàng gia/viền vàng và title wordmark sprite; slider,
+  toggle và Save/Cancel giữ component tương tác Unity nhưng presentation dùng palette xanh–vàng và button
+  sprite đồng bộ MainMenu. Reskin không chuyển ownership ra khỏi `SettingsService`.
+- SFX và Music dùng chung slider track/handle sprite để hình học, hit target và feedback nhất quán; giá trị
+  runtime vẫn do `UnityEngine.UI.Slider` và `SettingsService` sở hữu.
+- Fullscreen dùng cặp checkbox sprite unchecked/checked cùng hình học; `UnityEngine.UI.Toggle` sở hữu việc
+  bật/tắt checkmark và tiếp tục gửi giá trị vào `SettingsService`.
+- `ConfirmOverlay` và `ErrorOverlay` dùng dialog board cùng bộ gỗ sồi/xanh hoàng gia/viền vàng; message
+  vẫn là TMP vì thay đổi theo thao tác. Confirm/Close dùng button xanh, Cancel dùng button đỏ cảnh báo.
+- `LoadingOverlay` khóa input và hiển thị thanh tiến trình responsive neo từ 8% đến 92% chiều rộng Canvas.
+  Fill chạy trái→phải theo `AsyncOperation.progress` của `SceneFlowService` (chuẩn hóa dải Unity 0..0.9),
+  kèm phần trăm 0–100%. Scene activation được giữ lại cho tới khi UI đã render 100% và feedback hoàn tất
+  ngắn; gameplay restore tiếp tục do `GameplayReadinessGate` sở hữu sau khi scene được load.
+  Frame là sprite viền siêu ngang có lòng alpha trong suốt; progress dùng sprite fill riêng và được render
+  phía trên/lọt trong viền, tránh trường hợp nền đặc của frame che mất hiệu ứng fill.
+  Khi Loading bắt đầu, Landing/Slot/Settings và các Confirm/Error popup đều được ẩn; chỉ background cùng
+  LoadingOverlay được giữ lại. Nếu transition thất bại, page đã khởi tạo thao tác được khôi phục.
+
 ### DemoScene/world scene overlay UI
 
 ```text

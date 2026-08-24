@@ -14,7 +14,6 @@ public sealed class MainMenuSaveSlotsUI : MonoBehaviour
     private sealed class SlotView
     {
         public int slotId;
-        public TMP_Text title;
         public TMP_Text status;
         public TMP_Text details;
         public Button primaryButton;
@@ -35,7 +34,9 @@ public sealed class MainMenuSaveSlotsUI : MonoBehaviour
     [Header("Pages")]
     [SerializeField] private GameObject _landingPage;
     [SerializeField] private GameObject _slotPage;
-    [SerializeField] private TMP_Text _slotPageTitle;
+    [SerializeField] private Image _slotPageTitle;
+    [SerializeField] private Sprite _newGameTitleSprite;
+    [SerializeField] private Sprite _continueTitleSprite;
     [SerializeField] private Button _newGameButton;
     [SerializeField] private Button _continueButton;
     [SerializeField] private Button _settingsButton;
@@ -61,11 +62,16 @@ public sealed class MainMenuSaveSlotsUI : MonoBehaviour
     [SerializeField] private TMP_Text _errorMessage;
     [SerializeField] private Button _errorCloseButton;
     [SerializeField] private GameObject _loadingOverlay;
+    [SerializeField] private Image _loadingProgressFill;
+    [SerializeField] private TMP_Text _loadingProgressText;
 
     private SlotMode _mode;
     private SaveSlotInfo[] _slotInfo = Array.Empty<SaveSlotInfo>();
     private Action _pendingConfirmation;
     private bool _isLoading;
+    private bool _landingWasActiveBeforeLoading;
+    private bool _slotWasActiveBeforeLoading;
+    private bool _settingsWasActiveBeforeLoading;
     private SettingsSnapshot _settingsSnapshot;
 
     private void Awake()
@@ -100,6 +106,9 @@ public sealed class MainMenuSaveSlotsUI : MonoBehaviour
         if (GameStateManager.Instance != null)
             GameStateManager.Instance.StateChanged += OnGameStateChanged;
 
+        if (SceneFlowService.Instance != null)
+            SceneFlowService.Instance.TransitionProgressChanged += SetLoadingProgress;
+
         if (_inputModule != null && _inputModule.cancel != null)
             _inputModule.cancel.action.performed += OnCancelPerformed;
 
@@ -127,6 +136,9 @@ public sealed class MainMenuSaveSlotsUI : MonoBehaviour
         if (GameStateManager.Instance != null)
             GameStateManager.Instance.StateChanged -= OnGameStateChanged;
 
+        if (SceneFlowService.Instance != null)
+            SceneFlowService.Instance.TransitionProgressChanged -= SetLoadingProgress;
+
         if (_inputModule != null && _inputModule.cancel != null)
             _inputModule.cancel.action.performed -= OnCancelPerformed;
 
@@ -153,7 +165,7 @@ public sealed class MainMenuSaveSlotsUI : MonoBehaviour
             return;
 
         _mode = mode;
-        _slotPageTitle.text = mode == SlotMode.NewGame ? "NEW GAME" : "CONTINUE";
+        _slotPageTitle.sprite = mode == SlotMode.NewGame ? _newGameTitleSprite : _continueTitleSprite;
         _landingPage.SetActive(false);
         _slotPage.SetActive(true);
         RebuildSlots(_controller.RefreshSlots());
@@ -169,7 +181,6 @@ public sealed class MainMenuSaveSlotsUI : MonoBehaviour
             if (!TryGetSlot(view.slotId, out SaveSlotInfo info))
                 continue;
 
-            view.title.text = $"SLOT {info.SlotId}";
             ApplySlotInfo(view, info);
         }
 
@@ -343,12 +354,47 @@ public sealed class MainMenuSaveSlotsUI : MonoBehaviour
 
     private void SetLoading(bool loading)
     {
+        if (loading && !_isLoading)
+        {
+            _landingWasActiveBeforeLoading = _landingPage.activeSelf;
+            _slotWasActiveBeforeLoading = _slotPage.activeSelf;
+            _settingsWasActiveBeforeLoading = _settingsPage.activeSelf;
+
+            _landingPage.SetActive(false);
+            _slotPage.SetActive(false);
+            _settingsPage.SetActive(false);
+            _confirmPopup.SetActive(false);
+            _errorPopup.SetActive(false);
+        }
+        else if (!loading && _isLoading)
+        {
+            // A successful transition destroys this MainMenu Canvas. This path only matters when
+            // loading fails and the user must be returned to the page that initiated the request.
+            _landingPage.SetActive(_landingWasActiveBeforeLoading);
+            _slotPage.SetActive(_slotWasActiveBeforeLoading);
+            _settingsPage.SetActive(_settingsWasActiveBeforeLoading);
+        }
+
         _isLoading = loading;
         _interactionGroup.interactable = !loading;
         _interactionGroup.blocksRaycasts = !loading;
         _loadingOverlay.SetActive(loading);
         if (loading)
+        {
+            SetLoadingProgress(0f);
             EventSystem.current?.SetSelectedGameObject(null);
+        }
+    }
+
+    private void SetLoadingProgress(float progress)
+    {
+        float normalizedProgress = Mathf.Clamp01(progress);
+
+        if (_loadingProgressFill != null)
+            _loadingProgressFill.fillAmount = normalizedProgress;
+
+        if (_loadingProgressText != null)
+            _loadingProgressText.text = $"LOADING ADVENTURE...  {Mathf.RoundToInt(normalizedProgress * 100f)}%";
     }
 
     private void SelectFirstAvailableSlot()
