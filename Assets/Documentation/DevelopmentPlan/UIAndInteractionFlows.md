@@ -159,6 +159,40 @@ Paused
   danger đỏ. Safe area dùng title `460×64`, button `340×48`; layout tự gom lại theo mode hai hoặc ba action
   để không object nào chạm hay vượt viền. Popup reskin không thay confirmation kind, callback hoặc session ownership.
 
+### Tutorial overlay visual direction
+
+- DemoScene `TutorialOverlayRoot` giữ nguyên `TutorialOverlayUI`, `TutorialManager`, step binding và
+  Skip callback; reskin chỉ thay presentation, không sở hữu tutorial progression hoặc `Time.timeScale`.
+- `InstructionPanel` dùng RectTransform `360×92`, tăng nhẹ chiều cao so với legacy để khung và instruction
+  có safe area rõ ràng; board `tutorial_instruction_panel_hd.png` giữ parchment tan, gỗ/vàng mảnh, accent
+  xanh nhỏ và lá tiết chế. Header TMP legacy tắt render và được thay bằng wordmark ảnh
+  `tutorial_title_banner_hd.png`; instruction vẫn là TMP động. Skip dùng danger đỏ và hover chung MainMenu.
+- `SkipConfirmation/Dialog` giữ RectTransform `570×245`, dùng `tutorial_skip_dialog_hd.png` với safe
+  area dưới crest cho title/message TMP; Confirm Skip dùng danger đỏ, Keep Playing dùng primary xanh.
+  Lớp dim chặn raycast trong lúc xác nhận và không thay đổi tutorial save contract.
+
+### Quest UI visual direction
+
+- DemoScene `QuestUIRoot` giữ nguyên `QuestLogUI`, QuestManager event binding, GameplayMenu lifecycle và
+  callback Close; reskin chỉ thay presentation, không sở hữu quest progression hoặc save data.
+- `QuestTracker` dùng thẻ dọc `190×230` thay cho thanh ngang legacy để objective dài dễ quét và mang
+  hình thái quest journal chuyên nghiệp hơn. Board dùng parchment tan, khung gỗ/vàng mảnh; Header TMP
+  legacy tắt render và dùng `quest_title_banner_hd.png`, objective vẫn là TMP động.
+- `QuestLogWindow/Window` giữ RectTransform `650×380`; safe area nội bộ dùng `QuestListPanel` `190×255`
+  và `QuestDetailPanel` `340×255`, neo giữa board để không tràn đáy hoặc che nhau. Board, panel, close icon
+  và row button đồng bộ MainMenu, Inventory, Tutorial và SessionUX; không thay list/template binding.
+- Tiêu đề cố định dùng banner ảnh `quest_title_banner_hd.png` với chữ `QUEST`; TMP header legacy tắt
+  render. Detail fallback cũng dùng `QUEST`, còn quest title/status/objective tiếp tục là TMP động.
+
+### Commerce UI layout
+
+- DemoScene `CommerceUIRoot` giữ nguyên `ShopCraftingUI`, NPC capability service, transaction callback
+  và PlayerInput modal lifecycle; thay đổi layout không chuyển ownership mua/bán/craft sang UI.
+- `ShopWindow` và `CraftingWindow` giữ authored RectTransform `1180×680` cùng toàn bộ anchor nội bộ,
+  nhưng scale đồng đều `0.58` và neo giữa Canvas `800×450`, cho kích thước trình bày xấp xỉ
+  `684×394`. Cách fit này giữ đúng tỉ lệ, typography và hit target tương đối, đồng thời bảo đảm window
+  không vượt camera safe area ở reference resolution.
+
 Popup xác nhận là UI navigation con, không tạo global `GameState` mới.
 
 ## Save slot presentation
