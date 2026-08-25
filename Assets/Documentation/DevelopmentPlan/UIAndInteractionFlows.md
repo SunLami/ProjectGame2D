@@ -192,6 +192,24 @@ Paused
   nhưng scale đồng đều `0.58` và neo giữa Canvas `800×450`, cho kích thước trình bày xấp xỉ
   `684×394`. Cách fit này giữ đúng tỉ lệ, typography và hit target tương đối, đồng thời bảo đảm window
   không vượt camera safe area ở reference resolution.
+- `ShopWindow` và `CraftingWindow` dùng chung `commerce_window_board_hd.png`: parchment tan, gỗ sồi,
+  viền vàng, lá xanh, gem xanh và crest búa rèn trung tính. List/detail dùng inner parchment panel;
+  title badge, primary button, hover, close icon và Gold badge tái sử dụng hệ asset Light Fantasy hiện
+  có. Shop name, gold, item/recipe details và feedback vẫn là TMP động; reskin không thay capability
+  service hoặc transaction ownership.
+- Commerce safe area dùng hai cột cố định trong board authored `1180×680`: list `400×440` tại
+  `(-300,-48)`, detail `560×440` tại `(200,-48)`. Title/Close nằm trong header inset; Shop controls
+  và Craft button nằm trong đáy detail panel, không chạm khung ngoài hoặc ornament của panel con.
+  List content có top inset `102`; row template luôn inactive, clone runtime dùng height `50`, spacing
+  `6` và không force-expand chiều cao. Vì vậy row đầu không chạm crest và item/recipe liên tiếp không
+  tạo khoảng trống lớn giả tạo.
+- Crafting detail dùng TMP rich text để phân cấp recipe name, section header, ingredient counter,
+  output và station. Counter đủ/thiếu dùng xanh/đỏ; stable station ID như `station.forge` được format
+  thành label thân thiện `Forge`. Recipe name canh giữa theo detail panel; các section còn lại canh
+  trái để giữ khả năng quét thông tin. Đây chỉ là presentation, recipe ID và transaction data không đổi.
+- Shop detail dùng TMP rich text với item name canh giữa, description và nhóm `ITEM DETAILS` canh trái;
+  Owned/Buy total/Sell total có phân cấp và màu currency rõ ràng. Cụm transaction nằm hoàn toàn trong
+  detail panel trên một hàng gọn, có safe padding khỏi nội dung, viền và ornament.
 
 Popup xác nhận là UI navigation con, không tạo global `GameState` mới.
 

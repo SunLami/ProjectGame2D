@@ -289,7 +289,15 @@ public sealed class ShopCraftingUI : MonoBehaviour
         }
         int owned = OwnedCount(_selectedStock.ItemId);
         int sellEach = Mathf.RoundToInt(_selectedStock.Price * _shop.SellPriceMultiplier);
-        _shopDetails.text = $"{ItemName(_selectedStock.ItemId)}\n\n{ItemDescription(_selectedStock.ItemId)}\n\nOwned: {owned}\nBuy: {_selectedStock.Price * _quantity} G\nSell: {sellEach * _quantity} G";
+        var text = new StringBuilder();
+        text.Append("<align=\"center\"><size=32><b>").Append(ItemName(_selectedStock.ItemId))
+            .Append("</b></size></align>\n\n")
+            .Append("<align=\"left\"><size=20>").Append(ItemDescription(_selectedStock.ItemId)).Append("</size>\n\n")
+            .Append("<color=#8A4B14><size=21><b>ITEM DETAILS</b></size></color>\n")
+            .Append("<size=20>Owned   <b>").Append(owned).Append("</b></size>\n")
+            .Append("<size=20>Buy total   <color=#9A6615><b>").Append(_selectedStock.Price * _quantity).Append(" G</b></color></size>\n")
+            .Append("<size=20>Sell total  <color=#9A6615><b>").Append(sellEach * _quantity).Append(" G</b></color></size></align>");
+        _shopDetails.text = text.ToString();
     }
 
     private void RefreshRecipeDetails()
@@ -300,12 +308,38 @@ public sealed class ShopCraftingUI : MonoBehaviour
             return;
         }
         var text = new StringBuilder();
-        text.Append(_selectedRecipe.DisplayName).Append("\n\nINGREDIENTS\n");
+        text.Append("<align=\"center\"><size=32><b>").Append(_selectedRecipe.DisplayName).Append("</b></size></align>\n\n");
+        text.Append("<align=\"left\"><color=#8A4B14><size=21><b>INGREDIENTS</b></size></color>\n");
         foreach (RecipeIngredientEntry ingredient in _selectedRecipe.Ingredients)
-            text.Append("- ").Append(ItemName(ingredient.ItemId)).Append("  ").Append(OwnedCount(ingredient.ItemId)).Append(" / ").Append(ingredient.Quantity).Append('\n');
-        text.Append("\nOUTPUT\n- ").Append(ItemName(_selectedRecipe.OutputItemId)).Append(" x").Append(_selectedRecipe.OutputQuantity);
-        text.Append("\n\nSTATION\n").Append(string.IsNullOrEmpty(_selectedRecipe.RequiredStationTag) ? "No station required" : _selectedRecipe.RequiredStationTag);
+        {
+            int owned = OwnedCount(ingredient.ItemId);
+            string counterColor = owned >= ingredient.Quantity ? "#2D704A" : "#A13A2A";
+            text.Append("<size=20>• ").Append(ItemName(ingredient.ItemId)).Append("   ")
+                .Append("<color=").Append(counterColor).Append("><b>")
+                .Append(owned).Append(" / ").Append(ingredient.Quantity)
+                .Append("</b></color></size>\n");
+        }
+        text.Append("\n<color=#8A4B14><size=21><b>OUTPUT</b></size></color>\n")
+            .Append("<size=20>• ").Append(ItemName(_selectedRecipe.OutputItemId)).Append("  ×")
+            .Append(_selectedRecipe.OutputQuantity).Append("</size>");
+        text.Append("\n\n<color=#8A4B14><size=21><b>STATION</b></size></color>\n")
+            .Append("<size=20>").Append(FormatStationName(_selectedRecipe.RequiredStationTag)).Append("</size></align>");
         _recipeDetails.text = text.ToString();
+    }
+
+    private static string FormatStationName(string stationTag)
+    {
+        if (string.IsNullOrEmpty(stationTag))
+            return "Anywhere";
+
+        string value = stationTag.StartsWith("station.") ? stationTag.Substring("station.".Length) : stationTag;
+        string[] words = value.Split('.', '_');
+        for (int i = 0; i < words.Length; i++)
+        {
+            if (words[i].Length == 0) continue;
+            words[i] = char.ToUpperInvariant(words[i][0]) + words[i].Substring(1);
+        }
+        return string.Join(" ", words);
     }
 
     private int OwnedCount(string itemId)
