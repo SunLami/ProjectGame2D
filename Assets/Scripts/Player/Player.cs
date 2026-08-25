@@ -40,6 +40,11 @@ public partial class Player : MonoBehaviour, IDamageable
     private void Update()
     {
         _stats.TickRegeneration(Time.deltaTime);
+        bool isActivelySprinting = _isRunning && _isMoving && GameStateManager.AllowsGameplayInput;
+        _stats.TickStamina(isActivelySprinting, Time.deltaTime);
+
+        if (_isRunning && !_stats.HasStamina)
+            SetRunning(false);
     }
 
     public void TakeDamage(float damageAmount, Vector2 knockbackDirection, float knockbackForce)
