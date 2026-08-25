@@ -231,7 +231,7 @@ public sealed class QuestLogUI : MonoBehaviour
             || string.IsNullOrEmpty(_selectedQuestId)
             || !_questManager.Catalog.TryResolve(_selectedQuestId, out QuestDefinition quest))
         {
-            _detailTitle.text = "QUEST LOG";
+            _detailTitle.text = "QUEST";
             _detailStatus.text = string.Empty;
             _detailObjectives.text = "No accepted quests.";
             return;
