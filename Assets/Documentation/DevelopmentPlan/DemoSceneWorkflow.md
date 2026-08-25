@@ -204,3 +204,22 @@ Feature contract documented
 + portability test passes outside DemoScene
 + authoring/promotion instructions exist
 ```
+
+## MapNhat integration status
+
+`MapNhat` hiện có `_SceneContext` tối thiểu cho Editor direct-play gồm `GameBootstrap` ở chế độ
+`DevelopmentGameplay` và `GameInputCoordinator` bind tới `PlayerInput` của Player trong scene. Vì
+`GameStateManager` và `GameSessionManager` tự bootstrap trước scene load, cấu hình này đưa state từ
+`Booting` sang `Playing` và kích hoạt action map `Gameplay` mà không sao chép manager singleton vào
+scene. Đây mới là portability smoke integration cho Player; các feature UI/save/world đầy đủ vẫn phải
+được promote từ DemoScene theo checklist phía trên.
+
+Player ghép nhiều SpriteRenderer dùng cùng một sorting contract trong `DemoScene` và `MapNhat`:
+
+- Mọi sprite được các Player SpriteLibrary tham chiếu dùng pivot `Custom (0.5, 0.315)` normalized.
+- Head, Body, Weapon và AttackFX dùng Sprite Sort Point `Pivot`.
+- Transform Head, Body, Weapon và AttackFX giữ ở local `(0, 0, 0)`; không bù dịch sprite sau khi đổi
+  pivot, nên pivot trong Game Scene chính là pivot đã author trong Sprite Editor.
+- Root Player có `SortingGroup`, `sortAtRoot` bật, Sorting Layer/Order ngoài group là `Default/0`.
+- Order của Head/Weapon chỉ sắp xếp nội bộ group; Custom Axis Y so sánh toàn Player với world object.
+- Tái áp dụng/kiểm tra pivot `(0.5, 0.315)` bằng menu `Tools > Project Game > Player`.

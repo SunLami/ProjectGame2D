@@ -178,7 +178,7 @@ TextureImporter:
   maxTextureSize: 2048
   textureSettings:
     serializedVersion: 2
-    filterMode: 1
+    filterMode: 0
     aniso: 1
     mipBias: 0
     wrapU: 1
@@ -192,7 +192,7 @@ TextureImporter:
   spriteMeshType: 1
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
-  spritePixelsToUnits: 100
+  spritePixelsToUnits: 16
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
@@ -216,7 +216,7 @@ TextureImporter:
     maxTextureSize: 2048
     resizeAlgorithm: 0
     textureFormat: -1
-    textureCompression: 1
+    textureCompression: 0
     compressionQuality: 50
     crunchedCompression: 0
     allowsAlphaSplitting: 0
@@ -237,6 +237,19 @@ TextureImporter:
     ignorePlatformSupport: 0
     androidETC2FallbackOverride: 0
     forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Android
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
   spriteSheet:
     serializedVersion: 2
     sprites:
@@ -244,12 +257,12 @@ TextureImporter:
       name: bird_fly_animation_0
       rect:
         serializedVersion: 2
-        x: 26
-        y: 992
-        width: 8
-        height: 6
+        x: 0
+        y: 960
+        width: 144
+        height: 64
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -266,12 +279,12 @@ TextureImporter:
       name: bird_fly_animation_1
       rect:
         serializedVersion: 2
-        x: 170
-        y: 992
-        width: 8
-        height: 6
+        x: 144
+        y: 960
+        width: 144
+        height: 64
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -288,12 +301,12 @@ TextureImporter:
       name: bird_fly_animation_2
       rect:
         serializedVersion: 2
-        x: 314
-        y: 992
-        width: 8
-        height: 6
+        x: 288
+        y: 960
+        width: 144
+        height: 64
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -310,12 +323,12 @@ TextureImporter:
       name: bird_fly_animation_3
       rect:
         serializedVersion: 2
-        x: 25
-        y: 928
-        width: 10
-        height: 7
+        x: 0
+        y: 896
+        width: 144
+        height: 64
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -332,12 +345,12 @@ TextureImporter:
       name: bird_fly_animation_4
       rect:
         serializedVersion: 2
-        x: 169
-        y: 928
-        width: 10
-        height: 7
+        x: 144
+        y: 896
+        width: 144
+        height: 64
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -354,12 +367,12 @@ TextureImporter:
       name: bird_fly_animation_5
       rect:
         serializedVersion: 2
-        x: 313
-        y: 928
-        width: 10
-        height: 7
+        x: 288
+        y: 896
+        width: 144
+        height: 64
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -376,12 +389,12 @@ TextureImporter:
       name: bird_fly_animation_6
       rect:
         serializedVersion: 2
-        x: 24
-        y: 864
-        width: 14
-        height: 10
+        x: 0
+        y: 832
+        width: 144
+        height: 64
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -398,12 +411,12 @@ TextureImporter:
       name: bird_fly_animation_7
       rect:
         serializedVersion: 2
-        x: 168
-        y: 864
-        width: 14
-        height: 10
+        x: 144
+        y: 832
+        width: 144
+        height: 64
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -420,12 +433,12 @@ TextureImporter:
       name: bird_fly_animation_8
       rect:
         serializedVersion: 2
-        x: 312
-        y: 864
-        width: 14
-        height: 10
+        x: 288
+        y: 832
+        width: 144
+        height: 64
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -442,12 +455,12 @@ TextureImporter:
       name: bird_fly_animation_9
       rect:
         serializedVersion: 2
-        x: 21
-        y: 797
-        width: 19
-        height: 15
+        x: 0
+        y: 768
+        width: 144
+        height: 64
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -464,12 +477,12 @@ TextureImporter:
       name: bird_fly_animation_10
       rect:
         serializedVersion: 2
-        x: 165
-        y: 797
-        width: 19
-        height: 15
+        x: 144
+        y: 768
+        width: 144
+        height: 64
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -486,12 +499,12 @@ TextureImporter:
       name: bird_fly_animation_11
       rect:
         serializedVersion: 2
-        x: 309
-        y: 797
-        width: 19
-        height: 15
+        x: 288
+        y: 768
+        width: 144
+        height: 64
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -508,12 +521,12 @@ TextureImporter:
       name: bird_fly_animation_12
       rect:
         serializedVersion: 2
-        x: 18
-        y: 730
-        width: 23
-        height: 21
+        x: 0
+        y: 704
+        width: 144
+        height: 64
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -530,12 +543,12 @@ TextureImporter:
       name: bird_fly_animation_13
       rect:
         serializedVersion: 2
-        x: 162
-        y: 730
-        width: 23
-        height: 21
+        x: 144
+        y: 704
+        width: 144
+        height: 64
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -552,12 +565,12 @@ TextureImporter:
       name: bird_fly_animation_14
       rect:
         serializedVersion: 2
-        x: 306
-        y: 730
-        width: 23
-        height: 21
+        x: 288
+        y: 704
+        width: 144
+        height: 64
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -574,12 +587,12 @@ TextureImporter:
       name: bird_fly_animation_15
       rect:
         serializedVersion: 2
-        x: 14
-        y: 662
-        width: 34
-        height: 28
+        x: 0
+        y: 640
+        width: 144
+        height: 64
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -596,12 +609,12 @@ TextureImporter:
       name: bird_fly_animation_16
       rect:
         serializedVersion: 2
-        x: 158
-        y: 662
-        width: 34
-        height: 28
+        x: 144
+        y: 640
+        width: 144
+        height: 64
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -618,12 +631,12 @@ TextureImporter:
       name: bird_fly_animation_17
       rect:
         serializedVersion: 2
-        x: 302
-        y: 662
-        width: 34
-        height: 28
+        x: 288
+        y: 640
+        width: 144
+        height: 64
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -640,12 +653,12 @@ TextureImporter:
       name: bird_fly_animation_18
       rect:
         serializedVersion: 2
-        x: 12
-        y: 594
-        width: 46
-        height: 36
+        x: 0
+        y: 576
+        width: 144
+        height: 64
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -662,12 +675,12 @@ TextureImporter:
       name: bird_fly_animation_19
       rect:
         serializedVersion: 2
-        x: 156
-        y: 594
-        width: 46
-        height: 36
+        x: 144
+        y: 576
+        width: 144
+        height: 64
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -684,12 +697,12 @@ TextureImporter:
       name: bird_fly_animation_20
       rect:
         serializedVersion: 2
-        x: 300
-        y: 594
-        width: 46
-        height: 36
+        x: 288
+        y: 576
+        width: 144
+        height: 64
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -706,12 +719,12 @@ TextureImporter:
       name: bird_fly_animation_21
       rect:
         serializedVersion: 2
-        x: 12
-        y: 526
-        width: 55
-        height: 41
+        x: 0
+        y: 512
+        width: 144
+        height: 64
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -728,12 +741,12 @@ TextureImporter:
       name: bird_fly_animation_22
       rect:
         serializedVersion: 2
-        x: 156
-        y: 526
-        width: 55
-        height: 41
+        x: 144
+        y: 512
+        width: 144
+        height: 64
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -750,12 +763,12 @@ TextureImporter:
       name: bird_fly_animation_23
       rect:
         serializedVersion: 2
-        x: 300
-        y: 526
-        width: 55
-        height: 41
+        x: 288
+        y: 512
+        width: 144
+        height: 64
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -772,12 +785,12 @@ TextureImporter:
       name: bird_fly_animation_24
       rect:
         serializedVersion: 2
-        x: 15
-        y: 458
-        width: 57
-        height: 50
+        x: 0
+        y: 448
+        width: 144
+        height: 64
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -794,12 +807,12 @@ TextureImporter:
       name: bird_fly_animation_25
       rect:
         serializedVersion: 2
-        x: 159
-        y: 458
-        width: 57
-        height: 50
+        x: 144
+        y: 448
+        width: 144
+        height: 64
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -816,12 +829,12 @@ TextureImporter:
       name: bird_fly_animation_26
       rect:
         serializedVersion: 2
-        x: 303
-        y: 458
-        width: 57
-        height: 50
+        x: 288
+        y: 448
+        width: 144
+        height: 64
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -838,12 +851,12 @@ TextureImporter:
       name: bird_fly_animation_27
       rect:
         serializedVersion: 2
-        x: 16
-        y: 391
-        width: 64
-        height: 49
+        x: 0
+        y: 384
+        width: 144
+        height: 64
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -860,12 +873,12 @@ TextureImporter:
       name: bird_fly_animation_28
       rect:
         serializedVersion: 2
-        x: 160
-        y: 391
-        width: 64
-        height: 49
+        x: 144
+        y: 384
+        width: 144
+        height: 64
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -882,12 +895,12 @@ TextureImporter:
       name: bird_fly_animation_29
       rect:
         serializedVersion: 2
-        x: 304
-        y: 391
-        width: 64
-        height: 49
+        x: 288
+        y: 384
+        width: 144
+        height: 64
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -904,12 +917,12 @@ TextureImporter:
       name: bird_fly_animation_30
       rect:
         serializedVersion: 2
-        x: 14
-        y: 265
-        width: 71
-        height: 112
+        x: 0
+        y: 320
+        width: 144
+        height: 64
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -926,12 +939,12 @@ TextureImporter:
       name: bird_fly_animation_31
       rect:
         serializedVersion: 2
-        x: 71
-        y: 301
-        width: 21
-        height: 14
+        x: 144
+        y: 320
+        width: 144
+        height: 64
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -948,12 +961,12 @@ TextureImporter:
       name: bird_fly_animation_32
       rect:
         serializedVersion: 2
-        x: 158
-        y: 265
-        width: 71
-        height: 112
+        x: 288
+        y: 320
+        width: 144
+        height: 64
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -970,12 +983,12 @@ TextureImporter:
       name: bird_fly_animation_33
       rect:
         serializedVersion: 2
-        x: 215
-        y: 301
-        width: 21
-        height: 14
+        x: 0
+        y: 256
+        width: 144
+        height: 64
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -992,12 +1005,12 @@ TextureImporter:
       name: bird_fly_animation_34
       rect:
         serializedVersion: 2
-        x: 302
-        y: 265
-        width: 71
-        height: 112
+        x: 144
+        y: 256
+        width: 144
+        height: 64
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -1014,12 +1027,12 @@ TextureImporter:
       name: bird_fly_animation_35
       rect:
         serializedVersion: 2
-        x: 359
-        y: 301
-        width: 21
-        height: 14
+        x: 288
+        y: 256
+        width: 144
+        height: 64
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -1036,12 +1049,12 @@ TextureImporter:
       name: bird_fly_animation_36
       rect:
         serializedVersion: 2
-        x: 79
-        y: 237
-        width: 18
-        height: 19
+        x: 0
+        y: 192
+        width: 144
+        height: 64
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -1058,12 +1071,12 @@ TextureImporter:
       name: bird_fly_animation_37
       rect:
         serializedVersion: 2
-        x: 223
-        y: 237
-        width: 18
-        height: 19
+        x: 144
+        y: 192
+        width: 144
+        height: 64
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -1080,12 +1093,12 @@ TextureImporter:
       name: bird_fly_animation_38
       rect:
         serializedVersion: 2
-        x: 367
-        y: 237
-        width: 18
-        height: 19
+        x: 288
+        y: 192
+        width: 144
+        height: 64
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -1102,12 +1115,12 @@ TextureImporter:
       name: bird_fly_animation_39
       rect:
         serializedVersion: 2
-        x: 43
-        y: 173
-        width: 66
-        height: 29
+        x: 0
+        y: 128
+        width: 144
+        height: 64
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -1124,12 +1137,12 @@ TextureImporter:
       name: bird_fly_animation_40
       rect:
         serializedVersion: 2
-        x: 187
-        y: 173
-        width: 66
-        height: 29
+        x: 144
+        y: 128
+        width: 144
+        height: 64
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -1146,12 +1159,12 @@ TextureImporter:
       name: bird_fly_animation_41
       rect:
         serializedVersion: 2
-        x: 331
-        y: 173
-        width: 66
-        height: 29
+        x: 288
+        y: 128
+        width: 144
+        height: 64
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -1168,12 +1181,12 @@ TextureImporter:
       name: bird_fly_animation_42
       rect:
         serializedVersion: 2
-        x: 101
-        y: 109
-        width: 19
-        height: 17
+        x: 0
+        y: 64
+        width: 144
+        height: 64
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -1190,12 +1203,12 @@ TextureImporter:
       name: bird_fly_animation_43
       rect:
         serializedVersion: 2
-        x: 245
-        y: 109
-        width: 19
-        height: 17
+        x: 144
+        y: 64
+        width: 144
+        height: 64
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -1212,12 +1225,12 @@ TextureImporter:
       name: bird_fly_animation_44
       rect:
         serializedVersion: 2
-        x: 389
-        y: 109
-        width: 19
-        height: 17
+        x: 288
+        y: 64
+        width: 144
+        height: 64
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -1234,12 +1247,12 @@ TextureImporter:
       name: bird_fly_animation_45
       rect:
         serializedVersion: 2
-        x: 113
-        y: 51
-        width: 21
-        height: 14
+        x: 0
+        y: 0
+        width: 144
+        height: 64
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -1256,12 +1269,12 @@ TextureImporter:
       name: bird_fly_animation_46
       rect:
         serializedVersion: 2
-        x: 257
-        y: 51
-        width: 21
-        height: 14
+        x: 144
+        y: 0
+        width: 144
+        height: 64
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -1278,12 +1291,12 @@ TextureImporter:
       name: bird_fly_animation_47
       rect:
         serializedVersion: 2
-        x: 401
-        y: 51
-        width: 21
-        height: 14
+        x: 288
+        y: 0
+        width: 144
+        height: 64
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -1300,7 +1313,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: 955c0ceb45991944c86a9741f716dd92
     internalID: 0
     vertices: []
     indices: 
@@ -1308,7 +1321,9 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     spriteCustomMetadata:
-      entries: []
+      entries:
+      - key: SpriteEditor.SliceSettings
+        value: '{"sliceOnImport":false,"gridCellCount":{"x":3.0,"y":16.0},"gridSpriteSize":{"x":144.0,"y":64.0},"gridSpriteOffset":{"x":0.0,"y":0.0},"gridSpritePadding":{"x":0.0,"y":0.0},"pivot":{"x":0.5,"y":0.5},"pivotPixels":{"x":0.0,"y":0.0},"autoSlicingMethod":0,"spriteAlignment":0,"pivotUnitMode":0,"slicingType":2,"keepEmptyRects":false,"isAlternate":false}'
     nameFileIdTable:
       bird_fly_animation_0: 2147369376866629904
       bird_fly_animation_1: -3605623928965336318
