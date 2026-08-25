@@ -51,22 +51,15 @@ public partial class Player
         _attackHitbox.BeginAttack();
     }
 
-    public void DamageEnemyFromHitbox(Enemy enemy)
+    public void DamageTargetFromHitbox(IDamageable target, Transform targetTransform)
     {
-        if (!_isAttacking || _isHit || _isDead || enemy == null || enemy.IsDead)
+        if (!_isAttacking || _isHit || _isDead || target == null || target.IsDead)
             return;
 
-        Vector2 direction = (enemy.transform.position - transform.position).normalized;
-        enemy.TakeDamage(_stats.RollOutgoingDamage(out _), direction, _attackKnockbackForce);
-    }
-
-    public void DamageEnemyFromHitbox(EnemyUniversal enemy)
-    {
-        if (!_isAttacking || _isHit || _isDead || enemy == null || enemy.IsDead)
-            return;
-
-        Vector2 direction = (enemy.transform.position - transform.position).normalized;
-        enemy.TakeDamage(_stats.RollOutgoingDamage(out _), direction, _attackKnockbackForce);
+        Vector2 direction = targetTransform != null
+            ? ((Vector2)targetTransform.position - (Vector2)transform.position).normalized
+            : _lastFacingDirection;
+        target.TakeDamage(_stats.RollOutgoingDamage(out _), direction, _attackKnockbackForce);
     }
 
     private void UpdateDirectionToMouse()
