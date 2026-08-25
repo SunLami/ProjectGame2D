@@ -21,6 +21,8 @@ public partial class Player
         if (!context.started || _isAttacking || _isHit || _isDead
             || !GameStateManager.AllowsGameplayInput)
             return;
+        if (!_stats.TryConsumeAttackStamina())
+            return;
 
         _isAttacking = true;
         if (_isRunning && _moveInput != Vector2.zero)

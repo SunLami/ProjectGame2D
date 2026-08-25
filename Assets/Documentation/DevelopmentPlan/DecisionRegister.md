@@ -149,3 +149,9 @@ chưa được xác nhận; để lại nguyên trạng cho phase sau khi có co
 - Daily Quest reset clock.
 
 Code foundation nên cung cấp extension point nhưng không tự chọn gameplay rule thay designer.
+# Player HUD and transient stamina
+
+- **Status:** Accepted — 2026-08-25.
+- DemoScene/world gameplay HUD hiển thị đúng Health và Stamina ở góc trái trên Canvas.
+- Stamina là tài nguyên runtime không persistent: drain khi sprint có chuyển động, regenerate khi ngừng;
+  không thay đổi save schema/version. Presentation dùng prefab và event từ `PlayerStat`, không sở hữu state.

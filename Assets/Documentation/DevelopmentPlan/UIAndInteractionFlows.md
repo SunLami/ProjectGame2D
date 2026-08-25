@@ -61,6 +61,22 @@ navigation/state.
 
 ### DemoScene/world scene overlay UI
 
+### Player Health/Stamina HUD visual direction
+
+- `PlayerHUD.prefab` là nguồn chuẩn cho HUD gameplay, neo top-left theo Canvas và không phụ thuộc tên
+  hierarchy của DemoScene; DemoScene chỉ giữ prefab instance để integration.
+- HUD chỉ có hai tài nguyên: Health đỏ và Stamina xanh lá. Khung pixel-art gỗ sồi/viền vàng/đá xanh
+  dùng texture alpha rỗng; fill là `UnityEngine.UI.Image` riêng, giảm bằng `fillAmount` với origin trái để
+  mép phải rút dần về trái.
+- Health đọc `PlayerStat.OnHealthChanged`. Stamina là runtime resource: hao liên tục khi sprint thực sự
+  đang di chuyển và hao một lần khi bắt đầu attack; walk không tiêu hao và attack bị chặn nếu không đủ
+  chi phí. Stamina hồi khi không sprint và không được thêm vào save slot.
+- HUD không sở hữu gameplay stat, input hoặc save; controller chỉ subscribe và trình bày giá trị normalized.
+- Badge Level nằm dưới cụm icon, dùng khung sprite rỗng và `TMP/Digital Disco` cho chuỗi động `LV. <level>`;
+  controller cập nhật từ `PlayerStat.OnLevelUp`, không bake số level vào texture.
+- Frame HUD là overlay có alpha thật ở lõi hai track. `HealthFill` và `StaminaFill` dùng sprite riêng có
+  pixel highlight/shadow, render dưới Frame và tiếp tục giảm bằng `Image.fillAmount` origin trái.
+
 ```text
 Playing
 ├─ Esc → Paused
