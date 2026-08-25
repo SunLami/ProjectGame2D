@@ -103,16 +103,19 @@ public sealed class PlayerAttackHitbox : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        Enemy enemy = other.GetComponentInParent<Enemy>();
-        if (_owner != null && enemy != null && _hitEnemies.Add(enemy))
+        if (_owner == null || other.transform.root == _owner.transform)
+            return;
+
+        MonoBehaviour[] candidates = other.GetComponentsInParent<MonoBehaviour>();
+        foreach (MonoBehaviour candidate in candidates)
         {
-            _owner.DamageEnemyFromHitbox(enemy);
+            if (candidate is not IDamageable target || candidate == _owner || target.IsDead)
+                continue;
+
+            if (_hitEnemies.Add(candidate))
+                _owner.DamageTargetFromHitbox(target, candidate.transform);
             return;
         }
-
-        EnemyUniversal universalEnemy = other.GetComponentInParent<EnemyUniversal>();
-        if (_owner != null && universalEnemy != null && _hitEnemies.Add(universalEnemy))
-            _owner.DamageEnemyFromHitbox(universalEnemy);
     }
 
     private static Vector2 ToCardinalDirection(Vector2 direction)
