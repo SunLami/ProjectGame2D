@@ -22,6 +22,43 @@ cover theo aspect ratio màn hình. Ảnh keyframe tĩnh được giữ làm fal
 tiên sẵn sàng hoặc khi thiết bị không phát được video; background không nhận raycast và không sở hữu
 navigation/state.
 
+### MainMenu visual direction
+
+- Art direction là **Light Fantasy bình minh**, kể khoảnh khắc nhân vật rời cổng làng để bắt đầu hành
+  trình; không dùng palette đêm/gothic cho landing page.
+- Static fallback chuẩn hiện tại là `mainmenu_new_journey_dawn_v8.png`; video loop phải giữ cùng bố
+  cục để UI bên trái không bị tranh chấp thị giác.
+- Logo, landing board và button dùng chung ngôn ngữ vật liệu: gỗ sồi ấm, vải/xanh hoàng gia, viền vàng
+  bình minh và pixel edge sắc. Button label vẫn là TMP/Digital Disco, không bake chữ vào sprite nền;
+  slogan landing là wordmark sprite có outline riêng để giữ độ tương phản trên video sáng.
+- Cụm landing được anchor theo 25% chiều ngang Canvas để giữ vùng trái ổn định khi đổi aspect ratio;
+  các background graphic không nhận raycast.
+- Landing button giữ sprite xanh dương ở Normal/keyboard-selected; chỉ pointer hover mới đổi sang sprite
+  xanh lá, và phải khôi phục xanh dương khi pointer rời nút hoặc UI bị disable.
+- `SlotPage` dùng thẻ hồ sơ dọc đồng bộ landing: khung gỗ sồi, nẹp vàng, nền xanh hoàng gia và huy hiệu
+  ở đầu thẻ. Metadata save vẫn là TMP/Digital Disco để dữ liệu động không bị bake vào asset; primary/Back
+  dùng button xanh, còn Delete dùng cùng hình học với palette đỏ cảnh báo. Reskin không thay đổi binding,
+  confirm flow hoặc save-slot contract.
+- Tiêu đề mode của `SlotPage` (`NEW GAME`/`CONTINUE`) và nhãn cố định `SLOT 1–3` dùng wordmark/badge
+  sprite để khóa căn chỉnh và art direction; status, metadata và action label vẫn dùng TMP vì là dữ liệu động.
+- `SettingsPage` dùng settings board gỗ sồi/xanh hoàng gia/viền vàng và title wordmark sprite; slider,
+  toggle và Save/Cancel giữ component tương tác Unity nhưng presentation dùng palette xanh–vàng và button
+  sprite đồng bộ MainMenu. Reskin không chuyển ownership ra khỏi `SettingsService`.
+- SFX và Music dùng chung slider track/handle sprite để hình học, hit target và feedback nhất quán; giá trị
+  runtime vẫn do `UnityEngine.UI.Slider` và `SettingsService` sở hữu.
+- Fullscreen dùng cặp checkbox sprite unchecked/checked cùng hình học; `UnityEngine.UI.Toggle` sở hữu việc
+  bật/tắt checkmark và tiếp tục gửi giá trị vào `SettingsService`.
+- `ConfirmOverlay` và `ErrorOverlay` dùng dialog board cùng bộ gỗ sồi/xanh hoàng gia/viền vàng; message
+  vẫn là TMP vì thay đổi theo thao tác. Confirm/Close dùng button xanh, Cancel dùng button đỏ cảnh báo.
+- `LoadingOverlay` khóa input và hiển thị thanh tiến trình responsive neo từ 8% đến 92% chiều rộng Canvas.
+  Fill chạy trái→phải theo `AsyncOperation.progress` của `SceneFlowService` (chuẩn hóa dải Unity 0..0.9),
+  kèm phần trăm 0–100%. Scene activation được giữ lại cho tới khi UI đã render 100% và feedback hoàn tất
+  ngắn; gameplay restore tiếp tục do `GameplayReadinessGate` sở hữu sau khi scene được load.
+  Frame là sprite viền siêu ngang có lòng alpha trong suốt; progress dùng sprite fill riêng và được render
+  phía trên/lọt trong viền, tránh trường hợp nền đặc của frame che mất hiệu ứng fill.
+  Khi Loading bắt đầu, Landing/Slot/Settings và các Confirm/Error popup đều được ẩn; chỉ background cùng
+  LoadingOverlay được giữ lại. Nếu transition thất bại, page đã khởi tạo thao tác được khôi phục.
+
 ### DemoScene/world scene overlay UI
 
 ```text
@@ -40,6 +77,139 @@ Paused
 ├─ Return Main Menu → Loading → MainMenu (dirty/save confirmation bổ sung ở Phase 9)
 └─ Quit Desktop → confirmation flow
 ```
+
+### Inventory visual direction
+
+- `InventoryUIController.prefab` giữ nguyên navigation, drag/drop, equipment binding và gameplay-state
+  contract; reskin không được chuyển ownership sang presentation.
+- Inventory dùng cùng ngôn ngữ Light Fantasy với Main Menu: gỗ sồi ấm, nền xanh hoàng gia, viền vàng
+  bình minh và pixel edge sắc; label động tiếp tục dùng TMP/Digital Disco.
+- Asset thay thế giữ nguyên `RectTransform` để không làm thay đổi layout DemoScene, nhưng dùng texture HD
+  theo tỷ lệ trình bày để tránh phóng đại sprite legacy quá nhỏ: Inventory board `768x640`, Equipment
+  panel `256x640`, item/equipment slot `96x96`, Close `48x48`.
+- Viền Inventory dùng biến thể `thin`: bề dày gỗ/vàng và ornament góc được giảm để ưu tiên vùng nội
+  dung, tránh khung tranh chấp thị giác với lưới item/equipment.
+- Palette nền Inventory dùng hệ màu ấm thay cho navy: panel chính là parchment tan dịu gần `#CDA77A`,
+  lòng slot dùng warm taupe đậm hơn để giữ affordance, và badge Gold dùng caramel đậm để bảo đảm độ
+  tương phản với icon coin cùng số vàng; viền gỗ/vàng và điểm nhấn xanh nhỏ vẫn được giữ làm accent.
+- `TitleInventory` dùng wordmark sprite HD `INVENTORY` đồng bộ gỗ sồi/xanh hoàng gia/viền vàng với
+  Main Menu; title là nội dung cố định, còn mọi label/dữ liệu động vẫn dùng TMP/Digital Disco.
+- Cụm `Gold` dùng badge pixel-art xanh hoàng gia, viền gỗ/vàng mảnh nằm sau icon và TMP động; badge
+  nới 5 UI unit theo chiều ngang và 4 UI unit theo chiều dọc để currency nổi bật, không chặn raycast.
+- `GridScrollView` có inner frame riêng với viền gỗ/vàng mảnh để phân định rõ vùng item; `GridFrame` là
+  border-only overlay có lòng alpha trong suốt, không nhận raycast, nằm ngoài `Viewport` và nới 12 UI
+  unit ở cả bốn cạnh để không đè lên viền các `GridSlot` ngoài cùng; nền `GridScrollView` và `Viewport`
+  đều trong suốt để không còn lớp xanh nằm dưới các slot.
+- Source prefab là nguồn chuẩn; DemoScene `_UI/InventoryUIController` giữ prefab connection và không tạo
+  scene-only visual override.
+
+### Gameplay Settings visual direction
+
+- DemoScene `_UI/SettingsUI` giữ nguyên `SettingsUI`, `SettingsService`, slider/toggle binding và gameplay
+  menu lifecycle; reskin chỉ thay presentation trên scene object hiện có.
+- Panel giữ RectTransform `200×300` (asset legacy `100×150`) nhưng dùng texture HD cùng tỉ lệ, nền
+  parchment tan đồng bộ Inventory, viền gỗ/vàng và điểm nhấn xanh nhỏ đồng bộ MainMenu.
+- Save/Cancel giữ RectTransform `82×30` (asset legacy `41×15`), slider `110×14`, toggle khoảng `26×28`;
+  label động vẫn dùng TMP/Digital Disco và control state tiếp tục do Unity UI sở hữu.
+- SFX và Music dùng icon sprite HD riêng, nền alpha trong suốt và giữ container `24×24` legacy để nhận
+  diện nhanh ở kích thước nhỏ mà không cần label chữ.
+- Title gameplay Settings dùng trực tiếp wordmark sprite `settings_title.png` dùng chung với MainMenu;
+  TMP title legacy được tắt, còn label và dữ liệu động vẫn giữ TMP/Digital Disco.
+- Gameplay Settings dùng safe area nội bộ: slider được hạ khỏi crest/ornament trên, toggle và action button
+  cách đều theo trục dọc, Close nằm trong góc phải của board; không object tương tác nào vượt khỏi khung.
+- Slider gameplay render theo thứ tự `Fill Area → Background → Handle Slide Area`, để fill nằm dưới track
+  và không che viền/background presentation đồng bộ MainMenu.
+- `settings_slider_track.png` là border-only overlay `2172×240` với lõi alpha trong suốt; MainMenu và
+  gameplay Settings dùng chung asset để Fill phía dưới luôn nhìn thấy xuyên qua lòng track.
+
+### Pause Menu visual direction
+
+- DemoScene `_UI/PauseMenu` giữ nguyên `PauseMenuUI`, gameplay-state navigation, save/load flow và các
+  button callback; reskin chỉ thay presentation trên scene object hiện có.
+- Pause board giữ RectTransform legacy `164×340`, dùng texture HD portrait cùng tỷ lệ trình bày, nền
+  parchment tan, viền gỗ/vàng mảnh, huy hiệu xanh và lá xanh đồng bộ Inventory/Gameplay Settings.
+- Các action button giữ bề rộng legacy `139.4`; chiều cao được chuẩn hóa `28` để toàn bộ danh sách nằm
+  gọn trong board. Label cố định dùng TMP/Digital Disco thay vì bake chữ vào sprite.
+- PauseMenu trình bày Resume/Inventory/Save/Load/Settings/Back to Menu/Exit; Shop và Craft không xuất hiện vì
+  hai popup này được mở từ interaction context của NPC/crafting station theo kiến trúc tương tác gameplay.
+- Resume/Settings/Inventory/Save/Load/Back to Menu dùng primary button chung với MainMenu; Exit dùng danger button
+  đỏ, Close dùng icon thin chung với Inventory. Reskin không thay ownership save/session.
+- Các action button PauseMenu dùng `landing_action_button_hover.png` cho pointer Highlighted và
+  keyboard/gamepad Selected; sprite state không thay đổi RectTransform hoặc thứ tự layout.
+
+### SessionUX Save/Load overlay visual direction
+
+- `MenuWindow/SessionUX/LoadOverlay` giữ nguyên `PauseMenuUI` slot binding, save/load/delete action,
+  confirmation và session ownership; reskin chỉ thay presentation trên DemoScene.
+- `LoadPanel` giữ RectTransform `776×430`; ba slot card dùng safe-area `240×320` tại X `-250/0/250`
+  để không vượt viền panel. Slot action dùng `190×44`, còn Back giữ hit target `220×62`.
+- Board và card dùng parchment tan, viền gỗ/vàng mảnh, accent xanh và lá đồng bộ PauseMenu, Inventory
+  và Gameplay Settings. Title mode dùng hai banner ảnh `session_save_title_banner_hd.png` và
+  `session_load_title_banner_hd.png`; `PauseMenuUI` đổi sprite theo Save/Load mode, còn TMP legacy chỉ giữ binding.
+- Nhãn cố định `SLOT 1–3` dùng trực tiếp `slot_badge_1.png` đến `slot_badge_3.png`; TMP title legacy
+  vẫn giữ binding nhưng tắt render, không thay RectTransform card do designer đã tinh chỉnh thủ công.
+- Primary/Back dùng button chung MainMenu, Delete dùng danger button đỏ; chỉ pointer Highlighted dùng
+  `landing_action_button_hover.png`. Keyboard/gamepad Selected giữ sprite Normal tương ứng để focus mặc
+  định không làm button trông như đang được hover. LoadOverlay để `MainMenuButtonHoverVisual` sở hữu đổi
+  sprite pointer thay vì `Selectable.SpriteSwap`, tránh Selected của slot đầu ghi đè hover; thay đổi visual
+  không tác động callback.
+- `ConfirmationPopup` giữ lớp dim RectTransform `800×450`, dùng board riêng `session_confirmation_board_hd.png`
+  với panel gọn `580×330`: parchment tan, khung gỗ/vàng mảnh, accent xanh và lá đồng bộ LoadOverlay. Message
+  cùng label action tiếp tục là TMP động; Save/Confirm dùng primary xanh, hành động bỏ qua lưu và Cancel dùng
+  danger đỏ. Safe area dùng title `460×64`, button `340×48`; layout tự gom lại theo mode hai hoặc ba action
+  để không object nào chạm hay vượt viền. Popup reskin không thay confirmation kind, callback hoặc session ownership.
+
+### Tutorial overlay visual direction
+
+- DemoScene `TutorialOverlayRoot` giữ nguyên `TutorialOverlayUI`, `TutorialManager`, step binding và
+  Skip callback; reskin chỉ thay presentation, không sở hữu tutorial progression hoặc `Time.timeScale`.
+- `InstructionPanel` dùng RectTransform `360×92`, tăng nhẹ chiều cao so với legacy để khung và instruction
+  có safe area rõ ràng; board `tutorial_instruction_panel_hd.png` giữ parchment tan, gỗ/vàng mảnh, accent
+  xanh nhỏ và lá tiết chế. Header TMP legacy tắt render và được thay bằng wordmark ảnh
+  `tutorial_title_banner_hd.png`; instruction vẫn là TMP động. Skip dùng danger đỏ và hover chung MainMenu.
+- `SkipConfirmation/Dialog` giữ RectTransform `570×245`, dùng `tutorial_skip_dialog_hd.png` với safe
+  area dưới crest cho title/message TMP; Confirm Skip dùng danger đỏ, Keep Playing dùng primary xanh.
+  Lớp dim chặn raycast trong lúc xác nhận và không thay đổi tutorial save contract.
+
+### Quest UI visual direction
+
+- DemoScene `QuestUIRoot` giữ nguyên `QuestLogUI`, QuestManager event binding, GameplayMenu lifecycle và
+  callback Close; reskin chỉ thay presentation, không sở hữu quest progression hoặc save data.
+- `QuestTracker` dùng thẻ dọc `190×230` thay cho thanh ngang legacy để objective dài dễ quét và mang
+  hình thái quest journal chuyên nghiệp hơn. Board dùng parchment tan, khung gỗ/vàng mảnh; Header TMP
+  legacy tắt render và dùng `quest_title_banner_hd.png`, objective vẫn là TMP động.
+- `QuestLogWindow/Window` giữ RectTransform `650×380`; safe area nội bộ dùng `QuestListPanel` `190×255`
+  và `QuestDetailPanel` `340×255`, neo giữa board để không tràn đáy hoặc che nhau. Board, panel, close icon
+  và row button đồng bộ MainMenu, Inventory, Tutorial và SessionUX; không thay list/template binding.
+- Tiêu đề cố định dùng banner ảnh `quest_title_banner_hd.png` với chữ `QUEST`; TMP header legacy tắt
+  render. Detail fallback cũng dùng `QUEST`, còn quest title/status/objective tiếp tục là TMP động.
+
+### Commerce UI layout
+
+- DemoScene `CommerceUIRoot` giữ nguyên `ShopCraftingUI`, NPC capability service, transaction callback
+  và PlayerInput modal lifecycle; thay đổi layout không chuyển ownership mua/bán/craft sang UI.
+- `ShopWindow` và `CraftingWindow` giữ authored RectTransform `1180×680` cùng toàn bộ anchor nội bộ,
+  nhưng scale đồng đều `0.58` và neo giữa Canvas `800×450`, cho kích thước trình bày xấp xỉ
+  `684×394`. Cách fit này giữ đúng tỉ lệ, typography và hit target tương đối, đồng thời bảo đảm window
+  không vượt camera safe area ở reference resolution.
+- `ShopWindow` và `CraftingWindow` dùng chung `commerce_window_board_hd.png`: parchment tan, gỗ sồi,
+  viền vàng, lá xanh, gem xanh và crest búa rèn trung tính. List/detail dùng inner parchment panel;
+  title badge, primary button, hover, close icon và Gold badge tái sử dụng hệ asset Light Fantasy hiện
+  có. Shop name, gold, item/recipe details và feedback vẫn là TMP động; reskin không thay capability
+  service hoặc transaction ownership.
+- Commerce safe area dùng hai cột cố định trong board authored `1180×680`: list `400×440` tại
+  `(-300,-48)`, detail `560×440` tại `(200,-48)`. Title/Close nằm trong header inset; Shop controls
+  và Craft button nằm trong đáy detail panel, không chạm khung ngoài hoặc ornament của panel con.
+  List content có top inset `102`; row template luôn inactive, clone runtime dùng height `50`, spacing
+  `6` và không force-expand chiều cao. Vì vậy row đầu không chạm crest và item/recipe liên tiếp không
+  tạo khoảng trống lớn giả tạo.
+- Crafting detail dùng TMP rich text để phân cấp recipe name, section header, ingredient counter,
+  output và station. Counter đủ/thiếu dùng xanh/đỏ; stable station ID như `station.forge` được format
+  thành label thân thiện `Forge`. Recipe name canh giữa theo detail panel; các section còn lại canh
+  trái để giữ khả năng quét thông tin. Đây chỉ là presentation, recipe ID và transaction data không đổi.
+- Shop detail dùng TMP rich text với item name canh giữa, description và nhóm `ITEM DETAILS` canh trái;
+  Owned/Buy total/Sell total có phân cấp và màu currency rõ ràng. Cụm transaction nằm hoàn toàn trong
+  detail panel trên một hàng gọn, có safe padding khỏi nội dung, viền và ornament.
 
 Popup xác nhận là UI navigation con, không tạo global `GameState` mới.
 

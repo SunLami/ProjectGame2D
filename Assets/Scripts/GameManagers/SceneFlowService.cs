@@ -12,6 +12,7 @@ public sealed class SceneFlowService : MonoBehaviour
     public bool IsTransitioning { get; private set; }
 
     public event Action<string> TransitionFailed;
+    public event Action<float> TransitionProgressChanged;
 
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
     private static void Bootstrap()
@@ -56,9 +57,12 @@ public sealed class SceneFlowService : MonoBehaviour
 
     public void CompleteGameplayRestore()
     {
-        if (!IsTransitioning && GameStateManager.Instance.CurrentState == GameState.Loading
+        if (GameStateManager.Instance.CurrentState == GameState.Loading
             && GameSessionManager.Instance.HasActiveSession)
         {
+            // A gameplay scene's Start methods run before TrackSceneLoad resumes after scene
+            // activation. Readiness can therefore complete while this flag is still true.
+            IsTransitioning = false;
             GameStateManager.Instance.ResetToPlaying();
         }
         else
@@ -86,6 +90,7 @@ public sealed class SceneFlowService : MonoBehaviour
     private void BeginSceneLoad(string sceneName, bool enterMainMenu)
     {
         IsTransitioning = true;
+        TransitionProgressChanged?.Invoke(0f);
         GameStateManager.Instance.ReplaceState(GameState.Loading);
 
         if (enterMainMenu)
@@ -119,7 +124,41 @@ public sealed class SceneFlowService : MonoBehaviour
             return;
         }
 
-        operation.completed += _ => CompleteSceneLoad(enterMainMenu);
+        StartCoroutine(TrackSceneLoad(operation, enterMainMenu));
+    }
+
+    private System.Collections.IEnumerator TrackSceneLoad(AsyncOperation operation, bool enterMainMenu)
+    {
+        operation.allowSceneActivation = false;
+        float displayedProgress = 0f;
+
+        while (operation.progress < 0.9f)
+        {
+            // Unity reports scene loading in the 0..0.9 range until activation.
+            float targetProgress = Mathf.Clamp01(operation.progress / 0.9f);
+            displayedProgress = Mathf.MoveTowards(
+                displayedProgress, targetProgress, Time.unscaledDeltaTime * 1.5f);
+            TransitionProgressChanged?.Invoke(displayedProgress);
+            yield return null;
+        }
+
+        // A small presentation pass guarantees that the final part of the bar is rendered before
+        // LoadSceneMode.Single destroys the outgoing MainMenu Canvas.
+        while (displayedProgress < 1f)
+        {
+            displayedProgress = Mathf.MoveTowards(displayedProgress, 1f, Time.unscaledDeltaTime * 1.5f);
+            TransitionProgressChanged?.Invoke(displayedProgress);
+            yield return null;
+        }
+
+        TransitionProgressChanged?.Invoke(1f);
+        yield return new WaitForSecondsRealtime(0.25f);
+
+        operation.allowSceneActivation = true;
+        while (!operation.isDone)
+            yield return null;
+
+        CompleteSceneLoad(enterMainMenu);
     }
 
     private void CompleteSceneLoad(bool enterMainMenu)

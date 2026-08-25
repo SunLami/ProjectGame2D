@@ -51,6 +51,24 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PauseMenuUI
   _windowRoot: {fileID: 4027447057573531311}
   _inventoryWindow: {fileID: 0}
+  _sessionController: {fileID: 0}
+  _saveButton: {fileID: 0}
+  _loadButton: {fileID: 0}
+  _returnButton: {fileID: 0}
+  _quitButton: {fileID: 0}
+  _feedbackText: {fileID: 0}
+  _dirtyIndicator: {fileID: 0}
+  _loadOverlay: {fileID: 0}
+  _slotOverlayTitle: {fileID: 0}
+  _loadSlots: []
+  _loadBackButton: {fileID: 0}
+  _confirmationPopup: {fileID: 0}
+  _confirmationTitle: {fileID: 0}
+  _confirmationSaveButton: {fileID: 0}
+  _confirmationSaveLabel: {fileID: 0}
+  _confirmationWithoutSaveButton: {fileID: 0}
+  _confirmationWithoutSaveLabel: {fileID: 0}
+  _confirmationCancelButton: {fileID: 0}
 --- !u!1 &537134713367164424
 GameObject:
   m_ObjectHideFlags: 0
@@ -92,7 +110,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 139.40001, y: 0}
+  m_SizeDelta: {x: 139.40001, y: 194.66666}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &5857030401969262985
 MonoBehaviour:
