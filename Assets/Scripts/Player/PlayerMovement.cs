@@ -25,7 +25,7 @@ public partial class Player
     private Vector2 _facingDirection = Vector2.down;
 
     private float CurrentMoveSpeed => _stats.MoveSpeed
-        * (_isRunning ? _stats.SprintMultiplier : 1f);
+        * (_isRunning && _stats.HasStamina ? _stats.SprintMultiplier : 1f);
 
     public float MoveSpeed
     {
@@ -79,7 +79,7 @@ public partial class Player
             return;
         }
 
-        if (context.started)
+        if (context.started && _stats.HasStamina)
         {
             SetRunning(true);
             PlayerSprinted?.Invoke();
