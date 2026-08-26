@@ -320,9 +320,9 @@ Delete và overwrite luôn có confirm chứa đúng slot/character để giảm
 - Dialogue choices render inside the right-hand parchment, below a compact body-text region. Nodes
   without choices expand body text into that lower region; choice buttons never float above or outside
   the dialogue frame. Dynamic dialogue text and choice labels use Digital Disco at a compact readable
-  scale, preserving the portrait/name/body/decision hierarchy. The in-frame stack supports up to five
-  single-line choices; labels auto-size within the documented minimum and use ellipsis rather than
-  expanding a button beyond the parchment safe area.
+  scale, preserving the portrait/name/body/decision hierarchy. The in-frame choice list supports up to
+  five single-line choices, with exactly one choice per row; labels auto-size within the
+  documented minimum and use ellipsis rather than expanding a button beyond the parchment safe area.
 - Cutscene: input theo skip policy riêng.
 
 Không chỉ dựa vào `Time.timeScale`. Input policy phải khóa cả callback Input System.

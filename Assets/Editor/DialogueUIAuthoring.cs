@@ -18,7 +18,7 @@ public static class DialogueUIAuthoring
         EnsureFolder("Assets/Prefabs/UI");
         Sprite frame = LoadSprite("Assets/Resources/UI/Dialogue/LightFantasy/dialogue_frame_hd.png");
         Sprite nameplate = LoadSprite("Assets/Resources/UI/Dialogue/LightFantasy/dialogue_nameplate_hd.png");
-        Sprite choice = LoadSprite("Assets/Resources/UI/Dialogue/LightFantasy/dialogue_choice_button_hd.png");
+        Sprite choice = LoadSprite("Assets/Resources/UI/Dialogue/LightFantasy/dialogue_choice_button_compact_v2.png");
         Sprite indicator = LoadSprite("Assets/Resources/UI/Dialogue/LightFantasy/dialogue_continue_indicator_hd.png");
         TMP_FontAsset font = AssetDatabase.LoadAssetAtPath<TMP_FontAsset>("Assets/Fonts/DigitalDisco SDF v3.asset");
         DialogueDefinition demoDialogue = CreateDemoDialogue();
@@ -75,7 +75,7 @@ public static class DialogueUIAuthoring
         bodyRect.anchorMin = bodyRect.anchorMax = new Vector2(0.5f, 0.5f);
         bodyRect.pivot = new Vector2(0.5f, 0.5f);
         bodyRect.anchoredPosition = new Vector2(98f, 45f);
-        bodyRect.sizeDelta = new Vector2(360f, 40f);
+        bodyRect.sizeDelta = new Vector2(360f, 28f);
         body.textWrappingMode = TextWrappingModes.Normal;
         body.overflowMode = TextOverflowModes.Ellipsis;
         body.lineSpacing = 1f;
@@ -89,10 +89,10 @@ public static class DialogueUIAuthoring
         RectTransform choiceRootRect = choiceRoot.GetComponent<RectTransform>();
         choiceRootRect.anchorMin = choiceRootRect.anchorMax = new Vector2(0.5f, 0.5f);
         choiceRootRect.pivot = new Vector2(0.5f, 0.5f);
-        choiceRootRect.anchoredPosition = new Vector2(98f, -28f);
-        choiceRootRect.sizeDelta = new Vector2(280f, 104f);
+        choiceRootRect.anchoredPosition = new Vector2(98f, -25f);
+        choiceRootRect.sizeDelta = new Vector2(220f, 118f);
         VerticalLayoutGroup layout = choiceRoot.AddComponent<VerticalLayoutGroup>();
-        layout.spacing = 1f;
+        layout.spacing = 2f;
         layout.childAlignment = TextAnchor.UpperCenter;
         layout.childControlHeight = true;
         layout.childControlWidth = true;
@@ -101,9 +101,10 @@ public static class DialogueUIAuthoring
 
         GameObject templateObject = UI("ChoiceTemplate", choiceRoot.transform);
         LayoutElement element = templateObject.AddComponent<LayoutElement>();
-        element.preferredHeight = 20f;
+        element.preferredHeight = 22f;
         Image choiceImage = templateObject.AddComponent<Image>();
         choiceImage.sprite = choice;
+        choiceImage.type = UnityEngine.UI.Image.Type.Sliced;
         Button choiceButton = templateObject.AddComponent<Button>();
         ColorBlock colors = choiceButton.colors;
         colors.normalColor = Color.white;
@@ -112,11 +113,11 @@ public static class DialogueUIAuthoring
         colors.disabledColor = new Color32(130, 125, 116, 170);
         colors.fadeDuration = 0.08f;
         choiceButton.colors = colors;
-        TMP_Text choiceLabel = Text("Label", templateObject.transform, font, 11f, TextAlignmentOptions.Center, new Color32(58, 40, 25, 255));
-        Stretch(choiceLabel.rectTransform, 18f, 18f, 1f, 1f);
+        TMP_Text choiceLabel = Text("Label", templateObject.transform, font, 10.5f, TextAlignmentOptions.Center, new Color32(58, 40, 25, 255));
+        Stretch(choiceLabel.rectTransform, 16f, 16f, 3f, 3f);
         choiceLabel.enableAutoSizing = true;
         choiceLabel.fontSizeMin = 8f;
-        choiceLabel.fontSizeMax = 11f;
+        choiceLabel.fontSizeMax = 10.5f;
         choiceLabel.textWrappingMode = TextWrappingModes.NoWrap;
         choiceLabel.overflowMode = TextOverflowModes.Ellipsis;
 
@@ -127,7 +128,9 @@ public static class DialogueUIAuthoring
         data.FindProperty("_speakerName").objectReferenceValue = speaker;
         data.FindProperty("_bodyText").objectReferenceValue = body;
         data.FindProperty("_bodyTextWithChoicesPosition").vector2Value = new Vector2(98f, 45f);
-        data.FindProperty("_bodyTextWithChoicesSize").vector2Value = new Vector2(360f, 40f);
+        data.FindProperty("_bodyTextWithChoicesSize").vector2Value = new Vector2(360f, 28f);
+        data.FindProperty("_bodyTextWithChoicesFontSize").floatValue = 13f;
+        data.FindProperty("_bodyTextWithoutChoicesFontSize").floatValue = 15f;
         data.FindProperty("_bodyTextWithoutChoicesPosition").vector2Value = new Vector2(98f, -7f);
         data.FindProperty("_bodyTextWithoutChoicesSize").vector2Value = new Vector2(360f, 96f);
         data.FindProperty("_continueIndicator").objectReferenceValue = continueImage.gameObject;
@@ -275,6 +278,23 @@ public static class DialogueUIAuthoring
 
     private static Sprite LoadSprite(string path)
     {
+        if (AssetImporter.GetAtPath(path) is TextureImporter importer)
+        {
+            bool needsImport = importer.textureType != TextureImporterType.Sprite
+                || importer.spriteImportMode != SpriteImportMode.Single
+                || !importer.alphaIsTransparency
+                || importer.mipmapEnabled;
+            if (needsImport)
+            {
+                importer.textureType = TextureImporterType.Sprite;
+                importer.spriteImportMode = SpriteImportMode.Single;
+                importer.alphaIsTransparency = true;
+                importer.mipmapEnabled = false;
+                importer.textureCompression = TextureImporterCompression.Uncompressed;
+                importer.SaveAndReimport();
+            }
+        }
+
         Sprite sprite = AssetDatabase.LoadAssetAtPath<Sprite>(path);
         if (sprite == null)
             throw new MissingReferenceException($"Dialogue UI sprite is missing or not imported as Sprite: {path}");

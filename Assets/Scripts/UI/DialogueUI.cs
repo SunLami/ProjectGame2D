@@ -16,9 +16,11 @@ public sealed class DialogueUI : MonoBehaviour
     [SerializeField] private TMP_Text _speakerName;
     [SerializeField] private TMP_Text _bodyText;
     [SerializeField] private Vector2 _bodyTextWithChoicesPosition = new(98f, 45f);
-    [SerializeField] private Vector2 _bodyTextWithChoicesSize = new(360f, 40f);
+    [SerializeField] private Vector2 _bodyTextWithChoicesSize = new(360f, 28f);
+    [SerializeField] private float _bodyTextWithChoicesFontSize = 13f;
     [SerializeField] private Vector2 _bodyTextWithoutChoicesPosition = new(98f, -7f);
     [SerializeField] private Vector2 _bodyTextWithoutChoicesSize = new(360f, 96f);
+    [SerializeField] private float _bodyTextWithoutChoicesFontSize = 15f;
     [SerializeField] private GameObject _continueIndicator;
     [SerializeField] private Transform _choiceRoot;
     [SerializeField] private Button _choiceTemplate;
@@ -140,6 +142,7 @@ public sealed class DialogueUI : MonoBehaviour
         RectTransform rect = _bodyText.rectTransform;
         rect.anchoredPosition = hasChoices ? _bodyTextWithChoicesPosition : _bodyTextWithoutChoicesPosition;
         rect.sizeDelta = hasChoices ? _bodyTextWithChoicesSize : _bodyTextWithoutChoicesSize;
+        _bodyText.fontSize = hasChoices ? _bodyTextWithChoicesFontSize : _bodyTextWithoutChoicesFontSize;
     }
 
     private IEnumerator RevealText()
