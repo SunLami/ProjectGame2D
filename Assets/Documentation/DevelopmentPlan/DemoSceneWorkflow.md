@@ -223,3 +223,9 @@ Player ghép nhiều SpriteRenderer dùng cùng một sorting contract trong `De
 - Root Player có `SortingGroup`, `sortAtRoot` bật, Sorting Layer/Order ngoài group là `Default/0`.
 - Order của Head/Weapon chỉ sắp xếp nội bộ group; Custom Axis Y so sánh toàn Player với world object.
 - Tái áp dụng/kiểm tra pivot `(0.5, 0.315)` bằng menu `Tools > Project Game > Player`.
+
+`MapNhat/Attacked_Manequin1` dùng `PolygonCollider2D` của object cha làm body collider theo Physics
+Shape đã author trong Sprite Editor. Object con `Hurtbox` dùng `CapsuleCollider2D` trigger và
+`MannequinHurtbox` để nhận hit qua `IDamageable`, sau đó chuyển tín hiệu cho `MannequinHitReaction`.
+Reaction chỉ phát Animator trigger `Hit` và flash SpriteRenderer đỏ; không có health, death, movement,
+AI hoặc knockback. Controller quay về Idle bằng exit time của clip Hit.
