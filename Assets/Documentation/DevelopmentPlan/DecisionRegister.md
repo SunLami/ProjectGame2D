@@ -31,6 +31,11 @@ tiếp tục thiết kế; phải đổi thành `Accepted` trước phase implem
 | D-025 | Save migration strategy | **Accepted — 2026-08-23** | `SaveMigration`/`ISaveMigrationStep` chạy chuỗi N→N+1 additive-default (không parse raw JSON riêng từng version) tận dụng việc `JsonUtility` bỏ qua field lạ/thiếu. Chạy in-memory tại `FileSaveSlotRepository.TryLoadValid`, không bao giờ rewrite file trên đĩa; chỉ save thật (ghi mới) mới nâng version trên đĩa. Save cũ hơn `SaveMigration.MinimumSupportedVersion` (hiện = 1) hoặc mới hơn `CurrentSaveVersion` vẫn là `IncompatibleVersion`, không đoán shape. | Phase 10 |
 | D-026 | Player build GUI verification trong môi trường này | **Accepted — 2026-08-23** | Windows Player build tự thân thành công (0 error/warning, `Player.log` init sạch), nhưng cửa sổ game không thể được điều khiển/chụp màn hình đáng tin cậy qua computer-use automation hiện có trong môi trường này (window rect hợp lệ từ Win32 API nhưng không khớp nội dung nhìn thấy được trong screenshot). Đây là giới hạn tooling môi trường, không phải lỗi code. Click-through smoke test (New Game→DemoScene→Save→Return→Continue→Quit) cần chạy thủ công bởi user/Codex trên máy thật. | Phase 10 |
 | D-027 | Save Game slot-picker semantics | **Accepted — 2026-08-23** | Pause Menu "Save Game" mở slot picker thay vì ghi thẳng vào `ActiveSlotId`. Slot Empty ghi trực tiếp; slot Valid/Corrupted/IncompatibleVersion đều bắt buộc `OnSaveSlotConfirmationRequired` trước khi ghi (không có ngoại lệ im lặng cho bất kỳ status nào). Ghi thành công vào slot khác `ActiveSlotId` hiện tại ("Save As") tự động chuyển `ActiveSlotId` sang slot đó qua `GameSessionManager.SetActiveSlotId` — không reset `IsDirty`/`IsRestoring`/play-time base, chỉ đổi nhãn session. `DeleteSlot` không tự hỏi xác nhận (UI phải tự hỏi trước khi gọi, giống `MainMenuController.DeleteSlot`); xóa slot đang active không phá session đang chạy, save tiếp theo vào slot đó tự nhiên được coi là Empty vì không có autosave (D-012) nào có thể nhắm nhầm vào slot vừa xóa. | Phase 10 |
+| D-028 | Unified gameplay HUD | **Accepted từ yêu cầu — 2026-08-25** | Gộp Health, Stamina, EXP, 8 quick-slot presentation, Stat button và Map button vào một HUD đáy màn hình. Stat dùng `GameplayMenuPage.Character`; Map bổ sung `GameplayMenuPage.Map`. Quick slots chỉ là presentation cho đến khi item-use/assignment contract được chốt. | Content production |
+| D-029 | Supplemental top-left player status HUD | **Accepted từ yêu cầu — 2026-08-25** | Thêm HUD riêng ở góc trái trên hiển thị Avatar mặc định, Health, Stamina xanh lá và Level; không di chuyển hoặc xóa dữ liệu tương ứng khỏi unified HUD dưới. `PlayerHUDController.SetAvatar` chỉ là presentation hook. Upload/chọn avatar, quyền truy cập file, validation ảnh và persistence chưa thuộc phạm vi quyết định này. | Content production |
+| D-030 | Runtime cursor presentation | **Accepted từ yêu cầu — 2026-08-26** | Một `GameCursorManager` application service sở hữu `Cursor.SetCursor`, load tám texture từ `Resources/UI/Cursors` và phân loại hover từ component hiện có. Resource node author `ResourceHarvestType`; unavailable/out-of-range dùng Blocked. Cursor chỉ presentation, không sở hữu combat, quest, proximity interaction hay persistence. | Content production |
+| D-031 | Data-driven resource harvesting | **Accepted từ yêu cầu — 2026-08-26** | Mining/Chopping dùng hit và `harvestDamage` độc lập combat; Gathering click trong phạm vi rồi khóa 1–1.5 giây. `ResourceNodeDefinition` sở hữu loại khai thác, HP, `requiredToolType` (mặc định None), loot table nhiều entry và UTC respawn. Loot được kiểm tra sức chứa như một transaction, hiện vật rơi/bay trước và chỉ commit Inventory khi đến Player; thiếu chỗ thì node không bị tiêu thụ. Không tự chạy Player đến node. | Content production |
+| D-032 | NPC world interaction input | **Accepted từ yêu cầu — 2026-08-26** | NPC không bind action `Gameplay/Interact`/phím E. Khi Playing, hover collider NPC trong phạm vi hiển thị Talk cursor; nhấn chuột trái gọi capability tương tác của NPC. Ngoài phạm vi dùng Blocked và không tự chạy Player. | Dialogue content production |
 
 ## Quy tắc cập nhật
 
@@ -155,3 +160,22 @@ Code foundation nên cung cấp extension point nhưng không tự chọn gamepl
 - DemoScene/world gameplay HUD hiển thị đúng Health và Stamina ở góc trái trên Canvas.
 - Stamina là tài nguyên runtime không persistent: drain khi sprint có chuyển động, regenerate khi ngừng;
   không thay đổi save schema/version. Presentation dùng prefab và event từ `PlayerStat`, không sở hữu state.
+
+# Character Popup read-only equipment overview
+
+- **Status:** Accepted — 2026-08-26.
+- Character Popup mở từ phím `C` hoặc Stat Button trong UnifiedGameplayHUD và dùng
+  `GameplayMenuPage.Character` đã có.
+- Equipment preview chỉ đọc state từ `EquipmentManager`; không cho kéo thả, tháo hoặc thay item trong
+  popup. Mọi tương tác equipment vẫn thuộc Inventory/Equipment UI hiện có.
+- Character Stat panel chỉ trình bày các giá trị runtime từ `PlayerStat`; không sở hữu stat calculation,
+  equipment mutation hay save data.
+
+# Dialogue UI visual language
+
+- **Status:** Accepted từ yêu cầu — 2026-08-26.
+- Dialogue dùng bộ LightFantasy module gỗ sồi, parchment, vàng cổ, lá xanh và sapphire đồng bộ HUD,
+  Quest và Tutorial.
+- Portrait, nameplate, text area, choice button và continue indicator là presentation tách rời; tên NPC,
+  nội dung và lựa chọn dùng TMP/Digital Disco, không bake vào texture.
+- Dialogue UI không sở hữu quest outcome, shop/crafting transaction hoặc save data.

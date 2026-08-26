@@ -13,11 +13,11 @@ public sealed class QuestNpcInteractionUI : MonoBehaviour
     [SerializeField] private TMP_Text _promptText;
     [SerializeField] private TMP_Text _feedbackText;
     [SerializeField] private Button _interactionButton;
+    [SerializeField] private DialogueDefinition _dialogue;
 
     private readonly HashSet<Collider2D> _playerColliders = new();
     private QuestManager _questManager;
     private QuestNpcInteractionService _service;
-    private InputAction _interactAction;
 
     private void OnEnable()
     {
@@ -34,7 +34,6 @@ public sealed class QuestNpcInteractionUI : MonoBehaviour
     private void OnDisable()
     {
         _interactionButton.onClick.RemoveListener(TryInteract);
-        SetPlayerInput(null);
         UnbindQuestManager();
         _playerColliders.Clear();
     }
@@ -46,7 +45,6 @@ public sealed class QuestNpcInteractionUI : MonoBehaviour
             return;
 
         _playerColliders.Add(other);
-        SetPlayerInput(playerInput);
         Refresh();
     }
 
@@ -55,8 +53,6 @@ public sealed class QuestNpcInteractionUI : MonoBehaviour
         if (!_playerColliders.Remove(other))
             return;
 
-        if (_playerColliders.Count == 0)
-            SetPlayerInput(null);
         Refresh();
     }
 
@@ -92,26 +88,33 @@ public sealed class QuestNpcInteractionUI : MonoBehaviour
         _service = null;
     }
 
-    private void SetPlayerInput(PlayerInput playerInput)
-    {
-        if (_interactAction != null)
-            _interactAction.performed -= HandleInteractPerformed;
-
-        _interactAction = playerInput != null
-            ? playerInput.actions.FindAction("Gameplay/Interact", false)
-            : null;
-
-        if (_interactAction != null)
-            _interactAction.performed += HandleInteractPerformed;
-    }
-
-    private void HandleInteractPerformed(InputAction.CallbackContext context) => TryInteract();
     private void HandleQuestChanged(string questId) => Refresh();
     private void HandleMainQuestUnlocked() => Refresh();
 
     public void TryInteract()
     {
         if (_service == null || _playerColliders.Count == 0)
+            return;
+
+        if (_dialogue != null && DialogueUI.Instance != null
+            && DialogueUI.Instance.Open(_dialogue, CompleteDialogueInteraction))
+        {
+            _promptRoot.SetActive(false);
+            return;
+        }
+
+        PerformQuestInteraction();
+    }
+
+    private void CompleteDialogueInteraction(string outcomeId)
+    {
+        _service?.ReportConversation(_npcId, outcomeId);
+        PerformQuestInteraction();
+    }
+
+    private void PerformQuestInteraction()
+    {
+        if (_service == null)
             return;
 
         if (_service.TryGetTurnInQuest(_npcId, out QuestDefinition turnIn))
@@ -145,14 +148,17 @@ public sealed class QuestNpcInteractionUI : MonoBehaviour
         bool canOffer = !canTurnIn && _service.TryGetOfferedQuest(_npcId, out offered);
         _markerText.text = canTurnIn ? "?" : canOffer ? "!" : string.Empty;
 
-        bool showPrompt = _playerColliders.Count > 0 && (canTurnIn || canOffer);
+        bool showPrompt = _playerColliders.Count > 0
+            && GameStateManager.Instance != null
+            && GameStateManager.Instance.CurrentState == GameState.Playing
+            && (canTurnIn || canOffer);
         _promptRoot.SetActive(showPrompt);
         if (showPrompt)
         {
             QuestDefinition quest = canTurnIn ? turnIn : offered;
             _promptText.text = canTurnIn
-                ? $"HOLD E — TURN IN {quest.DisplayName}"
-                : $"HOLD E — ACCEPT {quest.DisplayName}";
+                ? $"LEFT CLICK — TURN IN {quest.DisplayName}"
+                : $"LEFT CLICK — ACCEPT {quest.DisplayName}";
         }
     }
 
