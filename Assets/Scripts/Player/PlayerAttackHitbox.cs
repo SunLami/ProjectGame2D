@@ -112,7 +112,14 @@ public sealed class PlayerAttackHitbox : MonoBehaviour
 
         EnemyUniversal universalEnemy = other.GetComponentInParent<EnemyUniversal>();
         if (_owner != null && universalEnemy != null && _hitEnemies.Add(universalEnemy))
+        {
             _owner.DamageEnemyFromHitbox(universalEnemy);
+            return;
+        }
+
+        ResourceNodeInteractable resource = other.GetComponentInParent<ResourceNodeInteractable>();
+        if (_owner != null && resource != null && _hitEnemies.Add(resource))
+            resource.TryApplyHarvestHit();
     }
 
     private static Vector2 ToCardinalDirection(Vector2 direction)

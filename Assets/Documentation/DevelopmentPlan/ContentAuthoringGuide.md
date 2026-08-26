@@ -47,8 +47,47 @@ catalogs later; for now, Resources loading is the accepted mechanism).
 For equipment, also set `EquipmentItemSO`'s slot (`EquipSlot`: Head/Body/Weapon/Ring/Necklace/Foot/
 Shield) and stat fields.
 
+### Equipment stat modifier reference
+
+Khi thiết kế equipment item, đối chiếu với growth mặc định của nhân vật để tránh cộng bonus mơ hồ
+hoặc vô tình nhân đôi progression:
+
+| Stat | Growth tự động mỗi level | Vai trò của item modifier |
+|---|---:|---|
+| Max Health | `+3` | Có thể cộng thêm Max Health qua equipment. |
+| Attack Damage | `+0.5` | Có thể cộng thêm Attack Damage qua equipment. |
+| Defense | `+0.15` | Có thể cộng thêm Defense qua equipment. |
+| Critical Chance | `+0.1%` (`0.001`) | Modifier dùng dạng normalized, ví dụ `0.05 = 5%`. |
+| Max Stamina | Không tăng theo level | Chưa có field trong `PlayerStatModifiers`; cần backend change nếu item phải tăng stat này. |
+| Critical Multiplier | Không tăng theo level | Item có thể cộng modifier; runtime clamp trong khoảng `1–3`. |
+| Move Speed | Không tăng theo level | Item có thể cộng modifier. |
+| Sprint Multiplier | Không tăng theo level | Item có thể cộng modifier; giá trị cuối không thấp hơn `1`. |
+| Dodge Chance | Không tăng theo level | Item có thể cộng modifier; runtime clamp tối đa `50%`. |
+| Damage Reduction | Không tăng theo level | Item có thể cộng modifier; runtime clamp tối đa `75%`. |
+| Health Regeneration | Không tăng theo level | Item có thể cộng modifier theo HP/giây. |
+
+Các con số trên mô tả contract runtime hiện tại, không phải bảng balance bonus cho item. Không tự đặt
+tier/rarity/budget bonus trước khi designer chốt. `CharacterPopup` phải chỉ hiển thị giá trị cuối cùng
+sau khi cộng level growth và toàn bộ equipment modifiers; item không được trực tiếp sửa text UI.
+
 **Validation:** `ContentValidationRunner.ValidateItems` checks empty/duplicate `itemId`. Run
 **Tools/Project Game/Validate Content** after adding any item.
+
+## Resource node authoring
+
+Create one `ResourceNodeDefinition` per resource species. Author a stable `resourceId`, Mining/
+Chopping/Gathering type, HP, independent `harvestDamage`, 1–1.5 second gathering duration, UTC respawn
+cooldown and one or more loot entries. Each loot entry directly references an `ItemSO` and declares
+chance plus inclusive min/max quantity. Keep `requiredToolType = None` while every valid attack is
+allowed; the field is the accepted future tool gate.
+
+The prefab root owns `ResourceNodeInteractable` and a 2D collider. Bind `_visualRoot` to a child—not
+the prefab root—so hiding presentation does not stop its cooldown coroutine. Every scene instance needs
+a unique `_persistentId`, an `_areaId`, and explicit registration in `WorldObjectRegistry`.
+
+For the current sample content, run **Tools/Project Game 2D/Build Demo Resource Nodes**. It rebuilds
+the three placeholder item assets, definitions, prefabs and DemoScene instances for Copper Ore, Wood
+Log and Medicinal Leaf without changing their stable `itemId` values.
 
 **Do not:**
 - Reuse an `itemId` that was ever shipped for different content.

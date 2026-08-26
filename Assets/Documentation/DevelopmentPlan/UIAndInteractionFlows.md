@@ -1,5 +1,21 @@
 # UI and Interaction Flows
 
+## Runtime cursor presentation
+
+- `GameCursorManager` is the single owner of `Cursor.SetCursor`; gameplay/UI components do not set cursor textures directly.
+- The manager loads the eight 64x64 textures from `Resources/UI/Cursors` and restores `Default` over UI, menus, missing cameras and empty world space.
+- While `GameState.Playing`, a 2D ray under the mouse resolves existing components without changing their interaction ownership: living Enemy -> Attack; quest/commerce NPC -> Talk; chest/unique pickup -> Interact; ResourceNode -> its authored Mining/Chopping/Gathering type.
+- Proximity-gated world interactions show Blocked when unavailable or farther than 2.5 world units. Attack remains a target-identification cursor and is not coupled to melee range.
+- `ResourceNodeInteractable` exposes its `ResourceNodeDefinition.HarvestType` to cursor presentation. Gathering cursor also owns the explicit left-click handoff to the node; reward, cooldown and persistence remain owned by the world/inventory systems.
+- All cursor textures use genuine alpha, point toward the upper-left and keep per-texture hotspots documented in `Assets/Resources/UI/Cursors/README.md`.
+
+### Resource harvesting flow
+
+- Mining and Chopping nodes receive `harvestDamage` from each valid attack. Combat damage is not reused.
+- Gathering requires hover in range, then left click. The node locks repeated input, blinks for its authored 1–1.5 second duration and completes without interruption or auto-walking.
+- Completion rolls every loot-table entry, checks the entire batch against inventory capacity, hides the node, presents the drop/fly animation, then commits the batch when it reaches Player.
+- A capacity failure leaves the node available and grants nothing. A completed node records `nextRespawnUtcTicks`, disappears, and becomes available after its UTC cooldown.
+
 ## Hai hệ menu độc lập
 
 ### MainMenu Scene UI
@@ -65,6 +81,10 @@ navigation/state.
 
 - `PlayerHUD.prefab` là nguồn chuẩn cho HUD gameplay, neo top-left theo Canvas và không phụ thuộc tên
   hierarchy của DemoScene; DemoScene chỉ giữ prefab instance để integration.
+- Theo D-029, `PlayerHUD.prefab` là HUD trạng thái bổ sung và không thay thế unified HUD đáy màn hình.
+  HUD này có avatar tròn mặc định, Health đỏ, Stamina xanh lá và Level TMP. Avatar là sprite presentation
+  có thể được thay qua `PlayerHUDController.SetAvatar`; luồng upload/chọn ảnh, kiểm tra file và persistence
+  chỉ triển khai sau khi contract avatar được chốt.
 - HUD chỉ có hai tài nguyên: Health đỏ và Stamina xanh lá. Khung pixel-art gỗ sồi/viền vàng/đá xanh
   dùng texture alpha rỗng; fill là `UnityEngine.UI.Image` riêng, giảm bằng `fillAmount` với origin trái để
   mép phải rút dần về trái.
@@ -76,6 +96,22 @@ navigation/state.
   controller cập nhật từ `PlayerStat.OnLevelUp`, không bake số level vào texture.
 - Frame HUD là overlay có alpha thật ở lõi hai track. `HealthFill` và `StaminaFill` dùng sprite riêng có
   pixel highlight/shadow, render dưới Frame và tiếp tục giảm bằng `Image.fillAmount` origin trái.
+
+### Character Popup visual direction
+
+- `UnifiedGameplayHUD.prefab/CharacterPopup` là popup Character chuẩn của gameplay, mở/tắt bằng phím
+  `C` hoặc `BottomHUD/StatButton`; lifecycle tiếp tục đi qua `GameStateManager` với
+  `GameplayMenuPage.Character`, không tự pause world hoặc sở hữu input gameplay.
+- Bên trái sao chép nguyên presentation/layout của `InventoryUIController.prefab/InventoryWindow/EquipmentPanel`
+  (frame, parchment, ornament, silhouette và tọa độ slot), rồi scale đồng đều để vừa CharacterPopup.
+  Bảy slot Head, Weapon, Body, Shield, Necklace, Ring, Foot vẫn ở chế độ chỉ đọc: các slot chỉ giữ
+  `Image` để hiển thị item từ `EquipmentManager`; không giữ `EquipmentSlotUI`, click, drag/drop hoặc
+  unequip callback.
+- Bên phải là bảng Character Stats chia nhóm Vitals, Combat, Mobility và Recovery. Label căn trái,
+  value căn phải, header xanh và dữ liệu động dùng TMP/Digital Disco; dữ liệu đọc từ `PlayerStat` và
+  tự refresh khi stat/equipment thay đổi.
+- Popup dùng dim overlay chặn raycast phía sau, Close button trả về state trước. Prefab là nguồn chuẩn;
+  DemoScene chỉ giữ prefab instance và không có visual override riêng cho popup.
 
 ```text
 Playing

@@ -23,6 +23,7 @@ public enum GameplayMenuPage
     Crafting,
     Shop,
     QuestLog,
+    Map,
     Settings
 }
 
