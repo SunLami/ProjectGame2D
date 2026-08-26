@@ -1,5 +1,7 @@
 using NUnit.Framework;
+using System.Reflection;
 using UnityEngine;
+using UnityEngine.UI;
 
 public sealed class PlayerStaminaTests
 {
@@ -8,6 +10,7 @@ public sealed class PlayerStaminaTests
     {
         GameObject playerObject = new GameObject("PlayerStat_Stamina_Test");
         PlayerStat stat = playerObject.AddComponent<PlayerStat>();
+        SetPrivate(stat, "_stamina", stat.MaxStamina);
 
         try
         {
@@ -33,6 +36,7 @@ public sealed class PlayerStaminaTests
     {
         GameObject playerObject = new GameObject("PlayerStat_Attack_Stamina_Test");
         PlayerStat stat = playerObject.AddComponent<PlayerStat>();
+        SetPrivate(stat, "_stamina", stat.MaxStamina);
 
         try
         {
@@ -50,5 +54,54 @@ public sealed class PlayerStaminaTests
         {
             Object.DestroyImmediate(playerObject);
         }
+    }
+
+    [Test]
+    public void PlayerHUD_StartRefreshesStaminaAfterPlayerAwakeOrdering()
+    {
+        GameObject playerObject = new GameObject("PlayerStat_HUD_Lifecycle_Test");
+        PlayerStat stat = playerObject.AddComponent<PlayerStat>();
+        GameObject hudObject = new GameObject("PlayerHUD_Lifecycle_Test");
+        PlayerHUDController hud = hudObject.AddComponent<PlayerHUDController>();
+        Image staminaFill = CreateImage("StaminaFill_Lifecycle_Test");
+
+        try
+        {
+            SetPrivate(hud, "_staminaFill", staminaFill);
+            SetPrivate(stat, "_stamina", 0f);
+            hud.Bind(stat);
+            Assert.AreEqual(0f, staminaFill.fillAmount, 0.001f);
+
+            SetPrivate(stat, "_stamina", stat.MaxStamina);
+            InvokePrivate(hud, "Start");
+
+            Assert.AreEqual(1f, staminaFill.fillAmount, 0.001f);
+        }
+        finally
+        {
+            Object.DestroyImmediate(staminaFill.gameObject);
+            Object.DestroyImmediate(hudObject);
+            Object.DestroyImmediate(playerObject);
+        }
+    }
+
+    private static Image CreateImage(string name)
+    {
+        GameObject imageObject = new GameObject(name, typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
+        return imageObject.GetComponent<Image>();
+    }
+
+    private static void SetPrivate<T>(object target, string fieldName, T value)
+    {
+        FieldInfo field = target.GetType().GetField(fieldName, BindingFlags.Instance | BindingFlags.NonPublic);
+        Assert.IsNotNull(field, $"Missing private field {fieldName}.");
+        field.SetValue(target, value);
+    }
+
+    private static void InvokePrivate(object target, string methodName)
+    {
+        MethodInfo method = target.GetType().GetMethod(methodName, BindingFlags.Instance | BindingFlags.NonPublic);
+        Assert.IsNotNull(method, $"Missing private method {methodName}.");
+        method.Invoke(target, null);
     }
 }

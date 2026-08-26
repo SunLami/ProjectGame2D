@@ -9,9 +9,11 @@ using TMPro;
 public static class PlayerHUDBuilder
 {
     private const string ScenePath = "Assets/Scenes/DemoScene.unity";
-    private const string FrameTexturePath = "Assets/Resources/UI/Gameplay/HUD/player_health_stamina_level_frame_hollow_v3.png";
-    private const string HealthFillTexturePath = "Assets/Resources/UI/Gameplay/HUD/player_health_fill_v1.png";
-    private const string StaminaFillTexturePath = "Assets/Resources/UI/Gameplay/HUD/player_stamina_fill_v1.png";
+    private const string FrameTexturePath = "Assets/Resources/UI/Gameplay/PlayerStatusHUD/LightFantasy/player_status_frame.png";
+    private const string HealthFillTexturePath = "Assets/Resources/UI/Gameplay/PlayerStatusHUD/LightFantasy/health_fill.png";
+    private const string StaminaFillTexturePath = "Assets/Resources/UI/Gameplay/PlayerStatusHUD/LightFantasy/stamina_fill_green.png";
+    private const string AvatarTexturePath = "Assets/Resources/UI/Gameplay/PlayerStatusHUD/LightFantasy/default_avatar.png";
+    private const string LevelBackgroundTexturePath = "Assets/Resources/UI/Gameplay/UnifiedHUD/LightFantasy/socket_background_round_brown.png";
     private const string PrefabPath = "Assets/Resources/UI/Gameplay/HUD/PlayerHUD.prefab";
     private const string FontPath = "Assets/Fonts/DigitalDisco SDF v3.asset";
 
@@ -21,7 +23,9 @@ public static class PlayerHUDBuilder
         Sprite frameSprite = ImportSprite(FrameTexturePath);
         Sprite healthFillSprite = ImportSprite(HealthFillTexturePath);
         Sprite staminaFillSprite = ImportSprite(StaminaFillTexturePath);
-        GameObject prefabRoot = BuildPrefabSource(frameSprite, healthFillSprite, staminaFillSprite);
+        Sprite avatarSprite = ImportSprite(AvatarTexturePath);
+        Sprite levelBackgroundSprite = AssetDatabase.LoadAssetAtPath<Sprite>(LevelBackgroundTexturePath);
+        GameObject prefabRoot = BuildPrefabSource(frameSprite, healthFillSprite, staminaFillSprite, avatarSprite, levelBackgroundSprite);
         GameObject prefab = PrefabUtility.SaveAsPrefabAsset(prefabRoot, PrefabPath);
         UnityEngine.Object.DestroyImmediate(prefabRoot);
 
@@ -47,18 +51,29 @@ public static class PlayerHUDBuilder
         Debug.Log("PlayerHUD prefab built and integrated into DemoScene gameplay Canvas.");
     }
 
-    private static GameObject BuildPrefabSource(Sprite frameSprite, Sprite healthFillSprite, Sprite staminaFillSprite)
+    private static GameObject BuildPrefabSource(Sprite frameSprite, Sprite healthFillSprite, Sprite staminaFillSprite, Sprite avatarSprite, Sprite levelBackgroundSprite)
     {
         GameObject root = new GameObject("PlayerHUD", typeof(RectTransform), typeof(PlayerHUDController));
         RectTransform rootRect = root.GetComponent<RectTransform>();
         rootRect.anchorMin = new Vector2(0f, 1f);
         rootRect.anchorMax = new Vector2(0f, 1f);
         rootRect.pivot = new Vector2(0f, 1f);
-        rootRect.anchoredPosition = new Vector2(9f, -9f);
-        rootRect.sizeDelta = new Vector2(190f, 68f);
+        rootRect.anchoredPosition = new Vector2(8f, -8f);
+        rootRect.sizeDelta = new Vector2(260f, 98f);
+        rootRect.localScale = Vector3.one * 0.62f;
 
-        Image healthFill = CreateFill(root.transform, "HealthFill", healthFillSprite, 30f, -20f);
-        Image staminaFill = CreateFill(root.transform, "StaminaFill", staminaFillSprite, 30f, -36f);
+        Image avatar = CreateImage(root.transform, "Avatar", Color.white);
+        avatar.sprite = avatarSprite;
+        avatar.preserveAspect = true;
+        PlaceTopLeft(avatar.rectTransform, 9f, -10f, 66f, 66f);
+
+        Image healthFill = CreateFill(root.transform, "HealthFill", healthFillSprite, 70f, -35f, 173f, 19f);
+        Image staminaFill = CreateFill(root.transform, "StaminaFill", staminaFillSprite, 74f, -63f, 148f, 14f);
+
+        Image levelBackground = CreateImage(root.transform, "LevelBackground", Color.white);
+        levelBackground.sprite = levelBackgroundSprite;
+        levelBackground.preserveAspect = true;
+        PlaceTopLeft(levelBackground.rectTransform, 52f, -61f, 34f, 34f);
 
         Image frame = CreateImage(root.transform, "Frame", Color.white);
         frame.sprite = frameSprite;
@@ -69,12 +84,15 @@ public static class PlayerHUDBuilder
         SerializedObject controller = new SerializedObject(root.GetComponent<PlayerHUDController>());
         controller.FindProperty("_healthFill").objectReferenceValue = healthFill;
         controller.FindProperty("_staminaFill").objectReferenceValue = staminaFill;
+        controller.FindProperty("_avatarImage").objectReferenceValue = avatar;
         controller.FindProperty("_levelText").objectReferenceValue = levelText;
         controller.ApplyModifiedPropertiesWithoutUndo();
 
-        healthFill.transform.SetAsFirstSibling();
-        staminaFill.transform.SetSiblingIndex(1);
-        frame.transform.SetSiblingIndex(2);
+        avatar.transform.SetAsFirstSibling();
+        healthFill.transform.SetSiblingIndex(1);
+        staminaFill.transform.SetSiblingIndex(2);
+        levelBackground.transform.SetSiblingIndex(3);
+        frame.transform.SetSiblingIndex(4);
         levelText.transform.SetAsLastSibling();
         return root;
     }
@@ -85,22 +103,24 @@ public static class PlayerHUDBuilder
         textObject.transform.SetParent(parent, false);
         TextMeshProUGUI text = textObject.GetComponent<TextMeshProUGUI>();
         text.font = AssetDatabase.LoadAssetAtPath<TMP_FontAsset>(FontPath);
-        text.text = "LV. 1";
-        text.fontSize = 6f;
+        text.text = "1";
+        text.fontSize = 10f;
         text.alignment = TextAlignmentOptions.Center;
         text.color = new Color32(255, 238, 168, 255);
+        text.outlineWidth = 0.2f;
+        text.outlineColor = new Color32(45, 22, 8, 255);
         text.raycastTarget = false;
 
         RectTransform rect = text.rectTransform;
         rect.anchorMin = new Vector2(0f, 1f);
         rect.anchorMax = new Vector2(0f, 1f);
         rect.pivot = new Vector2(0.5f, 0.5f);
-        rect.anchoredPosition = new Vector2(19f, -52f);
-        rect.sizeDelta = new Vector2(28f, 9f);
+        rect.anchoredPosition = new Vector2(69f, -78f);
+        rect.sizeDelta = new Vector2(30f, 16f);
         return text;
     }
 
-    private static Image CreateFill(Transform parent, string name, Sprite sprite, float x, float y)
+    private static Image CreateFill(Transform parent, string name, Sprite sprite, float x, float y, float width, float height)
     {
         Image image = CreateImage(parent, name, Color.white);
         image.sprite = sprite;
@@ -109,7 +129,7 @@ public static class PlayerHUDBuilder
         rect.anchorMax = new Vector2(0f, 1f);
         rect.pivot = new Vector2(0f, 0.5f);
         rect.anchoredPosition = new Vector2(x, y);
-        rect.sizeDelta = new Vector2(149f, 7f);
+        rect.sizeDelta = new Vector2(width, height);
         image.type = Image.Type.Filled;
         image.fillMethod = Image.FillMethod.Horizontal;
         image.fillOrigin = (int)Image.OriginHorizontal.Left;
@@ -133,6 +153,14 @@ public static class PlayerHUDBuilder
         rect.anchorMax = Vector2.one;
         rect.offsetMin = Vector2.zero;
         rect.offsetMax = Vector2.zero;
+    }
+
+    private static void PlaceTopLeft(RectTransform rect, float x, float y, float width, float height)
+    {
+        rect.anchorMin = rect.anchorMax = new Vector2(0f, 1f);
+        rect.pivot = new Vector2(0f, 1f);
+        rect.anchoredPosition = new Vector2(x, y);
+        rect.sizeDelta = new Vector2(width, height);
     }
 
     private static Sprite ImportSprite(string path)

@@ -6,6 +6,7 @@ public sealed class PlayerHUDController : MonoBehaviour
 {
     [SerializeField] private Image _healthFill;
     [SerializeField] private Image _staminaFill;
+    [SerializeField] private Image _avatarImage;
     [SerializeField] private TMP_Text _levelText;
 
     private PlayerStat _playerStat;
@@ -13,6 +14,12 @@ public sealed class PlayerHUDController : MonoBehaviour
     private void OnEnable()
     {
         TryBindPlayerStat();
+    }
+
+    private void Start()
+    {
+        TryBindPlayerStat();
+        RefreshFromPlayerStat();
     }
 
     private void Update()
@@ -40,9 +47,13 @@ public sealed class PlayerHUDController : MonoBehaviour
         _playerStat.OnHealthChanged += UpdateHealth;
         _playerStat.OnStaminaChanged += UpdateStamina;
         _playerStat.OnLevelUp += UpdateLevel;
-        UpdateHealth(_playerStat.Health, _playerStat.MaxHealth);
-        UpdateStamina(_playerStat.Stamina, _playerStat.MaxStamina);
-        UpdateLevel(_playerStat.Level);
+        RefreshFromPlayerStat();
+    }
+
+    public void SetAvatar(Sprite avatar)
+    {
+        if (_avatarImage != null && avatar != null)
+            _avatarImage.sprite = avatar;
     }
 
     private void TryBindPlayerStat()
@@ -76,7 +87,17 @@ public sealed class PlayerHUDController : MonoBehaviour
     private void UpdateLevel(int level)
     {
         if (_levelText != null)
-            _levelText.text = $"LV. {Mathf.Max(1, level)}";
+            _levelText.text = Mathf.Max(1, level).ToString();
+    }
+
+    private void RefreshFromPlayerStat()
+    {
+        if (_playerStat == null)
+            return;
+
+        UpdateHealth(_playerStat.Health, _playerStat.MaxHealth);
+        UpdateStamina(_playerStat.Stamina, _playerStat.MaxStamina);
+        UpdateLevel(_playerStat.Level);
     }
 
     private static void SetFill(Image image, float current, float maximum)

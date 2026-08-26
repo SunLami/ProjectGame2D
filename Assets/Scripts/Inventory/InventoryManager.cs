@@ -155,6 +155,70 @@ public class InventoryManager : MonoBehaviour
         return remaining <= 0;
     }
 
+    public bool HasCapacityForBatch(IReadOnlyList<InventoryItemGrant> grants)
+    {
+        if (grants == null || grants.Count == 0)
+            return false;
+
+        var simulatedItems = new ItemSO[_slots.Count];
+        var simulatedQuantities = new int[_slots.Count];
+        for (int i = 0; i < _slots.Count; i++)
+        {
+            simulatedItems[i] = _slots[i].item;
+            simulatedQuantities[i] = _slots[i].quantity;
+        }
+
+        foreach (InventoryItemGrant grant in grants)
+        {
+            if (grant.Item == null || grant.Quantity <= 0)
+                return false;
+
+            int remaining = grant.Quantity;
+            if (grant.Item.isStackable)
+            {
+                for (int i = 0; i < simulatedItems.Length && remaining > 0; i++)
+                {
+                    if (simulatedItems[i] != grant.Item || simulatedQuantities[i] >= grant.Item.maxStackSize)
+                        continue;
+
+                    int added = Mathf.Min(grant.Item.maxStackSize - simulatedQuantities[i], remaining);
+                    simulatedQuantities[i] += added;
+                    remaining -= added;
+                }
+            }
+
+            for (int i = 0; i < simulatedItems.Length && remaining > 0; i++)
+            {
+                if (simulatedItems[i] != null)
+                    continue;
+
+                int added = grant.Item.isStackable ? Mathf.Min(grant.Item.maxStackSize, remaining) : 1;
+                simulatedItems[i] = grant.Item;
+                simulatedQuantities[i] = added;
+                remaining -= added;
+            }
+
+            if (remaining > 0)
+                return false;
+        }
+
+        return true;
+    }
+
+    public bool TryAddBatch(IReadOnlyList<InventoryItemGrant> grants)
+    {
+        if (!HasCapacityForBatch(grants))
+            return false;
+
+        foreach (InventoryItemGrant grant in grants)
+        {
+            if (!AddItem(grant.Item, grant.Quantity))
+                return false;
+        }
+
+        return true;
+    }
+
     public bool HasItem(ItemSO item, int amount = 1)
     {
         if (item == null) return false;

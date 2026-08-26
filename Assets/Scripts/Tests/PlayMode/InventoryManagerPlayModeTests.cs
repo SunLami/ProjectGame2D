@@ -80,6 +80,36 @@ public sealed class InventoryManagerPlayModeTests
     }
 
     [Test]
+    public void BatchCapacity_ReservesSlotsAcrossEveryLootEntry()
+    {
+        int slotCount = InventoryManager.Instance.Slots.Count;
+        InventoryManager.Instance.AddItem(_nonStackable, slotCount - 1);
+        var secondItem = ScriptableObject.CreateInstance<ItemSO>();
+        secondItem.itemId = "test.second";
+        secondItem.isStackable = false;
+        secondItem.maxStackSize = 1;
+
+        try
+        {
+            var twoDrops = new List<InventoryItemGrant>
+            {
+                new(_stackable, 1),
+                new(secondItem, 1)
+            };
+
+            Assert.IsFalse(InventoryManager.Instance.HasCapacityForBatch(twoDrops));
+            Assert.IsFalse(InventoryManager.Instance.TryAddBatch(twoDrops));
+            Assert.IsFalse(InventoryManager.Instance.HasItem(_stackable, 1),
+                "A rejected loot transaction must not partially add its first entry.");
+            Assert.IsFalse(InventoryManager.Instance.HasItem(secondItem, 1));
+        }
+        finally
+        {
+            Object.DestroyImmediate(secondItem);
+        }
+    }
+
+    [Test]
     public void ToSaveData_LoadFromSaveData_RoundTripsSlotsAndGold()
     {
         InventoryManager.Instance.AddItem(_stackable, 3);
