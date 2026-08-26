@@ -21,7 +21,11 @@ public static class InventoryLightFantasySkinBuilder
         Sprite gridFrame = ImportSprite(SkinRoot + "inventory_grid_border_hd.png");
         Sprite goldBadge = ImportSprite(SkinRoot + "inventory_gold_badge_hd.png");
 
-        EditPrefab(SlotPrefab, root => SetSprite(root, slot));
+        EditPrefab(SlotPrefab, root =>
+        {
+            SetSprite(root, slot);
+            SetIconSafeArea(Find(root.transform, "Icon"));
+        });
         EditPrefab(ControllerPrefab, root =>
         {
             SetSprite(Find(root.transform, "InventoryPanel"), board);
@@ -41,7 +45,9 @@ public static class InventoryLightFantasySkinBuilder
             };
             foreach (string slotName in equipmentSlots)
             {
-                SetSprite(Find(root.transform, slotName), slot);
+                GameObject equipmentSlot = Find(root.transform, slotName);
+                SetSprite(equipmentSlot, slot);
+                SetIconSafeArea(Find(equipmentSlot.transform, "Icon"));
             }
         });
 
@@ -105,6 +111,22 @@ public static class InventoryLightFantasySkinBuilder
 
         image.sprite = sprite;
         image.type = Image.Type.Simple;
+    }
+
+    private static void SetIconSafeArea(GameObject iconObject)
+    {
+        RectTransform rect = iconObject.GetComponent<RectTransform>();
+        Image image = iconObject.GetComponent<Image>();
+        if (rect == null || image == null)
+        {
+            throw new InvalidOperationException($"Inventory icon requires RectTransform and Image: {iconObject.name}");
+        }
+
+        rect.anchorMin = new Vector2(0.16f, 0.16f);
+        rect.anchorMax = new Vector2(0.84f, 0.84f);
+        rect.anchoredPosition = Vector2.zero;
+        rect.sizeDelta = Vector2.zero;
+        image.preserveAspect = true;
     }
 
     private static void SetBackgroundSprite(GameObject target, Sprite sprite)

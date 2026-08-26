@@ -43,6 +43,7 @@ public sealed class GameCursorManager : MonoBehaviour
     private Transform _player;
     private ResourceNodeInteractable _hoveredGatheringNode;
     private QuestNpcInteractionUI _hoveredQuestNpc;
+    private ChestInteractable _hoveredChest;
 
     public static GameCursorManager Instance { get; private set; }
     public GameCursorType CurrentCursor => _current;
@@ -88,12 +89,20 @@ public sealed class GameCursorManager : MonoBehaviour
         {
             _hoveredQuestNpc.TryInteract();
         }
+        else if (_current == GameCursorType.Interact
+            && _hoveredChest != null
+            && Mouse.current != null
+            && Mouse.current.leftButton.wasPressedThisFrame)
+        {
+            _hoveredChest.TryBeginOpen();
+        }
     }
 
     private GameCursorType ResolveCursor()
     {
         _hoveredGatheringNode = null;
         _hoveredQuestNpc = null;
+        _hoveredChest = null;
         if (Mouse.current == null
             || GameStateManager.Instance == null
             || GameStateManager.Instance.CurrentState != GameState.Playing
@@ -122,6 +131,9 @@ public sealed class GameCursorManager : MonoBehaviour
                 _hoveredGatheringNode = collider.GetComponentInParent<ResourceNodeInteractable>(true);
             else if (target.Cursor == GameCursorType.Talk)
                 _hoveredQuestNpc = collider.GetComponentInParent<QuestNpcInteractionUI>(true);
+            else if (target.Cursor == GameCursorType.Interact
+                && collider.GetComponentInParent<ChestInteractable>(true) != null)
+                _hoveredChest = collider.GetComponentInParent<ChestInteractable>(true);
 
             return target.Cursor;
         }

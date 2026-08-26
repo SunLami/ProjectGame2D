@@ -23,6 +23,28 @@
 - Hover outside the 2.5-unit interaction range shows Blocked. Clicking while blocked does nothing and never auto-moves Player.
 - The current quest NPC capability receives this click; the production dialogue router will later become the single handoff point for Quest, Shop and Crafting NPC capabilities.
 
+### Persistent chest interaction
+
+- Chests use the Interact cursor and left-click while in range; `Gameplay/Interact`/keyboard E does
+  not open a chest.
+- A valid click first verifies the complete reward fits, then plays the authored four-frame opening
+  sequence. At the end of frame four, loot drops into the world, flies to Player, and only then commits
+  to Inventory and marks the persistent chest opened.
+- If capacity becomes unavailable before commit, the chest returns to its closed frame, remains
+  retryable, grants nothing, and does not change its persistent state.
+
+### Resource-node depletion presentation
+
+- Authored resource nodes may provide stable available/depleted sprite pairs. Successful harvest
+  changes to the depleted sprite during the UTC cooldown instead of hiding the GameObject.
+- When the cooldown expires or restore finds the node available, presentation returns to the
+  available sprite. Availability, loot transaction and save state remain owned by
+  `ResourceNodeInteractable`; sprites are presentation only.
+- Resource loot presentation and Inventory slots both read the same `ItemSO.icon`; authored material
+  icons therefore remain visually identical while dropping, flying to Player and after Inventory commit.
+- Demo resource presentation references named sub-sprites from the original `Objects.png` and
+  `Icons.png` atlases. Do not create standalone duplicate PNGs for individual node states or item icons.
+
 ## Hai hệ menu độc lập
 
 ### MainMenu Scene UI

@@ -1,6 +1,8 @@
+using System.Collections;
 using System.Collections.Generic;
 using NUnit.Framework;
 using UnityEngine;
+using UnityEngine.TestTools;
 
 public sealed class PersistentWorldObjectsPlayModeTests
 {
@@ -104,6 +106,35 @@ public sealed class PersistentWorldObjectsPlayModeTests
         // Idempotent: restoring again changes nothing further.
         chest.RestoreState(new WorldObjectState(true, 0));
         Assert.IsFalse(InventoryManager.Instance.HasItem(reward, 1));
+    }
+
+    [UnityTest]
+    public IEnumerator Chest_TryBeginOpen_CommitsOnlyAfterLootPresentation()
+    {
+        ItemSO reward = MakeItem("item.reward.animated_chest");
+        var resolver = new FakeItemResolver();
+        resolver.Register(reward);
+
+        var player = new GameObject("PlayerFixture");
+        player.tag = "Player";
+        _scratchObjects.Add(player);
+
+        var go = new GameObject("AnimatedChest");
+        _scratchObjects.Add(go);
+        ChestInteractable chest = go.AddComponent<ChestInteractable>();
+        chest.ConfigureForTests("world.chest.animated.01", reward.itemId, 2, resolver);
+
+        Assert.IsTrue(chest.TryBeginOpen());
+        Assert.IsTrue(chest.IsOpening);
+        Assert.IsFalse(chest.IsOpened);
+        Assert.IsFalse(InventoryManager.Instance.HasItem(reward, 1),
+            "Reward must not be committed before the loot reaches Player.");
+
+        yield return new WaitForSecondsRealtime(1.1f);
+
+        Assert.IsFalse(chest.IsOpening);
+        Assert.IsTrue(chest.IsOpened);
+        Assert.IsTrue(InventoryManager.Instance.HasItem(reward, 2));
     }
 
     // ---- Unique pickup ----
@@ -214,5 +245,27 @@ public sealed class PersistentWorldObjectsPlayModeTests
         {
             QuestDomainEvents.ResourceGathered -= OnGathered;
         }
+    }
+
+    [Test]
+    public void ResourceNode_RestoreState_HidesVisualAndColliderDuringCooldown()
+    {
+        var go = new GameObject("ResourceNodePresentation");
+        _scratchObjects.Add(go);
+        var visual = new GameObject("Visual");
+        visual.transform.SetParent(go.transform, false);
+        SpriteRenderer renderer = visual.AddComponent<SpriteRenderer>();
+        BoxCollider2D nodeCollider = go.AddComponent<BoxCollider2D>();
+
+        ResourceNodeInteractable node = go.AddComponent<ResourceNodeInteractable>();
+        node.ConfigurePresentationForTests(visual, renderer);
+
+        node.RestoreState(new WorldObjectState(false, System.DateTime.UtcNow.AddMinutes(5).Ticks));
+        Assert.IsFalse(visual.activeSelf, "A depleted resource node must disappear during cooldown.");
+        Assert.IsFalse(nodeCollider.enabled, "An invisible resource node must not remain targetable.");
+
+        node.RestoreState(new WorldObjectState(false, 0));
+        Assert.IsTrue(visual.activeSelf);
+        Assert.IsTrue(nodeCollider.enabled);
     }
 }

@@ -198,10 +198,8 @@ item, 4 object có persistentId, 1 catalog check thêm từ WorldObjectRegistry)
   cùng lớp bug với `MapManager` cũ, đã ghi nhận trong `ServiceOwnershipLifecycle.md` nhưng nằm ngoài
   phạm vi "MapManager" được giao trực tiếp ở Phase 8. Chưa sửa, không âm thầm bỏ qua -- ghi rõ ở đây
   để phase sau xử lý cùng nhóm world/audio ownership.
-- `ResourceNodeInteractable` không có visual auto-refresh khi hết cooldown (không polling mỗi frame
-  theo yêu cầu kiến trúc) -- `IsAvailable` tính đúng on-demand, chỉ cần một lần tương tác hoặc một
-  presentation script tương lai tự query lại để cập nhật hiển thị. Không ảnh hưởng tính đúng của
-  giao dịch.
+- `ResourceNodeInteractable` dùng coroutine realtime để tự hiện lại visual/collider khi cooldown UTC
+  kết thúc trong scene đang chạy; save/load vẫn dùng `nextRespawnUtcTicks` tuyệt đối theo D-015.
 - Chest reward là item+quantity authored trực tiếp trên từng instance, chưa có `LootTableDefinition`
   dùng chung nhiều chest -- đúng phạm vi tối giản của Phase 8 (persistence mechanism, không phải
   loot-table system), có thể nâng cấp sau nếu cần nhiều chest chia sẻ bảng thưởng.

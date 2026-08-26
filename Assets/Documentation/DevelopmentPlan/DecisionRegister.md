@@ -34,8 +34,9 @@ tiếp tục thiết kế; phải đổi thành `Accepted` trước phase implem
 | D-028 | Unified gameplay HUD | **Accepted từ yêu cầu — 2026-08-25** | Gộp Health, Stamina, EXP, 8 quick-slot presentation, Stat button và Map button vào một HUD đáy màn hình. Stat dùng `GameplayMenuPage.Character`; Map bổ sung `GameplayMenuPage.Map`. Quick slots chỉ là presentation cho đến khi item-use/assignment contract được chốt. | Content production |
 | D-029 | Supplemental top-left player status HUD | **Accepted từ yêu cầu — 2026-08-25** | Thêm HUD riêng ở góc trái trên hiển thị Avatar mặc định, Health, Stamina xanh lá và Level; không di chuyển hoặc xóa dữ liệu tương ứng khỏi unified HUD dưới. `PlayerHUDController.SetAvatar` chỉ là presentation hook. Upload/chọn avatar, quyền truy cập file, validation ảnh và persistence chưa thuộc phạm vi quyết định này. | Content production |
 | D-030 | Runtime cursor presentation | **Accepted từ yêu cầu — 2026-08-26** | Một `GameCursorManager` application service sở hữu `Cursor.SetCursor`, load tám texture từ `Resources/UI/Cursors` và phân loại hover từ component hiện có. Resource node author `ResourceHarvestType`; unavailable/out-of-range dùng Blocked. Cursor chỉ presentation, không sở hữu combat, quest, proximity interaction hay persistence. | Content production |
-| D-031 | Data-driven resource harvesting | **Accepted từ yêu cầu — 2026-08-26** | Mining/Chopping dùng hit và `harvestDamage` độc lập combat; Gathering click trong phạm vi rồi khóa 1–1.5 giây. `ResourceNodeDefinition` sở hữu loại khai thác, HP, `requiredToolType` (mặc định None), loot table nhiều entry và UTC respawn. Loot được kiểm tra sức chứa như một transaction, hiện vật rơi/bay trước và chỉ commit Inventory khi đến Player; thiếu chỗ thì node không bị tiêu thụ. Không tự chạy Player đến node. | Content production |
+| D-031 | Data-driven resource harvesting | **Accepted từ yêu cầu — 2026-08-26** | Mining/Chopping dùng hit và `harvestDamage` độc lập combat; cả Mining, Chopping và Gathering đều flash silhouette trắng khi tương tác mà không tắt/bật sprite. Gathering click trong phạm vi rồi khóa 1–1.5 giây. `ResourceNodeDefinition` sở hữu loại khai thác, HP, `requiredToolType` (mặc định None), loot table nhiều entry và UTC respawn. Khi thu hoạch xong, node ẩn toàn bộ visual/collider thay vì dùng depleted sprite và tự hiện lại đúng hạn. Loot icon hiển thị ở kích thước lớn, rơi/bay tới Player, được kiểm tra sức chứa như một transaction và chỉ commit Inventory khi đến Player; thiếu chỗ thì node không bị tiêu thụ. Không tự chạy Player đến node. | Content production |
 | D-032 | NPC world interaction input | **Accepted từ yêu cầu — 2026-08-26** | NPC không bind action `Gameplay/Interact`/phím E. Khi Playing, hover collider NPC trong phạm vi hiển thị Talk cursor; nhấn chuột trái gọi capability tương tác của NPC. Ngoài phạm vi dùng Blocked và không tự chạy Player. | Dialogue content production |
+| D-033 | Persistent chest interaction | **Accepted từ yêu cầu — 2026-08-26** | Chest dùng Interact cursor và chuột trái trong phạm vi, không bind phím E. Animation mở hoàn tất trước loot presentation; Inventory và persistent opened state chỉ commit sau khi loot bay tới Player. Capacity failure không tiêu thụ reward và chest vẫn retry được. | Content production |
 
 ## Quy tắc cập nhật
 
@@ -179,3 +180,12 @@ Code foundation nên cung cấp extension point nhưng không tự chọn gamepl
 - Portrait, nameplate, text area, choice button và continue indicator là presentation tách rời; tên NPC,
   nội dung và lựa chọn dùng TMP/Digital Disco, không bake vào texture.
 - Dialogue UI không sở hữu quest outcome, shop/crafting transaction hoặc save data.
+
+# Persistent chest left-click and delayed loot commit
+
+- **Status:** Accepted từ yêu cầu — 2026-08-26.
+- Chest dùng Interact cursor và chuột trái trong phạm vi; phím `Gameplay/Interact`/E không mở chest.
+- Chest chạy đủ animation mở bốn frame trước khi tạo loot presentation. Loot chỉ được commit vào
+  Inventory sau khi bay tới Player; persistent opened state chỉ đổi sau khi transaction thành công.
+- Hệ thống kiểm tra sức chứa trước khi bắt đầu và kiểm tra lại trước khi tạo loot. Nếu không thể commit,
+  chest trở về trạng thái đóng, không mất reward và vẫn có thể thử lại.
