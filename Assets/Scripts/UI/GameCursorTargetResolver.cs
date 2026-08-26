@@ -54,7 +54,11 @@ public static class GameCursorTargetResolver
         ChestInteractable chest = hoveredComponent.GetComponentInParent<ChestInteractable>(true);
         if (chest != null)
         {
-            target = new GameCursorTarget(GameCursorType.Interact, chest.transform, true, !chest.IsOpened);
+            target = new GameCursorTarget(
+                GameCursorType.Interact,
+                chest.transform,
+                true,
+                !chest.IsOpened && !chest.IsOpening);
             return true;
         }
 

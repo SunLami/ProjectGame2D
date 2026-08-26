@@ -14,7 +14,7 @@ public static class ResourceLootFlyVisual
             renderer.sprite = grants[i].Item.icon;
             renderer.sortingOrder = 200;
             renderer.color = renderer.sprite != null ? Color.white : FallbackColor(i);
-            visual.transform.localScale = renderer.sprite != null ? Vector3.one * 0.55f : Vector3.one * 0.18f;
+            visual.transform.localScale = renderer.sprite != null ? Vector3.one * 1.2f : Vector3.one * 0.36f;
             visual.transform.position = origin;
             visuals.Add(visual.transform);
         }

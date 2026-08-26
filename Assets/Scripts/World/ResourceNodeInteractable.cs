@@ -15,6 +15,9 @@ public sealed class ResourceNodeInteractable : MonoBehaviour, IPersistentWorldOb
     private float _currentHealth;
     private bool _isResolving;
     private Coroutine _respawnRoutine;
+    private Coroutine _flashRoutine;
+    private Collider2D[] _colliders;
+    private Material _originalMaterial;
     private IItemResolver _legacyItemResolver;
     private string _legacyResourceId;
     private string _legacyItemId;
@@ -31,6 +34,8 @@ public sealed class ResourceNodeInteractable : MonoBehaviour, IPersistentWorldOb
 
     private void Awake()
     {
+        _colliders = GetComponentsInChildren<Collider2D>(true);
+        if (_flashRenderer != null) _originalMaterial = _flashRenderer.sharedMaterial;
         _currentHealth = MaximumHealth;
         ApplyVisual();
     }
@@ -39,9 +44,19 @@ public sealed class ResourceNodeInteractable : MonoBehaviour, IPersistentWorldOb
 
     private void OnDisable()
     {
-        if (_respawnRoutine == null) return;
-        StopCoroutine(_respawnRoutine);
-        _respawnRoutine = null;
+        if (_respawnRoutine != null)
+        {
+            StopCoroutine(_respawnRoutine);
+            _respawnRoutine = null;
+        }
+
+        if (_flashRoutine != null)
+        {
+            StopCoroutine(_flashRoutine);
+            _flashRoutine = null;
+        }
+
+        RestoreFlashMaterial();
     }
 
     public bool TryApplyHarvestHit(HarvestToolType equippedTool = HarvestToolType.None)
@@ -50,9 +65,7 @@ public sealed class ResourceNodeInteractable : MonoBehaviour, IPersistentWorldOb
             return false;
 
         _currentHealth = Mathf.Max(0f, _currentHealth - HarvestDamage);
-        StartCoroutine(FlashRoutine(0.12f));
-        if (_currentHealth <= 0f)
-            TryBeginLootResolution();
+        PlayWhiteFlash(_currentHealth <= 0f);
         return true;
     }
 
@@ -90,16 +103,15 @@ public sealed class ResourceNodeInteractable : MonoBehaviour, IPersistentWorldOb
     private IEnumerator GatherRoutine()
     {
         _isResolving = true;
+        PlayWhiteFlash(false);
         float duration = _definition != null ? _definition.GatheringDuration : 1.2f;
         float elapsed = 0f;
         while (elapsed < duration)
         {
             elapsed += Time.unscaledDeltaTime;
-            SetRendererVisible(Mathf.FloorToInt(elapsed / 0.12f) % 2 == 0);
             yield return null;
         }
 
-        SetRendererVisible(true);
         _isResolving = false;
         TryBeginLootResolution();
     }
@@ -182,11 +194,32 @@ public sealed class ResourceNodeInteractable : MonoBehaviour, IPersistentWorldOb
         return required == HarvestToolType.None || required == equippedTool;
     }
 
-    private IEnumerator FlashRoutine(float interval)
+    private void PlayWhiteFlash(bool resolveLootAfter)
     {
-        SetRendererVisible(false);
-        yield return new WaitForSecondsRealtime(interval);
-        SetRendererVisible(true);
+        if (_flashRoutine != null)
+            StopCoroutine(_flashRoutine);
+        RestoreFlashMaterial();
+        _flashRoutine = StartCoroutine(WhiteFlashRoutine(resolveLootAfter));
+    }
+
+    private IEnumerator WhiteFlashRoutine(bool resolveLootAfter)
+    {
+        Material flashMaterial = Resources.Load<Material>("World/ResourceNodeWhiteFlash");
+        if (_flashRenderer != null && flashMaterial != null)
+            _flashRenderer.sharedMaterial = flashMaterial;
+
+        yield return new WaitForSecondsRealtime(0.12f);
+        RestoreFlashMaterial();
+        _flashRoutine = null;
+
+        if (resolveLootAfter)
+            TryBeginLootResolution();
+    }
+
+    private void RestoreFlashMaterial()
+    {
+        if (_flashRenderer != null)
+            _flashRenderer.sharedMaterial = _originalMaterial;
     }
 
     private void ScheduleRespawnIfNeeded()
@@ -222,6 +255,7 @@ public sealed class ResourceNodeInteractable : MonoBehaviour, IPersistentWorldOb
     {
         _currentHealth = MaximumHealth;
         _isResolving = false;
+        RestoreFlashMaterial();
         SetNodeVisible(true);
         SetRendererVisible(true);
     }
@@ -237,6 +271,10 @@ public sealed class ResourceNodeInteractable : MonoBehaviour, IPersistentWorldOb
     {
         if (_visualRoot != null) _visualRoot.SetActive(visible);
         else if (_flashRenderer != null) _flashRenderer.enabled = visible;
+
+        _colliders ??= GetComponentsInChildren<Collider2D>(true);
+        foreach (Collider2D nodeCollider in _colliders)
+            if (nodeCollider != null) nodeCollider.enabled = visible;
     }
 
     private void SetRendererVisible(bool visible)
@@ -285,5 +323,13 @@ public sealed class ResourceNodeInteractable : MonoBehaviour, IPersistentWorldOb
         _areaId = areaId;
         _definition = definition;
         _currentHealth = MaximumHealth;
+    }
+
+    internal void ConfigurePresentationForTests(GameObject visualRoot, SpriteRenderer renderer)
+    {
+        _visualRoot = visualRoot;
+        _flashRenderer = renderer;
+        _originalMaterial = renderer != null ? renderer.sharedMaterial : null;
+        ApplyVisual();
     }
 }
