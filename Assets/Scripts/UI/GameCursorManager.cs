@@ -42,6 +42,7 @@ public sealed class GameCursorManager : MonoBehaviour
     private GameCursorType _current = (GameCursorType)(-1);
     private Transform _player;
     private ResourceNodeInteractable _hoveredGatheringNode;
+    private QuestNpcInteractionUI _hoveredQuestNpc;
 
     public static GameCursorManager Instance { get; private set; }
     public GameCursorType CurrentCursor => _current;
@@ -80,11 +81,19 @@ public sealed class GameCursorManager : MonoBehaviour
         {
             _hoveredGatheringNode.TryBeginGathering();
         }
+        else if (_current == GameCursorType.Talk
+            && _hoveredQuestNpc != null
+            && Mouse.current != null
+            && Mouse.current.leftButton.wasPressedThisFrame)
+        {
+            _hoveredQuestNpc.TryInteract();
+        }
     }
 
     private GameCursorType ResolveCursor()
     {
         _hoveredGatheringNode = null;
+        _hoveredQuestNpc = null;
         if (Mouse.current == null
             || GameStateManager.Instance == null
             || GameStateManager.Instance.CurrentState != GameState.Playing
@@ -111,6 +120,8 @@ public sealed class GameCursorManager : MonoBehaviour
 
             if (target.Cursor == GameCursorType.Gathering)
                 _hoveredGatheringNode = collider.GetComponentInParent<ResourceNodeInteractable>(true);
+            else if (target.Cursor == GameCursorType.Talk)
+                _hoveredQuestNpc = collider.GetComponentInParent<QuestNpcInteractionUI>(true);
 
             return target.Cursor;
         }

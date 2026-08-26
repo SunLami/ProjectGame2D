@@ -297,7 +297,24 @@ Full detail: [DemoSceneWorkflow.md](DemoSceneWorkflow.md). Summary for this guid
   not a per-feature choice; check the Font Asset field on any new TMP component before considering a
   UI addition complete.
 
-## 7. Checklist for "can a content designer make a new Tutorial Quest without touching manager code?"
+## 7. Dialogue content
+
+1. Tạo `DialogueDefinition` bằng menu `Project Game 2D/Dialogue/Dialogue Definition`.
+2. Đặt `dialogueId` ổn định theo dạng `dialogue.<area>.<npc>.<context>`; display text có thể đổi nhưng
+   ID không đổi sau khi content được phát hành.
+3. Mỗi node cần `nodeId` duy nhất trong asset, speaker name, body text, portrait tùy chọn và một trong:
+   `nextNodeId`, danh sách choices, hoặc node kết thúc có `outcomeId`.
+4. Choice chỉ điều hướng đến node trong cùng definition. Quest/shop/crafting effect không được nhét
+   trực tiếp vào node; `DialogueUI` trả outcome cho capability/service phù hợp.
+5. Bind definition vào component tương tác NPC. UI dùng prefab
+   `Assets/Prefabs/UI/DialogueUI.prefab`; không copy một Canvas riêng cho từng NPC.
+6. Chạy validation/test graph trước khi test DemoScene; missing/duplicate node ID là lỗi content.
+
+Demo hiện có `dialogue.town.elder.greeting` tại `Resources/Dialogue/TownElderGreeting.asset`, được
+bind vào `TownElderNPC.prefab`. Hoàn tất node cuối phát `conversation.completed`, sau đó capability
+quest hiện tại quyết định offer/turn-in; dialogue asset không sửa `QuestManager`.
+
+## 8. Checklist for "can a content designer make a new Tutorial Quest without touching manager code?"
 
 This is the Phase 10 content-ready bar. Concretely, all of the following must be true:
 

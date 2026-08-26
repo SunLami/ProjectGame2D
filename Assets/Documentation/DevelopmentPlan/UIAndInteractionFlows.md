@@ -16,6 +16,13 @@
 - Completion rolls every loot-table entry, checks the entire batch against inventory capacity, hides the node, presents the drop/fly animation, then commits the batch when it reaches Player.
 - A capacity failure leaves the node available and grants nothing. A completed node records `nextRespawnUtcTicks`, disappears, and becomes available after its UTC cooldown.
 
+### NPC world interaction
+
+- NPC interaction is mouse-first: hover an NPC collider in range to show Talk, then left-click the NPC.
+- NPC components do not subscribe to `Gameplay/Interact`; keyboard E does not start NPC interaction.
+- Hover outside the 2.5-unit interaction range shows Blocked. Clicking while blocked does nothing and never auto-moves Player.
+- The current quest NPC capability receives this click; the production dialogue router will later become the single handoff point for Quest, Shop and Crafting NPC capabilities.
+
 ## Hai hệ menu độc lập
 
 ### MainMenu Scene UI
@@ -236,6 +243,22 @@ Paused
 - Tiêu đề cố định dùng banner ảnh `quest_title_banner_hd.png` với chữ `QUEST`; TMP header legacy tắt
   render. Detail fallback cũng dùng `QUEST`, còn quest title/status/objective tiếp tục là TMP động.
 
+### Dialogue UI visual direction
+
+- Dialogue dùng bộ module tại `Resources/UI/Dialogue/LightFantasy`: khung hội thoại đáy màn hình có
+  portrait aperture bên trái, vùng text bên phải, nameplate rời, choice button rời và continue indicator.
+- Art direction giữ chung hệ Light Fantasy hiện tại: gỗ sồi ấm, parchment sáng, viền vàng cổ, lá xanh
+  tiết chế và sapphire xanh. Asset ảnh không bake tên NPC, nội dung hoặc lựa chọn.
+- Tên NPC, nội dung thoại và choice label luôn là TMP động với `DigitalDisco SDF v3`; hover/pressed/
+  disabled của choice dùng Unity `Button.colors` trên cùng sprite để không nhân bản texture không cần thiết.
+- Dialogue presentation không sở hữu quest outcome, shop/crafting transaction hoặc save data. Router/capability
+  service cung cấp read model; UI chỉ render và phát intent lựa chọn/continue/cancel.
+- Ở reference Canvas `800x450`, frame neo bottom-center khoảng `700x190`, chừa bottom inset 42; text
+  và portrait nằm trong safe area của asset, continue indicator chỉ pulse khi page hiện tại reveal xong.
+- Khi Dialogue mở, scene binding ẩn gameplay `UICanvas` hiện tại và ghi nhớ `activeSelf`; khi đóng hoặc
+  Dialogue bị destroy, trạng thái trước đó được khôi phục chính xác. `EventSystem` và Dialogue Canvas
+  riêng vẫn hoạt động, nên trên màn hình chỉ còn Dialogue UI mà không làm mất lifecycle của HUD.
+
 ### Commerce UI layout
 
 - DemoScene `CommerceUIRoot` giữ nguyên `ShopCraftingUI`, NPC capability service, transaction callback
@@ -294,6 +317,12 @@ Delete và overwrite luôn có confirm chứa đúng slot/character để giảm
 - Playing: gameplay action map.
 - Paused/GameplayMenu: gameplay movement/combat bị khóa, UI action map hoạt động.
 - Dialogue: movement/combat khóa; dialogue UI nhận confirm/cancel.
+- Dialogue choices render inside the right-hand parchment, below a compact body-text region. Nodes
+  without choices expand body text into that lower region; choice buttons never float above or outside
+  the dialogue frame. Dynamic dialogue text and choice labels use Digital Disco at a compact readable
+  scale, preserving the portrait/name/body/decision hierarchy. The in-frame stack supports up to five
+  single-line choices; labels auto-size within the documented minimum and use ellipsis rather than
+  expanding a button beyond the parchment safe area.
 - Cutscene: input theo skip policy riêng.
 
 Không chỉ dựa vào `Time.timeScale`. Input policy phải khóa cả callback Input System.
