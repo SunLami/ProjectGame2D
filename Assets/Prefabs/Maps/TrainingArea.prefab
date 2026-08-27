@@ -10,7 +10,6 @@ GameObject:
   m_Component:
   - component: {fileID: 6741926853618540647}
   - component: {fileID: 875255264124449234}
-  - component: {fileID: 2020622825453146984}
   m_Layer: 0
   m_Name: TrainingArea
   m_TagString: Untagged
@@ -50,19 +49,6 @@ Grid:
   m_CellGap: {x: 0, y: 0, z: 0}
   m_CellLayout: 0
   m_CellSwizzle: 0
---- !u!210 &2020622825453146984
-SortingGroup:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 804326123015771437}
-  m_Enabled: 1
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
-  m_SortingOrder: 0
-  m_SortAtRoot: 0
-  m_Sort3DAs2D: 0
 --- !u!1 &3908556677737096002
 GameObject:
   m_ObjectHideFlags: 0
@@ -75,7 +61,7 @@ GameObject:
   - component: {fileID: 2502787524106748632}
   - component: {fileID: 6996890986700586099}
   m_Layer: 0
-  m_Name: Decorations
+  m_Name: TA_Decorations_ground
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -619,7 +605,7 @@ Tilemap:
     m_Data: {fileID: 11400000, guid: bce068c02a9cc604f885c59016dea329, type: 2}
   - serializedVersion: 2
     m_RefCount: 0
-    m_Data: {fileID: 11400000, guid: dbf6da642fd2c8d4aafcc347b06b366c, type: 2}
+    m_Data: {fileID: 11400000, guid: 8dcc8ffd88a61b7419d15d08edf2d887, type: 2}
   - serializedVersion: 2
     m_RefCount: 1
     m_Data: {fileID: 11400000, guid: 247ecf89aff6ec3478b018304e979180, type: 2}
@@ -637,10 +623,10 @@ Tilemap:
     m_Data: {fileID: 11400000, guid: b95f2e2675159dd4fa7cfc246adaee04, type: 2}
   - serializedVersion: 2
     m_RefCount: 0
-    m_Data: {fileID: 11400000, guid: 0741d32a3aaef0b4bb282d9f1387b518, type: 2}
+    m_Data: {fileID: 11400000, guid: 91d1d6416043e4740a764abd26f88d26, type: 2}
   - serializedVersion: 2
     m_RefCount: 0
-    m_Data: {fileID: 11400000, guid: 3f0fd410e8406d142831322ba2b4229d, type: 2}
+    m_Data: {fileID: 11400000, guid: 77dd50eda61c88743a8fe07899b7c160, type: 2}
   - serializedVersion: 2
     m_RefCount: 1
     m_Data: {fileID: 11400000, guid: ba5f491aa84498d48b9b29006ed6cb90, type: 2}
@@ -677,6 +663,9 @@ Tilemap:
   - serializedVersion: 2
     m_RefCount: 1
     m_Data: {fileID: 11400000, guid: bf20ed6d8d3861e49ad59fd6f4d7cc2d, type: 2}
+  - serializedVersion: 2
+    m_RefCount: 0
+    m_Data: {fileID: 11400000, guid: 58088107eec04c641ba028c68832f584, type: 2}
   m_TileSpriteArray:
   - serializedVersion: 2
     m_RefCount: 1
@@ -759,6 +748,18 @@ Tilemap:
   - serializedVersion: 2
     m_RefCount: 1
     m_Data: {fileID: -443794350, guid: f0fd9ad4041d24e43b2cf95900a03161, type: 3}
+  - serializedVersion: 2
+    m_RefCount: 0
+    m_Data: {fileID: 664299687, guid: 8338e7c6bbca58b4c821b84816dc5c98, type: 3}
+  - serializedVersion: 2
+    m_RefCount: 0
+    m_Data: {fileID: -1993553537, guid: 8338e7c6bbca58b4c821b84816dc5c98, type: 3}
+  - serializedVersion: 2
+    m_RefCount: 0
+    m_Data: {fileID: 292623815, guid: 8338e7c6bbca58b4c821b84816dc5c98, type: 3}
+  - serializedVersion: 2
+    m_RefCount: 0
+    m_Data: {fileID: 71528690, guid: 8338e7c6bbca58b4c821b84816dc5c98, type: 3}
   m_TileMatrixArray:
   - serializedVersion: 2
     m_RefCount: 48
@@ -786,8 +787,8 @@ Tilemap:
   m_TileObjectToInstantiateArray: []
   m_AnimationFrameRate: 1
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_Origin: {x: -4, y: 0, z: 0}
-  m_Size: {x: 14, y: 10, z: 1}
+  m_Origin: {x: -5, y: -6, z: 0}
+  m_Size: {x: 15, y: 16, z: 1}
   m_TileAnchor: {x: 0.5, y: 0.5, z: 0}
   m_TileOrientation: 0
   m_TileOrientationMatrix:
@@ -912,7 +913,7 @@ GameObject:
   - component: {fileID: 9194192947000687710}
   - component: {fileID: 561103429057290569}
   m_Layer: 0
-  m_Name: Coliders_object
+  m_Name: TA_Coliders_object
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3077,7 +3078,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1394795029807478185}
   m_Layer: 0
-  m_Name: DecorNPCs
+  m_Name: NPCs
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3116,7 +3117,7 @@ GameObject:
   - component: {fileID: 1613400035608946966}
   - component: {fileID: 5878792489039616279}
   m_Layer: 0
-  m_Name: Sand_ground
+  m_Name: TA_Sand_ground
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -6385,7 +6386,7 @@ TilemapRenderer:
   m_MaxChunkCount: 16
   m_MaxFrameAge: 16
   m_SortOrder: 0
-  m_Mode: 1
+  m_Mode: 0
   m_DetectChunkCullingBounds: 0
 --- !u!1001 &899113323310502781
 PrefabInstance:
@@ -6463,11 +6464,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7745343866764768052, guid: 036519772cf42ca438ba126023850175, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 3.44
+      value: 3.5
       objectReference: {fileID: 0}
     - target: {fileID: 7745343866764768052, guid: 036519772cf42ca438ba126023850175, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.15999997
+      value: 0.13
       objectReference: {fileID: 0}
     - target: {fileID: 7745343866764768052, guid: 036519772cf42ca438ba126023850175, type: 3}
       propertyPath: m_LocalPosition.z
@@ -6521,7 +6522,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 272251503764095392, guid: 4e7b594ddaa55064dbc0d517b3e4fdf2, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 5
+      value: 4.5
       objectReference: {fileID: 0}
     - target: {fileID: 272251503764095392, guid: 4e7b594ddaa55064dbc0d517b3e4fdf2, type: 3}
       propertyPath: m_LocalPosition.y
@@ -6562,6 +6563,10 @@ PrefabInstance:
     - target: {fileID: 958456362769485886, guid: 4e7b594ddaa55064dbc0d517b3e4fdf2, type: 3}
       propertyPath: m_Name
       value: Fighter_sword_shield
+      objectReference: {fileID: 0}
+    - target: {fileID: 4482109605250061928, guid: 4e7b594ddaa55064dbc0d517b3e4fdf2, type: 3}
+      propertyPath: m_SpriteSortPoint
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -6829,9 +6834,13 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1394795029807478185}
     m_Modifications:
+    - target: {fileID: 7512951898063797844, guid: 154ba7907aceab24c9b8dbd558b255c1, type: 3}
+      propertyPath: m_SpriteSortPoint
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 8046843352262208329, guid: 154ba7907aceab24c9b8dbd558b255c1, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 7
+      value: 6.5
       objectReference: {fileID: 0}
     - target: {fileID: 8046843352262208329, guid: 154ba7907aceab24c9b8dbd558b255c1, type: 3}
       propertyPath: m_LocalPosition.y
