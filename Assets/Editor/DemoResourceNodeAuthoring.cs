@@ -12,7 +12,10 @@ public static class DemoResourceNodeAuthoring
     private const string ItemFolder = "Assets/Resources/Items/Materials";
     private const string DefinitionFolder = "Assets/Resources/World/ResourceNodes";
     private const string PrefabFolder = "Assets/Prefabs/World/Resources";
-    private const string IconFolder = "Assets/Resources/Items/Materials/PlaceholderIcons";
+    private const string ItemIconFolder = "Assets/Resources/Items/Materials/Icons";
+    private const string VisualFolder = "Assets/Resources/World/ResourceNodes/Visuals";
+    private const string ObjectAtlasPath = VisualFolder + "/Objects.png";
+    private const string IconAtlasPath = ItemIconFolder + "/Icons.png";
 
     [MenuItem("Tools/Project Game 2D/Build Demo Resource Nodes")]
     public static void Build()
@@ -20,11 +23,19 @@ public static class DemoResourceNodeAuthoring
         EnsureFolder(ItemFolder);
         EnsureFolder(DefinitionFolder);
         EnsureFolder(PrefabFolder);
-        EnsureFolder(IconFolder);
+        EnsureFolder(ItemIconFolder);
+        EnsureFolder(VisualFolder);
 
-        Sprite copperIcon = CreatePlaceholderIcon("CopperOre", new Color32(190, 91, 45, 255), IconShape.Ore);
-        Sprite woodIcon = CreatePlaceholderIcon("WoodLog", new Color32(139, 82, 38, 255), IconShape.Log);
-        Sprite herbIcon = CreatePlaceholderIcon("MedicinalLeaf", new Color32(72, 175, 84, 255), IconShape.Leaf);
+        ConfigureObjectAtlas();
+        ConfigureIconAtlas();
+
+        Sprite copperAvailable = LoadAtlasSprite(ObjectAtlasPath, "CopperOre_Available");
+        Sprite woodAvailable = LoadAtlasSprite(ObjectAtlasPath, "WoodTree_Available");
+        Sprite herbAvailable = LoadAtlasSprite(ObjectAtlasPath, "MedicinalHerb_Available");
+
+        Sprite copperIcon = LoadAtlasSprite(IconAtlasPath, "Icons_r01_c00");
+        Sprite woodIcon = LoadAtlasSprite(IconAtlasPath, "Icons_r01_c27");
+        Sprite herbIcon = LoadAtlasSprite(IconAtlasPath, "Icons_r01_c21");
 
         ItemSO copper = CreateItem("CopperOre", "item.material.copper_ore", "Copper Ore", copperIcon);
         ItemSO wood = CreateItem("WoodLog", "item.material.wood_log", "Wood Log", woodIcon);
@@ -40,9 +51,9 @@ public static class DemoResourceNodeAuthoring
             "MedicinalHerb", "resource.herb.medicinal", ResourceHarvestType.Gathering, 1f, 1f, 20f,
             new LootSpec(herb, 1f, 1, 2));
 
-        GameObject copperPrefab = CreatePrefab("CopperOreVein", copperDefinition, copperIcon, new Vector2(0.9f, 0.75f));
-        GameObject woodPrefab = CreatePrefab("WoodTree", woodDefinition, woodIcon, new Vector2(0.9f, 1.25f));
-        GameObject herbPrefab = CreatePrefab("MedicinalHerb", herbDefinition, herbIcon, new Vector2(0.75f, 0.75f));
+        GameObject copperPrefab = CreatePrefab("CopperOreVein", copperDefinition, copperAvailable, new Vector2(0.9f, 0.75f));
+        GameObject woodPrefab = CreatePrefab("WoodTree", woodDefinition, woodAvailable, new Vector2(0.9f, 1.25f));
+        GameObject herbPrefab = CreatePrefab("MedicinalHerb", herbDefinition, herbAvailable, new Vector2(0.75f, 0.75f));
 
         Scene scene = EditorSceneManager.OpenScene(ScenePath, OpenSceneMode.Single);
         Transform parent = FindOrCreateResourceParent(scene);
@@ -138,13 +149,13 @@ public static class DemoResourceNodeAuthoring
     }
 
     private static GameObject CreatePrefab(
-        string assetName, ResourceNodeDefinition definition, Sprite sprite, Vector2 colliderSize)
+        string assetName, ResourceNodeDefinition definition, Sprite availableSprite, Vector2 colliderSize)
     {
         var root = new GameObject(assetName);
         var visual = new GameObject("Visual");
         visual.transform.SetParent(root.transform, false);
         SpriteRenderer renderer = visual.AddComponent<SpriteRenderer>();
-        renderer.sprite = sprite;
+        renderer.sprite = availableSprite;
         renderer.sortingOrder = 20;
         visual.transform.localScale = Vector3.one * 1.5f;
 
@@ -198,34 +209,95 @@ public static class DemoResourceNodeAuthoring
             Object.DestroyImmediate(node.gameObject);
     }
 
-    private static Sprite CreatePlaceholderIcon(string name, Color32 color, IconShape shape)
+    private static void ConfigureObjectAtlas()
     {
-        string path = $"{IconFolder}/{name}.png";
-        var texture = new Texture2D(32, 32, TextureFormat.RGBA32, false);
-        var pixels = new Color32[32 * 32];
-        for (int y = 0; y < 32; y++)
-        for (int x = 0; x < 32; x++)
-        {
-            bool filled = shape switch
-            {
-                IconShape.Ore => Mathf.Abs(x - 16) + Mathf.Abs(y - 15) < 12,
-                IconShape.Log => x >= 7 && x <= 24 && y >= 10 && y <= 21,
-                _ => ((x - 15) * (x - 15)) / 100f + ((y - 16) * (y - 16)) / 49f <= 1f && x + y > 20
-            };
-            pixels[y * 32 + x] = filled ? color : new Color32(0, 0, 0, 0);
-        }
-        texture.SetPixels32(pixels);
-        texture.Apply();
-        File.WriteAllBytes(path, texture.EncodeToPNG());
-        Object.DestroyImmediate(texture);
-        AssetDatabase.ImportAsset(path, ImportAssetOptions.ForceUpdate);
-        TextureImporter importer = (TextureImporter)AssetImporter.GetAtPath(path);
+        TextureImporter importer = GetAtlasImporter(ObjectAtlasPath);
         importer.textureType = TextureImporterType.Sprite;
+        importer.spriteImportMode = SpriteImportMode.Multiple;
         importer.spritePixelsPerUnit = 32f;
         importer.filterMode = FilterMode.Point;
         importer.textureCompression = TextureImporterCompression.Uncompressed;
+        importer.mipmapEnabled = false;
+        importer.alphaIsTransparency = true;
+
+#pragma warning disable CS0618
+        SpriteMetaData[] sprites = importer.spritesheet;
+        RenameAndAnchor(sprites, new Rect(1f, 241f, 28f, 24f), "CopperOre_Available");
+        RenameAndAnchor(sprites, new Rect(7f, 144f, 21f, 30f), "MedicinalHerb_Available");
+        RenameAndAnchor(sprites, new Rect(0f, 0f, 32f, 47f), "WoodTree_Available");
+        importer.spritesheet = sprites;
+#pragma warning restore CS0618
         importer.SaveAndReimport();
-        return AssetDatabase.LoadAssetAtPath<Sprite>(path);
+    }
+
+    private static void ConfigureIconAtlas()
+    {
+        TextureImporter importer = GetAtlasImporter(IconAtlasPath);
+        importer.textureType = TextureImporterType.Sprite;
+        importer.spriteImportMode = SpriteImportMode.Multiple;
+        importer.spritePixelsPerUnit = 32f;
+        importer.filterMode = FilterMode.Point;
+        importer.textureCompression = TextureImporterCompression.Uncompressed;
+        importer.mipmapEnabled = false;
+        importer.alphaIsTransparency = true;
+
+        var sprites = new SpriteMetaData[30 * 20];
+        for (int row = 0; row < 20; row++)
+        for (int column = 0; column < 30; column++)
+        {
+            int index = row * 30 + column;
+            sprites[index] = new SpriteMetaData
+            {
+                name = $"Icons_r{row:00}_c{column:00}",
+                rect = new Rect(column * 16f, 320f - (row + 1) * 16f, 16f, 16f),
+                alignment = (int)SpriteAlignment.Center,
+                pivot = new Vector2(0.5f, 0.5f)
+            };
+        }
+#pragma warning disable CS0618
+        importer.spritesheet = sprites;
+#pragma warning restore CS0618
+        importer.SaveAndReimport();
+    }
+
+    private static TextureImporter GetAtlasImporter(string path)
+    {
+        AssetDatabase.ImportAsset(path, ImportAssetOptions.ForceUpdate);
+        if (AssetImporter.GetAtPath(path) is TextureImporter importer)
+            return importer;
+        throw new FileNotFoundException($"Required sprite atlas is missing: {path}");
+    }
+
+    private static void RenameAndAnchor(SpriteMetaData[] sprites, Rect expectedRect, string semanticName)
+    {
+        for (int i = 0; i < sprites.Length; i++)
+        {
+            if (sprites[i].rect != expectedRect)
+                continue;
+            SpriteMetaData sprite = sprites[i];
+            sprite.name = semanticName;
+            sprite.alignment = (int)SpriteAlignment.Custom;
+            sprite.pivot = new Vector2(0.5f, 0f);
+            sprites[i] = sprite;
+            return;
+        }
+        throw new InvalidDataException($"Atlas {ObjectAtlasPath} is missing rect {expectedRect} for {semanticName}.");
+    }
+
+    private static Sprite LoadAtlasSprite(string path, string spriteName)
+    {
+        Sprite sprite = null;
+        foreach (Object asset in AssetDatabase.LoadAllAssetsAtPath(path))
+        {
+            if (asset is Sprite candidate && candidate.name == spriteName)
+            {
+                sprite = candidate;
+                break;
+            }
+        }
+        if (sprite == null)
+            throw new FileNotFoundException($"Required sprite '{spriteName}' is missing from atlas: {path}");
+        return sprite;
     }
 
     private static void EnsureFolder(string path)
@@ -249,6 +321,5 @@ public static class DemoResourceNodeAuthoring
             => (Item, Chance, Minimum, Maximum) = (item, chance, minimum, maximum);
     }
 
-    private enum IconShape { Ore, Log, Leaf }
 }
 #endif

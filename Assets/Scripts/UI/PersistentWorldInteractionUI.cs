@@ -70,8 +70,9 @@ public sealed class PersistentWorldInteractionUI : MonoBehaviour
         bool granted;
         if (_chest != null)
         {
-            succeeded = _chest.TryOpen(out granted);
-            _feedbackText.text = succeeded && granted ? "Chest opened." : "Chest cannot be opened.";
+            succeeded = _chest.TryBeginOpen();
+            granted = false;
+            _feedbackText.text = succeeded ? "Opening chest..." : "Chest cannot be opened.";
         }
         else if (_pickup != null)
         {
@@ -93,7 +94,7 @@ public sealed class PersistentWorldInteractionUI : MonoBehaviour
         if (_interactAction != null)
             _interactAction.performed -= HandleInteract;
 
-        _interactAction = playerInput != null
+        _interactAction = playerInput != null && _chest == null
             ? playerInput.actions.FindAction("Gameplay/Interact", false)
             : null;
 
@@ -115,12 +116,12 @@ public sealed class PersistentWorldInteractionUI : MonoBehaviour
         if (_promptRoot != null)
             _promptRoot.SetActive(showPrompt);
         if (showPrompt && _promptText != null)
-            _promptText.text = _chest != null ? "E / A  OPEN CHEST"
+            _promptText.text = _chest != null ? "LEFT CLICK  OPEN CHEST"
                 : _pickup != null ? "E / A  COLLECT RELIC"
                 : "E / A  HARVEST WOOD";
     }
 
-    private bool IsAvailable() => _chest != null ? !_chest.IsOpened
+    private bool IsAvailable() => _chest != null ? !_chest.IsOpened && !_chest.IsOpening
         : _pickup != null ? !_pickup.IsCollected
         : _resource != null && _resource.IsAvailable;
 }
