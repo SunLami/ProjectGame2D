@@ -76,7 +76,7 @@ TextureImporter:
   maxTextureSize: 2048
   textureSettings:
     serializedVersion: 2
-    filterMode: 1
+    filterMode: 0
     aniso: 1
     mipBias: 0
     wrapU: 1
@@ -90,7 +90,7 @@ TextureImporter:
   spriteMeshType: 1
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
-  spritePixelsToUnits: 100
+  spritePixelsToUnits: 16
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
@@ -114,7 +114,7 @@ TextureImporter:
     maxTextureSize: 2048
     resizeAlgorithm: 0
     textureFormat: -1
-    textureCompression: 1
+    textureCompression: 0
     compressionQuality: 50
     crunchedCompression: 0
     allowsAlphaSplitting: 0
@@ -135,6 +135,19 @@ TextureImporter:
     ignorePlatformSupport: 0
     androidETC2FallbackOverride: 0
     forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Android
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
   spriteSheet:
     serializedVersion: 2
     sprites:
@@ -143,11 +156,11 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 0
-        y: 38
-        width: 17
-        height: 26
+        y: 32
+        width: 16
+        height: 32
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -165,11 +178,11 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 16
-        y: 38
-        width: 17
-        height: 26
+        y: 32
+        width: 16
+        height: 32
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -187,11 +200,11 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 32
-        y: 38
-        width: 17
-        height: 26
+        y: 32
+        width: 16
+        height: 32
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -209,11 +222,11 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 48
-        y: 38
-        width: 17
-        height: 26
+        y: 32
+        width: 16
+        height: 32
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -231,11 +244,11 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 64
-        y: 38
-        width: 32
-        height: 26
+        y: 32
+        width: 16
+        height: 32
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -252,12 +265,12 @@ TextureImporter:
       name: Eater_animation_5
       rect:
         serializedVersion: 2
-        x: 95
-        y: 38
-        width: 17
-        height: 25
+        x: 80
+        y: 32
+        width: 16
+        height: 32
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -274,12 +287,12 @@ TextureImporter:
       name: Eater_animation_6
       rect:
         serializedVersion: 2
-        x: 111
-        y: 38
-        width: 17
-        height: 25
+        x: 96
+        y: 32
+        width: 16
+        height: 32
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -296,12 +309,12 @@ TextureImporter:
       name: Eater_animation_7
       rect:
         serializedVersion: 2
-        x: 0
-        y: 2
-        width: 17
-        height: 26
+        x: 112
+        y: 32
+        width: 16
+        height: 32
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -318,12 +331,12 @@ TextureImporter:
       name: Eater_animation_8
       rect:
         serializedVersion: 2
-        x: 16
-        y: 2
-        width: 17
-        height: 26
+        x: 0
+        y: 0
+        width: 16
+        height: 32
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -340,12 +353,12 @@ TextureImporter:
       name: Eater_animation_9
       rect:
         serializedVersion: 2
-        x: 32
-        y: 2
-        width: 17
-        height: 26
+        x: 16
+        y: 0
+        width: 16
+        height: 32
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -362,12 +375,12 @@ TextureImporter:
       name: Eater_animation_10
       rect:
         serializedVersion: 2
-        x: 48
-        y: 2
-        width: 17
-        height: 26
+        x: 32
+        y: 0
+        width: 16
+        height: 32
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -384,12 +397,12 @@ TextureImporter:
       name: Eater_animation_11
       rect:
         serializedVersion: 2
-        x: 64
-        y: 2
-        width: 32
-        height: 26
+        x: 48
+        y: 0
+        width: 16
+        height: 32
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -406,12 +419,12 @@ TextureImporter:
       name: Eater_animation_12
       rect:
         serializedVersion: 2
-        x: 95
-        y: 2
-        width: 17
-        height: 25
+        x: 64
+        y: 0
+        width: 16
+        height: 32
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -428,12 +441,12 @@ TextureImporter:
       name: Eater_animation_13
       rect:
         serializedVersion: 2
-        x: 111
-        y: 2
-        width: 17
-        height: 25
+        x: 80
+        y: 0
+        width: 16
+        height: 32
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -446,11 +459,55 @@ TextureImporter:
       indices: 
       edges: []
       weights: []
+    - serializedVersion: 2
+      name: Eater_animation_14
+      rect:
+        serializedVersion: 2
+        x: 96
+        y: 0
+        width: 16
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 78bcd854cc7f28540870cd5d6199b7a6
+      internalID: 140519993
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Eater_animation_15
+      rect:
+        serializedVersion: 2
+        x: 112
+        y: 0
+        width: 16
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 80542315e523f254ea27a9f1b3657ad3
+      internalID: 779004651
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     outline: []
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: b121bbfb12c377741ba29d3a09cc221e
     internalID: 0
     vertices: []
     indices: 
@@ -458,7 +515,9 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     spriteCustomMetadata:
-      entries: []
+      entries:
+      - key: SpriteEditor.SliceSettings
+        value: '{"sliceOnImport":false,"gridCellCount":{"x":8.0,"y":2.0},"gridSpriteSize":{"x":16.0,"y":32.0},"gridSpriteOffset":{"x":0.0,"y":0.0},"gridSpritePadding":{"x":0.0,"y":0.0},"pivot":{"x":0.5,"y":0.5},"pivotPixels":{"x":0.0,"y":0.0},"autoSlicingMethod":0,"spriteAlignment":0,"pivotUnitMode":0,"slicingType":2,"keepEmptyRects":false,"isAlternate":false}'
     nameFileIdTable:
       Eater_animation_0: 1611003404326418476
       Eater_animation_1: 2333052668512236735
@@ -466,6 +525,8 @@ TextureImporter:
       Eater_animation_11: -1337823353864551217
       Eater_animation_12: -6687778873054901425
       Eater_animation_13: -7214443668943781966
+      Eater_animation_14: 140519993
+      Eater_animation_15: 779004651
       Eater_animation_2: 394639306903052394
       Eater_animation_3: -3584544949258317726
       Eater_animation_4: 4410903585808490332
