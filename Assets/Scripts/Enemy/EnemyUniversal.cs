@@ -396,6 +396,12 @@ public sealed class EnemyUniversal : MonoBehaviour, IDamageable
             hitbox?.Close();
     }
 
+    // Animation Event compatibility shared with Player attack clips.
+    public void CloseAttackHitbox()
+    {
+        CloseAttackWindow();
+    }
+
     private static void CloseDirectionalMeleeHitboxes(AttackProfile attack)
     {
         attack.meleeHitboxDown?.Close();
