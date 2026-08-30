@@ -82,7 +82,7 @@ TextureImporter:
   maxTextureSize: 2048
   textureSettings:
     serializedVersion: 2
-    filterMode: 1
+    filterMode: 0
     aniso: 1
     mipBias: 0
     wrapU: 1
@@ -96,7 +96,7 @@ TextureImporter:
   spriteMeshType: 1
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
-  spritePixelsToUnits: 100
+  spritePixelsToUnits: 16
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
@@ -120,7 +120,7 @@ TextureImporter:
     maxTextureSize: 2048
     resizeAlgorithm: 0
     textureFormat: -1
-    textureCompression: 1
+    textureCompression: 0
     compressionQuality: 50
     crunchedCompression: 0
     allowsAlphaSplitting: 0
@@ -141,6 +141,19 @@ TextureImporter:
     ignorePlatformSupport: 0
     androidETC2FallbackOverride: 0
     forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Android
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
   spriteSheet:
     serializedVersion: 2
     sprites:
@@ -148,17 +161,25 @@ TextureImporter:
       name: Attacked_Manequin1_with_shadow_0
       rect:
         serializedVersion: 2
-        x: 10
-        y: 97
-        width: 19
-        height: 27
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 0
+        y: 96
+        width: 32
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.1875}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
-      physicsShape: []
-      tessellationDetail: -1
+      physicsShape:
+      - - {x: 8, y: -11}
+        - {x: 8, y: -8}
+        - {x: 6, y: -6}
+        - {x: 1, y: -6}
+        - {x: -1, y: -8}
+        - {x: -1, y: -11}
+        - {x: 1, y: -13}
+        - {x: 6, y: -13}
+      tessellationDetail: 0
       bones: []
       spriteID: b2a69f43d868d99a0800000000000000
       internalID: -6224671168918885845
@@ -170,17 +191,25 @@ TextureImporter:
       name: Attacked_Manequin1_with_shadow_1
       rect:
         serializedVersion: 2
-        x: 42
-        y: 97
-        width: 19
-        height: 28
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 32
+        y: 96
+        width: 32
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.1875}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
-      physicsShape: []
-      tessellationDetail: -1
+      physicsShape:
+      - - {x: 8, y: -11}
+        - {x: 8, y: -8}
+        - {x: 6, y: -6}
+        - {x: 1, y: -6}
+        - {x: -1, y: -8}
+        - {x: -1, y: -11}
+        - {x: 1, y: -13}
+        - {x: 6, y: -13}
+      tessellationDetail: 0
       bones: []
       spriteID: 9bb0c1610a77dabb0800000000000000
       internalID: -4923147288196674631
@@ -192,17 +221,25 @@ TextureImporter:
       name: Attacked_Manequin1_with_shadow_2
       rect:
         serializedVersion: 2
-        x: 74
-        y: 97
-        width: 19
-        height: 29
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 64
+        y: 96
+        width: 32
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.1875}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
-      physicsShape: []
-      tessellationDetail: -1
+      physicsShape:
+      - - {x: 8, y: -11}
+        - {x: 8, y: -8}
+        - {x: 6, y: -6}
+        - {x: 1, y: -6}
+        - {x: -1, y: -8}
+        - {x: -1, y: -11}
+        - {x: 1, y: -13}
+        - {x: 6, y: -13}
+      tessellationDetail: 0
       bones: []
       spriteID: eb94cbbed5af177b0800000000000000
       internalID: -5228122411106547266
@@ -214,17 +251,25 @@ TextureImporter:
       name: Attacked_Manequin1_with_shadow_3
       rect:
         serializedVersion: 2
-        x: 106
-        y: 97
-        width: 19
-        height: 28
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 96
+        y: 96
+        width: 32
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.1875}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
-      physicsShape: []
-      tessellationDetail: -1
+      physicsShape:
+      - - {x: 8, y: -11}
+        - {x: 8, y: -8}
+        - {x: 6, y: -6}
+        - {x: 1, y: -6}
+        - {x: -1, y: -8}
+        - {x: -1, y: -11}
+        - {x: 1, y: -13}
+        - {x: 6, y: -13}
+      tessellationDetail: 0
       bones: []
       spriteID: 1cae7b2370b319860800000000000000
       internalID: 7534868553669274305
@@ -236,17 +281,25 @@ TextureImporter:
       name: Attacked_Manequin1_with_shadow_4
       rect:
         serializedVersion: 2
-        x: 10
-        y: 65
-        width: 19
-        height: 27
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 0
+        y: 64
+        width: 32
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.1875}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
-      physicsShape: []
-      tessellationDetail: -1
+      physicsShape:
+      - - {x: 8, y: -11}
+        - {x: 8, y: -8}
+        - {x: 6, y: -6}
+        - {x: 1, y: -6}
+        - {x: -1, y: -8}
+        - {x: -1, y: -11}
+        - {x: 1, y: -13}
+        - {x: 6, y: -13}
+      tessellationDetail: 0
       bones: []
       spriteID: c733417187b66ef80800000000000000
       internalID: -8077650718114958468
@@ -258,17 +311,25 @@ TextureImporter:
       name: Attacked_Manequin1_with_shadow_5
       rect:
         serializedVersion: 2
-        x: 42
-        y: 65
-        width: 19
-        height: 27
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 32
+        y: 64
+        width: 32
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.1875}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
-      physicsShape: []
-      tessellationDetail: -1
+      physicsShape:
+      - - {x: 8, y: -11}
+        - {x: 8, y: -8}
+        - {x: 6, y: -6}
+        - {x: 1, y: -6}
+        - {x: -1, y: -8}
+        - {x: -1, y: -11}
+        - {x: 1, y: -13}
+        - {x: 6, y: -13}
+      tessellationDetail: 0
       bones: []
       spriteID: 3c2623060a42af390800000000000000
       internalID: -7783868734729198909
@@ -280,17 +341,25 @@ TextureImporter:
       name: Attacked_Manequin1_with_shadow_6
       rect:
         serializedVersion: 2
-        x: 75
-        y: 65
-        width: 19
-        height: 27
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 64
+        y: 64
+        width: 32
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.1875}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
-      physicsShape: []
-      tessellationDetail: -1
+      physicsShape:
+      - - {x: 8, y: -11}
+        - {x: 8, y: -8}
+        - {x: 6, y: -6}
+        - {x: 1, y: -6}
+        - {x: -1, y: -8}
+        - {x: -1, y: -11}
+        - {x: 1, y: -13}
+        - {x: 6, y: -13}
+      tessellationDetail: 0
       bones: []
       spriteID: 67938b88ed2367b70800000000000000
       internalID: 8896354045274896758
@@ -302,17 +371,25 @@ TextureImporter:
       name: Attacked_Manequin1_with_shadow_7
       rect:
         serializedVersion: 2
-        x: 106
-        y: 65
-        width: 19
-        height: 27
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 96
+        y: 64
+        width: 32
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.1875}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
-      physicsShape: []
-      tessellationDetail: -1
+      physicsShape:
+      - - {x: 8, y: -11}
+        - {x: 8, y: -8}
+        - {x: 6, y: -6}
+        - {x: 1, y: -6}
+        - {x: -1, y: -8}
+        - {x: -1, y: -11}
+        - {x: 1, y: -13}
+        - {x: 6, y: -13}
+      tessellationDetail: 0
       bones: []
       spriteID: 2a27ced8580ca1ae0800000000000000
       internalID: -1577737039595670878
@@ -324,17 +401,25 @@ TextureImporter:
       name: Attacked_Manequin1_with_shadow_8
       rect:
         serializedVersion: 2
-        x: 3
-        y: 33
-        width: 19
-        height: 27
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 0
+        y: 32
+        width: 32
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.1875}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
-      physicsShape: []
-      tessellationDetail: -1
+      physicsShape:
+      - - {x: -1, y: -13}
+        - {x: 1, y: -11}
+        - {x: 1, y: -8}
+        - {x: -1, y: -6}
+        - {x: -6, y: -6}
+        - {x: -8, y: -8}
+        - {x: -8, y: -11}
+        - {x: -6, y: -13}
+      tessellationDetail: 0
       bones: []
       spriteID: bf1c78f151a06b910800000000000000
       internalID: 1852679382549119483
@@ -346,17 +431,25 @@ TextureImporter:
       name: Attacked_Manequin1_with_shadow_9
       rect:
         serializedVersion: 2
-        x: 35
-        y: 33
-        width: 19
-        height: 27
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 32
+        y: 32
+        width: 32
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.1875}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
-      physicsShape: []
-      tessellationDetail: -1
+      physicsShape:
+      - - {x: -1, y: -13}
+        - {x: 1, y: -11}
+        - {x: 1, y: -8}
+        - {x: -1, y: -6}
+        - {x: -6, y: -6}
+        - {x: -8, y: -8}
+        - {x: -8, y: -11}
+        - {x: -6, y: -13}
+      tessellationDetail: 0
       bones: []
       spriteID: 63673c6e390238ca0800000000000000
       internalID: -6015928857632999882
@@ -368,17 +461,25 @@ TextureImporter:
       name: Attacked_Manequin1_with_shadow_10
       rect:
         serializedVersion: 2
-        x: 66
-        y: 33
-        width: 19
-        height: 27
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 64
+        y: 32
+        width: 32
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.1875}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
-      physicsShape: []
-      tessellationDetail: -1
+      physicsShape:
+      - - {x: -1, y: -13}
+        - {x: 1, y: -11}
+        - {x: 1, y: -8}
+        - {x: -1, y: -6}
+        - {x: -6, y: -6}
+        - {x: -8, y: -8}
+        - {x: -8, y: -11}
+        - {x: -6, y: -13}
+      tessellationDetail: 0
       bones: []
       spriteID: a478f61cc524f85f0800000000000000
       internalID: -752309646597847222
@@ -390,17 +491,25 @@ TextureImporter:
       name: Attacked_Manequin1_with_shadow_11
       rect:
         serializedVersion: 2
-        x: 99
-        y: 33
-        width: 19
-        height: 27
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 96
+        y: 32
+        width: 32
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.1875}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
-      physicsShape: []
-      tessellationDetail: -1
+      physicsShape:
+      - - {x: -1, y: -13}
+        - {x: 1, y: -11}
+        - {x: 1, y: -8}
+        - {x: -1, y: -6}
+        - {x: -6, y: -6}
+        - {x: -8, y: -8}
+        - {x: -8, y: -11}
+        - {x: -6, y: -13}
+      tessellationDetail: 0
       bones: []
       spriteID: b68c6fb1a7a9fdd20800000000000000
       internalID: 3305530500759079019
@@ -412,17 +521,25 @@ TextureImporter:
       name: Attacked_Manequin1_with_shadow_12
       rect:
         serializedVersion: 2
-        x: 10
-        y: 1
-        width: 19
-        height: 27
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 0
+        y: 0
+        width: 32
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.1875}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
-      physicsShape: []
-      tessellationDetail: -1
+      physicsShape:
+      - - {x: 8, y: -11}
+        - {x: 8, y: -8}
+        - {x: 6, y: -6}
+        - {x: 1, y: -6}
+        - {x: -1, y: -8}
+        - {x: -1, y: -11}
+        - {x: 1, y: -13}
+        - {x: 6, y: -13}
+      tessellationDetail: 0
       bones: []
       spriteID: 8147debdebf1994e0800000000000000
       internalID: -1974512057031232488
@@ -434,17 +551,25 @@ TextureImporter:
       name: Attacked_Manequin1_with_shadow_13
       rect:
         serializedVersion: 2
-        x: 42
-        y: 1
-        width: 19
-        height: 26
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 32
+        y: 0
+        width: 32
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.1875}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
-      physicsShape: []
-      tessellationDetail: -1
+      physicsShape:
+      - - {x: 8, y: -11}
+        - {x: 8, y: -8}
+        - {x: 6, y: -6}
+        - {x: 1, y: -6}
+        - {x: -1, y: -8}
+        - {x: -1, y: -11}
+        - {x: 1, y: -13}
+        - {x: 6, y: -13}
+      tessellationDetail: 0
       bones: []
       spriteID: 54e625bb2bcbcf3f0800000000000000
       internalID: -865609552529035707
@@ -456,17 +581,25 @@ TextureImporter:
       name: Attacked_Manequin1_with_shadow_14
       rect:
         serializedVersion: 2
-        x: 74
-        y: 1
-        width: 19
-        height: 25
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 64
+        y: 0
+        width: 32
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.1875}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
-      physicsShape: []
-      tessellationDetail: -1
+      physicsShape:
+      - - {x: 8, y: -11}
+        - {x: 8, y: -8}
+        - {x: 6, y: -6}
+        - {x: 1, y: -6}
+        - {x: -1, y: -8}
+        - {x: -1, y: -11}
+        - {x: 1, y: -13}
+        - {x: 6, y: -13}
+      tessellationDetail: 0
       bones: []
       spriteID: ee73d1c41da8a9140800000000000000
       internalID: 4727243390408538094
@@ -478,17 +611,25 @@ TextureImporter:
       name: Attacked_Manequin1_with_shadow_15
       rect:
         serializedVersion: 2
-        x: 106
-        y: 1
-        width: 19
-        height: 26
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 96
+        y: 0
+        width: 32
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.1875}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
-      physicsShape: []
-      tessellationDetail: -1
+      physicsShape:
+      - - {x: 8, y: -11}
+        - {x: 8, y: -8}
+        - {x: 6, y: -6}
+        - {x: 1, y: -6}
+        - {x: -1, y: -8}
+        - {x: -1, y: -11}
+        - {x: 1, y: -13}
+        - {x: 6, y: -13}
+      tessellationDetail: 0
       bones: []
       spriteID: fee3638c1c7807310800000000000000
       internalID: 1400768750469660399
@@ -500,7 +641,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: 7a9a1357c9ea9d94592351b4197ae637
     internalID: 0
     vertices: []
     indices: 
@@ -508,7 +649,9 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     spriteCustomMetadata:
-      entries: []
+      entries:
+      - key: SpriteEditor.SliceSettings
+        value: '{"sliceOnImport":false,"gridCellCount":{"x":4.0,"y":4.0},"gridSpriteSize":{"x":32.0,"y":32.0},"gridSpriteOffset":{"x":0.0,"y":0.0},"gridSpritePadding":{"x":0.0,"y":0.0},"pivot":{"x":0.5,"y":0.5},"pivotPixels":{"x":0.0,"y":0.0},"autoSlicingMethod":0,"spriteAlignment":0,"pivotUnitMode":0,"slicingType":2,"keepEmptyRects":false,"isAlternate":false}'
     nameFileIdTable:
       Attacked_Manequin1_with_shadow_0: -6224671168918885845
       Attacked_Manequin1_with_shadow_1: -4923147288196674631

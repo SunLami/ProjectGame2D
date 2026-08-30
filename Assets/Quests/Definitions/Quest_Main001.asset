@@ -1,0 +1,35 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2a7a75faac2e50c44ac9f79fb2dfa85e, type: 3}
+  m_Name: Quest_Main001
+  m_EditorClassIdentifier: ProjectGame2D.Runtime::QuestDefinition
+  _questId: quest.main.001
+  _displayName: A Call to Adventure
+  _prerequisiteQuestIds:
+  - quest.tutorial.crafting.001
+  _objectives:
+  - _type: 5
+    _targetId: enemy.goblin.green
+    _targetAreaId: 
+    _targetCount: 1
+    _obtainMode: 0
+    _description: Defeat a Goblin to prove you're ready for the journey ahead.
+  _rewards:
+    _items:
+    - _itemId: item.material.wood
+      _quantity: 5
+    _gold: 100
+    _experience: 50
+  _isTutorialQuest: 0
+  _isMainQuest: 1
+  _giverNpcId: npc.town.elder
+  _turnInNpcId: npc.town.elder

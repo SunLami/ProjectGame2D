@@ -62,6 +62,14 @@ public sealed class EnemyUniversal : MonoBehaviour, IDamageable
     [SerializeField] private Animator _animator;
     [SerializeField] private GameObject _player;
 
+    [Header("Quest Identity")]
+    [Tooltip("Stable enemyId for Kill objectives (e.g. 'enemy.slime.green'). Empty means this " +
+        "instance never satisfies a Kill objective.")]
+    [SerializeField] private string _enemyId;
+    [Tooltip("Optional stable areaId this instance counts as being in for Kill objectives that " +
+        "require a specific area. Empty matches an objective with no area requirement.")]
+    [SerializeField] private string _areaId;
+
     [Header("Stats")]
     [SerializeField, Min(1f)] private float _maxHealth = 100f;
     [SerializeField, Min(0f)] private float _patrolSpeed = 1f;
@@ -107,6 +115,10 @@ public sealed class EnemyUniversal : MonoBehaviour, IDamageable
     public event Action<float, float> HealthChanged;
     public event Action ReturnedHome;
 
+    /// <summary>Fires exactly once on death, before the delayed corpse Destroy(). BossDefeatTracker
+    /// (Assets/Scripts/World/) subscribes to capture defeated state before this GameObject is gone.</summary>
+    public event Action Died;
+
     private void Awake()
     {
         if (_rigidbody == null) _rigidbody = GetComponent<Rigidbody2D>();
@@ -144,6 +156,19 @@ public sealed class EnemyUniversal : MonoBehaviour, IDamageable
             _rigidbody.linearVelocity = _state == State.Dead
                 ? Vector2.zero
                 : _launchRoutine != null ? _launchVelocity : _desiredVelocity;
+    }
+
+    /// <summary>Restore-only: removes an already-defeated boss silently on scene load -- no
+    /// TakeDamage/state machine, no HealthChanged/Died/EnemyKilled event, no death animation, no
+    /// duplicate experience/kill credit. Called by BossDefeatTracker.RestoreState.</summary>
+    public void RestoreDefeated()
+    {
+        if (_state == State.Dead)
+            return;
+
+        _state = State.Dead;
+        _currentHealth = 0f;
+        gameObject.SetActive(false);
     }
 
     public void TakeDamage(float damage, Vector2 direction = default, float knockbackForce = 0f)
@@ -446,6 +471,9 @@ public sealed class EnemyUniversal : MonoBehaviour, IDamageable
         if (state != State.Dead) return;
 
         GrantExperience();
+        if (!string.IsNullOrEmpty(_enemyId))
+            QuestDomainEvents.RaiseEnemyKilled(_enemyId, _areaId);
+        Died?.Invoke();
 
         if (_hurtRoutine != null)
         {

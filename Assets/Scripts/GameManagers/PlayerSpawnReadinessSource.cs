@@ -1,0 +1,210 @@
+using System;
+using System.Collections.Generic;
+using UnityEngine;
+
+/// <summary>
+/// IGameplayReadinessSource that restores the whole active session's GameSaveData into the
+/// gameplay scene in deterministic order: base progression -> position -> inventory -> equipment
+/// -> recalculate derived stats once -> finalize health against final MaxHealth. Plugs into the
+/// GameplayReadinessGate added in Phase 1 (not modified here). For New Game sessions, starting
+/// inventory is seeded exactly once and the initial save is (re)written including the seeded
+/// snapshot (D-011). Sessions without SaveData (Development, or callers still using the legacy
+/// TryStartNewGame/TryStartLoadedGame overloads) report ready immediately without touching
+/// Player/Inventory/Equipment.
+/// </summary>
+public sealed class PlayerSpawnReadinessSource : MonoBehaviour, IGameplayReadinessSource
+{
+    [SerializeField] private string _sourceId = "PlayerSpawn";
+    [SerializeField] private PlayerStat _playerStat;
+    [SerializeField] private Transform _playerTransform;
+    [SerializeField] private SpawnRegistry _spawnRegistry;
+    [SerializeField] private InventorySeeder _inventorySeeder;
+    [SerializeField] private WorldObjectRegistry _worldRegistry;
+
+    public string SourceId => _sourceId;
+    public bool IsReady { get; private set; }
+
+    public event Action ReadyChanged;
+
+    internal void ConfigureForTests(
+        PlayerStat playerStat, Transform playerTransform, SpawnRegistry spawnRegistry,
+        InventorySeeder inventorySeeder = null, WorldObjectRegistry worldRegistry = null)
+    {
+        _playerStat = playerStat;
+        _playerTransform = playerTransform;
+        _spawnRegistry = spawnRegistry;
+        _inventorySeeder = inventorySeeder;
+        _worldRegistry = worldRegistry;
+    }
+
+    private void Start()
+    {
+        GameSession session = GameSessionManager.Instance != null
+            ? GameSessionManager.Instance.Current
+            : default;
+
+        if (session.SaveData?.player != null)
+        {
+            // SessionDirtyTracker (Phase 9) must never see a freshly restored session as dirty --
+            // RestoreProgression/RestoreEquipped/LoadFromSaveData/RestoreState all fire the same
+            // change events real gameplay does, so GameSessionManager.MarkDirty() checks IsRestoring.
+            GameSessionManager.Instance.BeginRestore();
+            try
+            {
+                RestoreAll(session);
+            }
+            finally
+            {
+                GameSessionManager.Instance.EndRestore();
+            }
+
+            if (session.Kind == GameSessionKind.NewGame)
+                WriteInitialSave(session);
+        }
+
+        MarkReady();
+    }
+
+    private void RestoreAll(GameSession session)
+    {
+        PlayerSaveData playerData = session.SaveData.player;
+
+        // 1. Base progression -- health is finalized last, after equipment is known.
+        if (_playerStat != null)
+            _playerStat.RestoreProgression(playerData.level, playerData.currentExperience);
+
+        // 2. Position.
+        RestorePosition(playerData.location);
+
+        // 3. Inventory: seed once for New Game, else restore from save.
+        IItemResolver resolver = new ResourcesItemResolver();
+        if (session.Kind == GameSessionKind.NewGame)
+        {
+            _inventorySeeder?.SeedStartingInventory();
+        }
+        else if (InventoryManager.Instance != null && session.SaveData.inventory != null)
+        {
+            List<string> missingItemIds = new();
+            InventoryManager.Instance.LoadFromSaveData(session.SaveData.inventory, resolver, missingItemIds);
+            if (missingItemIds.Count > 0)
+            {
+                Debug.LogWarning(
+                    $"PlayerSpawnReadinessSource: {missingItemIds.Count} inventory item(s) could not "
+                    + $"be resolved and were dropped: {string.Join(", ", missingItemIds)}", this);
+            }
+        }
+
+        // 4. Equipment -- restored directly, never through the public Equip() UI path.
+        if (EquipmentManager.Instance != null && session.SaveData.equipment?.slots != null)
+        {
+            foreach (EquipmentSaveData.SlotData slotData in session.SaveData.equipment.slots)
+            {
+                if (resolver.TryResolve(slotData.itemId, out ItemSO item) && item is EquipmentItemSO equipment)
+                {
+                    EquipmentManager.Instance.RestoreEquipped(slotData.slot, equipment);
+                }
+                else
+                {
+                    Debug.LogWarning(
+                        $"PlayerSpawnReadinessSource: could not resolve equipped item "
+                        + $"'{slotData.itemId}' for slot {slotData.slot}.", this);
+                }
+            }
+        }
+
+        // 5. Recalculate derived stats exactly once, now that equipment is final.
+        EquipmentManager.Instance?.RecalculateStats();
+
+        // 6. Finalize health against the final MaxHealth (not the live-equip delta formula).
+        _playerStat?.RestoreHealth(playerData.health);
+
+        // 7. Tutorial progress -- does not gate Playing (input tutorial is a prompt, not a lock);
+        // restored via RestoreState so it never fires OnStepChanged/OnTutorialCompleted.
+        if (TutorialManager.Instance != null && session.SaveData.tutorial != null)
+        {
+            TutorialManager.Instance.RestoreState(
+                session.SaveData.tutorial.currentStepId, session.SaveData.tutorial.completed);
+        }
+
+        // 8. Quest progress -- restored via RestoreState so it never fires QuestAccepted/
+        // QuestProgressChanged/QuestCompleted/MainQuestUnlocked as if it were fresh progression.
+        if (QuestManager.Instance != null)
+        {
+            QuestManager.Instance.RestoreState(session.SaveData.quests);
+        }
+
+        // 9. World persistence -- chest/pickup/boss/resource-node state, restored before Playing
+        // is reached (this class is itself an IGameplayReadinessSource). No reward is granted and
+        // no gameplay event fires here; unknown/removed persistentIds are reported, not thrown.
+        if (_worldRegistry != null && session.SaveData.world != null)
+        {
+            List<string> missingWorldIds = new();
+            _worldRegistry.RestoreState(session.SaveData.world, missingWorldIds);
+            if (missingWorldIds.Count > 0)
+            {
+                Debug.LogWarning(
+                    $"PlayerSpawnReadinessSource: {missingWorldIds.Count} world object(s) not found "
+                    + $"in this scene and were skipped: {string.Join(", ", missingWorldIds)}", this);
+            }
+        }
+    }
+
+    private void RestorePosition(PlayerLocationSaveData location)
+    {
+        if (_playerTransform == null || location == null)
+            return;
+
+        if (location.HasSavedPosition)
+        {
+            _playerTransform.position = new Vector3(
+                location.positionX, location.positionY, _playerTransform.position.z);
+            return;
+        }
+
+        if (_spawnRegistry != null && _spawnRegistry.TryGetSpawn(location.fallbackSpawnId, out Vector3 spawnPosition))
+        {
+            _playerTransform.position = new Vector3(
+                spawnPosition.x, spawnPosition.y, _playerTransform.position.z);
+        }
+        else
+        {
+            Debug.LogWarning(
+                $"PlayerSpawnReadinessSource: spawn id '{location.fallbackSpawnId}' not found; "
+                + "keeping current position.", this);
+        }
+    }
+
+    private void WriteInitialSave(GameSession session)
+    {
+        ISaveSlotRepository repository = GameSessionManager.Instance.SaveRepository;
+        if (repository == null)
+            return;
+
+        GameSaveData snapshot = session.SaveData;
+        if (InventoryManager.Instance != null)
+            snapshot.inventory = InventoryManager.Instance.ToSaveData();
+        if (EquipmentManager.Instance != null)
+            snapshot.equipment = EquipmentManager.Instance.ToSaveData();
+        if (TutorialManager.Instance != null)
+            snapshot.tutorial = TutorialManager.Instance.ToSaveData();
+        if (QuestManager.Instance != null)
+            snapshot.quests = QuestManager.Instance.ToSaveData();
+        if (_worldRegistry != null)
+            snapshot.world = _worldRegistry.ToSaveData();
+
+        SaveOperationResult result = repository.WriteSave(session.SlotId, snapshot);
+        if (result.Success)
+            GameSessionManager.Instance.ClearDirty();
+        else
+            Debug.LogError($"PlayerSpawnReadinessSource: initial save write failed: {result.ErrorMessage}", this);
+    }
+
+    private void MarkReady()
+    {
+        if (IsReady)
+            return;
+
+        IsReady = true;
+        ReadyChanged?.Invoke();
+    }
+}

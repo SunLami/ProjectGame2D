@@ -1,8 +1,13 @@
+using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
 public partial class Player
 {
+    public static event Action PlayerAttacked;
+
+    internal static void RaiseAttackedForTests() => PlayerAttacked?.Invoke();
+
     private static readonly int AttackHash = Animator.StringToHash("Attack");
 
     [Header("Attack Hitbox")]
@@ -13,7 +18,10 @@ public partial class Player
 
     public void OnAttack(InputAction.CallbackContext context)
     {
-        if (!context.started || _isAttacking || _isHit || _isDead)
+        if (!context.started || _isAttacking || _isHit || _isDead
+            || !GameStateManager.AllowsGameplayInput)
+            return;
+        if (!_stats.TryConsumeAttackStamina())
             return;
 
         _isAttacking = true;
@@ -23,6 +31,7 @@ public partial class Player
             UpdateDirectionToMouse();
 
         _animator.SetTrigger(AttackHash);
+        PlayerAttacked?.Invoke();
     }
 
     public void FinishAttack()
@@ -42,22 +51,15 @@ public partial class Player
         _attackHitbox.BeginAttack();
     }
 
-    public void DamageEnemyFromHitbox(Enemy enemy)
+    public void DamageTargetFromHitbox(IDamageable target, Transform targetTransform)
     {
-        if (!_isAttacking || _isHit || _isDead || enemy == null || enemy.IsDead)
+        if (!_isAttacking || _isHit || _isDead || target == null || target.IsDead)
             return;
 
-        Vector2 direction = (enemy.transform.position - transform.position).normalized;
-        enemy.TakeDamage(_stats.RollOutgoingDamage(out _), direction, _attackKnockbackForce);
-    }
-
-    public void DamageEnemyFromHitbox(EnemyUniversal enemy)
-    {
-        if (!_isAttacking || _isHit || _isDead || enemy == null || enemy.IsDead)
-            return;
-
-        Vector2 direction = (enemy.transform.position - transform.position).normalized;
-        enemy.TakeDamage(_stats.RollOutgoingDamage(out _), direction, _attackKnockbackForce);
+        Vector2 direction = targetTransform != null
+            ? ((Vector2)targetTransform.position - (Vector2)transform.position).normalized
+            : _lastFacingDirection;
+        target.TakeDamage(_stats.RollOutgoingDamage(out _), direction, _attackKnockbackForce);
     }
 
     private void UpdateDirectionToMouse()

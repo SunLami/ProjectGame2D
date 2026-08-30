@@ -1,0 +1,34 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2a7a75faac2e50c44ac9f79fb2dfa85e, type: 3}
+  m_Name: Quest_SidePotionSupply001
+  m_EditorClassIdentifier: ProjectGame2D.Runtime::QuestDefinition
+  _questId: quest.side.potion_supply.001
+  _displayName: Potion Supply Run
+  _prerequisiteQuestIds: []
+  _objectives:
+  - _type: 3
+    _targetId: item.consumable.health_potion
+    _targetAreaId: 
+    _targetCount: 1
+    _obtainMode: 0
+    _description: Purchase 1 Health Potion from the Town Elder's general shop.
+  _rewards:
+    _items:
+    - _itemId: item.material.wood
+      _quantity: 1
+    _gold: 10
+    _experience: 20
+  _isTutorialQuest: 0
+  _isMainQuest: 0
+  _giverNpcId: npc.town.elder
+  _turnInNpcId: npc.town.elder

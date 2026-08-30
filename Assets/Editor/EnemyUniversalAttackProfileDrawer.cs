@@ -42,8 +42,6 @@ public sealed class EnemyUniversalAttackProfileDrawer : PropertyDrawer
         return height;
     }
 
-    public override bool CanCacheInspectorGUI(SerializedProperty property) => false;
-
     private static bool IsValid(SerializedProperty property) =>
         property != null && property.serializedObject != null
         && property.serializedObject.targetObject != null;

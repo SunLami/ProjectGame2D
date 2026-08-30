@@ -15,6 +15,10 @@ public class PlayerStat : MonoBehaviour
     [SerializeField, Min(0f)] private float _defense = 2f;
     [SerializeField, Min(0f)] private float _moveSpeed = 2f;
     [SerializeField, Min(1f)] private float _sprintMultiplier = 2f;
+    [SerializeField, Min(1f)] private float _maxStamina = 100f;
+    [SerializeField, Min(0f)] private float _staminaDrainPerSecond = 25f;
+    [SerializeField, Min(0f)] private float _staminaRegenerationPerSecond = 18f;
+    [SerializeField, Min(0f)] private float _attackStaminaCost = 15f;
     [SerializeField, Range(0f, 0.75f)] private float _criticalChance = 0.05f;
     [SerializeField, Range(1f, 3f)] private float _criticalMultiplier = 1.5f;
     [SerializeField, Range(0f, 0.75f)] private float _damageReduction;
@@ -33,11 +37,13 @@ public class PlayerStat : MonoBehaviour
 
     [Header("Runtime")]
     [SerializeField] private float _health;
+    [SerializeField] private float _stamina;
 
     private PlayerStatModifiers _equipmentModifiers;
 
     public event Action OnStatsChanged;
     public event Action<float, float> OnHealthChanged;
+    public event Action<float, float> OnStaminaChanged;
     public event Action<int> OnLevelUp;
     public event Action<int, int> OnExperienceChanged;
 
@@ -50,6 +56,9 @@ public class PlayerStat : MonoBehaviour
     public float Defense => Mathf.Max(0f, _defense + LevelBonus(_defensePerLevel) + _equipmentModifiers.defense);
     public float MoveSpeed => Mathf.Max(0f, _moveSpeed + _equipmentModifiers.moveSpeed);
     public float SprintMultiplier => Mathf.Max(1f, _sprintMultiplier + _equipmentModifiers.sprintMultiplier);
+    public float Stamina => _stamina;
+    public float MaxStamina => Mathf.Max(1f, _maxStamina);
+    public bool HasStamina => _stamina > 0f;
     public float CriticalChance => Mathf.Clamp(_criticalChance + LevelBonus(_criticalChancePerLevel) + _equipmentModifiers.criticalChance, 0f, 0.75f);
     public float CriticalMultiplier => Mathf.Clamp(_criticalMultiplier + _equipmentModifiers.criticalMultiplier, 1f, 3f);
     public float DamageReduction => Mathf.Clamp(_damageReduction + _equipmentModifiers.damageReduction, 0f, 0.75f);
@@ -79,6 +88,7 @@ public class PlayerStat : MonoBehaviour
         }
 
         _health = MaxHealth;
+        _stamina = MaxStamina;
     }
 
     public PlayerDamageResult ReceiveDamage(float rawDamage)
@@ -122,6 +132,31 @@ public class PlayerStat : MonoBehaviour
             Heal(HealthRegeneration * deltaTime);
     }
 
+    public void TickStamina(bool isSprinting, float deltaTime)
+    {
+        if (deltaTime <= 0f)
+            return;
+
+        float previous = _stamina;
+        float change = isSprinting ? -_staminaDrainPerSecond : _staminaRegenerationPerSecond;
+        _stamina = Mathf.Clamp(_stamina + change * deltaTime, 0f, MaxStamina);
+
+        if (!Mathf.Approximately(previous, _stamina))
+            OnStaminaChanged?.Invoke(_stamina, MaxStamina);
+    }
+
+    public bool TryConsumeAttackStamina()
+    {
+        if (_attackStaminaCost <= 0f)
+            return true;
+        if (_stamina < _attackStaminaCost)
+            return false;
+
+        _stamina -= _attackStaminaCost;
+        OnStaminaChanged?.Invoke(_stamina, MaxStamina);
+        return true;
+    }
+
     public void AddExperience(int amount)
     {
         if (amount <= 0)
@@ -140,6 +175,35 @@ public class PlayerStat : MonoBehaviour
         }
 
         OnExperienceChanged?.Invoke(_currentExperience, ExperienceToNextLevel);
+        OnHealthChanged?.Invoke(_health, MaxHealth);
+    }
+
+    /// <summary>Applies saved progression without firing OnLevelUp/reward-adjacent events.
+    /// health &lt; 0 restores to full MaxHealth (fresh New Game character).</summary>
+    public void RestoreProgression(int level, int currentExperience, float health)
+    {
+        RestoreProgression(level, currentExperience);
+        RestoreHealth(health);
+    }
+
+    /// <summary>Restores level/experience only, without touching health. Use this before
+    /// restoring equipment (so MaxHealth reflects final modifiers), then call RestoreHealth
+    /// afterward to clamp the saved health against the final MaxHealth.</summary>
+    public void RestoreProgression(int level, int currentExperience)
+    {
+        _level = Mathf.Max(1, level);
+        _currentExperience = Mathf.Max(0, currentExperience);
+
+        OnStatsChanged?.Invoke();
+        OnExperienceChanged?.Invoke(_currentExperience, ExperienceToNextLevel);
+    }
+
+    /// <summary>Sets health directly against the current MaxHealth (health &lt; 0 means full).
+    /// Unlike ApplyEquipmentModifiers, this does not add a live-equip delta -- it sets the exact
+    /// saved value, which is what restore needs.</summary>
+    public void RestoreHealth(float health)
+    {
+        _health = health < 0f ? MaxHealth : Mathf.Clamp(health, 0f, MaxHealth);
         OnHealthChanged?.Invoke(_health, MaxHealth);
     }
 
@@ -171,6 +235,10 @@ public class PlayerStat : MonoBehaviour
         _defense = Mathf.Max(0f, _defense);
         _moveSpeed = Mathf.Max(0f, _moveSpeed);
         _sprintMultiplier = Mathf.Max(1f, _sprintMultiplier);
+        _maxStamina = Mathf.Max(1f, _maxStamina);
+        _staminaDrainPerSecond = Mathf.Max(0f, _staminaDrainPerSecond);
+        _staminaRegenerationPerSecond = Mathf.Max(0f, _staminaRegenerationPerSecond);
+        _attackStaminaCost = Mathf.Max(0f, _attackStaminaCost);
         _level = Mathf.Max(1, _level);
         _currentExperience = Mathf.Max(0, _currentExperience);
     }

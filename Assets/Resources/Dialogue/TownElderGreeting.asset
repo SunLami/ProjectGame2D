@@ -1,0 +1,44 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 14c148da086a4444f9dc223cd131312a, type: 3}
+  m_Name: TownElderGreeting
+  m_EditorClassIdentifier: ProjectGame2D.Runtime::DialogueDefinition
+  _dialogueId: dialogue.town.elder.greeting
+  _initialNodeId: greeting
+  _nodes:
+  - _nodeId: greeting
+    _speakerName: Village Elder
+    _portrait: {fileID: 0}
+    _text: Welcome, traveler. Our village has work for capable hands. Come, let us
+      speak of what lies ahead.
+    _nextNodeId: 
+    _outcomeId: 
+    _choices:
+    - _text: What work needs doing?
+      _nextNodeId: quest
+    - _text: Tell me about this village.
+      _nextNodeId: village
+  - _nodeId: village
+    _speakerName: Village Elder
+    _portrait: {fileID: 0}
+    _text: Our people live by the forest and the old mines. We help one another,
+      especially when the wilds grow restless.
+    _nextNodeId: quest
+    _outcomeId: 
+    _choices: []
+  - _nodeId: quest
+    _speakerName: Village Elder
+    _portrait: {fileID: 0}
+    _text: Help the people, learn the land, and return when your task is complete.
+    _nextNodeId: 
+    _outcomeId: conversation.completed
+    _choices: []

@@ -15,4 +15,5 @@ public class InventorySaveData
     }
 
     public List<SlotData> slots = new List<SlotData>();
+    public int gold;
 }
