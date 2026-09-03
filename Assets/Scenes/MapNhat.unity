@@ -142074,6 +142074,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1994078754}
     m_Modifications:
+    - target: {fileID: 1185232546073673301, guid: 707a401d4f212f04887609c98877ac44, type: 3}
+      propertyPath: m_SortingOrder
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 4644929321531086067, guid: 707a401d4f212f04887609c98877ac44, type: 3}
       propertyPath: m_Name
       value: Eating_table
@@ -142121,7 +142125,10 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 4644929321531086067, guid: 707a401d4f212f04887609c98877ac44, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1202990859}
   m_SourcePrefab: {fileID: 100100000, guid: 707a401d4f212f04887609c98877ac44, type: 3}
 --- !u!4 &1202990851 stripped
 Transform:
@@ -142138,6 +142145,19 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 4644929321531086067, guid: 707a401d4f212f04887609c98877ac44, type: 3}
   m_PrefabInstance: {fileID: 1202990850}
   m_PrefabAsset: {fileID: 0}
+--- !u!210 &1202990859
+SortingGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1202990853}
+  m_Enabled: 1
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 0
+  m_SortAtRoot: 0
+  m_Sort3DAs2D: 0
 --- !u!1 &1238454001
 GameObject:
   m_ObjectHideFlags: 0
@@ -165974,7 +165994,7 @@ Transform:
   m_GameObject: {fileID: 1735715387}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -10.12, y: -16.09, z: 0}
+  m_LocalPosition: {x: 44.44, y: 9.34, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
