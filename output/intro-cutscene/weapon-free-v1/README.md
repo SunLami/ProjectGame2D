@@ -1,0 +1,42 @@
+# Intro cutscene — weapon-free keyframes
+
+Generated with built-in image_gen. Five flat PNG keyframes, intended for 10 seconds each (50 seconds total). These are still images, not animated video or separated parallax layers. Not yet bound to Unity Timeline.
+
+Visual direction: golden dawn, green vegetation, blue roofs, warm brown wood, consistent young hero with dark hair and travel clothing. All characters have empty hands except the bard's musical instrument. No protagonist weapons.
+
+## Scene order and Vietnamese captions
+
+1. intro-01-bard.png — Từ nhỏ, tôi đã thuộc những bài ca về các mạo hiểm giả lừng danh.
+2. intro-02-departure.png — Tôi luôn tự hỏi… bao giờ mới có một bài ca mang tên mình?
+3. intro-03-road.png — Muốn biết câu trả lời, tôi phải tự mình lên đường.
+4. intro-04-village.png — Điểm dừng đầu tiên: ngôi làng nơi những người mới học cách trở thành mạo hiểm giả.
+5. intro-05-arrival.png — Hành trang đã sẵn sàng. Can đảm cũng vậy. Giờ chỉ còn tìm người giao nhiệm vụ!
+
+Text remains separate from art. Each scene's fade is included within its 10-second duration.
+
+## Generation prompts
+
+### Scene 1
+
+Use case: illustration-story. Generate ONE standalone full-bleed 16:9 landscape static intro cutscene keyframe for a topdown pixel-art fantasy RPG, ideally 1920x1080. Reference image 1 is the project's approved visual style and palette; reference image 2 is the level-1 swordsman identity sprite sheet, NOT a layout to reproduce. Match crisp deliberately visible pixel clusters and stylized compact character proportions, detailed pixel environment, golden dawn sunlight, lush greens, blue tile roofs, warm brown wood, hopeful sincere adventure. All five scenes share same world and hero. Environment must have distinct depth planes useful for later gentle camera movement, unobstructed readable silhouettes, quiet lower 15% for future dialogue overlay. Single static image, no panels, no storyboard grid, no text, no captions, no logo, no UI, no watermark. Do not render photographic or smooth anime painting. Do not give hero ornate high-level armor. Scene 1: childhood inspiration. At a small welcoming village camp in early golden morning, a lute bard sits by a modest campfire telling adventures to a few villagers. The young boy version of the reference hero listens in wonder in foreground, same dark tousled hair, humble brown and blue clothing, a wooden practice sword at his side. Trees, blue roof wooden houses behind. Warm intimate composition.
+
+### Scene 2
+
+Use case: illustration-story. Generate ONE standalone full-bleed 16:9 landscape static intro cutscene keyframe for a topdown pixel-art fantasy RPG, ideally 1920x1080. Reference image 1 is the project's approved visual style and palette; reference image 2 is the level-1 swordsman identity sprite sheet, NOT a layout to reproduce. Match crisp deliberately visible pixel clusters and stylized compact character proportions, detailed pixel environment, golden dawn sunlight, lush greens, blue tile roofs, warm brown wood, hopeful sincere adventure. All five scenes share same world and hero. Environment must have distinct depth planes useful for later gentle camera movement, unobstructed readable silhouettes, quiet lower 15% for future dialogue overlay. Single static image, no panels, no storyboard grid, no text, no captions, no logo, no UI, no watermark. Do not render photographic or smooth anime painting. Do not give hero ornate high-level armor. Scene 2: ready to depart. The young adult reference hero, dark tousled hair, modest brown leather clothing with muted blue details, boots, simple steel sword and small travel backpack, stands at the open door of his humble timber home preparing to leave. Golden dawn through the window, curtain, wooden table, a blank journal. Hopeful quiet determination.
+
+### Scene 3
+
+Use case: illustration-story. Generate ONE standalone full-bleed 16:9 landscape static intro cutscene keyframe for a topdown pixel-art fantasy RPG, ideally 1920x1080. Reference image 1 is the project's approved visual style and palette; reference image 2 is the level-1 swordsman identity sprite sheet, NOT a layout to reproduce. Match crisp deliberately visible pixel clusters and stylized compact character proportions, detailed pixel environment, golden dawn sunlight, lush greens, blue tile roofs, warm brown wood, hopeful sincere adventure. All five scenes share same world and hero. Environment must have distinct depth planes useful for later gentle camera movement, unobstructed readable silhouettes, quiet lower 15% for future dialogue overlay. Single static image, no panels, no storyboard grid, no text, no captions, no logo, no UI, no watermark. Do not render photographic or smooth anime painting. Do not give hero ornate high-level armor. Scene 3: the open road. Same young adult hero with identical dark hair, brown leather outfit, muted blue accents, travel backpack and simple steel sword, viewed from rear three-quarter on a winding dirt trail beside a small wooden bridge. Green meadow, lush rounded trees, stream, distant hills. Hero small against broad inviting landscape; a tiny friendly-looking slime far beside the stream, unobtrusive.
+
+### Scene 4
+
+Use case: illustration-story. Generate ONE standalone full-bleed 16:9 landscape static intro cutscene keyframe for a topdown pixel-art fantasy RPG, ideally 1920x1080. Reference image 1 is the project's approved visual style and palette; reference image 2 is the level-1 swordsman identity sprite sheet, NOT a layout to reproduce. Match crisp deliberately visible pixel clusters and stylized compact character proportions, detailed pixel environment, golden dawn sunlight, lush greens, blue tile roofs, warm brown wood, hopeful sincere adventure. All five scenes share same world and hero. Environment must have distinct depth planes useful for later gentle camera movement, unobstructed readable silhouettes, quiet lower 15% for future dialogue overlay. Single static image, no panels, no storyboard grid, no text, no captions, no logo, no UI, no watermark. Do not render photographic or smooth anime painting. Do not give hero ornate high-level armor. Scene 4: first sight of the village. Same young adult hero on foreground trail looking towards a welcoming village surrounded by green forest: timber farm buildings with blue tiled roofs, brown wooden windmill, training yard with straw dummies on left, colorful blue and purple merchant tents on right, small crop fields below. Plausible intimate village scale matching reference assets. Early warm morning.
+
+### Scene 5
+
+Use case: illustration-story. Generate ONE standalone full-bleed 16:9 landscape static intro cutscene keyframe for a topdown pixel-art fantasy RPG, ideally 1920x1080. Reference image 1 is the project's approved visual style and palette; reference image 2 is the level-1 swordsman identity sprite sheet, NOT a layout to reproduce. Match crisp deliberately visible pixel clusters and stylized compact character proportions, detailed pixel environment, golden dawn sunlight, lush greens, blue tile roofs, warm brown wood, hopeful sincere adventure. All five scenes share same world and hero. Environment must have distinct depth planes useful for later gentle camera movement, unobstructed readable silhouettes, quiet lower 15% for future dialogue overlay. Single static image, no panels, no storyboard grid, no text, no captions, no logo, no UI, no watermark. Do not render photographic or smooth anime painting. Do not give hero ornate high-level armor. Scene 5: arrival and handoff into topdown game. Same young adult hero enters village from a dirt path on left, modest brown leather outfit blue details sword backpack dark hair. Friendly veteran trainer waits ahead near fenced sandy training yard with targets and dummies. Forest, green grass, blue-roof windmill distant right. Elevated three-quarter view closer to topdown than previous shots, framing the path for a seamless game transition.
+
+## Final editing instruction
+
+Remove the protagonist's sword and any carried weapon or scabbard, leave natural empty hands. Keep the character, hair, clothing, backpack, environment, composition and pixel style. Scene 1: retain the bard's lute (musical instrument) and remove the boy's wooden sword. Scene 5: also remove the trainer's sword and bottom overlay. This final instruction supersedes weapon mentions in the generation prompts above.
+
