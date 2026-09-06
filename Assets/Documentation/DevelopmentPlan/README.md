@@ -45,6 +45,7 @@ cập nhật tài liệu liên quan trước hoặc cùng lúc với code.
 14. [Data Asset and Stable ID Inventory](DataAssetStableIdInventory.md): toàn bộ custom ScriptableObject/catalog và chất lượng ID hiện tại.
 15. [Content Validation](ContentValidation.md): cách chạy validator, rule và severity hiện có.
 16. [Forest RuleTile Authoring](ForestRuleTileAuthoring.md): cách sinh, kiểm tra và cập nhật RuleTile học từ `Forest.tmx`.
+17. [Intro Cutscene](IntroCutscene.md): nội dung, Timeline, UI thoại và quy tắc khởi chạy intro Orynthals.
 
 ## Quy tắc quản trị tài liệu
 

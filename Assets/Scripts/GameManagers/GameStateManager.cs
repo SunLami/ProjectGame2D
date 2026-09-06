@@ -15,7 +15,7 @@ public sealed class GameStateManager : MonoBehaviour
             [GameState.Paused] = new(true, false, true, true),
             [GameState.GameplayMenu] = new(true, false, true, true),
             [GameState.Dialogue] = new(false, false, true, true),
-            [GameState.Cutscene] = new(false, false, false, false),
+            [GameState.Cutscene] = new(true, false, true, true),
             [GameState.Saving] = new(true, false, false, true),
             [GameState.PlayerDead] = new(true, false, true, true)
         };
