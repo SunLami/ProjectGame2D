@@ -1,0 +1,92 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d913a4144935222419bce97051219529, type: 3}
+  m_Name: IntroCutsceneDefinition
+  m_EditorClassIdentifier: ProjectGame2D.Runtime::IntroCutsceneDefinition
+  _cutsceneId: cutscene.intro.orynthals
+  _segments:
+  - _segmentId: intro.logo
+    _displayName: Logo Intro
+    _video: {fileID: 32900000, guid: c6afc4acf13141c468bb350bbec1099e, type: 3}
+    _lines: []
+  - _segmentId: intro.story.firelight
+    _displayName: The First Spark
+    _video: {fileID: 32900000, guid: 88a53e790f59c8248acd6388f25649f4, type: 3}
+    _lines:
+    - _speakerName: Storyteller
+      _text: Long ago, a little girl carried a tiny lantern through a forest so dark
+        that every tree seemed to whisper her name. She was afraid, but she never
+        turned back.
+    - _speakerName: Young Hero
+      _text: Did she become a famous adventurer? Did anyone sing songs about her?
+        I want to hear one someday... and maybe have a song of my own too.
+    - _speakerName: Storyteller
+      _text: 'Ha! That is a grand dream. Remember this: people do not remember heroes
+        for their names, but for the moment they chose not to turn away.'
+  - _segmentId: intro.story.departure
+    _displayName: A Promise at Dawn
+    _video: {fileID: 32900000, guid: c371b62259b89c74bafb6b79f96e31d9, type: 3}
+    _lines:
+    - _speakerName: Hero
+      _text: Am I really leaving? One step beyond this door, and everything changes.
+        My heart is racing so fast that I cannot tell whether it is excitement or
+        fear.
+    - _speakerName: A Memory
+      _text: It is all right to be afraid. It means you understand this journey matters.
+        Just do not let fear choose your path for you. Promise me that.
+    - _speakerName: Hero
+      _text: I promise. I cannot promise to be brave every moment, but I will not
+        give up easily. And I will come home with more stories than I can carry.
+  - _segmentId: intro.story.open-road
+    _displayName: The Road Calls
+    _video: {fileID: 32900000, guid: 84b46b8dc9d154941a68a36aeb369e23, type: 3}
+    _lines:
+    - _speakerName: Hero
+      _text: Wow... the world is wider than every map I ever studied. Look at that
+        road. It feels like it is calling my name. Or maybe that is just my stomach.
+    - _speakerName: Hero
+      _text: 'I do not know what waits ahead: treasure, monsters, or rain cruel enough
+        to soak my pack. Thinking about it only makes me want to take another step.'
+    - _speakerName: Hero
+      _text: That is fine. I have no title, no grand victory, and no one waiting
+        to tell my story. Every famous adventurer was once a newcomer, too.
+  - _segmentId: intro.story.village
+    _displayName: The Village of Beginnings
+    _video: {fileID: 32900000, guid: 3fb0dbfa87b134544a729b25b8c46c35, type: 3}
+    _lines:
+    - _speakerName: Hero
+      _text: I finally made it... This village is even brighter than I imagined.
+        A training yard, a market, farms, a windmill... there must always be something
+        waiting to be done.
+    - _speakerName: Hero
+      _text: They say many adventurers began here. Some became heroes, some opened
+        shops, and some simply found a home worth returning to.
+    - _speakerName: Hero
+      _text: I want to travel far, but first I should learn how to stand on my own
+        here. Maybe this little village is the first page of my real adventure.
+  - _segmentId: intro.story.training-yard
+    _displayName: A Guide Appears
+    _video: {fileID: 32900000, guid: 2f2c972fbff0a2249a50baa96d061b6e, type: 3}
+    _lines:
+    - _speakerName: Guide
+      _text: 'You are new here, right? I can spot that look from a mile away: eager,
+        confident... and completely unaware of how tiring a real adventure can be.'
+    - _speakerName: Hero
+      _text: I want to become a famous adventurer! I want to see the world, do something
+        I can be proud of, and someday hear people sing about the places I have been.
+    - _speakerName: Guide
+      _text: That is a fine dream. Before the whole world knows your name, let this
+        village learn who you are. Come on. I will show you where an adventurer begins.
+  - _segmentId: intro.outro.transition
+    _displayName: Into the Village
+    _video: {fileID: 32900000, guid: f9422df3995cd804bad417dce54a79ae, type: 3}
+    _lines: []

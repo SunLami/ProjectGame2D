@@ -6,6 +6,8 @@ public class MusicManager : MonoBehaviour
 {
     public static MusicManager Instance { get; private set; }
 
+    private static bool _backgroundMusicSuppressed;
+
     private AudioSource _audioSource;
     private float _trackVolume = 1f;
     private float _settingsVolume = 1f;
@@ -26,6 +28,9 @@ public class MusicManager : MonoBehaviour
 
         Instance = this;
         DontDestroyOnLoad(gameObject);
+
+        if (_backgroundMusicSuppressed)
+            _audioSource.Stop();
 
         if (SettingsService.Instance != null)
             SettingsService.Instance.ApplyAudioSettings();
@@ -55,7 +60,24 @@ public class MusicManager : MonoBehaviour
             return;
 
         source.clip = clip;
-        source.Play();
+        if (!_backgroundMusicSuppressed)
+            source.Play();
+    }
+
+    /// <summary>Temporarily keeps scene background music silent while a cinematic owns presentation.</summary>
+    public static void SuppressBackgroundMusic()
+    {
+        _backgroundMusicSuppressed = true;
+        if (Instance?._audioSource != null)
+            Instance._audioSource.Stop();
+    }
+
+    /// <summary>Starts the scene's configured background track after the cinematic hand-off finishes.</summary>
+    public static void ResumeBackgroundMusic()
+    {
+        _backgroundMusicSuppressed = false;
+        if (Instance?._audioSource != null && Instance._audioSource.clip != null)
+            Instance._audioSource.Play();
     }
 
     private void ApplyVolume()
