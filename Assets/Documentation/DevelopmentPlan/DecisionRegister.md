@@ -181,6 +181,16 @@ Code foundation nên cung cấp extension point nhưng không tự chọn gamepl
   nội dung và lựa chọn dùng TMP/Digital Disco, không bake vào texture.
 - Dialogue UI không sở hữu quest outcome, shop/crafting transaction hoặc save data.
 
+# Orynthals intro cutscene
+
+- **Status:** Accepted từ yêu cầu content — 2026-09-06.
+- Intro gồm Logo Intro, năm clip truyện, và Outro Transition; data asset giữ stable cutscene/segment ID,
+  còn Timeline chỉ điều phối thứ tự presentation.
+- New Game và Development preview có thể phát Intro; Continue không phát lại. Skip cinematic không
+  ghi save, không đổi quest/tutorial/world progression.
+- `GameState.Cutscene` dừng world và khóa gameplay input, nhưng cho phép UI/cursor để người chơi điều
+  khiển thoại hoặc skip.
+
 # Persistent chest left-click and delayed loot commit
 
 - **Status:** Accepted từ yêu cầu — 2026-08-26.
