@@ -102,8 +102,9 @@ GameObject:
   m_Component:
   - component: {fileID: 5460889958050550174}
   - component: {fileID: 1953523361483219683}
+  - component: {fileID: 6312074989060133567}
   m_Layer: 0
-  m_Name: Windmill
+  m_Name: Farm_Windmill
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -118,7 +119,7 @@ Transform:
   m_GameObject: {fileID: 5530843208209430155}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 25.171, y: -14.404295, z: 0}
+  m_LocalPosition: {x: 11.980003, y: 7.3199997, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -136,9 +137,64 @@ SortingGroup:
   m_Enabled: 1
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingOrder: 1
   m_SortAtRoot: 0
   m_Sort3DAs2D: 0
+--- !u!60 &6312074989060133567
+PolygonCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5530843208209430155}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_ForceSendLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ForceReceiveLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ContactCaptureLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_CallbackLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_CompositeOperation: 0
+  m_CompositeOrder: 0
+  m_Offset: {x: -5.89, y: 0}
+  m_SpriteTilingProperty:
+    border: {x: 0, y: 0, z: 0, w: 0}
+    pivot: {x: 0, y: 0}
+    oldSize: {x: 0, y: 0}
+    newSize: {x: 0, y: 0}
+    adaptiveTilingThreshold: 0
+    drawMode: 0
+    adaptiveTiling: 0
+  m_AutoTiling: 0
+  m_Points:
+    m_Paths:
+    - - {x: 2.0070577, y: 0.87418556}
+      - {x: 1.0103765, y: 1.8625412}
+      - {x: -1.0180507, y: 1.8642807}
+      - {x: -2.0720444, y: 0.8380451}
+      - {x: -2.0847235, y: -0.46437284}
+      - {x: -1.0659957, y: -1.5335482}
+      - {x: 1.0105071, y: -1.5343721}
+      - {x: 2.0222769, y: -0.47398192}
+  m_UseDelaunayMesh: 1
 --- !u!1 &7588518850302625202
 GameObject:
   m_ObjectHideFlags: 0
