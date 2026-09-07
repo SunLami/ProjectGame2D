@@ -24,7 +24,7 @@ tiếp tục thiết kế; phải đổi thành `Accepted` trước phase implem
 | D-017 | Return Main Menu dirty state | **Accepted — 2026-08-23** | Đúng theo proposed default: `GameplaySessionController.OnConfirmationRequired` khi dirty → Save and Return / Return Without Saving / Cancel; clean session Return trực tiếp không hỏi. | Phase 9 |
 | D-024 | Dirty-session event contract | **Accepted — 2026-08-23** | `SessionDirtyTracker` (scene service) đánh dấu dirty qua: `InventoryManager.OnInventoryChanged`, `EquipmentManager.OnEquipmentChanged`, `PlayerStat.OnLevelUp`/`OnExperienceChanged`, `TutorialManager.OnStepChanged`/`OnTutorialCompleted`, `QuestManager.QuestAccepted`/`QuestProgressChanged`/`QuestCompleted`/`MainQuestUnlocked`, `WorldDomainEvents.WorldObjectChanged` (mới). Player position/di chuyển đơn thuần **không** làm dirty. `GameSessionManager.MarkDirty()` tự no-op khi `IsRestoring == true` nên toàn bộ restore path (kể cả seed New Game) không bao giờ dirty giả. | Phase 9 |
 | D-018 | Settings ownership | Accepted kiến trúc | Shared SettingsService, hai navigation UI riêng | Phase 1 |
-| D-019 | Production world scene topology | Open | Chưa chốt một hay nhiều scene; save luôn dùng area/scene ID ổn định | Trước production world |
+| D-019 | Production world scene topology | **Accepted — 2026-09-07** | `MapNhat` là world scene production chính thức đầu tiên (nhiều scene, không phải một scene duy nhất dùng chung với DemoScene). `DemoScene` tiếp tục là integration playground, không đổi vai trò. Save tiếp tục dùng stable `areaId`/spawn ID, không hard-code tên scene vào domain save. | Trước production world |
 | D-020 | Data loading backend | **Accepted — 2026-08-22** | Domain phụ thuộc `IItemResolver`; `ResourcesItemResolver` là backend migration ban đầu | Phase 4 |
 | D-021 | Definition authoring reference | **Accepted — 2026-08-22** | Typed asset reference trong Inspector (`ItemSO`/`EquipmentItemSO`), stable `itemId` tại save/runtime boundary | Phase 4–7 |
 | D-022 | Legacy item ID convention | **Accepted — 2026-08-22** | Giữ nguyên 60 legacy underscore itemId hiện có (`sword_lvl1`, `body_lvl9`, ...) làm stable ID chính thức cho content hiện có; **không** bulk rename. Convention dot-namespace (`item.weapon.sword.001`) chỉ áp dụng cho item MỚI thêm sau Phase 4. Validator tiếp tục báo Warning (không phải Error) cho các legacy ID này. | Phase 4 |
@@ -145,6 +145,20 @@ khác để D-005 có thể bám vào (không có state/flag nào đánh dấu "
 ngoài phạm vi Phase 9 theo đúng ghi chú "Chưa có ở foundation; manual save trước" — Phase 9 chỉ làm
 manual Save Game. Không tự chế một cơ chế combat-lock để "xong" D-005 vì sẽ là quyết định gameplay
 chưa được xác nhận; để lại nguyên trạng cho phase sau khi có combat state thật.
+
+## Chi tiết quyết định D-019 — 2026-09-07
+
+```text
+D-019 — Accepted — 2026-09-07 — Claude (theo yêu cầu trực tiếp của người dùng)
+MapNhat được chốt làm world scene production chính thức đầu tiên. Lý do: người dùng muốn mang toàn bộ
+gameplay UI (HUD, Pause, Inventory/Equipment, Settings, Quest, Shop/Crafting, Tutorial) sang MapNhat và
+dùng chung một GameStateManager/UI state machine với DemoScene, thay vì chỉ dừng ở portability
+smoke-test như trạng thái trước đó. DemoScene giữ nguyên vai trò integration playground (D-001 không
+đổi). Kế hoạch triển khai chi tiết: MapNhatUiStateMachinePlan.md.
+Ảnh hưởng: Assets/Scenes/MapNhat.unity (thêm _UI + _SceneContext service đầy đủ), có thể ảnh hưởng
+Build Settings/SceneFlowService target khi có nhiều world scene sau này. Chưa xác định topology cho
+world scene thứ ba trở đi; sẽ đánh giá lại khi có nhu cầu cụ thể.
+```
 
 ## Những quyết định không được hard-code trước khi chốt
 
