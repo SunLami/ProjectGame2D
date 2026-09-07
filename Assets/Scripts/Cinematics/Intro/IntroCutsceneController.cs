@@ -27,6 +27,7 @@ public sealed class IntroCutsceneController : MonoBehaviour
     [Header("Dialogue Presentation")]
     [SerializeField] private GameObject _root;
     [SerializeField] private GameObject _dialoguePanel;
+    [SerializeField] private GameObject _dialogueParchment;
     [SerializeField] private TMP_Text _speakerText;
     [SerializeField] private TMP_Text _bodyText;
     [SerializeField] private Button _nextButton;
@@ -244,8 +245,14 @@ public sealed class IntroCutsceneController : MonoBehaviour
             && _lineIndex >= 0
             && _lineIndex < segment.Lines.Count;
 
+        bool showDialogue = hasLine
+            && _segmentIndex > 0
+            && _segmentIndex < _definition.Segments.Count - 1;
+
         if (_dialoguePanel != null)
-            _dialoguePanel.SetActive(hasLine);
+            _dialoguePanel.SetActive(showDialogue);
+        if (_dialogueParchment != null)
+            _dialogueParchment.SetActive(showDialogue);
 
         if (!hasLine)
             return;

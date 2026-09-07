@@ -46,7 +46,8 @@ public sealed class DialogueUI : MonoBehaviour
         }
         Instance = this;
         _root.SetActive(false);
-        _choiceTemplate.gameObject.SetActive(false);
+        foreach (Button slot in _choiceRoot.GetComponentsInChildren<Button>(true))
+            slot.gameObject.SetActive(false);
     }
 
     private void Update()
@@ -139,10 +140,13 @@ public sealed class DialogueUI : MonoBehaviour
 
     private void ApplyBodyLayout(bool hasChoices)
     {
-        RectTransform rect = _bodyText.rectTransform;
-        rect.anchoredPosition = hasChoices ? _bodyTextWithChoicesPosition : _bodyTextWithoutChoicesPosition;
-        rect.sizeDelta = hasChoices ? _bodyTextWithChoicesSize : _bodyTextWithoutChoicesSize;
-        _bodyText.fontSize = hasChoices ? _bodyTextWithChoicesFontSize : _bodyTextWithoutChoicesFontSize;
+        // The panel owns the text bounds. Choices are rendered in their own column,
+        // so dialogue text never resizes or moves when a node has answers.
+        _bodyText.enableAutoSizing = true;
+        _bodyText.fontSizeMin = 8f;
+        _bodyText.fontSizeMax = _bodyTextWithChoicesFontSize;
+        _bodyText.enableWordWrapping = true;
+        _bodyText.overflowMode = TextOverflowModes.Overflow;
     }
 
     private IEnumerator RevealText()
@@ -172,15 +176,28 @@ public sealed class DialogueUI : MonoBehaviour
 
     private void BuildChoices()
     {
-        foreach (DialogueChoiceDefinition choice in _currentNode.Choices)
+        Button[] slots = _choiceRoot.GetComponentsInChildren<Button>(true);
+        int count = Mathf.Min(_currentNode.Choices.Count, slots.Length);
+        for (int index = 0; index < count; index++)
         {
-            Button button = Instantiate(_choiceTemplate, _choiceRoot);
+            DialogueChoiceDefinition choice = _currentNode.Choices[index];
+            Button button = slots[index];
             button.gameObject.SetActive(true);
-            button.GetComponentInChildren<TMP_Text>(true).text = choice.Text;
+            TMP_Text label = button.GetComponentInChildren<TMP_Text>(true);
+            label.text = choice.Text;
+            label.enableAutoSizing = true;
+            label.fontSizeMin = 5.5f;
+            label.fontSizeMax = 8.5f;
+            label.enableWordWrapping = false;
+            label.overflowMode = TextOverflowModes.Overflow;
             string nextNodeId = choice.NextNodeId;
+            button.onClick.RemoveAllListeners();
             button.onClick.AddListener(() => SelectChoice(nextNodeId));
             _choiceButtons.Add(button);
         }
+
+        Canvas.ForceUpdateCanvases();
+        LayoutRebuilder.ForceRebuildLayoutImmediate(_choiceRoot as RectTransform);
     }
 
     private void SelectChoice(string nextNodeId)
@@ -192,9 +209,15 @@ public sealed class DialogueUI : MonoBehaviour
     private void ClearChoices()
     {
         foreach (Button button in _choiceButtons)
-            if (button != null)
-                Destroy(button.gameObject);
+        {
+            if (button == null)
+                continue;
+            button.onClick.RemoveAllListeners();
+            button.gameObject.SetActive(false);
+        }
         _choiceButtons.Clear();
+        Canvas.ForceUpdateCanvases();
+        LayoutRebuilder.ForceRebuildLayoutImmediate(_choiceRoot as RectTransform);
     }
 
     private bool IsPointerOverChoice()
