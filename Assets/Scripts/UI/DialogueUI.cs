@@ -186,8 +186,8 @@ public sealed class DialogueUI : MonoBehaviour
             TMP_Text label = button.GetComponentInChildren<TMP_Text>(true);
             label.text = choice.Text;
             label.enableAutoSizing = true;
-            label.fontSizeMin = 5.5f;
-            label.fontSizeMax = 8.5f;
+            label.fontSizeMin = 7f;
+            label.fontSizeMax = 10f;
             label.enableWordWrapping = false;
             label.overflowMode = TextOverflowModes.Overflow;
             string nextNodeId = choice.NextNodeId;
