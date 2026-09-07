@@ -207,12 +207,37 @@ Feature contract documented
 
 ## MapNhat integration status
 
-`MapNhat` hiện có `_SceneContext` tối thiểu cho Editor direct-play gồm `GameBootstrap` ở chế độ
-`DevelopmentGameplay` và `GameInputCoordinator` bind tới `PlayerInput` của Player trong scene. Vì
-`GameStateManager` và `GameSessionManager` tự bootstrap trước scene load, cấu hình này đưa state từ
-`Booting` sang `Playing` và kích hoạt action map `Gameplay` mà không sao chép manager singleton vào
-scene. Đây mới là portability smoke integration cho Player; các feature UI/save/world đầy đủ vẫn phải
-được promote từ DemoScene theo checklist phía trên.
+**Cập nhật 2026-09-07 — `MapNhat` đã là world scene production chính thức (D-019 Accepted).** Toàn bộ
+gameplay UI và scene-service đã được promote từ `DemoScene` theo đúng quy trình 6 bước ở trên. Chi tiết
+đầy đủ, từng bước, kết quả verify: [MapNhatUiStateMachinePlan.md](MapNhatUiStateMachinePlan.md).
+
+Trạng thái hiện tại của `MapNhat`:
+
+- **UI**: `_UI/GameplayUIRoot` là prefab instance kéo từ `Assets/Prefabs/UI/GameplayUIRoot.prefab`
+  (chính là `DemoScene/_UI/UICanvas` cũ, giờ đã đóng gói prefab và DemoScene cũng dùng chung prefab này
+  — sửa UI ở một trong hai scene không còn tạo bản sao lệch nhau). `DialogueUI_v2.prefab` và
+  `IntroCutscene.prefab` cũng đã instantiate (đã sẵn là prefab từ trước khi bắt đầu kế hoạch này).
+- **Manager singleton**: `InventoryManager`, `Equipment Manager`, `SoundFX Manager`, `MusicManager`,
+  `TutorialManager`, `QuestManager`, `ShopManager`, `CraftingManager`, `MapManager` đều có instance
+  riêng trong `MapNhat` (nhân bản từ DemoScene, rebind đúng scene actor của MapNhat — xem plan để biết
+  field nào đã rebind), nên `MapNhat` chạy độc lập hoàn toàn, không cần từng mở `DemoScene` trước.
+- **`_SceneContext`**: đầy đủ `GameBootstrap`, `GameInputCoordinator`, `GameplaySceneLifetime`,
+  `SceneDependencyReadinessSource`, `GameplayReadinessGate`, `SpawnRegistry` (gồm cả
+  `spawn.tutorial.start` — spawn ID `NewGameFactory` hard-code cho New Game), `PlayerSpawnReadinessSource`,
+  `WorldObjectRegistry` (rỗng — chưa có persistent world object nào được author trong MapNhat),
+  `GameplaySessionController` (`_gameplaySceneName = "MapNhat"`), `SessionDirtyTracker`.
+- **MainMenu routing**: `MainMenuController._gameplaySceneName = "MapNhat"` — New Game và Continue từ
+  MainMenu đều vào thẳng `MapNhat` sau Loading, không còn qua `DemoScene`. Build Settings hiện chỉ còn
+  `MainMenu` (0) và `MapNhat` (1) — `DemoScene` đã được gỡ khỏi Build Settings (2026-09-07) vì không
+  còn nằm trong luồng Player build, nhưng vẫn giữ nguyên vai trò integration playground (D-001 không
+  đổi): mở trực tiếp trong Editor để dựng/test feature mới, rồi promote sang `MapNhat` khi sẵn sàng.
+- **Verify đã chạy**: EditMode 67/67 PASS; smoke test end-to-end thật (New Game → Save → Return Main
+  Menu → Continue → restore đúng vị trí) PASS qua `execute_code` trong Play Mode. PlayMode full suite có
+  ~25 test fail nhưng đã xác nhận **100% pre-existing** (tái hiện y hệt trên git baseline trước khi kế
+  hoạch này bắt đầu) — không chặn tính đúng đắn của phần MapNhat, đang xử lý ở task riêng.
+
+Gap còn lại: `WorldObjectRegistry` của MapNhat chưa có persistent world object nào (chest/pickup/boss/
+resource node) — cần author khi có content thật cho map này, theo `ContentAuthoringGuide.md`.
 
 Player ghép nhiều SpriteRenderer dùng cùng một sorting contract trong `DemoScene` và `MapNhat`:
 
