@@ -109,5 +109,15 @@ public sealed class SessionDirtyTracker : MonoBehaviour
     private void HandleLevelUp(int level) => GameSessionManager.Instance?.MarkDirty();
     private void HandleExperienceChanged(int current, int toNext) => GameSessionManager.Instance?.MarkDirty();
     private void HandleTutorialStepChanged(TutorialStepDefinition step) => GameSessionManager.Instance?.MarkDirty();
-    private void HandleQuestEvent(string questId) => GameSessionManager.Instance?.MarkDirty();
+    private void HandleQuestEvent(string questId)
+    {
+        if (_questManager?.Catalog != null
+            && _questManager.Catalog.TryResolve(questId, out QuestDefinition quest)
+            && quest.IsDebugQuest)
+        {
+            return;
+        }
+
+        GameSessionManager.Instance?.MarkDirty();
+    }
 }
