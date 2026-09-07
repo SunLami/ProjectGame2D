@@ -46,6 +46,8 @@ cập nhật tài liệu liên quan trước hoặc cùng lúc với code.
 15. [Content Validation](ContentValidation.md): cách chạy validator, rule và severity hiện có.
 16. [Forest RuleTile Authoring](ForestRuleTileAuthoring.md): cách sinh, kiểm tra và cập nhật RuleTile học từ `Forest.tmx`.
 17. [Intro Cutscene](IntroCutscene.md): nội dung, Timeline, UI thoại và quy tắc khởi chạy intro Orynthals.
+18. [MapNhat UI State Machine Integration Plan](MapNhatUiStateMachinePlan.md): kế hoạch kéo gameplay UI
+    từ DemoScene sang MapNhat dùng chung GameStateManager; cần chốt D-019 trước khi triển khai.
 
 ## Quy tắc quản trị tài liệu
 
@@ -71,7 +73,13 @@ cập nhật tài liệu liên quan trước hoặc cùng lúc với code.
 - Save đã là hệ thống save slot hoàn chỉnh: 3 slot, atomic write/backup, migration V1→Current, Save
   Game slot picker (Empty/Overwrite/Save As/Delete) trong Pause Menu. Chi tiết:
   [SaveAndWorldPersistence.md](SaveAndWorldPersistence.md).
-- Build Settings hiện dùng `MainMenu` index 0 và `DemoScene` index 1.
+- Build Settings hiện dùng `MainMenu` index 0 và `MapNhat` index 1. Từ 2026-09-07,
+  `MainMenuController._gameplaySceneName = "MapNhat"` — New Game/Continue vào thẳng `MapNhat` sau
+  Loading (D-019 Accepted). `DemoScene` đã bị **gỡ khỏi Build Settings** (theo yêu cầu người dùng
+  2026-09-07) nhưng file scene vẫn còn nguyên và vẫn là integration playground (D-001 không đổi) —
+  chỉ mở trực tiếp trong Editor để dựng/test tính năng, không còn nằm trong luồng Player build. Feature
+  test xong ở DemoScene sẽ được promote sang MapNhat theo đúng quy trình ở
+  [DemoSceneWorkflow.md](DemoSceneWorkflow.md). Chi tiết: [MapNhatUiStateMachinePlan.md](MapNhatUiStateMachinePlan.md).
 - **Phase 10 (phase cuối của roadmap nền tảng này) đã `CONTENT_READY` — 2026-08-23.** Toàn bộ nền
   tảng (state machine, scene flow, save/load, inventory/equipment, tutorial, quest, shop/crafting,
   world persistence, hardening) đã qua automated test + physical Player build acceptance. Bước tiếp
