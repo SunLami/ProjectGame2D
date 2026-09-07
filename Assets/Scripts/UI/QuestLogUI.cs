@@ -28,7 +28,9 @@ public sealed class QuestLogUI : MonoBehaviour
     [SerializeField] private Button _closeButton;
 
     private readonly List<GameObject> _rows = new();
+    private readonly List<TrackedQuestView> _trackedQuests = new();
     private QuestManager _questManager;
+    private QuestTrackerUI _tracker;
     private InputAction _questLogAction;
     private string _selectedQuestId;
 
@@ -40,6 +42,14 @@ public sealed class QuestLogUI : MonoBehaviour
         _questLogAction = _playerInput != null
             ? _playerInput.actions.FindAction("Gameplay/QuestLog", false)
             : null;
+
+        if (_trackerRoot != null)
+        {
+            _tracker = _trackerRoot.GetComponent<QuestTrackerUI>();
+            if (_tracker == null)
+                _tracker = _trackerRoot.AddComponent<QuestTrackerUI>();
+            _tracker.Initialize(_trackerTitle, _trackerObjectives);
+        }
     }
 
     private void OnEnable()
@@ -141,7 +151,7 @@ public sealed class QuestLogUI : MonoBehaviour
         bool logOpen = IsQuestLogOpen();
         _logRoot.SetActive(logOpen);
         if (_trackerRoot != null)
-            _trackerRoot.SetActive(!logOpen && FindTrackedQuest() != null);
+            _trackerRoot.SetActive(!logOpen && _trackedQuests.Count > 0);
     }
 
     private bool IsQuestLogOpen() =>
@@ -151,33 +161,44 @@ public sealed class QuestLogUI : MonoBehaviour
 
     private void RefreshQuestPresentation()
     {
-        QuestDefinition tracked = FindTrackedQuest();
-        if (tracked != null)
-        {
-            _trackerTitle.text = tracked.DisplayName;
-            _trackerObjectives.text = BuildObjectiveText(tracked, compact: true);
-        }
+        RebuildTracker();
 
         RebuildList();
         RefreshDetails();
         RefreshVisibility();
     }
 
-    private QuestDefinition FindTrackedQuest()
+    private void RebuildTracker()
     {
+        _trackedQuests.Clear();
         if (_questManager?.Catalog == null)
-            return null;
+        {
+            _tracker?.SetQuests(_trackedQuests);
+            return;
+        }
 
-        QuestDefinition ready = null;
         foreach (QuestDefinition quest in _questManager.Catalog.AllQuests)
         {
             QuestStatus status = _questManager.GetStatus(quest.QuestId);
-            if (status == QuestStatus.Active)
-                return quest;
-            if (status == QuestStatus.ReadyToTurnIn)
-                ready = quest;
+            if (status != QuestStatus.Active && status != QuestStatus.ReadyToTurnIn)
+                continue;
+
+            _trackedQuests.Add(new TrackedQuestView(
+                quest.QuestId,
+                quest.DisplayName,
+                BuildObjectiveText(quest, compact: true),
+                CategoryOf(quest)));
         }
-        return ready;
+
+        _trackedQuests.Sort(QuestTrackerOrdering.Compare);
+        _tracker?.SetQuests(_trackedQuests);
+    }
+
+    private static QuestCategory CategoryOf(QuestDefinition quest)
+    {
+        if (quest.IsMainQuest)
+            return QuestCategory.Main;
+        return quest.IsDailyQuest ? QuestCategory.Daily : QuestCategory.Side;
     }
 
     private void RebuildList()

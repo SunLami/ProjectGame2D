@@ -17,6 +17,10 @@ public sealed class QuestDefinition : ScriptableObject
     [SerializeField] private QuestRewardDefinition _rewards;
     [SerializeField] private bool _isTutorialQuest;
     [SerializeField] private bool _isMainQuest;
+    [Tooltip("Presentation category used to place Daily Quests after Main and Side Quests. Daily reset/generation is owned by a future system.")]
+    [SerializeField] private bool _isDailyQuest;
+    [Tooltip("Development-only content. It is excluded from save/restore and unavailable in non-development builds.")]
+    [SerializeField] private bool _isDebugQuest;
 
     [Tooltip("Stable npcId that offers this quest while it is Available.")]
     [SerializeField] private string _giverNpcId;
@@ -31,6 +35,8 @@ public sealed class QuestDefinition : ScriptableObject
     public QuestRewardDefinition Rewards => _rewards;
     public bool IsTutorialQuest => _isTutorialQuest;
     public bool IsMainQuest => _isMainQuest;
+    public bool IsDailyQuest => _isDailyQuest;
+    public bool IsDebugQuest => _isDebugQuest;
     public string GiverNpcId => _giverNpcId;
     public string TurnInNpcId => _turnInNpcId;
 }

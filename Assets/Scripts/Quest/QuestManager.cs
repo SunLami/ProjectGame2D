@@ -202,6 +202,9 @@ public sealed class QuestManager : MonoBehaviour
         if (_catalog == null || !_catalog.TryResolve(questId, out QuestDefinition definition))
             return false;
 
+        if (definition.IsDebugQuest && !CanUseDebugQuest)
+            return false;
+
         if (GetStatus(questId) != QuestStatus.Available)
             return false;
 
@@ -209,6 +212,18 @@ public sealed class QuestManager : MonoBehaviour
         QuestAccepted?.Invoke(questId);
         QuestProgressChanged?.Invoke(questId);
         return true;
+    }
+
+    private static bool CanUseDebugQuest
+    {
+        get
+        {
+#if UNITY_EDITOR
+            return true;
+#else
+            return Debug.isDebugBuild;
+#endif
+        }
     }
 
     /// <summary>Atomic turn-in transaction (TutorialAndQuestProgression.md reward transaction):
@@ -325,6 +340,9 @@ public sealed class QuestManager : MonoBehaviour
         var data = new QuestSaveData();
         foreach (KeyValuePair<string, QuestRuntimeState> pair in _runtime)
         {
+            if (pair.Value.Definition.IsDebugQuest)
+                continue;
+
             data.quests.Add(new QuestProgressSaveData
             {
                 questId = pair.Key,
@@ -352,6 +370,9 @@ public sealed class QuestManager : MonoBehaviour
                         $"QuestManager: quest '{entry.questId}' not found in catalog; progress dropped.", this);
                     continue;
                 }
+
+                if (definition.IsDebugQuest)
+                    continue;
 
                 var state = new QuestRuntimeState(definition);
                 state.RestoreProgress(entry.status, entry.currentObjectiveIndex, entry.objectiveCounters);
