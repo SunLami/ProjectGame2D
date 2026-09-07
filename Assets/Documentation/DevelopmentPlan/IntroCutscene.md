@@ -33,6 +33,9 @@ presentation nằm ở `Assets/Prefabs/Cinematics/IntroCutscene.prefab`.
   qua scene hiện tại. Scene không có thoại tự chuyển khi video hết.
 - Outro kết thúc ở trạng thái `Playing`. Gameplay Timeline sẽ được nối ở phase kế tiếp và tự quản lý
   `GameState.Cutscene` của nó.
+- Trong 2 giây cuối của `OutroTransition`, overlay đen fade dần trên chính video. Khi clip kết thúc,
+  màn hình giữ đen 0,15 giây rồi controller phát `Completed` để Gameplay Timeline bắt đầu. Fade che
+  frame chuyển giao và ngăn flash frame world.
 - `MusicManager` bị suppress từ lúc intro bắt đầu; track nền của gameplay chỉ bắt đầu khi Outro hoàn
   tất và controller bàn giao về gameplay (`Finish`).
 

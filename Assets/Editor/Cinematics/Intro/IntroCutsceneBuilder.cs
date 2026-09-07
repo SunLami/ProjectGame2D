@@ -174,6 +174,9 @@ public static class IntroCutsceneBuilder
         Button next = CreateButton("NextButton", panel.transform, "NEXT", new Vector2(0.79f, 0.69f), new Vector2(0.96f, 0.93f));
         Button skipScene = CreateButton("SkipSceneButton", panel.transform, "SKIP SCENE", new Vector2(0.72f, 0.41f), new Vector2(0.96f, 0.63f));
         Button skipIntro = CreateButton("SkipIntroButton", panel.transform, "SKIP INTRO", new Vector2(0.72f, 0.15f), new Vector2(0.96f, 0.35f));
+        GameObject fadeObject = CreatePanel("FadeOverlay", presentationRoot.transform, new Color(0f, 0f, 0f, 0f), Vector2.zero, Vector2.one, Vector2.zero, Vector2.zero);
+        Image fadeOverlay = fadeObject.GetComponent<Image>();
+        fadeOverlay.raycastTarget = false;
 
         PlayableDirector director = root.GetComponent<PlayableDirector>();
         director.playableAsset = timeline;
@@ -195,6 +198,7 @@ public static class IntroCutsceneBuilder
         serialized.FindProperty("_nextButton").objectReferenceValue = next;
         serialized.FindProperty("_skipSceneButton").objectReferenceValue = skipScene;
         serialized.FindProperty("_skipIntroButton").objectReferenceValue = skipIntro;
+        serialized.FindProperty("_fadeOverlay").objectReferenceValue = fadeOverlay;
         serialized.ApplyModifiedPropertiesWithoutUndo();
 
         System.IO.Directory.CreateDirectory(System.IO.Path.GetDirectoryName(PrefabPath));

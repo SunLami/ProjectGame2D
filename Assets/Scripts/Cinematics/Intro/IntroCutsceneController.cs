@@ -32,10 +32,14 @@ public sealed class IntroCutsceneController : MonoBehaviour
     [SerializeField] private Button _nextButton;
     [SerializeField] private Button _skipSceneButton;
     [SerializeField] private Button _skipIntroButton;
+    [SerializeField] private Image _fadeOverlay;
+    [SerializeField, Min(0.05f)] private float _outroFadeDuration = 2f;
+    [SerializeField, Min(0f)] private float _outroBlackHoldDuration = 0.15f;
 
     private RenderTexture _renderTexture;
     private bool _ownsRenderTexture;
     private bool _isPlaying;
+    private bool _isEnding;
     private bool _videoPrepared;
     private int _segmentIndex = -1;
     private int _lineIndex;
@@ -71,6 +75,7 @@ public sealed class IntroCutsceneController : MonoBehaviour
 
         if (_root != null)
             _root.SetActive(false);
+        SetFadeAlpha(0f);
     }
 
     private IEnumerator Start()
@@ -94,6 +99,8 @@ public sealed class IntroCutsceneController : MonoBehaviour
 
         if (Keyboard.current != null && Keyboard.current.escapeKey.wasPressedThisFrame)
             SkipScene();
+
+        UpdateOutroFade();
     }
 
     private void OnDestroy()
@@ -130,9 +137,11 @@ public sealed class IntroCutsceneController : MonoBehaviour
             return;
 
         _isPlaying = true;
+        _isEnding = false;
         GameStateManager.Instance.PushState(GameState.Cutscene);
         if (_root != null)
             _root.SetActive(true);
+        SetFadeAlpha(0f);
 
         if (_director != null)
         {
@@ -271,19 +280,70 @@ public sealed class IntroCutsceneController : MonoBehaviour
         if (_definition.TryGetSegment(_segmentIndex, out IntroCutsceneSegment segment)
             && !segment.RequiresPlayerAdvance)
         {
+            if (_segmentIndex == _definition.Segments.Count - 1)
+            {
+                StartCoroutine(HoldBlackThenFinish());
+                return;
+            }
+
             MoveToNextSegment();
         }
+    }
+
+    private void UpdateOutroFade()
+    {
+        if (_isEnding || _videoPlayer == null || !_videoPlayer.isPlaying || _segmentIndex != _definition.Segments.Count - 1)
+            return;
+
+        double remainingSeconds = GetOutroRemainingSeconds();
+        if (remainingSeconds > _outroFadeDuration)
+            return;
+
+        SetFadeAlpha(1f - Mathf.Clamp01((float)(remainingSeconds / _outroFadeDuration)));
+    }
+
+    private double GetOutroRemainingSeconds()
+    {
+        if (_videoPlayer.frame >= 0 && _videoPlayer.frameCount > 0 && _videoPlayer.frameRate > 0d)
+            return Math.Max(0d, ((double)_videoPlayer.frameCount - _videoPlayer.frame) / _videoPlayer.frameRate);
+
+        return Math.Max(0d, _videoPlayer.length - _videoPlayer.time);
+    }
+
+    private IEnumerator HoldBlackThenFinish()
+    {
+        if (_isEnding)
+            yield break;
+
+        _isEnding = true;
+        SetFadeAlpha(1f);
+
+        if (_outroBlackHoldDuration > 0f)
+            yield return new WaitForSecondsRealtime(_outroBlackHoldDuration);
+
+        Finish();
     }
 
     private void Finish()
     {
         _isPlaying = false;
+        _isEnding = false;
         _videoPlayer?.Stop();
         if (_root != null)
             _root.SetActive(false);
         GameStateManager.Instance?.ResetToPlaying();
         MusicManager.ResumeBackgroundMusic();
         Completed?.Invoke();
+    }
+
+    private void SetFadeAlpha(float alpha)
+    {
+        if (_fadeOverlay == null)
+            return;
+
+        Color color = _fadeOverlay.color;
+        color.a = Mathf.Clamp01(alpha);
+        _fadeOverlay.color = color;
     }
 
     private void EnsureRenderTexture()
