@@ -157,6 +157,10 @@ này, nhưng không nằm trong phase đầu.
 Daily Quest chưa triển khai nhưng foundation cần hỗ trợ:
 
 - Quest instance ID khác definition ID.
+- `isDailyQuest` hiện chỉ là metadata presentation để QuestTracker xếp Daily sau Main và Side; không
+  ngụ ý quest đã có generation/reset/expiry runtime.
+- `isDebugQuest` dành riêng cho content kiểm thử: chỉ nhận được trong Editor/Development Build, không
+  được ghi vào save, bị bỏ qua khi restore và không làm session dirty.
 - Generated/accepted/expiry timestamp.
 - Reset policy dựa trên game/server clock được định nghĩa sau.
 - Daily Quest không nằm trong prerequisite mặc định của Main Quest.

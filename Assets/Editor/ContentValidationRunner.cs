@@ -313,7 +313,13 @@ public static class ContentValidationRunner
 
             ValidateQuestRewards(path, quest, report);
 
-            if (quest.IsMainQuest && quest.PrerequisiteQuestIds.Count == 0)
+            if (quest.IsMainQuest && quest.IsDailyQuest)
+                report.Error(path, "a quest cannot be both isMainQuest and isDailyQuest.", quest);
+
+            if (quest.IsDebugQuest && !quest.QuestId.StartsWith("quest.debug.", StringComparison.Ordinal))
+                report.Error(path, "isDebugQuest requires a questId beginning with 'quest.debug.'.", quest);
+
+            if (quest.IsMainQuest && !quest.IsDebugQuest && quest.PrerequisiteQuestIds.Count == 0)
                 report.Warning(path, "isMainQuest quest has no prerequisiteQuestIds -- Main Quest gate expects a Tutorial Quest chain.", quest);
         }
 

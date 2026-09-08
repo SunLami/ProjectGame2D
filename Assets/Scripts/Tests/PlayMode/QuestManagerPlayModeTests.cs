@@ -50,7 +50,8 @@ public sealed class QuestManagerPlayModeTests
 
     private QuestDefinition MakeDefinition(
         string questId, QuestObjectiveDefinition[] objectives, string[] prerequisites = null,
-        bool isTutorialQuest = false, bool isMainQuest = false, QuestRewardDefinition rewards = null)
+        bool isTutorialQuest = false, bool isMainQuest = false, QuestRewardDefinition rewards = null,
+        bool isDebugQuest = false)
     {
         var definition = ScriptableObject.CreateInstance<QuestDefinition>();
         SetPrivate(definition, "_questId", questId);
@@ -58,6 +59,7 @@ public sealed class QuestManagerPlayModeTests
         SetPrivate(definition, "_prerequisiteQuestIds", prerequisites ?? System.Array.Empty<string>());
         SetPrivate(definition, "_isTutorialQuest", isTutorialQuest);
         SetPrivate(definition, "_isMainQuest", isMainQuest);
+        SetPrivate(definition, "_isDebugQuest", isDebugQuest);
         SetPrivate(definition, "_rewards", rewards);
         _scratchAssets.Add(definition);
         return definition;
@@ -348,6 +350,32 @@ public sealed class QuestManagerPlayModeTests
         saveData.quests.Add(new QuestProgressSaveData { questId = "quest.removed_content", status = QuestStatus.Active });
 
         Assert.DoesNotThrow(() => _manager.RestoreState(saveData));
+        Assert.AreEqual(0, _manager.ToSaveData().quests.Count);
+    }
+
+    [Test]
+    public void DebugQuest_IsAcceptedForPreviewButExcludedFromSaveAndRestore()
+    {
+        QuestDefinition debugQuest = MakeDefinition(
+            "quest.debug.main.001",
+            new[] { MakeObjective(QuestObjectiveType.Talk, "npc.debug") },
+            isMainQuest: true,
+            isDebugQuest: true);
+        _manager.ConfigureForTests(MakeCatalog(debugQuest));
+
+        Assert.IsTrue(_manager.TryAcceptQuest(debugQuest.QuestId));
+        Assert.AreEqual(QuestStatus.Active, _manager.GetStatus(debugQuest.QuestId));
+        Assert.AreEqual(0, _manager.ToSaveData().quests.Count);
+
+        var saveData = new QuestSaveData();
+        saveData.quests.Add(new QuestProgressSaveData
+        {
+            questId = debugQuest.QuestId,
+            status = QuestStatus.Active
+        });
+        _manager.RestoreState(saveData);
+
+        Assert.AreEqual(QuestStatus.Available, _manager.GetStatus(debugQuest.QuestId));
         Assert.AreEqual(0, _manager.ToSaveData().quests.Count);
     }
 
