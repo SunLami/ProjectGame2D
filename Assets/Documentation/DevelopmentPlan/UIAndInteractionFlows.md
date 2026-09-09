@@ -256,9 +256,18 @@ Paused
 
 - DemoScene `QuestUIRoot` giữ nguyên `QuestLogUI`, QuestManager event binding, GameplayMenu lifecycle và
   callback Close; reskin chỉ thay presentation, không sở hữu quest progression hoặc save data.
-- `QuestTracker` dùng thẻ dọc `190×230` thay cho thanh ngang legacy để objective dài dễ quét và mang
-  hình thái quest journal chuyên nghiệp hơn. Board dùng parchment tan, khung gỗ/vàng mảnh; Header TMP
-  legacy tắt render và dùng `quest_title_banner_hd.png`, objective vẫn là TMP động.
+- `QuestTracker` là viewport cố định `190×230`, giữ nguyên vị trí trên HUD và không tăng kích thước khi
+  có thêm quest hoặc khi một quest được bung nội dung. Nền mặc định trong suốt; pointer hover toàn vùng
+  tracker mới hiện lớp xám đen mờ để tăng độ đọc mà không che world thường xuyên.
+- Tracker hiển thị các quest `Active`/`ReadyToTurnIn` thành danh sách dọc trong `ScrollRect` có mask,
+  cuộn bằng mouse wheel khi nội dung vượt chiều cao. Thứ tự presentation bắt buộc là Main Quest → Side
+  Quest → Daily Quest; trong cùng loại sắp theo display name. Mỗi title tag là nút bung/thu độc lập:
+  trạng thái thu chỉ hiện title, trạng thái bung hiện objective hiện tại/mô tả ngắn. QuestLogWindow tiếp
+  tục sở hữu phần trình bày đầy đủ của quest.
+- Trong Editor/Development Build, ba nút `TRACK MAIN QUEST`, `TRACK SIDE QUEST`, `TRACK DAILY QUEST`
+  nằm ngay dưới `DEBUG LEVEL +1` và accept ba QuestDefinition `quest.debug.*` qua QuestManager để kiểm
+  thử đồng thời Tracker/QuestLog. Debug quest không được persist hoặc làm session dirty và không nhận
+  được trong non-development Player build.
 - `QuestLogWindow/Window` giữ RectTransform `650×380`; safe area nội bộ dùng `QuestListPanel` `190×255`
   và `QuestDetailPanel` `340×255`, neo giữa board để không tràn đáy hoặc che nhau. Board, panel, close icon
   và row button đồng bộ MainMenu, Inventory, Tutorial và SessionUX; không thay list/template binding.

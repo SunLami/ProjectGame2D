@@ -31,12 +31,18 @@ public static class QuestUILightFantasySkinBuilder
         Sprite primaryButton = ImportSprite(MainMenuRoot + "landing_action_button.png");
         Sprite hoverButton = ImportSprite(MainMenuRoot + "landing_action_button_hover.png");
 
-        SetImage(tracker.gameObject, innerPanel, false, false);
+        Image trackerBackground = tracker.GetComponent<Image>();
+        if (trackerBackground == null) trackerBackground = tracker.gameObject.AddComponent<Image>();
+        trackerBackground.sprite = null;
+        trackerBackground.color = Color.clear;
+        trackerBackground.raycastTarget = true;
         tracker.GetComponent<RectTransform>().sizeDelta = new Vector2(190f, 230f);
         TMP_Text trackerTitle = RequireChild(tracker, "Title").GetComponent<TMP_Text>();
         trackerTitle.enabled = false;
-        EnsureTrackerTitleBanner(tracker, titleBanner);
+        Transform trackerBanner = tracker.Find("SkinTrackerQuestBanner");
+        if (trackerBanner != null) trackerBanner.gameObject.SetActive(false);
         TMP_Text trackerObjectives = RequireChild(tracker, "Objectives").GetComponent<TMP_Text>();
+        trackerObjectives.enabled = false;
         SetTopLeftRect(trackerObjectives.rectTransform, new Vector2(158f, 145f), new Vector2(16f, -68f));
         StyleTrackerText(trackerObjectives, 11f, false);
 
@@ -152,21 +158,6 @@ public static class QuestUILightFantasySkinBuilder
         rect.pivot = new Vector2(0.5f, 0.5f);
         rect.sizeDelta = new Vector2(220f, 80f);
         rect.anchoredPosition = new Vector2(-22f, 2f);
-        SetImage(banner, sprite, true, false);
-        banner.transform.SetAsLastSibling();
-    }
-
-    private static void EnsureTrackerTitleBanner(Transform tracker, Sprite sprite)
-    {
-        Transform existing = tracker.Find("SkinTrackerQuestBanner");
-        GameObject banner = existing != null ? existing.gameObject : new GameObject("SkinTrackerQuestBanner", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
-        banner.transform.SetParent(tracker, false);
-        RectTransform rect = banner.GetComponent<RectTransform>();
-        rect.anchorMin = new Vector2(0.5f, 1f);
-        rect.anchorMax = new Vector2(0.5f, 1f);
-        rect.pivot = new Vector2(0.5f, 0.5f);
-        rect.sizeDelta = new Vector2(142f, 52f);
-        rect.anchoredPosition = new Vector2(0f, -20f);
         SetImage(banner, sprite, true, false);
         banner.transform.SetAsLastSibling();
     }
