@@ -80,6 +80,13 @@ public sealed class PlayerSpawnReadinessSource : MonoBehaviour, IGameplayReadine
         IItemResolver resolver = new ResourcesItemResolver();
         if (session.Kind == GameSessionKind.NewGame)
         {
+            // InventorySeeder sits alongside the persistent InventoryManager in the Bootstrap scene
+            // while this readiness source lives in the gameplay scene, so the Inspector reference
+            // can't be wired per-scene. Fall back to a scene search the first time (or after a
+            // scene reload destroys the cached one).
+            if (_inventorySeeder == null)
+                _inventorySeeder = UnityEngine.Object.FindAnyObjectByType<InventorySeeder>();
+
             _inventorySeeder?.SeedStartingInventory();
         }
         else if (InventoryManager.Instance != null && session.SaveData.inventory != null)

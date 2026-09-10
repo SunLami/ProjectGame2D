@@ -84,14 +84,7 @@ public class PauseMenuUI : MonoBehaviour
         if (GameStateManager.Instance != null)
             GameStateManager.Instance.StateChanged += HandleStateChanged;
 
-        if (_sessionController != null)
-        {
-            _sessionController.OnSaveSlotListChanged += RebuildLoadSlots;
-            _sessionController.OnSaveSucceeded += HandleSaveSucceeded;
-            _sessionController.OnOperationFailed += HandleOperationFailed;
-            _sessionController.OnConfirmationRequired += ShowConfirmation;
-            _sessionController.OnSaveSlotConfirmationRequired += ShowSaveSlotConfirmation;
-        }
+        EnsureSessionController();
 
         if (GameSessionManager.Instance != null)
             GameSessionManager.Instance.DirtyStateChanged += HandleDirtyChanged;
@@ -114,14 +107,7 @@ public class PauseMenuUI : MonoBehaviour
         if (GameStateManager.Instance != null)
             GameStateManager.Instance.StateChanged -= HandleStateChanged;
 
-        if (_sessionController != null)
-        {
-            _sessionController.OnSaveSlotListChanged -= RebuildLoadSlots;
-            _sessionController.OnSaveSucceeded -= HandleSaveSucceeded;
-            _sessionController.OnOperationFailed -= HandleOperationFailed;
-            _sessionController.OnConfirmationRequired -= ShowConfirmation;
-            _sessionController.OnSaveSlotConfirmationRequired -= ShowSaveSlotConfirmation;
-        }
+        UnsubscribeFromSessionController();
 
         if (GameSessionManager.Instance != null)
             GameSessionManager.Instance.DirtyStateChanged -= HandleDirtyChanged;
@@ -388,8 +374,54 @@ public class PauseMenuUI : MonoBehaviour
         _confirmationWithoutSaveButton.gameObject.SetActive(true);
     }
 
-    private void HandleStateChanged(GameStateChange change) => Refresh();
+    private void HandleStateChanged(GameStateChange change)
+    {
+        EnsureSessionController();
+        Refresh();
+    }
+
     private void HandleDirtyChanged(bool dirty) => Refresh();
+
+    // GameplaySessionController lives in the gameplay scene (MapNhat/DemoScene/...), while this UI
+    // lives in the persistent Bootstrap scene -- so the Inspector reference can't survive a scene
+    // reload. Re-resolve it whenever the cached one is missing (never assigned, or destroyed along
+    // with the previous gameplay scene) and re-subscribe so Save/Load/Return/Quit stay responsive.
+    private void EnsureSessionController()
+    {
+        if (_sessionController != null)
+            return;
+
+        GameplaySessionController found = FindAnyObjectByType<GameplaySessionController>();
+        if (found == null)
+            return;
+
+        _sessionController = found;
+        SubscribeToSessionController();
+    }
+
+    private void SubscribeToSessionController()
+    {
+        if (_sessionController == null)
+            return;
+
+        _sessionController.OnSaveSlotListChanged += RebuildLoadSlots;
+        _sessionController.OnSaveSucceeded += HandleSaveSucceeded;
+        _sessionController.OnOperationFailed += HandleOperationFailed;
+        _sessionController.OnConfirmationRequired += ShowConfirmation;
+        _sessionController.OnSaveSlotConfirmationRequired += ShowSaveSlotConfirmation;
+    }
+
+    private void UnsubscribeFromSessionController()
+    {
+        if (_sessionController == null)
+            return;
+
+        _sessionController.OnSaveSlotListChanged -= RebuildLoadSlots;
+        _sessionController.OnSaveSucceeded -= HandleSaveSucceeded;
+        _sessionController.OnOperationFailed -= HandleOperationFailed;
+        _sessionController.OnConfirmationRequired -= ShowConfirmation;
+        _sessionController.OnSaveSlotConfirmationRequired -= ShowSaveSlotConfirmation;
+    }
 
     private void Refresh()
     {
