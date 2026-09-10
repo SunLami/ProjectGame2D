@@ -48,6 +48,7 @@ cập nhật tài liệu liên quan trước hoặc cùng lúc với code.
 17. [Intro Cutscene](IntroCutscene.md): nội dung, Timeline, UI thoại và quy tắc khởi chạy intro Orynthals.
 18. [MapNhat UI State Machine Integration Plan](MapNhatUiStateMachinePlan.md): kế hoạch kéo gameplay UI
     từ DemoScene sang MapNhat dùng chung GameStateManager; cần chốt D-019 trước khi triển khai.
+19. [Gameplay Timeline](GameplayTimeline.md): chuỗi Timeline gameplay sau Intro, hiện author Scene 01 qua cầu.
 
 ## Quy tắc quản trị tài liệu
 

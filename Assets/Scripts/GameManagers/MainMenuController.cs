@@ -9,6 +9,7 @@ using UnityEngine;
 public sealed class MainMenuController : MonoBehaviour
 {
     [SerializeField] private string _gameplaySceneName = "DemoScene";
+    [SerializeField] private string _introSceneName = "IntroCutscene";
 
     /// <summary>Fired after RefreshSlots(), DeleteSlot(), or OnEnable so UI can rebuild its list.</summary>
     public event Action<SaveSlotInfo[]> OnSaveSlotListChanged;
@@ -52,8 +53,10 @@ public sealed class MainMenuController : MonoBehaviour
             return;
         }
 
-        if (!SceneFlowService.Instance.TryLoadGameplay(_gameplaySceneName))
-            OnOperationFailed?.Invoke("Could not start loading the gameplay scene.");
+        // New games route through the dedicated intro-cutscene scene first; the session still
+        // records _gameplaySceneName (MapNhat) as its ultimate destination for Save/Return.
+        if (!SceneFlowService.Instance.TryLoadGameplay(_introSceneName))
+            OnOperationFailed?.Invoke("Could not start loading the intro scene.");
     }
 
     public void RequestContinue(int slotId)

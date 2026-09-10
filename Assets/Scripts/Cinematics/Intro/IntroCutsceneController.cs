@@ -37,6 +37,12 @@ public sealed class IntroCutsceneController : MonoBehaviour
     [SerializeField, Min(0.05f)] private float _outroFadeDuration = 2f;
     [SerializeField, Min(0f)] private float _outroBlackHoldDuration = 0.15f;
 
+    [Header("Scene Handoff")]
+    [Tooltip("Fallback scene to load once the video ends. Only used when nothing is listening "
+        + "to Completed (e.g. the in-engine Timeline Gameplay object is inactive) -- normally "
+        + "GameplayTimelineController owns the transition after its Timeline finishes.")]
+    [SerializeField] private string _fallbackNextSceneName = "MapNhat";
+
     private RenderTexture _renderTexture;
     private bool _ownsRenderTexture;
     private bool _isPlaying;
@@ -81,11 +87,25 @@ public sealed class IntroCutsceneController : MonoBehaviour
 
     private IEnumerator Start()
     {
-        // GameBootstrap establishes the Development/NewGame session in Awake. Waiting one frame
-        // keeps this presentation component independent from scene object execution order.
-        yield return null;
-        if (ShouldAutoPlay())
-            PlayIntro();
+        if (!ShouldAutoPlay())
+            yield break;
+
+        // Reached via SceneFlowService (MainMenu -> intro scene), GameState only flips
+        // Loading -> Playing once GameplayReadinessGate finishes restoring the session
+        // asynchronously, which can take more than one frame. Wait for it rather than a
+        // fixed one-frame delay, or the cutscene can silently be skipped (PlayIntro() no-ops
+        // unless CurrentState == Playing). Reached via GameBootstrap's DevelopmentGameplay
+        // path, state is already Playing by the next frame, so this resolves immediately.
+        float deadline = Time.unscaledTime + 10f;
+        while (GameStateManager.Instance == null
+            || GameStateManager.Instance.CurrentState != GameState.Playing)
+        {
+            if (Time.unscaledTime >= deadline)
+                yield break;
+            yield return null;
+        }
+
+        PlayIntro();
     }
 
     private void Update()
@@ -340,7 +360,19 @@ public sealed class IntroCutsceneController : MonoBehaviour
             _root.SetActive(false);
         GameStateManager.Instance?.ResetToPlaying();
         MusicManager.ResumeBackgroundMusic();
+
+        // Capture before invoking: if nobody subscribed (the Timeline Gameplay object was
+        // toggled inactive for isolated testing), it will never call
+        // SceneFlowService.TryLoadGameplay, so do it here instead of leaving the game stuck.
+        bool hasSubscriber = Completed != null;
         Completed?.Invoke();
+
+        if (!hasSubscriber
+            && !string.IsNullOrWhiteSpace(_fallbackNextSceneName)
+            && SceneFlowService.Instance != null)
+        {
+            SceneFlowService.Instance.TryLoadGameplay(_fallbackNextSceneName);
+        }
     }
 
     private void SetFadeAlpha(float alpha)
