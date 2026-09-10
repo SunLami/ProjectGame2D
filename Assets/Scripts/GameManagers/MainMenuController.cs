@@ -55,7 +55,8 @@ public sealed class MainMenuController : MonoBehaviour
 
         // New games route through the dedicated intro-cutscene scene first; the session still
         // records _gameplaySceneName (MapNhat) as its ultimate destination for Save/Return.
-        if (!SceneFlowService.Instance.TryLoadGameplay(_introSceneName))
+        // resetBootstrap: a fresh session must never inherit the previous session's manager state.
+        if (!SceneFlowService.Instance.TryLoadGameplay(_introSceneName, resetBootstrap: true))
             OnOperationFailed?.Invoke("Could not start loading the intro scene.");
     }
 
@@ -79,7 +80,9 @@ public sealed class MainMenuController : MonoBehaviour
             return;
         }
 
-        if (!SceneFlowService.Instance.TryLoadGameplay(_gameplaySceneName))
+        // resetBootstrap: loading a different save slot must never inherit the previous
+        // session's manager state (leaking slot A's inventory/quest/etc. into slot B).
+        if (!SceneFlowService.Instance.TryLoadGameplay(_gameplaySceneName, resetBootstrap: true))
             OnOperationFailed?.Invoke("Could not start loading the gameplay scene.");
     }
 

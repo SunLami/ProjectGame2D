@@ -21,6 +21,16 @@ public class EquipmentManager : MonoBehaviour
     private int currentSwordIndex = 0;
     private int currentHeadIndex = 0;
 
+    /// <summary>Rebinds to the current scene's own Player visuals -- EquipmentManager is a shared
+    /// Bootstrap singleton now, so an Inspector-time reference to one scene's Player would break
+    /// the moment another map's Player becomes active. Called by Player.Awake().</summary>
+    public void BindPlayerVisuals(SpriteLibrary body, SpriteLibrary head, SpriteLibrary sword)
+    {
+        bodySpriteLibrary = body;
+        headSpriteLibrary = head;
+        swordSpriteLibrary = sword;
+    }
+
     public void EquipBodyByIndex(int index)
     {
         if (bodyEquipmentAssets == null || index < 0 || index >= bodyEquipmentAssets.Length) return;
@@ -67,6 +77,9 @@ public class EquipmentManager : MonoBehaviour
         if (Instance == null)
         {
             Instance = this;
+            // Editor-only parent (e.g. "_Managers") keeps the Hierarchy tidy; detach before
+            // DontDestroyOnLoad, which only works on root GameObjects.
+            transform.SetParent(null);
             DontDestroyOnLoad(gameObject);
         }
         else

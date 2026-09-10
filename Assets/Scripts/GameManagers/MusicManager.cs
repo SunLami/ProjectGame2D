@@ -27,6 +27,9 @@ public class MusicManager : MonoBehaviour
         }
 
         Instance = this;
+        // Editor-only parent (e.g. "_Managers") keeps the Hierarchy tidy; detach before
+        // DontDestroyOnLoad, which only works on root GameObjects.
+        transform.SetParent(null);
         DontDestroyOnLoad(gameObject);
 
         if (_backgroundMusicSuppressed)

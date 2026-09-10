@@ -36,12 +36,7 @@ public sealed class QuestLogUI : MonoBehaviour
 
     private void Awake()
     {
-        if (_playerInput == null)
-            _playerInput = Object.FindAnyObjectByType<PlayerInput>(FindObjectsInactive.Include);
-
-        _questLogAction = _playerInput != null
-            ? _playerInput.actions.FindAction("Gameplay/QuestLog", false)
-            : null;
+        ResolveQuestLogAction();
 
         if (_trackerRoot != null)
         {
@@ -141,9 +136,34 @@ public sealed class QuestLogUI : MonoBehaviour
 
     private void HandleGameStateChanged(GameStateChange change)
     {
+        ResolveQuestLogAction();
         RefreshVisibility();
         if (IsQuestLogOpen())
             SelectDefault();
+    }
+
+    // This UI lives in the persistent Bootstrap scene and resolves its PlayerInput by scene
+    // search, but Awake() here runs before the gameplay scene (and its Player) is loaded, so the
+    // first lookup always fails. Retry on every GameState change (never assigned yet, or the
+    // previous gameplay scene's Player was destroyed) so the QuestLog hotkey (J) starts working
+    // once a real gameplay scene is actually loaded.
+    private void ResolveQuestLogAction()
+    {
+        if (_questLogAction != null)
+            return;
+
+        if (_playerInput == null)
+            _playerInput = Object.FindAnyObjectByType<PlayerInput>(FindObjectsInactive.Include);
+
+        InputAction found = _playerInput != null
+            ? _playerInput.actions.FindAction("Gameplay/QuestLog", false)
+            : null;
+        if (found == null)
+            return;
+
+        _questLogAction = found;
+        if (isActiveAndEnabled)
+            _questLogAction.performed += HandleQuestLogPerformed;
     }
 
     private void RefreshVisibility()

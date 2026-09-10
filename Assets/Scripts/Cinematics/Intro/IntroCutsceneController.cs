@@ -162,7 +162,13 @@ public sealed class IntroCutsceneController : MonoBehaviour
         GameStateManager.Instance.PushState(GameState.Cutscene);
         if (_root != null)
             _root.SetActive(true);
-        SetFadeAlpha(0f);
+        // Start opaque, not transparent: VideoPlayer.Prepare() below is async and can take a
+        // real chunk of time (codec startup), and until the first segment's video frame is
+        // ready there is nothing in the RawImage yet -- a transparent overlay would let the
+        // scene's own camera view (the local map/Player behind the cutscene canvas) show
+        // through for that whole window. HandleVideoPrepared reveals the video once it
+        // actually has a frame to show (waitForFirstFrame = true guarantees one is ready).
+        SetFadeAlpha(1f);
 
         if (_director != null)
         {
@@ -297,6 +303,10 @@ public sealed class IntroCutsceneController : MonoBehaviour
         }
 
         player.Play();
+
+        // Only the very first segment needs this: later segments' Prepare() gaps stay covered
+        // by the previous segment's last rendered frame, so this is a no-op past segment 0 (already 0).
+        SetFadeAlpha(0f);
     }
 
     private void HandleVideoLoopPoint(VideoPlayer player)

@@ -19,6 +19,9 @@ public class InventoryManager : MonoBehaviour
         if (Instance == null)
         {
             Instance = this;
+            // Editor-only parent (e.g. "_Managers") keeps the Hierarchy tidy; detach before
+            // DontDestroyOnLoad, which only works on root GameObjects.
+            transform.SetParent(null);
             DontDestroyOnLoad(gameObject);
 
             _slots = new List<InventorySlot>(_startingSlotCount);
