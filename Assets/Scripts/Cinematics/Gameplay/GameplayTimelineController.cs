@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 using UnityEngine.Playables;
 using UnityEngine.Timeline;
@@ -8,6 +9,7 @@ public sealed class GameplayTimelineController : MonoBehaviour
     [SerializeField] private IntroCutsceneController _introCutscene;
     [SerializeField] private PlayableDirector _director;
     [SerializeField] private bool _playInDevelopment = true;
+    [SerializeField] private string _nextSceneName = "MapNhat";
 
     private void Awake()
     {
@@ -64,11 +66,34 @@ public sealed class GameplayTimelineController : MonoBehaviour
 
     private void Start()
     {
-        if (_introCutscene != null)
+        // _introCutscene is a scene reference, not a live subscription check: even when its
+        // GameObject is active, only re-subscribe here -- Awake/Configure already wired this
+        // once, and this just guards against double calls to Play. When the IntroCutscene
+        // object is inactive (author toggled it off in the Hierarchy for isolated testing),
+        // its Completed event never fires, so this Timeline would otherwise never play. Fall
+        // back to driving it directly in that case.
+        if (_introCutscene != null && _introCutscene.isActiveAndEnabled)
         {
             _introCutscene.Completed -= Play;
             _introCutscene.Completed += Play;
+            return;
         }
+
+        StartCoroutine(PlayWhenReady());
+    }
+
+    private IEnumerator PlayWhenReady()
+    {
+        float deadline = Time.unscaledTime + 10f;
+        while (GameStateManager.Instance == null
+            || GameStateManager.Instance.CurrentState != GameState.Playing)
+        {
+            if (Time.unscaledTime >= deadline)
+                yield break;
+            yield return null;
+        }
+
+        Play();
     }
 
     private void OnDestroy()
@@ -99,6 +124,13 @@ public sealed class GameplayTimelineController : MonoBehaviour
             || (_playInDevelopment && session.Current.Kind == GameSessionKind.Development);
     }
 
-    private static void HandleStopped(PlayableDirector director) =>
-        GameStateManager.Instance?.ResetToPlaying();
+    private void HandleStopped(PlayableDirector director)
+    {
+        if (string.IsNullOrWhiteSpace(_nextSceneName)
+            || SceneFlowService.Instance == null
+            || !SceneFlowService.Instance.TryLoadGameplay(_nextSceneName))
+        {
+            GameStateManager.Instance?.ResetToPlaying();
+        }
+    }
 }
