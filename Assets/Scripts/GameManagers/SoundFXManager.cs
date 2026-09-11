@@ -9,6 +9,11 @@ public class SoundFXManager : MonoBehaviour
 
     private static AudioSource _audioSource;
 
+    /// <summary>Rebinds to the current scene's own Player -- SoundFXManager is a shared Bootstrap
+    /// singleton now, so an Inspector-time reference to one scene's Player would break the moment
+    /// another map's Player becomes active. Called by Player.Awake().</summary>
+    public void BindPlayerFootPos(Transform footPos) => _playerFootPos = footPos;
+
     private void Awake()
     {
         if (Instance != null && Instance != this)
@@ -19,6 +24,9 @@ public class SoundFXManager : MonoBehaviour
 
         Instance = this;
         _audioSource = GetComponent<AudioSource>();
+        // Editor-only parent (e.g. "_Managers") keeps the Hierarchy tidy; detach before
+        // DontDestroyOnLoad, which only works on root GameObjects.
+        transform.SetParent(null);
         DontDestroyOnLoad(gameObject);
 
         if (SettingsService.Instance != null)

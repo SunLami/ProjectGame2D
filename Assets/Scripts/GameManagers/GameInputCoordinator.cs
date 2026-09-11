@@ -106,12 +106,17 @@ public sealed class GameInputCoordinator : MonoBehaviour
 
     private void HandleInventoryPerformed(InputAction.CallbackContext context)
     {
-        if (GameStateManager.Instance == null
-            || GameStateManager.Instance.CurrentState != GameState.Playing
-            || _inventoryWindow == null)
-        {
+        if (GameStateManager.Instance == null || GameStateManager.Instance.CurrentState != GameState.Playing)
             return;
-        }
+
+        // InventoryWindowUI lives in the persistent Bootstrap scene while this coordinator lives in
+        // the gameplay scene, so the Inspector reference can't be wired per-scene. Fall back to a
+        // scene search the first time (or after a scene reload destroys the cached one).
+        if (_inventoryWindow == null)
+            _inventoryWindow = Object.FindAnyObjectByType<InventoryWindowUI>(FindObjectsInactive.Include);
+
+        if (_inventoryWindow == null)
+            return;
 
         _inventoryWindow.OpenWindow();
     }

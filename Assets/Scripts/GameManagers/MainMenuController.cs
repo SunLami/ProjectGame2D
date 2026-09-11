@@ -9,6 +9,7 @@ using UnityEngine;
 public sealed class MainMenuController : MonoBehaviour
 {
     [SerializeField] private string _gameplaySceneName = "DemoScene";
+    [SerializeField] private string _introSceneName = "IntroCutscene";
 
     /// <summary>Fired after RefreshSlots(), DeleteSlot(), or OnEnable so UI can rebuild its list.</summary>
     public event Action<SaveSlotInfo[]> OnSaveSlotListChanged;
@@ -52,8 +53,11 @@ public sealed class MainMenuController : MonoBehaviour
             return;
         }
 
-        if (!SceneFlowService.Instance.TryLoadGameplay(_gameplaySceneName))
-            OnOperationFailed?.Invoke("Could not start loading the gameplay scene.");
+        // New games route through the dedicated intro-cutscene scene first; the session still
+        // records _gameplaySceneName (MapNhat) as its ultimate destination for Save/Return.
+        // resetBootstrap: a fresh session must never inherit the previous session's manager state.
+        if (!SceneFlowService.Instance.TryLoadGameplay(_introSceneName, resetBootstrap: true))
+            OnOperationFailed?.Invoke("Could not start loading the intro scene.");
     }
 
     public void RequestContinue(int slotId)
@@ -76,7 +80,9 @@ public sealed class MainMenuController : MonoBehaviour
             return;
         }
 
-        if (!SceneFlowService.Instance.TryLoadGameplay(_gameplaySceneName))
+        // resetBootstrap: loading a different save slot must never inherit the previous
+        // session's manager state (leaking slot A's inventory/quest/etc. into slot B).
+        if (!SceneFlowService.Instance.TryLoadGameplay(_gameplaySceneName, resetBootstrap: true))
             OnOperationFailed?.Invoke("Could not start loading the gameplay scene.");
     }
 

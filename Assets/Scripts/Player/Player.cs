@@ -35,6 +35,24 @@ public partial class Player : MonoBehaviour, IDamageable
 
         CacheCombatReferences();
         CacheVisualReferences();
+        BindSharedManagers();
+    }
+
+    // EquipmentManager/SoundFXManager are shared Bootstrap singletons (one instance for the whole
+    // game), so they can't hold a fixed Inspector reference to any one scene's Player -- each
+    // scene's own Player pushes its own visuals/foot position in here instead.
+    private void BindSharedManagers()
+    {
+        if (EquipmentManager.Instance != null)
+        {
+            var body = transform.Find("Body")?.GetComponent<UnityEngine.U2D.Animation.SpriteLibrary>();
+            var head = transform.Find("Head")?.GetComponent<UnityEngine.U2D.Animation.SpriteLibrary>();
+            var sword = transform.Find("Weapon")?.GetComponent<UnityEngine.U2D.Animation.SpriteLibrary>();
+            EquipmentManager.Instance.BindPlayerVisuals(body, head, sword);
+        }
+
+        if (SoundFXManager.Instance != null)
+            SoundFXManager.Instance.BindPlayerFootPos(transform.Find("FootPos"));
     }
 
     private void Update()
