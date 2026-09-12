@@ -26,11 +26,18 @@ public sealed class DialogueUI : MonoBehaviour
     [SerializeField] private Button _choiceTemplate;
     [SerializeField, Min(1f)] private float _charactersPerSecond = 42f;
 
+    [Header("Node Transition")]
+    [Tooltip("The box that pops when a new speaker/line appears. Defaults to the root panel.")]
+    [SerializeField] private RectTransform _panelTransform;
+    [SerializeField, Range(0.5f, 1f)] private float _nodeTransitionPunchScale = 0.92f;
+    [SerializeField, Min(0.01f)] private float _nodeTransitionPunchDuration = 0.16f;
+
     private readonly List<Button> _choiceButtons = new();
     private DialogueDefinition _definition;
     private DialogueNodeDefinition _currentNode;
     private Action<string> _completed;
     private Coroutine _typewriter;
+    private Coroutine _panelPunch;
     private bool _isRevealing;
     private DialogueHudGroup _hiddenHudGroup;
     private bool _hudWasActive;
@@ -45,6 +52,8 @@ public sealed class DialogueUI : MonoBehaviour
             return;
         }
         Instance = this;
+        if (_panelTransform == null)
+            _panelTransform = _root.transform as RectTransform;
         _root.SetActive(false);
         foreach (Button slot in _choiceRoot.GetComponentsInChildren<Button>(true))
             slot.gameObject.SetActive(false);
@@ -68,8 +77,14 @@ public sealed class DialogueUI : MonoBehaviour
 
     public bool Open(DialogueDefinition definition, Action<string> completed = null)
     {
-        if (definition == null || GameStateManager.Instance == null
-            || GameStateManager.Instance.CurrentState != GameState.Playing
+        if (definition == null || GameStateManager.Instance == null)
+            return false;
+
+        // Cutscene state is allowed so Timeline-driven dialogue (e.g. GameplayTimelineController
+        // pausing a PlayableDirector mid-cutscene) can reuse this same presentation instead of a
+        // parallel dialogue UI. GameState's Push/Pop stack unwinds back to Cutscene on Close().
+        GameState currentState = GameStateManager.Instance.CurrentState;
+        if ((currentState != GameState.Playing && currentState != GameState.Cutscene)
             || !definition.TryGetNode(definition.InitialNodeId, out DialogueNodeDefinition initial))
             return false;
 
@@ -111,6 +126,11 @@ public sealed class DialogueUI : MonoBehaviour
         if (_typewriter != null)
             StopCoroutine(_typewriter);
         _typewriter = null;
+        if (_panelPunch != null)
+            StopCoroutine(_panelPunch);
+        _panelPunch = null;
+        if (_panelTransform != null)
+            _panelTransform.localScale = Vector3.one;
         _isRevealing = false;
         ClearChoices();
         _root.SetActive(false);
@@ -136,6 +156,36 @@ public sealed class DialogueUI : MonoBehaviour
         _bodyText.maxVisibleCharacters = 0;
         _continueIndicator.SetActive(false);
         _typewriter = StartCoroutine(RevealText());
+        PunchPanel();
+    }
+
+    /// <summary>Quick scale-down-then-spring-back pop so each new line reads as a fresh beat,
+    /// not just a text swap inside a static box.</summary>
+    private void PunchPanel()
+    {
+        if (_panelTransform == null)
+            return;
+        if (_panelPunch != null)
+            StopCoroutine(_panelPunch);
+        _panelPunch = StartCoroutine(PunchPanelRoutine());
+    }
+
+    private IEnumerator PunchPanelRoutine()
+    {
+        float elapsed = 0f;
+        while (elapsed < _nodeTransitionPunchDuration)
+        {
+            elapsed += Time.unscaledDeltaTime;
+            float t = Mathf.Clamp01(elapsed / _nodeTransitionPunchDuration);
+            // Ease-out back: dip to _nodeTransitionPunchScale immediately, then overshoot past 1
+            // before settling, so the pop reads as a spring rather than a linear resize.
+            float eased = 1f - Mathf.Pow(1f - t, 3f);
+            float scale = Mathf.Lerp(_nodeTransitionPunchScale, 1f, eased);
+            _panelTransform.localScale = new Vector3(scale, scale, 1f);
+            yield return null;
+        }
+        _panelTransform.localScale = Vector3.one;
+        _panelPunch = null;
     }
 
     private void ApplyBodyLayout(bool hasChoices)
