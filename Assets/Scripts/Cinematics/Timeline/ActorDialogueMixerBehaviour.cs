@@ -30,6 +30,18 @@ public sealed class ActorDialogueMixerBehaviour : PlayableBehaviour
 
     public static void ResetAll() => LastShownIndex.Clear();
 
+    /// <summary>Marks every clip up to and including <paramref name="index"/> as already shown
+    /// on this track. Used by a scene-skip control that jumps the director's time forward past
+    /// lines the player never saw -- without this, ProcessFrame's one-step-at-a-time dedup would
+    /// still try to pause and show each of those skipped lines in order the next time this track
+    /// evaluates, instead of the one actually at the new (later) time.</summary>
+    public static void MarkShownThrough(TrackAsset track, int index)
+    {
+        if (track == null)
+            return;
+        LastShownIndex[track] = index;
+    }
+
     public override void ProcessFrame(Playable playable, FrameData info, object playerData)
     {
         Transform actor = playerData as Transform;

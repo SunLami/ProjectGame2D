@@ -53,6 +53,12 @@ public sealed class GameplayTimelineController : MonoBehaviour
         + "Sampling the intended idle clip directly guarantees the correct held pose regardless.")]
     [SerializeField] private List<ActorIdlePose> _scene1GreetingIdlePoses = new();
 
+    [Header("Skip Control")]
+    [Tooltip("Shown for the duration of the Timeline so the player can skip ahead scene by "
+        + "scene (to the next Cinemachine camera cut) instead of clicking through every "
+        + "dialogue line; hidden again once the Timeline stops.")]
+    [SerializeField] private GameObject _skipSceneButtonRoot;
+
     [Header("Actor Doubles")]
     [Tooltip("Real gameplay objects (Player, NPCs) stood in for by dedicated cutscene actor "
         + "clones. Hidden for the duration of the Timeline, restored when it stops -- an "
@@ -188,6 +194,8 @@ public sealed class GameplayTimelineController : MonoBehaviour
         GameStateManager.Instance?.PushState(GameState.Cutscene);
         HideActorDoubles();
         HideHud();
+        if (_skipSceneButtonRoot != null)
+            _skipSceneButtonRoot.SetActive(true);
         // Symmetric with HideCutsceneActors() in HandleStopped() -- only matters if this ever
         // plays more than once (_playOnlyOncePerSession false), so a second run's actors don't
         // start deactivated from the first run's finish.
@@ -324,11 +332,84 @@ public sealed class GameplayTimelineController : MonoBehaviour
         }
     }
 
+    /// <summary>Wired to the skip button's onClick. Jumps straight to the next Cinemachine
+    /// camera cut (i.e. the next "scene" within this single Timeline) instead of requiring the
+    /// player to click through every dialogue line to get there. Clicking again from the new
+    /// scene advances to the one after that, and so on; with no further camera cut left (already
+    /// in the last scene), this finishes the Timeline the same way reaching its end normally
+    /// does.</summary>
+    public void SkipToNextScene()
+    {
+        if (_director == null || _director.playableAsset is not TimelineAsset timeline)
+            return;
+
+        // Force-closes through the bubble's own Close() -- same resume-and-pop-GameState path a
+        // player-confirmed close takes -- before we pull the director's time out from under it.
+        ActorSpeechBubble.CloseCurrentIfOpen();
+
+        // Matched by type name rather than a compile-time Cinemachine reference: this assembly
+        // has no dependency on the Cinemachine package otherwise, and the track's runtime type
+        // name is a stable enough signal for "the camera-cut track" without adding one.
+        TrackAsset cameraTrack = null;
+        foreach (TrackAsset track in timeline.GetOutputTracks())
+        {
+            if (track != null && track.GetType().Name == "CinemachineTrack")
+            {
+                cameraTrack = track;
+                break;
+            }
+        }
+
+        double currentTime = _director.time;
+        double? nextSceneStart = null;
+        if (cameraTrack != null)
+        {
+            foreach (TimelineClip clip in cameraTrack.GetClips())
+            {
+                if (clip.start > currentTime + 0.001 && (nextSceneStart == null || clip.start < nextSceneStart))
+                    nextSceneStart = clip.start;
+            }
+        }
+
+        double targetTime = nextSceneStart ?? timeline.duration;
+
+        // Every ActorDialogueTrack needs its dedup bookkeeping (see ActorDialogueMixerBehaviour)
+        // fast-forwarded too, or the next time it evaluates it would still try to pause and show
+        // -- one at a time, from wherever it last stopped -- every line the skip jumped past,
+        // instead of the one actually at the new time.
+        foreach (TrackAsset track in timeline.GetOutputTracks())
+        {
+            if (track is not ActorDialogueTrack)
+                continue;
+
+            int lastPassedIndex = -1;
+            int index = 0;
+            foreach (TimelineClip clip in track.GetClips())
+            {
+                if (clip.start <= targetTime + 0.001)
+                    lastPassedIndex = index;
+                index++;
+            }
+            if (lastPassedIndex >= 0)
+                ActorDialogueMixerBehaviour.MarkShownThrough(track, lastPassedIndex);
+        }
+
+        _director.time = targetTime;
+        _director.Evaluate();
+
+        if (nextSceneStart.HasValue)
+            _director.Play();
+        else
+            _director.Stop();
+    }
+
     private void HandleStopped(PlayableDirector director)
     {
         RestoreActorDoubles();
         RestoreHud();
         HideCutsceneActors();
+        if (_skipSceneButtonRoot != null)
+            _skipSceneButtonRoot.SetActive(false);
 
         if (string.IsNullOrWhiteSpace(_nextSceneName)
             || SceneFlowService.Instance == null
