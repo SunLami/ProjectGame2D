@@ -12,6 +12,17 @@ public sealed class GameplayTimelineController : MonoBehaviour
     [SerializeField] private bool _playInDevelopment = true;
     [SerializeField] private string _nextSceneName = "MapNhat";
 
+    [Tooltip("Set for a cutscene embedded directly in a gameplay scene the player returns to "
+        + "repeatedly (e.g. a story beat partway into MapNhat), as opposed to a dedicated "
+        + "one-shot cutscene scene like IntroCutscene (which never plays a second time anyway, "
+        + "since finishing it always navigates away). Guards against re-firing on every re-entry "
+        + "into the scene within the same play session -- keyed by the Timeline asset itself "
+        + "(stable across the scene reloads every Play does, unlike an instance field) rather "
+        + "than persisted to the save file, matching how ShouldPlay() already only ever allows "
+        + "this on a NewGame/Development session in the first place.")]
+    [SerializeField] private bool _playOnlyOncePerSession;
+    private static readonly HashSet<PlayableAsset> PlayedOnceThisSession = new();
+
     [Header("Timeline Dialogue Cues")]
     [Tooltip("Wired to a Signal Emitter (via Signal Receiver) once Player has walked into the "
         + "village alone, before TruongLang appears. Pauses the director for this solo line, "
@@ -50,6 +61,16 @@ public sealed class GameplayTimelineController : MonoBehaviour
         + "made it hard to verify; this direct toggle is unambiguous either way.")]
     [SerializeField] private List<GameObject> _actorDoublesToHide = new();
     private readonly List<bool> _actorDoublesPreviousActive = new();
+
+    [Tooltip("The cutscene's own actor clones (Player_Actor_SceneN, TruongLang_Actor_SceneN, "
+        + "etc.) -- deactivated once the Timeline stops. A dedicated one-shot cutscene scene "
+        + "like IntroCutscene never needed this: finishing it always unloads the whole scene, "
+        + "taking these along with it. A cutscene embedded in a gameplay scene the player keeps "
+        + "playing in (e.g. a story beat partway into MapNhat) has no such unload to rely on -- "
+        + "without this, the actor clones are left sitting at wherever the Timeline reset them "
+        + "to (its start, since a director's own time resets to 0 when it stops), visibly "
+        + "overlapping the real Player/NPCs this same Stop already restored.")]
+    [SerializeField] private List<GameObject> _cutsceneActorsToHideOnFinish = new();
 
     [Tooltip("Name of the persistent gameplay HUD root (lives in the Bootstrap scene, so it "
         + "can't be dragged in here from this scene) to hide for the duration of the Timeline.")]
@@ -161,9 +182,20 @@ public sealed class GameplayTimelineController : MonoBehaviour
         if (_director == null || _director.playableAsset == null || !ShouldPlay())
             return;
 
+        if (_playOnlyOncePerSession && !PlayedOnceThisSession.Add(_director.playableAsset))
+            return;
+
         GameStateManager.Instance?.PushState(GameState.Cutscene);
         HideActorDoubles();
         HideHud();
+        // Symmetric with HideCutsceneActors() in HandleStopped() -- only matters if this ever
+        // plays more than once (_playOnlyOncePerSession false), so a second run's actors don't
+        // start deactivated from the first run's finish.
+        foreach (GameObject actor in _cutsceneActorsToHideOnFinish)
+        {
+            if (actor != null)
+                actor.SetActive(true);
+        }
         // Each ActorDialogueTrack's "already shown this line" bookkeeping lives outside the
         // PlayableGraph (see ActorDialogueMixerBehaviour) specifically so it survives the
         // Pause()/Play() cycle every dialogue line goes through mid-cutscene. Clear it only here,
@@ -207,6 +239,15 @@ public sealed class GameplayTimelineController : MonoBehaviour
         {
             if (_actorDoublesToHide[i] != null)
                 _actorDoublesToHide[i].SetActive(_actorDoublesPreviousActive[i]);
+        }
+    }
+
+    private void HideCutsceneActors()
+    {
+        foreach (GameObject actor in _cutsceneActorsToHideOnFinish)
+        {
+            if (actor != null)
+                actor.SetActive(false);
         }
     }
 
@@ -287,6 +328,7 @@ public sealed class GameplayTimelineController : MonoBehaviour
     {
         RestoreActorDoubles();
         RestoreHud();
+        HideCutsceneActors();
 
         if (string.IsNullOrWhiteSpace(_nextSceneName)
             || SceneFlowService.Instance == null
