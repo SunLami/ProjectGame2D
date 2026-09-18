@@ -29,6 +29,14 @@ public class EquipmentManager : MonoBehaviour
         bodySpriteLibrary = body;
         headSpriteLibrary = head;
         swordSpriteLibrary = sword;
+
+        // Awake() only wires _swordRenderer up once, from whichever scene happened to be loaded
+        // first -- every later scene's Player rebinds a different SpriteLibrary/SpriteRenderer
+        // here, so re-resolve it and re-sync its enabled state to the actual equipped item, or a
+        // freshly loaded scene's sword renderer is left at its own Inspector-time default
+        // (typically enabled) instead of reflecting "nothing equipped yet".
+        _swordRenderer = swordSpriteLibrary != null ? swordSpriteLibrary.GetComponent<SpriteRenderer>() : null;
+        SetSwordVisible(GetEquipped(EquipSlot.Weapon) != null);
     }
 
     public void EquipBodyByIndex(int index)
