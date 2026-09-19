@@ -1,6 +1,51 @@
 # Claude → Codex Handoff
 
-Status: `READY_FOR_CODEX_FINAL_QUEST_VERIFICATION_ONLY`
+Status: `READY_FOR_CODEX_ARROW_ART`
+
+Ngày: 2026-09-19
+Feature: Training Area onboarding (Tutorial + Quest chain) backend xong, chỉ cần 4 sprite mũi tên/vòng tròn cho hệ thống quest direction indicator -- code đã chạy đúng với placeholder hình học sinh bằng code, chỉ cần thay `Image.sprite`.
+
+## Bối cảnh
+
+Đã dựng xong toàn bộ: Trainer NPC + 3 training dummy (HP/chết/respawn) trong `MapNhat` scene khu
+TrainingArea, chuỗi quest `quest.trainer_greeting` → `quest.equip_weapon` (auto turn-in) →
+`quest.trainer_killquest`, Tutorial 1-4 (Move/Sprint/OpenInventory/EquipItem) nối với quest qua
+`TutorialStepType.WaitForQuest` mới, và hệ thống Quest Direction Indicator 2 nhánh (NPC target / Area
+target). Toàn bộ đã verify qua Play Mode thật, không cần Codex sửa logic gì -- chỉ cần 4 sprite dưới
+đây, sau đó kéo thả vào đúng field Inspector là xong, không cần đụng script.
+
+## Asset cần gen (3 sprite, phong cách pixel art khớp game hiện tại)
+
+Đã bỏ thiết kế vòng tròn ground marker theo yêu cầu -- "đã đến khu vực" giờ chỉ còn 1 mũi tên nhấp nhô
+chỉ xuống dưới chân Player, dùng chung asset với mục 1 bên dưới.
+
+1. **Bobbing target arrow** (`Assets/Scripts/UI/QuestDirectionIndicator.cs` field `_npcHeadMarkerImage`
+   và `_arrivedMarkerArrowImage`, và `Assets/Scripts/World/MannequinAttackIndicator.cs` field
+   `_arrowImage`) -- mũi tên nhấp nhô trỏ xuống, dùng chung cho "trên đầu NPC cần nói chuyện", "trên
+   đầu hình nhân cần đánh", và "đã đến khu vực nhiệm vụ" (dưới chân Player). ~48x48px, nên có viền/glow
+   nhẹ để nổi trên nền cỏ/nền da NPC.
+2. **Ground direction arrow** (`QuestDirectionIndicator.cs` field `_groundArrowImage`) -- mũi tên dưới
+   chân Player chỉ hướng khi đang di chuyển tới mục tiêu (NPC ở xa hoặc khu vực nhiệm vụ, chưa tới
+   nơi). ~64x64px, nhìn từ góc top-down (game là top-down 2D).
+3. **Edge-of-screen arrow** (`QuestDirectionIndicator.cs` field `_edgeIndicatorImage`) -- icon mũi tên
+   bám rìa màn hình khi mục tiêu ở ngoài khung hình. ~40x40px, dạng compact, rõ hướng ở kích thước nhỏ.
+
+Placeholder hiện tại (tam giác màu vàng-xanh sinh bằng code trong
+`Assets/Scripts/UI/ProceduralArrowSprite.cs`) đã hoạt động đúng chức năng -- không có gì gấp về logic,
+đây thuần là nâng cấp hình ảnh.
+
+## Việc Codex KHÔNG cần làm
+
+- Không cần sửa `QuestDirectionIndicator.cs`, `MannequinAttackIndicator.cs`, `QuestManager.cs`,
+  `TutorialManager.cs`, `MannequinHurtbox.cs` hay bất kỳ script Quest/Tutorial nào -- toàn bộ logic đã
+  xong và verify qua Play Mode. Nếu cần field/API mới, báo lại Claude qua `CodexToClaude.md`.
+- Không cần tự đặt `ProceduralArrowSprite` sang trạng thái không dùng nữa -- nó tự động chỉ được dùng
+  làm fallback khi field `Image.sprite` đang trống (`if (...Image.sprite == null)` trong Awake của mỗi
+  script), nên gán sprite thật vào Inspector là đủ, không cần xoá code fallback.
+
+---
+
+
 
 Ngày: 2026-08-23
 Feature: Root cause thật đã tìm ra bằng instrumentation trực tiếp — KHÔNG phải GameInputCoordinator/GameStateManager, mà là Input System event bị rớt khi Editor mất focus

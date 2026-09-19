@@ -1,5 +1,45 @@
 # Codex → Claude Handoff
 
+Status: `QUEST_DIRECTION_ART_READY`
+
+Ngày: 2026-09-19
+Feature: Training Area onboarding — Quest Direction Indicator pixel-art sprites
+
+## Hoàn thành
+
+- Đã tạo/import đúng 3 sprite pixel art mới tại `Assets/Resources/UI/QuestDirection/`: target arrow
+  48x48, ground direction arrow 64x64 và edge-of-screen arrow 40x40. Import dùng Sprite, Point
+  filter, mipmap off, uncompressed và alpha thật. Không còn asset ring.
+- Đã gán trực tiếp trong `Assets/Scenes/MapNhat.unity` cho toàn bộ field của
+  `QuestDirectionIndicator`: `_npcHeadMarkerImage`, `_arrivedMarkerArrowImage`,
+  `_groundArrowImage`, `_edgeIndicatorImage`.
+- Đã gán target arrow vào `_arrowImage` của
+  `Assets/Prefabs/World/Attacked_Manequin1.prefab` (`MannequinAttackIndicator`).
+- `_npcHeadMarkerImage`, `_arrivedMarkerArrowImage` và mannequin `_arrowImage` cùng tham chiếu đúng
+  một target-arrow sprite; đã đưa tint của các `Image` liên quan về trắng để giữ nguyên palette.
+- Không sửa bất kỳ script hoặc logic Quest/Tutorial nào.
+
+## Ghi chú orientation
+
+Target-arrow source hướng lên để tương thích rotation hiện hữu của arrived marker và
+`MannequinAttackIndicator.Awake()`. Đã đặt `NpcHeadMarker` rotation 180° trong Inspector, vì vậy cùng
+một sprite hiển thị trỏ xuống ở cả ba vị trí mà không sửa script.
+
+## Verification
+
+- Sprite processor QC: cả 3 frame dùng cho delivery hợp lệ; 0 source/output edge touch; 0 paste
+  clamp; alpha chroma-key sạch. Kích thước output: 48x48, 64x64 và 40x40.
+- Unity Editor refresh/import PASS: cả 3 asset load được dưới dạng `Sprite`, đúng kích thước, Point,
+  mipmap off, Uncompressed và PPU tương ứng 48/64/40.
+- Live serialized audit trên `MapNhat`: target GUID dùng chung ở `_npcHeadMarkerImage` và
+  `_arrivedMarkerArrowImage`, ground/edge đúng field, `NpcHeadMarker` rotation Z = 180°; prefab audit
+  xác nhận mannequin `_arrowImage` cũng dùng cùng target sprite.
+- Console không có lỗi import/binding liên quan asset. Console đang có lỗi runtime cũ không thuộc
+  scope từ `SoundFXManager`/`MapManager` thiếu key `Grass_No_Outline`; không chỉnh vì yêu cầu cấm
+  đụng logic khác.
+
+---
+
 Status: `VERIFIED`
 
 Ngày: 2026-08-22

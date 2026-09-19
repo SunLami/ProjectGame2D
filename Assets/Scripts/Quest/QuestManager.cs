@@ -25,6 +25,12 @@ public sealed class QuestManager : MonoBehaviour
     public event Action<string> QuestCompleted;
     public event Action MainQuestUnlocked;
 
+    /// <summary>Static mirror of QuestCompleted so cross-system consumers (e.g. TutorialManager,
+    /// another Bootstrap-scoped singleton with no guaranteed Awake order relative to this one) can
+    /// subscribe without depending on QuestManager.Instance already existing -- same reasoning as
+    /// EquipmentManager.ItemEquipped being static.</summary>
+    public static event Action<string> QuestTurnedIn;
+
     public IQuestResolver Catalog => _catalog;
     public bool IsMainQuestUnlocked => _mainQuestUnlocked;
 
@@ -73,6 +79,7 @@ public sealed class QuestManager : MonoBehaviour
         QuestDomainEvents.ItemPurchased += HandlePurchase;
         QuestDomainEvents.ResourceGathered += HandleGather;
         QuestDomainEvents.EnemyKilled += HandleKill;
+        QuestDomainEvents.ItemEquipped += HandleEquip;
         _subscribed = true;
     }
 
@@ -87,6 +94,7 @@ public sealed class QuestManager : MonoBehaviour
         QuestDomainEvents.ItemPurchased -= HandlePurchase;
         QuestDomainEvents.ResourceGathered -= HandleGather;
         QuestDomainEvents.EnemyKilled -= HandleKill;
+        QuestDomainEvents.ItemEquipped -= HandleEquip;
         _subscribed = false;
     }
 
@@ -104,6 +112,9 @@ public sealed class QuestManager : MonoBehaviour
 
     private void HandleKill(string enemyId, string areaId) =>
         ProgressMatching(o => QuestObjectiveMatchers.MatchesKill(o, enemyId, areaId), 1);
+
+    private void HandleEquip(string itemId) =>
+        ProgressMatching(o => QuestObjectiveMatchers.MatchesEquip(o, itemId), 1);
 
     // Obtain needs its own handler: RequirePossession is a boolean gate re-checked against live
     // inventory, not an incrementing counter (ObtainObjectiveMode / D-014).
@@ -141,8 +152,16 @@ public sealed class QuestManager : MonoBehaviour
             if (!matches(state.CurrentObjective))
                 continue;
 
-            if (state.TryProgressCurrentObjective(amount))
-                QuestProgressChanged?.Invoke(questId);
+            if (!state.TryProgressCurrentObjective(amount))
+                continue;
+
+            QuestProgressChanged?.Invoke(questId);
+
+            // A quest authored with AutoTurnIn (e.g. "equip a weapon") completes itself the
+            // instant its objectives are done -- no NPC visit to hand it in. TryTurnIn re-validates
+            // ReadyToTurnIn/reward capacity itself, so this is just as safe as any other caller.
+            if (state.Status == QuestStatus.ReadyToTurnIn && state.Definition.AutoTurnIn)
+                TryTurnIn(questId, out _);
         }
     }
 
@@ -157,6 +176,63 @@ public sealed class QuestManager : MonoBehaviour
                 ids.Add(pair.Key);
         }
         return ids;
+    }
+
+    /// <summary>Read-model for a direction indicator: every npcId that currently has something
+    /// actionable for the player, in priority order -- a quest ready to turn in, then an Active
+    /// quest whose current objective is literally "go talk to someone" (the objective's own
+    /// TargetId, not the quest's GiverNpcId/TurnInNpcId -- this is mid-quest, not an offer/turn-in
+    /// moment), then any quest ready to offer. A direction indicator resolves each id to a world
+    /// position itself (e.g. via a scene registry) and should walk this list in order, since not
+    /// every actionable NPC is necessarily present/resolvable in the player's current scene -- this
+    /// method only knows quest state, not world placement, so it can't filter for that itself.</summary>
+    public IEnumerable<string> GetActionableNpcIds()
+    {
+        if (_catalog == null)
+            yield break;
+
+        foreach (QuestDefinition quest in _catalog.AllQuests)
+        {
+            if (!string.IsNullOrEmpty(quest.TurnInNpcId) && GetStatus(quest.QuestId) == QuestStatus.ReadyToTurnIn)
+                yield return quest.TurnInNpcId;
+        }
+
+        foreach (QuestRuntimeState state in _runtime.Values)
+        {
+            if (state.Status != QuestStatus.Active)
+                continue;
+
+            QuestObjectiveDefinition objective = state.CurrentObjective;
+            if (objective != null && objective.Type == QuestObjectiveType.Talk && !string.IsNullOrEmpty(objective.TargetId))
+                yield return objective.TargetId;
+        }
+
+        foreach (QuestDefinition quest in _catalog.AllQuests)
+        {
+            if (!string.IsNullOrEmpty(quest.GiverNpcId) && GetStatus(quest.QuestId) == QuestStatus.Available)
+                yield return quest.GiverNpcId;
+        }
+    }
+
+    /// <summary>Read-model for a direction indicator: every areaId the current objective of some
+    /// Active quest points at (Kill/Gather with a TargetAreaId set) -- a location the player needs
+    /// to go to make progress, as opposed to an NPC they need to talk to. Checked as a fallback
+    /// after GetActionableNpcIds finds nothing resolvable, since talking to someone usually takes
+    /// priority over "go stand somewhere."</summary>
+    public IEnumerable<string> GetActionableAreaIds()
+    {
+        foreach (QuestRuntimeState state in _runtime.Values)
+        {
+            if (state.Status != QuestStatus.Active)
+                continue;
+
+            QuestObjectiveDefinition objective = state.CurrentObjective;
+            if (objective == null || string.IsNullOrEmpty(objective.TargetAreaId))
+                continue;
+
+            if (objective.Type == QuestObjectiveType.Kill || objective.Type == QuestObjectiveType.Gather)
+                yield return objective.TargetAreaId;
+        }
     }
 
     /// <summary>Computed status: Locked/Available are derived from prerequisites every call
@@ -263,6 +339,7 @@ public sealed class QuestManager : MonoBehaviour
         state.MarkCompleted();
         result = QuestTurnInResult.Success;
         QuestCompleted?.Invoke(questId);
+        QuestTurnedIn?.Invoke(questId);
         QuestProgressChanged?.Invoke(questId);
         ReconcileMainQuestUnlock(fireEvent: true);
         return true;

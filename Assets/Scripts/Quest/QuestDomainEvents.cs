@@ -17,6 +17,7 @@ public static class QuestDomainEvents
     public static event Action<string, int, string> ItemPurchased;
     public static event Action<string, int, string> ResourceGathered;
     public static event Action<string, string> EnemyKilled;
+    public static event Action<string> ItemEquipped;
 
     public static void RaiseNpcConversationCompleted(string npcId, string outcomeId) =>
         NpcConversationCompleted?.Invoke(npcId, outcomeId);
@@ -35,4 +36,7 @@ public static class QuestDomainEvents
 
     public static void RaiseEnemyKilled(string enemyId, string areaId = null) =>
         EnemyKilled?.Invoke(enemyId, areaId);
+
+    public static void RaiseItemEquipped(string itemId) =>
+        ItemEquipped?.Invoke(itemId);
 }
