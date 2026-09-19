@@ -411,11 +411,22 @@ public sealed class GameplayTimelineController : MonoBehaviour
         if (_skipSceneButtonRoot != null)
             _skipSceneButtonRoot.SetActive(false);
 
-        if (string.IsNullOrWhiteSpace(_nextSceneName)
-            || SceneFlowService.Instance == null
-            || !SceneFlowService.Instance.TryLoadGameplay(_nextSceneName))
+        if (string.IsNullOrWhiteSpace(_nextSceneName) || SceneFlowService.Instance == null)
         {
             GameStateManager.Instance?.ResetToPlaying();
+            return;
         }
+
+        // This Timeline's own fade-to-black (GameplayTimelineFade) lives in this scene and only
+        // covers the screen for as long as this scene and its PlayableDirector graph are alive --
+        // both are on their way out right now. Snap the persistent cross-scene overlay opaque
+        // before the load starts so there's continuous black cover from here through the whole
+        // scene swap, instead of a gap where Cinemachine has already lost its bound camera but
+        // SceneFlowService's own overlay hasn't turned opaque yet (it normally only does that
+        // once the incoming scene finishes loading -- too late for this handoff).
+        SceneFlowService.Instance.SnapOverlayOpaque();
+
+        if (!SceneFlowService.Instance.TryLoadGameplay(_nextSceneName))
+            GameStateManager.Instance?.ResetToPlaying();
     }
 }
