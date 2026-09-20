@@ -407,6 +407,17 @@ Khi mở Shop/Crafting/Dialogue:
 4. Mọi transaction đi qua service.
 5. Đóng UI trả state trước.
 
+### Fishing interaction
+
+`FishingSpotInteractable` tham gia cùng cursor/range flow: trong tầm dùng Interact cursor, ngoài tầm
+dùng Blocked và không tự di chuyển Player. Click bắt đầu chỉ hợp lệ khi Inventory có ô trống.
+
+- `FishingWaiting`: hiện waiting/bite prompt, world tiếp tục chạy nhưng gameplay và menu input bị khóa.
+- Click dấu `!` kịp thời chuyển sang `FishingMinigame`; bỏ lỡ quay lại waiting.
+- `FishingMinigame`: world pause theo `GameStateManager`; UI đọc input giữ/thả chuột bằng unscaled time.
+- Result hiển thị ngắn rồi pop state; UI không trực tiếp set `Time.timeScale`.
+- `Escape` là cancel chung và phải trả đúng state trước đó.
+
 ## Settings reuse
 
 Tách logic khỏi presentation:

@@ -24,6 +24,17 @@ public static class GameCursorTargetResolver
         if (hoveredComponent == null)
             return false;
 
+        FishingSpotInteractable fishingSpot = hoveredComponent.GetComponentInParent<FishingSpotInteractable>(true);
+        if (fishingSpot != null)
+        {
+            target = new GameCursorTarget(
+                GameCursorType.Interact,
+                fishingSpot.transform,
+                true,
+                fishingSpot.IsAvailable);
+            return true;
+        }
+
         Enemy enemy = hoveredComponent.GetComponentInParent<Enemy>(true);
         if (enemy != null)
         {

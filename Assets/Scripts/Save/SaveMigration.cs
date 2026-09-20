@@ -28,6 +28,7 @@ public static class SaveMigration
         new V3ToV4_IntroducesTutorial(),
         new V4ToV5_IntroducesQuests(),
         new V5ToV6_IntroducesWorld(),
+        new V6ToV7_IntroducesInventoryItemInstances(),
     };
 
     /// <summary>True if this version can be upgraded to CurrentSaveVersion by Migrate(). Does not
@@ -117,5 +118,17 @@ public static class SaveMigration
         public int ToVersion => 6;
 
         public void Apply(GameSaveData data) => data.world ??= new WorldSaveData();
+    }
+
+    private sealed class V6ToV7_IntroducesInventoryItemInstances : ISaveMigrationStep
+    {
+        public int FromVersion => 6;
+        public int ToVersion => 7;
+
+        public void Apply(GameSaveData data)
+        {
+            data.inventory ??= new InventorySaveData();
+            data.inventory.slots ??= new List<InventorySaveData.SlotData>();
+        }
     }
 }

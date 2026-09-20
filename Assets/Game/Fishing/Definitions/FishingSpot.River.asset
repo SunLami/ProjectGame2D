@@ -1,0 +1,31 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4d9d91025ee8566499f363e430a988a9, type: 3}
+  m_Name: FishingSpot.River
+  m_EditorClassIdentifier: ProjectGame2D.Runtime::FishingSpotDefinition
+  _minimumWaitSeconds: 1.5
+  _maximumWaitSeconds: 4
+  _hookWindowSeconds: 1.25
+  _timeLimitSeconds: 18
+  _catchZoneSize: 0.25
+  _catchProgressPerSecond: 0.34
+  _progressLossPerSecond: 0.2
+  _fishSpeed: 0.8
+  _fishTargetInterval: 0.75
+  _liftAcceleration: 2.8
+  _gravity: 2.1
+  _maximumCatchZoneSpeed: 1.25
+  _fish:
+  - _fish: {fileID: 11400000, guid: 5f2b6ab4e5dd9a2439c01dd56a39aa89, type: 2}
+    _weight: 3
+  - _fish: {fileID: 11400000, guid: ca5f4dd2e03cc444ab21b0d143c21ebf, type: 2}
+    _weight: 1

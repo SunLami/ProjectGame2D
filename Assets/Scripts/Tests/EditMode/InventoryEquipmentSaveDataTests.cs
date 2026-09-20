@@ -21,6 +21,24 @@ public sealed class InventoryEquipmentSaveDataTests
     }
 
     [Test]
+    public void InventorySaveData_RoundTripsUniqueFishInstance()
+    {
+        InventorySaveData data = new();
+        data.slots.Add(new InventorySaveData.SlotData
+        {
+            itemId = "fish.river.minnow",
+            quantity = 1,
+            fish = new FishInstanceData { instanceId = "catch-001", weightGrams = 475 }
+        });
+
+        InventorySaveData loaded = JsonUtility.FromJson<InventorySaveData>(JsonUtility.ToJson(data));
+
+        Assert.AreEqual("fish.river.minnow", loaded.slots[0].itemId);
+        Assert.AreEqual("catch-001", loaded.slots[0].fish.instanceId);
+        Assert.AreEqual(475, loaded.slots[0].fish.weightGrams);
+    }
+
+    [Test]
     public void EquipmentSaveData_RoundTripsSlots()
     {
         EquipmentSaveData data = new();
