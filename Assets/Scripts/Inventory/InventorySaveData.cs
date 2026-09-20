@@ -12,6 +12,7 @@ public class InventorySaveData
     {
         public string itemId;
         public int quantity;
+        public FishInstanceData fish;
     }
 
     public List<SlotData> slots = new List<SlotData>();

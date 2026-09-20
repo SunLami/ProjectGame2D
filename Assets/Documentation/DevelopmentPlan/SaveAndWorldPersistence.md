@@ -226,6 +226,13 @@ không resolve được qua `QuestCatalog` (content bị xoá/đổi ID) bị dr
 crash toàn save. `PlayerSpawnReadinessSource` thêm bước restore quest sau tutorial (bước 8) và ghi
 `quests` vào initial save của New Game giống các domain khác.
 
+**Fishing save hiện trạng (2026-09-20):** bump `CurrentSaveVersion` 6 → 7 để bổ sung payload tùy chọn
+`FishInstanceData { instanceId, weightGrams }` vào từng `InventorySaveData.SlotData`. Definition vẫn
+được resolve bằng stable `itemId`; `instanceId` chỉ nhận diện cá cụ thể đã bắt, không thay thế fish ID.
+Migration V6→V7 giữ nguyên slot cũ và để payload mới null. Restore chỉ nhận fish payload có GUID không
+rỗng và cân nặng dương, ép quantity = 1, clamp cân nặng theo definition; record hỏng bị bỏ qua kèm
+warning. Xem [FishingSystem.md](FishingSystem.md).
+
 ## Inventory/equipment persistence
 
 - Serialize item bằng stable `itemId`, không serialize ScriptableObject reference.
@@ -234,6 +241,8 @@ crash toàn save. `PlayerSpawnReadinessSource` thêm bước restore quest sau t
 - Recalculate stat sau khi equipment hoàn tất.
 - Không gọi gameplay `Equip()` thông thường nếu method đó di chuyển item/phát event; cần restore API riêng.
 - Item resolver là dependency explicit; backend Resources hiện tại không được rò vào SaveManager.
+- Item có state riêng như cá lưu payload instance trong slot; không mutate `ItemSO` definition và không
+  đưa qua generic stack/batch path.
 
 ## Quest/tutorial persistence
 

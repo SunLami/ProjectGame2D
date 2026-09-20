@@ -5,6 +5,7 @@ public class InventorySlot
 {
     public ItemSO item;
     public int quantity;
+    public FishInstanceData fish;
 
     public bool IsEmpty => item == null;
 
@@ -12,5 +13,6 @@ public class InventorySlot
     {
         item = null;
         quantity = 0;
+        fish = null;
     }
 }

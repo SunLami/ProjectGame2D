@@ -11,7 +11,9 @@ public enum GameState
     Dialogue,
     Cutscene,
     Saving,
-    PlayerDead
+    PlayerDead,
+    FishingWaiting,
+    FishingMinigame
 }
 
 public enum GameplayMenuPage

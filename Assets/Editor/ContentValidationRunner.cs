@@ -19,6 +19,7 @@ public static class ContentValidationRunner
         List<EquipmentItemSO> equipment = LoadAssets<EquipmentItemSO>();
 
         HashSet<string> knownItemIds = ValidateItems(items, report);
+        ValidateFishingDefinitions(report);
         ValidateEquipmentCatalogs(equipment, report);
         ValidateItemDatabases(report);
         ValidateTileData(report);
@@ -124,6 +125,44 @@ public static class ContentValidationRunner
         {
             if (!cataloged.Contains(item))
                 report.Error(AssetDatabase.GetAssetPath(item), "equipment item is missing from every EquipmentCatalog.", item);
+        }
+    }
+
+    private static void ValidateFishingDefinitions(ValidationReport report)
+    {
+        foreach (FishDefinitionSO fish in LoadAssets<FishDefinitionSO>())
+        {
+            report.Check(fish);
+            string path = AssetDatabase.GetAssetPath(fish);
+            if (fish.MinimumWeightGrams <= 0 || fish.MaximumWeightGrams < fish.MinimumWeightGrams)
+                report.Error(path, "fish weight range is invalid.", fish);
+            if (fish.PricePerKilogram < 0)
+                report.Error(path, "price per kilogram must not be negative.", fish);
+            if (fish.isStackable || fish.maxStackSize != 1)
+                report.Error(path, "fish must be non-stackable with maxStackSize = 1.", fish);
+        }
+
+        foreach (FishingSpotDefinition spot in LoadAssets<FishingSpotDefinition>())
+        {
+            report.Check(spot);
+            string path = AssetDatabase.GetAssetPath(spot);
+            if (spot.FishEntries == null || spot.FishEntries.Length == 0)
+            {
+                report.Error(path, "fishing spot must contain at least one fish entry.", spot);
+                continue;
+            }
+
+            var seen = new HashSet<FishDefinitionSO>();
+            for (int i = 0; i < spot.FishEntries.Length; i++)
+            {
+                FishingSpotDefinition.FishEntry entry = spot.FishEntries[i];
+                if (entry?.Fish == null)
+                    report.Error(path, $"fish[{i}] has no FishDefinition.", spot);
+                else if (!seen.Add(entry.Fish))
+                    report.Error(path, $"fish[{i}] duplicates '{entry.Fish.name}'.", spot);
+                if (entry != null && entry.Weight <= 0f)
+                    report.Error(path, $"fish[{i}] weight must be greater than zero.", spot);
+            }
         }
     }
 

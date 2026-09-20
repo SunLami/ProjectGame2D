@@ -19,7 +19,9 @@ public partial class Player
     public void OnAttack(InputAction.CallbackContext context)
     {
         if (!context.started || _isAttacking || _isHit || _isDead
-            || !GameStateManager.AllowsGameplayInput)
+            || !GameStateManager.AllowsGameplayInput
+            || GameCursorManager.Instance != null
+                && GameCursorManager.Instance.IsPointerOverNonCombatInteraction)
             return;
         if (!_stats.TryConsumeAttackStamina())
             return;
