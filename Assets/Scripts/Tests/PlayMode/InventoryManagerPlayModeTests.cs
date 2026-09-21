@@ -145,6 +145,38 @@ public sealed class InventoryManagerPlayModeTests
         Assert.IsTrue(InventoryManager.Instance.Slots[0].IsEmpty);
     }
 
+    [Test]
+    public void TryAddFish_CreatesUniqueNonStackingSlot_AndRoundTripsInstanceData()
+    {
+        FishDefinitionSO fish = ScriptableObject.CreateInstance<FishDefinitionSO>();
+        fish.itemId = "fish.test.river";
+        fish.itemName = "Test Fish";
+        fish.isStackable = false;
+        fish.maxStackSize = 1;
+
+        try
+        {
+            Assert.IsTrue(InventoryManager.Instance.TryAddFish(fish, 500, "fish-instance-1"));
+            InventorySlot slot = InventoryManager.Instance.Slots[0];
+            Assert.AreSame(fish, slot.item);
+            Assert.AreEqual(1, slot.quantity);
+            Assert.AreEqual("fish-instance-1", slot.fish.instanceId);
+            Assert.AreEqual(500, slot.fish.weightGrams);
+
+            InventorySaveData saved = InventoryManager.Instance.ToSaveData();
+            InventoryManager.Instance.RemoveItem(fish, 1);
+            var resolver = new FakeResolver(new Dictionary<string, ItemSO> { [fish.itemId] = fish });
+            InventoryManager.Instance.LoadFromSaveData(saved, resolver);
+
+            Assert.AreEqual("fish-instance-1", InventoryManager.Instance.Slots[0].fish.instanceId);
+            Assert.AreEqual(500, InventoryManager.Instance.Slots[0].fish.weightGrams);
+        }
+        finally
+        {
+            Object.DestroyImmediate(fish);
+        }
+    }
+
     private sealed class FakeResolver : IItemResolver
     {
         private readonly Dictionary<string, ItemSO> _map;

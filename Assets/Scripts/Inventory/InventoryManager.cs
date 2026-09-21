@@ -49,6 +49,11 @@ public class InventoryManager : MonoBehaviour
     public bool AddItem(ItemSO item, int amount = 1)
     {
         if (item == null || amount <= 0) return false;
+        if (item is FishDefinitionSO)
+        {
+            Debug.LogWarning("Fish must be added with TryAddFish so its unique weight and instance ID are preserved.", this);
+            return false;
+        }
 
         int requested = amount;
 
@@ -81,6 +86,7 @@ public class InventoryManager : MonoBehaviour
             int toAdd = item.isStackable ? Mathf.Min(item.maxStackSize, amount) : 1;
             emptySlot.item = item;
             emptySlot.quantity = toAdd;
+            emptySlot.fish = null;
             amount -= toAdd;
             addedAny = true;
         }
@@ -134,6 +140,8 @@ public class InventoryManager : MonoBehaviour
     public bool HasCapacityFor(ItemSO item, int amount)
     {
         if (item == null || amount <= 0) return false;
+        if (item is FishDefinitionSO)
+            return amount == 1 && HasEmptySlot;
 
         int remaining = amount;
         if (item.isStackable)
@@ -173,7 +181,9 @@ public class InventoryManager : MonoBehaviour
 
         foreach (InventoryItemGrant grant in grants)
         {
-            if (grant.Item == null || grant.Quantity <= 0)
+            // Fish are unique runtime instances (weight/value/instanceId), so they must enter
+            // through TryAddFish instead of the generic stack-oriented batch path.
+            if (grant.Item == null || grant.Quantity <= 0 || grant.Item is FishDefinitionSO)
                 return false;
 
             int remaining = grant.Quantity;
@@ -246,6 +256,7 @@ public class InventoryManager : MonoBehaviour
 
         (a.item, b.item) = (b.item, a.item);
         (a.quantity, b.quantity) = (b.quantity, a.quantity);
+        (a.fish, b.fish) = (b.fish, a.fish);
 
         OnInventoryChanged?.Invoke();
     }
@@ -277,7 +288,8 @@ public class InventoryManager : MonoBehaviour
             data.slots.Add(new InventorySaveData.SlotData
             {
                 itemId = slot.IsEmpty ? null : slot.item.itemId,
-                quantity = slot.quantity
+                quantity = slot.quantity,
+                fish = slot.fish?.Clone()
             });
         }
 
@@ -311,8 +323,16 @@ public class InventoryManager : MonoBehaviour
                 continue;
             }
 
+            if (item is FishDefinitionSO fishDefinition)
+            {
+                if (!TryRestoreFishSlot(_slots[i], fishDefinition, slotData.fish))
+                    Debug.LogWarning($"Skipped invalid fish instance in inventory slot {i} ({slotData.itemId}).", this);
+                continue;
+            }
+
             _slots[i].item = item;
-            _slots[i].quantity = slotData.quantity;
+            _slots[i].quantity = Mathf.Max(0, slotData.quantity);
+            _slots[i].fish = null;
         }
 
         _gold = Mathf.Max(0, data.gold);
@@ -353,8 +373,16 @@ public class InventoryManager : MonoBehaviour
                 continue;
             }
 
+            if (item is FishDefinitionSO fishDefinition)
+            {
+                if (!TryRestoreFishSlot(_slots[i], fishDefinition, slotData.fish))
+                    Debug.LogWarning($"Skipped invalid fish instance in inventory slot {i} ({slotData.itemId}).", this);
+                continue;
+            }
+
             _slots[i].item = item;
             _slots[i].quantity = Mathf.Max(0, slotData.quantity);
+            _slots[i].fish = null;
         }
 
         _gold = Mathf.Max(0, data.gold);
@@ -369,5 +397,57 @@ public class InventoryManager : MonoBehaviour
         }
 
         return null;
+    }
+
+    private static bool TryRestoreFishSlot(
+        InventorySlot destination,
+        FishDefinitionSO definition,
+        FishInstanceData savedInstance)
+    {
+        if (destination == null
+            || definition == null
+            || savedInstance == null
+            || string.IsNullOrWhiteSpace(savedInstance.instanceId)
+            || savedInstance.weightGrams <= 0)
+        {
+            destination?.Clear();
+            return false;
+        }
+
+        destination.item = definition;
+        destination.quantity = 1;
+        destination.fish = FishInstanceData.Create(
+            definition,
+            savedInstance.weightGrams,
+            savedInstance.instanceId);
+        return true;
+    }
+
+    public bool HasEmptySlot
+    {
+        get
+        {
+            if (_slots == null) return false;
+            foreach (InventorySlot slot in _slots)
+                if (slot.IsEmpty) return true;
+            return false;
+        }
+    }
+
+    public bool TryAddFish(FishDefinitionSO definition, int weightGrams, string instanceId = null)
+    {
+        if (definition == null || weightGrams <= 0)
+            return false;
+
+        InventorySlot emptySlot = FindEmptySlot();
+        if (emptySlot == null)
+            return false;
+
+        emptySlot.item = definition;
+        emptySlot.quantity = 1;
+        emptySlot.fish = FishInstanceData.Create(definition, weightGrams, instanceId);
+        OnInventoryChanged?.Invoke();
+        QuestDomainEvents.RaiseInventoryItemAdded(definition.itemId, 1);
+        return true;
     }
 }
