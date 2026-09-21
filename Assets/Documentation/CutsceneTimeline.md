@@ -41,6 +41,25 @@ Mỗi actor nói chuyện trong cảnh là một **actor double** (bản sao ch�
 Player/NPC thật) đặt trong chính scene cutscene, dưới một `*_Anchor` cố định (điểm spawn/tổ chức
 Hierarchy, actor double di chuyển tương đối so với Anchor này qua `TimelineActorMotion`).
 
+## Quy ước Hierarchy khi một Timeline gộp nhiều cảnh (SceneN_TênKhuVực)
+
+Khi nhiều "cảnh" nối tiếp nhau trong **cùng một** `.playable` (vd Cảnh 1 "Forest Bridge" nối sang
+Cảnh 2 "Training Area" trong `IntroTimeline.playable`), mỗi cảnh có một nhóm GameObject riêng đặt tên
+`SceneN_TênKhuVực` (vd `Scene1_ForestBridge`, `Scene2_TrainingArea`), nhưng **actor KHÔNG bị nhân bản
+theo từng nhóm**:
+
+- Actor double chỉ được tạo **một lần**, đặt trong nhóm của cảnh mà nó **xuất hiện lần đầu**
+  (`Scene1_ForestBridge/Player_Actor_Scene1_Anchor/Player_Actor_Scene1`). Nếu actor đó tiếp tục diễn
+  xuất ở cảnh sau (đi tiếp, nói tiếp), chỉ cần **thêm keyframe mới vào cùng `TimelineActorMotion` /
+  cùng track dialogue đã có** — actor "đi" từ nhóm cảnh này sang khu vực của cảnh sau bằng toạ độ
+  world, không phải bằng việc di chuyển GameObject sang nhóm Hierarchy khác.
+- Nhóm cảnh sau (`Scene2_TrainingArea`, ...) chỉ chứa những gì **mới, riêng của cảnh đó**: Camera
+  (`CutsceneCam_SceneN_...`), PathMarker mốc đường đi, và actor double MỚI nếu cảnh đó có nhân vật
+  lần đầu xuất hiện. Không tạo actor double trùng lặp chỉ để "cho đủ bộ" trong mỗi nhóm.
+- Lý do: đây vẫn là **một Timeline/một actor double duy nhất xuyên suốt**, không phải nhiều cutscene
+  độc lập ghép lại — nhân bản actor theo từng nhóm sẽ tạo ra 2 object hiển thị cùng lúc hoặc phải viết
+  thêm logic ẩn/hiện chuyển giao không cần thiết.
+
 ## Quy trình dựng một cảnh cutscene mới (theo base Scene 1)
 
 1. **Tạo actor double** cho mỗi nhân vật xuất hiện: copy từ actor double đã có (vd

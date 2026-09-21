@@ -314,6 +314,15 @@ Demo hiện có `dialogue.town.elder.greeting` tại `Resources/Dialogue/TownEld
 bind vào `TownElderNPC.prefab`. Hoàn tất node cuối phát `conversation.completed`, sau đó capability
 quest hiện tại quyết định offer/turn-in; dialogue asset không sửa `QuestManager`.
 
+## 7a. Fishing content
+
+Fish mới là `FishDefinitionSO` nằm dưới `Assets/Resources/Items/Fish/` để resolver hiện tại tìm được
+khi load save. Gán một `itemId` dot-namespace ổn định (ví dụ `fish.river.minnow`), display name, icon,
+khoảng cân nặng theo gram và giá/kg; không bật stack. Sau đó thêm definition vào weighted fish table
+của một `FishingSpotDefinition`. Không sửa `FishingMinigameController` khi thêm loài cá hoặc đổi bảng
+cá của điểm câu. Chi tiết field, scene wiring, save contract và test matrix xem
+[FishingSystem.md](FishingSystem.md).
+
 ## 8. Checklist for "can a content designer make a new Tutorial Quest without touching manager code?"
 
 This is the Phase 10 content-ready bar. Concretely, all of the following must be true:

@@ -36,6 +36,12 @@ public sealed class ActorSpeechBubble : MonoBehaviour
     // before opening a new one closes that race outright.
     private static ActorSpeechBubble s_currentlyOpen;
 
+    /// <summary>Force-closes whichever bubble is currently open, if any, without waiting for
+    /// player input -- used by a scene-skip control so a mid-line skip doesn't leave a stale
+    /// bubble on screen or the director paused. Runs the exact same resume-and-pop-state path
+    /// as a normal player-confirmed close.</summary>
+    public static void CloseCurrentIfOpen() => s_currentlyOpen?.Close();
+
     private PlayableDirector _director;
     private Coroutine _typewriter;
     private Coroutine _punch;

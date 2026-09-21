@@ -17,6 +17,14 @@ public sealed class SceneFlowService : MonoBehaviour
 
     public bool IsTransitioning { get; private set; }
 
+    /// <summary>Snaps the persistent transition overlay fully opaque right now, with no fade.
+    /// For a caller whose own scene is about to stop covering the screen by itself (e.g. a
+    /// cutscene's Timeline-driven fade-to-black, which lives in that scene and stops holding the
+    /// instant its PlayableDirector's graph tears down / the scene unloads) -- call this before
+    /// TryLoadGameplay so this overlay is already covering the screen for the whole load, instead
+    /// of only snapping opaque once the incoming scene finishes loading (see RunSceneLoad).</summary>
+    public void SnapOverlayOpaque() => SetOverlayAlphaImmediate(1f);
+
     public event Action<string> TransitionFailed;
     public event Action<float> TransitionProgressChanged;
 

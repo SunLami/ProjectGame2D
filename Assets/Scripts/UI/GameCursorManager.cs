@@ -44,9 +44,12 @@ public sealed class GameCursorManager : MonoBehaviour
     private ResourceNodeInteractable _hoveredGatheringNode;
     private QuestNpcInteractionUI _hoveredQuestNpc;
     private ChestInteractable _hoveredChest;
+    private FishingSpotInteractable _hoveredFishingSpot;
 
     public static GameCursorManager Instance { get; private set; }
     public GameCursorType CurrentCursor => _current;
+    public bool IsPointerOverNonCombatInteraction =>
+        _current is GameCursorType.Interact or GameCursorType.Talk;
 
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
     private static void Bootstrap()
@@ -90,6 +93,13 @@ public sealed class GameCursorManager : MonoBehaviour
             _hoveredQuestNpc.TryInteract();
         }
         else if (_current == GameCursorType.Interact
+            && _hoveredFishingSpot != null
+            && Mouse.current != null
+            && Mouse.current.leftButton.wasPressedThisFrame)
+        {
+            _hoveredFishingSpot.TryBeginFishing();
+        }
+        else if (_current == GameCursorType.Interact
             && _hoveredChest != null
             && Mouse.current != null
             && Mouse.current.leftButton.wasPressedThisFrame)
@@ -103,6 +113,7 @@ public sealed class GameCursorManager : MonoBehaviour
         _hoveredGatheringNode = null;
         _hoveredQuestNpc = null;
         _hoveredChest = null;
+        _hoveredFishingSpot = null;
         if (Mouse.current == null
             || GameStateManager.Instance == null
             || GameStateManager.Instance.CurrentState != GameState.Playing
@@ -131,6 +142,9 @@ public sealed class GameCursorManager : MonoBehaviour
                 _hoveredGatheringNode = collider.GetComponentInParent<ResourceNodeInteractable>(true);
             else if (target.Cursor == GameCursorType.Talk)
                 _hoveredQuestNpc = collider.GetComponentInParent<QuestNpcInteractionUI>(true);
+            else if (target.Cursor == GameCursorType.Interact
+                && collider.GetComponentInParent<FishingSpotInteractable>(true) != null)
+                _hoveredFishingSpot = collider.GetComponentInParent<FishingSpotInteractable>(true);
             else if (target.Cursor == GameCursorType.Interact
                 && collider.GetComponentInParent<ChestInteractable>(true) != null)
                 _hoveredChest = collider.GetComponentInParent<ChestInteractable>(true);

@@ -15,7 +15,14 @@ public sealed class GameStateManager : MonoBehaviour
             [GameState.Paused] = new(true, false, true, true),
             [GameState.GameplayMenu] = new(true, false, true, true),
             [GameState.Dialogue] = new(false, false, true, true),
-            [GameState.Cutscene] = new(true, false, true, true),
+            // Cutscene no longer sets Time.timeScale = 0: player input is already blocked via
+            // AllowsGameplayInput=false and the real Player/NPCs are deactivated by
+            // GameplayTimelineController, so pausing world time bought nothing except freezing
+            // every Time.deltaTime-driven animation in the map (windmill sails, ambient NPCs,
+            // etc.) every time the Dialogue state above it got pushed/popped between lines.
+            [GameState.Cutscene] = new(false, false, true, true),
+            [GameState.FishingWaiting] = new(false, false, false, true),
+            [GameState.FishingMinigame] = new(true, false, false, true),
             [GameState.Saving] = new(true, false, false, true),
             [GameState.PlayerDead] = new(true, false, true, true)
         };

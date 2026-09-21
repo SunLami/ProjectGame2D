@@ -78,6 +78,25 @@ public sealed class SaveMigrationTests
     }
 
     [Test]
+    public void V6_AddsInventoryInstanceContractWithoutChangingExistingSlots()
+    {
+        var v6 = new GameSaveData
+        {
+            saveVersion = 6,
+            saveId = "legacy-v6",
+            inventory = new InventorySaveData { gold = 75 }
+        };
+        v6.inventory.slots.Add(new InventorySaveData.SlotData { itemId = "sword_lvl1", quantity = 1 });
+
+        GameSaveData migrated = SaveMigration.Migrate(v6);
+
+        Assert.AreEqual(GameSaveData.CurrentSaveVersion, migrated.saveVersion);
+        Assert.AreEqual(75, migrated.inventory.gold);
+        Assert.AreEqual("sword_lvl1", migrated.inventory.slots[0].itemId);
+        Assert.IsNull(migrated.inventory.slots[0].fish);
+    }
+
+    [Test]
     public void AlreadyCurrentVersion_MigrateIsANoOp()
     {
         var current = new GameSaveData { saveVersion = GameSaveData.CurrentSaveVersion, saveId = "already-current" };

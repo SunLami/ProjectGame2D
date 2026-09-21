@@ -6,8 +6,11 @@
 
 ## 1. Bối cảnh
 
-- **Scene/Map:** MapNhat
-- **Kích hoạt:** tự động khi vào MapNhat lần đầu
+- **Scene:** `IntroCutscene.unity`, nối tiếp vào cùng `IntroTimeline.playable` đang chứa Cảnh 1 + Cảnh 2
+  (xem "Quy ước Hierarchy khi một Timeline gộp nhiều cảnh" trong CutsceneTimeline.md — **không** dựng
+  cảnh mới trong `MapNhat.unity`, đó là scene gameplay thật, chỉ đứng đích đến sau khi Timeline kết
+  thúc).
+- **Kích hoạt:** tiếp diễn tự động ngay sau khi Cảnh 2 kết thúc (cùng một lần Play Timeline)
 - **Vị trí diễn ra trong map:** _(mô tả hoặc chụp ảnh khu vực trong Scene view — gần cổng làng?
   quảng trường? nhà TruongLang? ...)_
 
