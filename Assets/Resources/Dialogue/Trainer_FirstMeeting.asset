@@ -20,14 +20,6 @@ MonoBehaviour:
     _portrait: {fileID: 0}
     _text: Welcome! I'm the trainer here. Before you head out on any adventure,
       you'll need a sword to defend yourself.
-    _nextNodeId: give_sword
-    _outcomeId:
-    _choices: []
-  - _nodeId: give_sword
-    _speakerName: Trainer
-    _portrait: {fileID: 0}
-    _text: Here, take this sword. Open your inventory and equip it before we begin
-      training.
     _nextNodeId:
-    _outcomeId: trainer.greeting.complete
+    _outcomeId: trainer.greeting.offered
     _choices: []
