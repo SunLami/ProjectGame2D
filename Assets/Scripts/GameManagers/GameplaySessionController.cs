@@ -18,6 +18,7 @@ public sealed class GameplaySessionController : MonoBehaviour
     [SerializeField] private PlayerStat _playerStat;
     [SerializeField] private Transform _playerTransform;
     [SerializeField] private WorldObjectRegistry _worldRegistry;
+    [SerializeField] private FarmingManager _farmingManager;
 
     private IApplicationQuitter _quitter;
     private int? _pendingSaveSlotId;
@@ -56,11 +57,12 @@ public sealed class GameplaySessionController : MonoBehaviour
 
     internal void ConfigureForTests(
         PlayerStat playerStat, Transform playerTransform, WorldObjectRegistry worldRegistry,
-        IApplicationQuitter quitter = null, string gameplaySceneName = null)
+        IApplicationQuitter quitter = null, string gameplaySceneName = null, FarmingManager farmingManager = null)
     {
         _playerStat = playerStat;
         _playerTransform = playerTransform;
         _worldRegistry = worldRegistry;
+        _farmingManager = farmingManager;
         _quitter = quitter;
         if (gameplaySceneName != null)
             _gameplaySceneName = gameplaySceneName;
@@ -260,7 +262,11 @@ public sealed class GameplaySessionController : MonoBehaviour
             equipment = EquipmentManager.Instance != null ? EquipmentManager.Instance.ToSaveData() : session.SaveData.equipment,
             tutorial = TutorialManager.Instance != null ? TutorialManager.Instance.ToSaveData() : session.SaveData.tutorial,
             quests = QuestManager.Instance != null ? QuestManager.Instance.ToSaveData() : session.SaveData.quests,
-            world = _worldRegistry != null ? _worldRegistry.ToSaveData() : session.SaveData.world
+            world = _worldRegistry != null ? _worldRegistry.ToSaveData() : session.SaveData.world,
+            quickBar = QuickBarManager.Instance != null ? QuickBarManager.Instance.ToSaveData() : session.SaveData.quickBar,
+            farming = (_farmingManager != null ? _farmingManager : FarmingManager.Instance) != null
+                ? (_farmingManager != null ? _farmingManager : FarmingManager.Instance).ToSaveData()
+                : session.SaveData.farming
         };
     }
 

@@ -113,6 +113,15 @@ public class InventoryManager : MonoBehaviour
         return total >= amount;
     }
 
+    public int GetTotalQuantity(string itemId)
+    {
+        if (string.IsNullOrWhiteSpace(itemId) || _slots == null) return 0;
+        int total = 0;
+        foreach (InventorySlot slot in _slots)
+            if (!slot.IsEmpty && slot.item.itemId == itemId) total += slot.quantity;
+        return total;
+    }
+
     public bool RemoveItem(ItemSO item, int amount = 1)
     {
         if (item == null || amount <= 0 || !HasItem(item, amount)) return false;

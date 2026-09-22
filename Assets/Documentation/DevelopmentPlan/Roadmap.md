@@ -307,6 +307,18 @@ nền tảng này — không có Phase 11 kế tiếp trong tài liệu; bước
 `Open`/`Proposed` trong `DecisionRegister.md` (D-010, D-013, D-019, ...) nếu muốn mở rộng nền tảng
 thêm trước khi sản xuất content quy mô lớn.
 
+### Content slice sau `CONTENT_READY`: Quick bar và Farming — 2026-09-22
+
+- Quick bar 8 slot đã chuyển từ presentation-only sang stable `itemId` assignment, chọn bằng click/
+  phím 1–8 và persist ở save schema V8.
+- Farming ô cố định đã có hai crop variants, UTC growth, transactional harvest/loot fly, hover feedback,
+  non-combat click và persist ở save schema V9.
+- Đã promote prefab/catalog từ DemoScene sang MapNhat (8 plot demo, 21 plot production candidate),
+  bổ sung validator và tài liệu authoring/acceptance tại [FarmingSystem.md](FarmingSystem.md).
+- Gate đã chạy: EditMode 73/73 và Quick bar/Farming PlayMode 5/5. Full PlayMode regression được giữ
+  như release gate chung; test runner MCP đã discover 169 test nhưng bị kẹt trước test đầu trong lần
+  chạy này, không ghi nhận failure và đã được clear an toàn.
+
 ## Trình tự bắt buộc
 
 ```text

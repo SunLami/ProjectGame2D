@@ -29,6 +29,8 @@ public static class SaveMigration
         new V4ToV5_IntroducesQuests(),
         new V5ToV6_IntroducesWorld(),
         new V6ToV7_IntroducesInventoryItemInstances(),
+        new V7ToV8_IntroducesQuickBar(),
+        new V8ToV9_IntroducesFarming(),
     };
 
     /// <summary>True if this version can be upgraded to CurrentSaveVersion by Migrate(). Does not
@@ -130,5 +132,21 @@ public static class SaveMigration
             data.inventory ??= new InventorySaveData();
             data.inventory.slots ??= new List<InventorySaveData.SlotData>();
         }
+    }
+
+    private sealed class V7ToV8_IntroducesQuickBar : ISaveMigrationStep
+    {
+        public int FromVersion => 7;
+        public int ToVersion => 8;
+
+        public void Apply(GameSaveData data) => data.quickBar ??= new QuickBarSaveData();
+    }
+
+    private sealed class V8ToV9_IntroducesFarming : ISaveMigrationStep
+    {
+        public int FromVersion => 8;
+        public int ToVersion => 9;
+
+        public void Apply(GameSaveData data) => data.farming ??= new FarmingSaveData();
     }
 }
