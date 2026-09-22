@@ -26,6 +26,13 @@ public sealed class QuestLogUI : MonoBehaviour
     [SerializeField] private TMP_Text _detailStatus;
     [SerializeField] private TMP_Text _detailObjectives;
     [SerializeField] private Button _closeButton;
+    [SerializeField] private Button _trackButton;
+    [SerializeField] private TMP_Text _trackButtonLabel;
+    [SerializeField] private Button _abandonButton;
+    [SerializeField] private GameObject _abandonConfirmationRoot;
+    [SerializeField] private TMP_Text _abandonConfirmationMessage;
+    [SerializeField] private Button _confirmAbandonButton;
+    [SerializeField] private Button _cancelAbandonButton;
 
     private readonly List<GameObject> _rows = new();
     private readonly List<TrackedQuestView> _trackedQuests = new();
@@ -33,10 +40,13 @@ public sealed class QuestLogUI : MonoBehaviour
     private QuestTrackerUI _tracker;
     private InputAction _questLogAction;
     private string _selectedQuestId;
+    private QuestCategory? _activeFilter;
+    private Button[] _filterButtons;
 
     private void Awake()
     {
         ResolveQuestLogAction();
+        ResolveQuestLogPresentation();
 
         if (_trackerRoot != null)
         {
@@ -49,7 +59,12 @@ public sealed class QuestLogUI : MonoBehaviour
 
     private void OnEnable()
     {
-        _closeButton.onClick.AddListener(CloseQuestLog);
+        _closeButton?.onClick.AddListener(CloseQuestLog);
+        _trackButton?.onClick.AddListener(ToggleSelectedQuestTracking);
+        _abandonButton?.onClick.AddListener(OpenAbandonConfirmation);
+        _confirmAbandonButton?.onClick.AddListener(ConfirmAbandonQuest);
+        _cancelAbandonButton?.onClick.AddListener(CloseAbandonConfirmation);
+        BindFilterButtons();
         if (_questLogAction != null)
             _questLogAction.performed += HandleQuestLogPerformed;
 
@@ -68,7 +83,12 @@ public sealed class QuestLogUI : MonoBehaviour
 
     private void OnDisable()
     {
-        _closeButton.onClick.RemoveListener(CloseQuestLog);
+        _closeButton?.onClick.RemoveListener(CloseQuestLog);
+        _trackButton?.onClick.RemoveListener(ToggleSelectedQuestTracking);
+        _abandonButton?.onClick.RemoveListener(OpenAbandonConfirmation);
+        _confirmAbandonButton?.onClick.RemoveListener(ConfirmAbandonQuest);
+        _cancelAbandonButton?.onClick.RemoveListener(CloseAbandonConfirmation);
+        UnbindFilterButtons();
         if (_questLogAction != null)
             _questLogAction.performed -= HandleQuestLogPerformed;
 
@@ -106,6 +126,8 @@ public sealed class QuestLogUI : MonoBehaviour
                 _questManager.QuestAccepted += HandleQuestChanged;
                 _questManager.QuestProgressChanged += HandleQuestChanged;
                 _questManager.QuestCompleted += HandleQuestChanged;
+                _questManager.QuestTrackingChanged += HandleQuestChanged;
+                _questManager.QuestAbandoned += HandleQuestAbandoned;
                 _questManager.MainQuestUnlocked += HandleMainQuestUnlocked;
             }
         }
@@ -121,6 +143,8 @@ public sealed class QuestLogUI : MonoBehaviour
         _questManager.QuestAccepted -= HandleQuestChanged;
         _questManager.QuestProgressChanged -= HandleQuestChanged;
         _questManager.QuestCompleted -= HandleQuestChanged;
+        _questManager.QuestTrackingChanged -= HandleQuestChanged;
+        _questManager.QuestAbandoned -= HandleQuestAbandoned;
         _questManager.MainQuestUnlocked -= HandleMainQuestUnlocked;
         _questManager = null;
     }
@@ -133,6 +157,14 @@ public sealed class QuestLogUI : MonoBehaviour
     }
 
     private void HandleMainQuestUnlocked() => RefreshQuestPresentation();
+
+    private void HandleQuestAbandoned(string questId)
+    {
+        if (_selectedQuestId == questId)
+            _selectedQuestId = null;
+        CloseAbandonConfirmation();
+        RefreshQuestPresentation();
+    }
 
     private void HandleGameStateChanged(GameStateChange change)
     {
@@ -199,15 +231,28 @@ public sealed class QuestLogUI : MonoBehaviour
 
         foreach (QuestDefinition quest in _questManager.Catalog.AllQuests)
         {
+            if (!_questManager.IsTracked(quest.QuestId))
+                continue;
+
             QuestStatus status = _questManager.GetStatus(quest.QuestId);
             if (status != QuestStatus.Active && status != QuestStatus.ReadyToTurnIn)
                 continue;
 
+            _questManager.TryGetProgress(quest.QuestId, out QuestProgressSnapshot snapshot);
+            int objectiveIndex = Mathf.Clamp(snapshot.CurrentObjectiveIndex, 0, Mathf.Max(0, quest.Objectives.Count - 1));
+            QuestObjectiveDefinition objective = quest.Objectives.Count > 0 ? quest.Objectives[objectiveIndex] : null;
+            int currentCount = objective != null && objectiveIndex < snapshot.ObjectiveCounters.Count
+                ? snapshot.ObjectiveCounters[objectiveIndex]
+                : 0;
             _trackedQuests.Add(new TrackedQuestView(
                 quest.QuestId,
                 quest.DisplayName,
-                BuildObjectiveText(quest, compact: true),
-                CategoryOf(quest)));
+                objective != null ? objective.Description : "Return to the quest giver",
+                CategoryOf(quest),
+                objective != null ? objective.Type : QuestObjectiveType.Talk,
+                currentCount,
+                objective != null ? objective.TargetCount : 1,
+                status == QuestStatus.ReadyToTurnIn));
         }
 
         _trackedQuests.Sort(QuestTrackerOrdering.Compare);
@@ -244,12 +289,25 @@ public sealed class QuestLogUI : MonoBehaviour
                 continue;
             }
 
+            QuestCategory category = CategoryOf(quest);
+            if (_activeFilter.HasValue && category != _activeFilter.Value)
+                continue;
+
             first ??= quest;
             GameObject row = Instantiate(_rowTemplate, _listContent);
             row.name = $"QuestRow_{quest.QuestId}";
             row.SetActive(true);
             row.transform.Find("Title").GetComponent<TMP_Text>().text = quest.DisplayName;
             row.transform.Find("Status").GetComponent<TMP_Text>().text = FormatStatus(status);
+            TMP_Text categoryLabel = row.transform.Find("Category")?.GetComponent<TMP_Text>();
+            if (categoryLabel != null)
+                categoryLabel.text = category.ToString().ToUpperInvariant();
+            Image categoryIcon = row.transform.Find("CategoryIcon")?.GetComponent<Image>();
+            if (categoryIcon != null)
+                categoryIcon.sprite = LoadCategorySprite(category);
+            Transform pin = row.transform.Find("TrackedPin");
+            if (pin != null)
+                pin.gameObject.SetActive(_questManager.IsTracked(quest.QuestId));
             string questId = quest.QuestId;
             row.GetComponent<Button>().onClick.AddListener(() => SelectQuest(questId));
             _rows.Add(row);
@@ -266,6 +324,69 @@ public sealed class QuestLogUI : MonoBehaviour
         RefreshDetails();
     }
 
+    private void ResolveQuestLogPresentation()
+    {
+        Transform filters = _logRoot != null
+            ? _logRoot.transform.Find("Window/QuestListPanel/Filters")
+            : null;
+        if (filters == null)
+            return;
+
+        _filterButtons = new[]
+        {
+            filters.Find("All")?.GetComponent<Button>(),
+            filters.Find("Main")?.GetComponent<Button>(),
+            filters.Find("Side")?.GetComponent<Button>(),
+            filters.Find("Daily")?.GetComponent<Button>()
+        };
+    }
+
+    private void BindFilterButtons()
+    {
+        if (_filterButtons == null) return;
+        _filterButtons[0]?.onClick.AddListener(FilterAll);
+        _filterButtons[1]?.onClick.AddListener(FilterMain);
+        _filterButtons[2]?.onClick.AddListener(FilterSide);
+        _filterButtons[3]?.onClick.AddListener(FilterDaily);
+    }
+
+    private void UnbindFilterButtons()
+    {
+        if (_filterButtons == null) return;
+        _filterButtons[0]?.onClick.RemoveListener(FilterAll);
+        _filterButtons[1]?.onClick.RemoveListener(FilterMain);
+        _filterButtons[2]?.onClick.RemoveListener(FilterSide);
+        _filterButtons[3]?.onClick.RemoveListener(FilterDaily);
+    }
+
+    private void FilterAll() => SetFilter(null);
+    private void FilterMain() => SetFilter(QuestCategory.Main);
+    private void FilterSide() => SetFilter(QuestCategory.Side);
+    private void FilterDaily() => SetFilter(QuestCategory.Daily);
+
+    private void SetFilter(QuestCategory? filter)
+    {
+        _activeFilter = filter;
+        _selectedQuestId = null;
+        RebuildList();
+        RefreshDetails();
+        SelectDefault();
+    }
+
+    private static Sprite LoadCategorySprite(QuestCategory category)
+    {
+        string path = category switch
+        {
+            QuestCategory.Main => "UI/Quest/Tracker1920/category_main",
+            QuestCategory.Daily => "UI/Quest/Tracker1920/category_daily",
+            _ => "UI/Quest/Tracker1920/category_side"
+        };
+        Sprite sprite = Resources.Load<Sprite>(path);
+        if (sprite != null) return sprite;
+        Sprite[] sprites = Resources.LoadAll<Sprite>(path);
+        return sprites.Length > 0 ? sprites[0] : null;
+    }
+
     private void RefreshDetails()
     {
         if (_questManager?.Catalog == null
@@ -275,12 +396,92 @@ public sealed class QuestLogUI : MonoBehaviour
             _detailTitle.text = "QUEST";
             _detailStatus.text = string.Empty;
             _detailObjectives.text = "No accepted quests.";
+            SetQuestActionVisibility(false, false);
             return;
         }
 
+        QuestStatus status = _questManager.GetStatus(quest.QuestId);
         _detailTitle.text = quest.DisplayName;
-        _detailStatus.text = FormatStatus(_questManager.GetStatus(quest.QuestId));
+        _detailStatus.text = FormatStatus(status);
         _detailObjectives.text = BuildObjectiveText(quest, compact: false);
+
+        Transform detail = _detailTitle.transform.parent;
+        Image categoryIcon = detail.Find("CategoryIcon")?.GetComponent<Image>();
+        if (categoryIcon != null)
+            categoryIcon.sprite = LoadCategorySprite(CategoryOf(quest));
+        TMP_Text categoryLabel = detail.Find("CategoryLabel")?.GetComponent<TMP_Text>();
+        if (categoryLabel != null)
+            categoryLabel.text = CategoryOf(quest).ToString().ToUpperInvariant() + " QUEST";
+        TMP_Text rewards = detail.Find("Rewards/RewardSummary")?.GetComponent<TMP_Text>();
+        if (rewards != null)
+            rewards.text = FormatRewards(quest.Rewards);
+
+        bool actionable = status == QuestStatus.Active || status == QuestStatus.ReadyToTurnIn;
+        SetQuestActionVisibility(actionable, actionable && !string.IsNullOrEmpty(quest.GiverNpcId));
+        if (_trackButtonLabel != null)
+            _trackButtonLabel.text = _questManager.IsTracked(quest.QuestId) ? "UNTRACK QUEST" : "TRACK QUEST";
+    }
+
+    private static string FormatRewards(QuestRewardDefinition rewards)
+    {
+        if (rewards == null) return "No rewards";
+
+        var parts = new List<string>();
+        if (rewards.Gold > 0) parts.Add($"{rewards.Gold} GOLD");
+        if (rewards.Experience > 0) parts.Add($"{rewards.Experience} EXP");
+        foreach (QuestRewardItemEntry item in rewards.Items)
+            parts.Add($"{item.Quantity}x {item.ItemId}");
+        return parts.Count > 0 ? string.Join("     ", parts) : "No rewards";
+    }
+
+    private void SetQuestActionVisibility(bool showTrack, bool showAbandon)
+    {
+        if (_trackButton != null)
+            _trackButton.gameObject.SetActive(showTrack);
+        if (_abandonButton != null)
+            _abandonButton.gameObject.SetActive(showAbandon);
+    }
+
+    private void ToggleSelectedQuestTracking()
+    {
+        if (_questManager == null || string.IsNullOrEmpty(_selectedQuestId))
+            return;
+
+        if (_questManager.IsTracked(_selectedQuestId))
+            _questManager.TryUntrackQuest(_selectedQuestId);
+        else
+            _questManager.TryTrackQuest(_selectedQuestId);
+    }
+
+    private void OpenAbandonConfirmation()
+    {
+        if (_questManager?.Catalog == null
+            || string.IsNullOrEmpty(_selectedQuestId)
+            || !_questManager.Catalog.TryResolve(_selectedQuestId, out QuestDefinition quest)
+            || string.IsNullOrEmpty(quest.GiverNpcId))
+        {
+            return;
+        }
+
+        if (_abandonConfirmationMessage != null)
+        {
+            _abandonConfirmationMessage.text =
+                $"Abandon {quest.DisplayName}?\nProgress will be lost. Return to the quest giver to accept it again.";
+        }
+        _abandonConfirmationRoot?.SetActive(true);
+        if (EventSystem.current != null && _confirmAbandonButton != null)
+            EventSystem.current.SetSelectedGameObject(_confirmAbandonButton.gameObject);
+    }
+
+    private void ConfirmAbandonQuest()
+    {
+        if (_questManager != null && !string.IsNullOrEmpty(_selectedQuestId))
+            _questManager.TryAbandonQuest(_selectedQuestId);
+    }
+
+    private void CloseAbandonConfirmation()
+    {
+        _abandonConfirmationRoot?.SetActive(false);
     }
 
     private string BuildObjectiveText(QuestDefinition quest, bool compact)

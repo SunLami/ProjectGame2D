@@ -15,8 +15,8 @@ using UnityEngine.UI;
 /// current objective wants the player standing in (e.g. "defeat 3 dummies in the training area"):
 ///   - far: edge-of-screen indicator toward the zone
 ///   - near/on-screen but not yet inside: ground arrow under the player pointing at it
-///   - player is inside (AreaZoneRegistry.IsPlayerInside): a "you've arrived" bobbing down-arrow
-///     marker under the player replaces the arrow -- there's nowhere further to walk
+///   - player is inside (AreaZoneRegistry.IsPlayerInside): direction indicators hide because
+///     there is nowhere further to walk
 ///
 /// NPC targets take priority over area targets (checked first each frame) since talking to
 /// someone is usually the more immediate action. Hides everything when neither resolves.
@@ -30,15 +30,11 @@ public sealed class QuestDirectionIndicator : MonoBehaviour
     [SerializeField] private Camera _camera;
 
     [Header("Area target -- approaching")]
-    [Tooltip("World-space RectTransform under the player's feet that rotates to face an area target while outside it.")]
+    [Tooltip("World-space RectTransform that orbits the player and rotates to face an area target while outside it.")]
     [SerializeField] private RectTransform _groundArrow;
     [SerializeField] private Image _groundArrowImage;
-
-    [Header("Area target -- arrived")]
-    [Tooltip("World-space RectTransform under the player's feet shown once the player is inside the target area.")]
-    [SerializeField] private RectTransform _arrivedMarker;
-    [SerializeField] private Image _arrivedMarkerArrowImage;
-    [SerializeField] private float _arrivedMarkerBobAmplitude = 0.15f;
+    [Min(0f)]
+    [SerializeField] private float _groundArrowOrbitRadius = 0.75f;
 
     [Header("Off-screen (either target kind)")]
     [Tooltip("Screen-space overlay RectTransform clamped to the edge of the screen toward the target.")]
@@ -62,8 +58,6 @@ public sealed class QuestDirectionIndicator : MonoBehaviour
     [SerializeField] private float _edgeMargin = 60f;
 
     private QuestManager _questManager;
-    private Vector3 _arrivedMarkerBaseLocalPosition;
-
     private void Awake()
     {
         if (_camera == null)
@@ -82,10 +76,6 @@ public sealed class QuestDirectionIndicator : MonoBehaviour
             _edgeIndicatorImage.sprite = arrow;
         if (_npcHeadMarkerImage != null && _npcHeadMarkerImage.sprite == null)
             _npcHeadMarkerImage.sprite = arrow;
-        if (_arrivedMarkerArrowImage != null && _arrivedMarkerArrowImage.sprite == null)
-            _arrivedMarkerArrowImage.sprite = arrow;
-        if (_arrivedMarkerArrowImage != null)
-            _arrivedMarkerBaseLocalPosition = _arrivedMarkerArrowImage.rectTransform.localPosition;
     }
 
     private void OnEnable()
@@ -164,7 +154,6 @@ public sealed class QuestDirectionIndicator : MonoBehaviour
     private void UpdateForNpcTarget(Transform target)
     {
         SetActive(_groundArrow, false);
-        SetActive(_arrivedMarker, false);
 
         Vector3 viewportPos = _camera.WorldToViewportPoint(target.position);
         bool onScreen = IsOnScreen(viewportPos);
@@ -189,12 +178,8 @@ public sealed class QuestDirectionIndicator : MonoBehaviour
         {
             SetActive(_groundArrow, false);
             SetActive(_edgeIndicator, false);
-            SetActive(_arrivedMarker, true);
-            BobArrivedMarker();
             return;
         }
-
-        SetActive(_arrivedMarker, false);
 
         Vector3 toTarget = target.position - _player.position;
         toTarget.z = 0f;
@@ -228,16 +213,6 @@ public sealed class QuestDirectionIndicator : MonoBehaviour
         _npcHeadMarker.position = screenPos;
     }
 
-    private void BobArrivedMarker()
-    {
-        if (_arrivedMarkerArrowImage == null)
-            return;
-
-        float offset = Mathf.Sin(Time.time * _bobSpeed) * _arrivedMarkerBobAmplitude;
-        _arrivedMarkerArrowImage.rectTransform.localPosition =
-            _arrivedMarkerBaseLocalPosition + new Vector3(0f, offset, 0f);
-    }
-
     private void ShowGroundArrow(Vector3 direction)
     {
         if (_groundArrow == null)
@@ -245,6 +220,8 @@ public sealed class QuestDirectionIndicator : MonoBehaviour
 
         SetActive(_groundArrow, true);
         SetActive(_edgeIndicator, false);
+        Vector2 normalizedDirection = new Vector2(direction.x, direction.y).normalized;
+        _groundArrow.anchoredPosition = normalizedDirection * _groundArrowOrbitRadius;
         float angle = Mathf.Atan2(direction.x, direction.y) * Mathf.Rad2Deg;
         _groundArrow.localEulerAngles = new Vector3(0f, 0f, -angle);
     }
@@ -287,7 +264,6 @@ public sealed class QuestDirectionIndicator : MonoBehaviour
         SetActive(_groundArrow, false);
         SetActive(_edgeIndicator, false);
         SetActive(_npcHeadMarker, false);
-        SetActive(_arrivedMarker, false);
     }
 
     private static void SetActive(RectTransform rect, bool active)

@@ -97,6 +97,21 @@ public sealed class SaveMigrationTests
     }
 
     [Test]
+    public void V7_SelectsFirstActiveQuestAsTrackedQuest()
+    {
+        var v7 = new GameSaveData { saveVersion = 7, quests = new QuestSaveData() };
+        v7.quests.quests.Add(new QuestProgressSaveData { questId = "quest.completed", status = QuestStatus.Completed });
+        v7.quests.quests.Add(new QuestProgressSaveData { questId = "quest.active", status = QuestStatus.Active });
+        v7.quests.quests.Add(new QuestProgressSaveData { questId = "quest.ready", status = QuestStatus.ReadyToTurnIn });
+
+        GameSaveData migrated = SaveMigration.Migrate(v7);
+
+        Assert.AreEqual(GameSaveData.CurrentSaveVersion, migrated.saveVersion);
+        Assert.AreEqual("quest.active", migrated.quests.trackedQuestId);
+        Assert.AreEqual(3, migrated.quests.quests.Count, "Migration must preserve all quest progress records.");
+    }
+
+    [Test]
     public void AlreadyCurrentVersion_MigrateIsANoOp()
     {
         var current = new GameSaveData { saveVersion = GameSaveData.CurrentSaveVersion, saveId = "already-current" };

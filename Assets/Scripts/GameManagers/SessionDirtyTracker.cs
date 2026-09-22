@@ -69,6 +69,8 @@ public sealed class SessionDirtyTracker : MonoBehaviour
             _questManager.QuestAccepted += HandleQuestEvent;
             _questManager.QuestProgressChanged += HandleQuestEvent;
             _questManager.QuestCompleted += HandleQuestEvent;
+            _questManager.QuestTrackingChanged += HandleQuestEvent;
+            _questManager.QuestAbandoned += HandleQuestEvent;
             _questManager.MainQuestUnlocked += HandleDirtyingEvent;
         }
         WorldDomainEvents.WorldObjectChanged += HandleDirtyingEvent;
@@ -98,6 +100,8 @@ public sealed class SessionDirtyTracker : MonoBehaviour
             _questManager.QuestAccepted -= HandleQuestEvent;
             _questManager.QuestProgressChanged -= HandleQuestEvent;
             _questManager.QuestCompleted -= HandleQuestEvent;
+            _questManager.QuestTrackingChanged -= HandleQuestEvent;
+            _questManager.QuestAbandoned -= HandleQuestEvent;
             _questManager.MainQuestUnlocked -= HandleDirtyingEvent;
         }
         WorldDomainEvents.WorldObjectChanged -= HandleDirtyingEvent;

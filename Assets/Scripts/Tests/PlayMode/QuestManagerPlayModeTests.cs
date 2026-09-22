@@ -51,7 +51,7 @@ public sealed class QuestManagerPlayModeTests
     private QuestDefinition MakeDefinition(
         string questId, QuestObjectiveDefinition[] objectives, string[] prerequisites = null,
         bool isTutorialQuest = false, bool isMainQuest = false, QuestRewardDefinition rewards = null,
-        bool isDebugQuest = false)
+        bool isDebugQuest = false, string giverNpcId = null)
     {
         var definition = ScriptableObject.CreateInstance<QuestDefinition>();
         SetPrivate(definition, "_questId", questId);
@@ -60,6 +60,7 @@ public sealed class QuestManagerPlayModeTests
         SetPrivate(definition, "_isTutorialQuest", isTutorialQuest);
         SetPrivate(definition, "_isMainQuest", isMainQuest);
         SetPrivate(definition, "_isDebugQuest", isDebugQuest);
+        SetPrivate(definition, "_giverNpcId", giverNpcId);
         SetPrivate(definition, "_rewards", rewards);
         _scratchAssets.Add(definition);
         return definition;
@@ -407,6 +408,97 @@ public sealed class QuestManagerPlayModeTests
         // Turning in another quest afterwards must not fire MainQuestUnlocked again.
         QuestDomainEvents.RaiseEnemyKilled("enemy.slime.green", null);
         Assert.AreEqual(1, unlockedCount);
+    }
+
+    [Test]
+    public void TrackAndUntrack_SelectExactlyOneActiveQuestAndRoundTripSave()
+    {
+        QuestDefinition first = MakeDefinition("quest.first", new[]
+            { MakeObjective(QuestObjectiveType.Kill, "enemy.first", targetAreaId: "area.first") });
+        QuestDefinition second = MakeDefinition("quest.second", new[]
+            { MakeObjective(QuestObjectiveType.Kill, "enemy.second", targetAreaId: "area.second") });
+        _manager.ConfigureForTests(MakeCatalog(first, second));
+
+        Assert.IsTrue(_manager.TryAcceptQuest(first.QuestId));
+        Assert.AreEqual(first.QuestId, _manager.TrackedQuestId, "The first accepted quest should auto-track.");
+        Assert.IsTrue(_manager.TryAcceptQuest(second.QuestId));
+        Assert.IsTrue(_manager.TryTrackQuest(second.QuestId));
+        Assert.IsFalse(_manager.IsTracked(first.QuestId));
+        Assert.IsTrue(_manager.IsTracked(second.QuestId));
+        CollectionAssert.AreEqual(new[] { "area.second" }, new List<string>(_manager.GetActionableAreaIds()));
+
+        QuestSaveData save = _manager.ToSaveData();
+        Assert.AreEqual(second.QuestId, save.trackedQuestId);
+        Assert.IsTrue(_manager.TryUntrackQuest(second.QuestId));
+        Assert.IsNull(_manager.TrackedQuestId);
+        Assert.IsFalse(_manager.TryUntrackQuest(second.QuestId));
+
+        _manager.RestoreState(save);
+        Assert.AreEqual(second.QuestId, _manager.TrackedQuestId);
+    }
+
+    [Test]
+    public void Abandon_ResetsProgressAndRequiresNpcGiverToAcceptAgain()
+    {
+        const string questId = "quest.abandon";
+        const string giverNpcId = "npc.giver";
+        QuestDefinition quest = MakeDefinition(
+            questId,
+            new[] { MakeObjective(QuestObjectiveType.Kill, "enemy.slime", targetCount: 3) },
+            giverNpcId: giverNpcId);
+        _manager.ConfigureForTests(MakeCatalog(quest));
+        var service = new QuestNpcInteractionService(_manager);
+
+        Assert.IsTrue(service.TryAcceptQuest(giverNpcId, questId));
+        _manager.RestoreState(new QuestSaveData
+        {
+            trackedQuestId = questId,
+            quests = new List<QuestProgressSaveData>
+            {
+                new()
+                {
+                    questId = questId,
+                    status = QuestStatus.Active,
+                    currentObjectiveIndex = 0,
+                    objectiveCounters = new[] { 1 }
+                }
+            }
+        });
+        Assert.AreEqual(1, _manager.ToSaveData().quests[0].objectiveCounters[0]);
+
+        Assert.IsTrue(_manager.TryAbandonQuest(questId));
+        Assert.AreEqual(QuestStatus.Available, _manager.GetStatus(questId));
+        Assert.IsFalse(_manager.TryGetProgress(questId, out _), "Abandon must discard all previous counters.");
+        Assert.IsNull(_manager.TrackedQuestId);
+        Assert.AreEqual(0, _manager.ToSaveData().quests.Count, "Abandoned state derives as Available and needs no runtime save record.");
+
+        Assert.IsFalse(service.TryAcceptQuest("npc.wrong", questId));
+        Assert.IsTrue(service.TryAcceptQuest(giverNpcId, questId));
+        Assert.IsTrue(_manager.TryGetProgress(questId, out QuestProgressSnapshot restarted));
+        Assert.AreEqual(0, restarted.ObjectiveCounters[0], "Re-accepting at the giver NPC must restart from zero.");
+    }
+
+    [Test]
+    public void Abandon_RejectsCompletedOrNpcLessQuest()
+    {
+        QuestDefinition npcLess = MakeDefinition("quest.npc_less", new[]
+            { MakeObjective(QuestObjectiveType.Kill, "enemy.slime") });
+        QuestDefinition completed = MakeDefinition("quest.completed", new[]
+            { MakeObjective(QuestObjectiveType.Kill, "enemy.slime") }, giverNpcId: "npc.giver");
+        _manager.ConfigureForTests(MakeCatalog(npcLess, completed));
+        _manager.TryAcceptQuest(npcLess.QuestId);
+
+        Assert.IsFalse(_manager.TryAbandonQuest(npcLess.QuestId),
+            "A quest without a giver cannot be safely reacquired and must not be abandonable.");
+
+        _manager.RestoreState(new QuestSaveData
+        {
+            quests = new List<QuestProgressSaveData>
+            {
+                new() { questId = completed.QuestId, status = QuestStatus.Completed, currentObjectiveIndex = 1, objectiveCounters = new[] { 1 } }
+            }
+        });
+        Assert.IsFalse(_manager.TryAbandonQuest(completed.QuestId), "Completed quests must remain part of progression history.");
     }
 
     [Test]

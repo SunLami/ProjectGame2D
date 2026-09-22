@@ -8,7 +8,7 @@ using System;
 [Serializable]
 public sealed class GameSaveData
 {
-    public const int CurrentSaveVersion = 7;
+    public const int CurrentSaveVersion = 8;
 
     public int saveVersion = CurrentSaveVersion;
     public string saveId;

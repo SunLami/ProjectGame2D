@@ -128,6 +128,9 @@ navigation/state.
 
 ### Character Popup visual direction
 
+- Trong `GameplayUIRoot.prefab`, `PlayerHUD` và `UnifiedGameplayHUD` phải đứng trước các gameplay
+  overlay/menu trong sibling order. Vì dùng chung một Canvas, thứ tự này bảo đảm Inventory, Quest Log,
+  Settings và các confirmation panel luôn render phủ lên toàn bộ HUD khi mở.
 - `UnifiedGameplayHUD.prefab/CharacterPopup` là popup Character chuẩn của gameplay, mở/tắt bằng phím
   `C` hoặc `BottomHUD/StatButton`; lifecycle tiếp tục đi qua `GameStateManager` với
   `GameplayMenuPage.Character`, không tự pause world hoặc sở hữu input gameplay.
@@ -256,23 +259,38 @@ Paused
 
 - DemoScene `QuestUIRoot` giữ nguyên `QuestLogUI`, QuestManager event binding, GameplayMenu lifecycle và
   callback Close; reskin chỉ thay presentation, không sở hữu quest progression hoặc save data.
-- `QuestTracker` là viewport cố định `190×230`, giữ nguyên vị trí trên HUD và không tăng kích thước khi
-  có thêm quest hoặc khi một quest được bung nội dung. Nền mặc định trong suốt; pointer hover toàn vùng
-  tracker mới hiện lớp xám đen mờ để tăng độ đọc mà không che world thường xuyên.
-- Tracker hiển thị các quest `Active`/`ReadyToTurnIn` thành danh sách dọc trong `ScrollRect` có mask,
+- `QuestTracker` là HUD không nền, không board và không lớp dim để không che gameplay. Vùng logic
+  `190×230` tương ứng `456×552` physical pixel ở target `1920×1080`; icon nguồn là `384×384` và được
+  thu nhỏ khi render để giữ cạnh sắc. Header gồm chevron button, icon cuộn quest, chữ `QUESTS` TMP và
+  đường vàng. Nhấn toàn bộ header sẽ mở/đóng danh sách; chevron đổi hướng theo trạng thái.
+- `Assets/Prefabs/UI/QuestTracker.prefab` là nguồn authoring: Header, Chevron, QuestIcon, GoldDivider,
+  Viewport, Content và QuestRowTemplate phải tồn tại thành GameObject thật để designer chỉnh vị trí,
+  kích thước và sprite trực tiếp trong Prefab Mode. Runtime chỉ clone RowTemplate và bind dữ liệu động;
+  Bootstrap nhận thay đổi qua nested prefab trong `GameplayUIRoot.prefab`, không tạo scene-only override.
+- Tracker chỉ hiển thị quest `Active`/`ReadyToTurnIn` đang được người chơi chọn Track thành danh sách dọc trong `ScrollRect` có mask,
   cuộn bằng mouse wheel khi nội dung vượt chiều cao. Thứ tự presentation bắt buộc là Main Quest → Side
-  Quest → Daily Quest; trong cùng loại sắp theo display name. Mỗi title tag là nút bung/thu độc lập:
-  trạng thái thu chỉ hiện title, trạng thái bung hiện objective hiện tại/mô tả ngắn. QuestLogWindow tiếp
-  tục sở hữu phần trình bày đầy đủ của quest.
+  Quest → Daily Quest; trong cùng loại sắp theo display name. Mỗi quest hiển thị icon category và
+  objective hiện tại hiển thị icon theo loại hành động, progress căn phải hoặc trạng thái `READY` màu
+  vàng. QuestLogWindow tiếp tục sở hữu phần trình bày đầy đủ của quest.
 - Trong Editor/Development Build, ba nút `TRACK MAIN QUEST`, `TRACK SIDE QUEST`, `TRACK DAILY QUEST`
   nằm ngay dưới `DEBUG LEVEL +1` và accept ba QuestDefinition `quest.debug.*` qua QuestManager để kiểm
   thử đồng thời Tracker/QuestLog. Debug quest không được persist hoặc làm session dirty và không nhận
   được trong non-development Player build.
-- `QuestLogWindow/Window` giữ RectTransform `650×380`; safe area nội bộ dùng `QuestListPanel` `190×255`
-  và `QuestDetailPanel` `340×255`, neo giữa board để không tràn đáy hoặc che nhau. Board, panel, close icon
-  và row button đồng bộ MainMenu, Inventory, Tutorial và SessionUX; không thay list/template binding.
-- Tiêu đề cố định dùng banner ảnh `quest_title_banner_hd.png` với chữ `QUEST`; TMP header legacy tắt
-  render. Detail fallback cũng dùng `QUEST`, còn quest title/status/objective tiếp tục là TMP động.
+- `QuestLogWindow/Window` dùng RectTransform `560×340` trên Canvas reference `800×600`, tương đương
+  khoảng `1344×816` physical pixel ở target `1920×1080`. Safe area chia `QuestListPanel` `190×270`
+  và `QuestDetailPanel` `330×270`; window nằm giữa nhưng vẫn để lộ gameplay quanh bốn cạnh.
+- `QuestListPanel` dùng `ScrollRect` dọc với `Viewport + RectMask2D`, `Content + ContentSizeFitter`
+  và scrollbar lane cố định phía phải. Row cao `43`, có category icon, title, status, category badge
+  và tracked-pin; scrollbar không được chồng lên nội dung row.
+- `QuestDetailPanel` có category icon/label, objective icon + tiến độ động, reward summary và action
+  buttons. Header `QUEST LOG`, close button, filter, row, reward và action đều là GameObject thật trong
+  `GameplayUIRoot.prefab` để designer chỉnh trực tiếp trong Prefab Mode; runtime chỉ bind dữ liệu.
+- Mockup scroll lưu tại `Assets/Documentation/DevelopmentPlan/quest_log_window_scroll_mockup_v2.png`;
+  board production là `Assets/Resources/UI/Quest/QuestLog1920/quest_log_board_scroll_v2.png` và atlas
+  không bake text nằm tại `Assets/Resources/UI/Quest/QuestLog1920/quest_log_atlas_source.png`.
+- Detail panel có `TRACK QUEST`/`UNTRACK QUEST` và `ABANDON QUEST`. Abandon luôn qua confirmation,
+  reset toàn bộ tiến độ và nhắc người chơi quay lại đúng giver NPC để nhận lại. Quest không có
+  `giverNpcId` không được abandon để tránh trạng thái progression không thể phục hồi.
 
 ### Dialogue UI visual direction
 

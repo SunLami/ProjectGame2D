@@ -233,6 +233,12 @@ Migration V6→V7 giữ nguyên slot cũ và để payload mới null. Restore c
 rỗng và cân nặng dương, ép quantity = 1, clamp cân nặng theo definition; record hỏng bị bỏ qua kèm
 warning. Xem [FishingSystem.md](FishingSystem.md).
 
+**Quest tracking save (2026-09-22):** bump `CurrentSaveVersion` 7 → 8 và thêm
+`QuestSaveData.trackedQuestId`. Chỉ một quest `Active`/`ReadyToTurnIn` được track tại một thời điểm;
+`null` nghĩa là người chơi chủ động untrack. Migration V7→V8 chọn quest Active/Ready đầu tiên để
+giữ trải nghiệm tracker của save cũ. Abandon xóa runtime progress record nên quest trở lại trạng thái
+`Available` được derive từ prerequisite; không lưu một trạng thái Abandoned riêng.
+
 ## Inventory/equipment persistence
 
 - Serialize item bằng stable `itemId`, không serialize ScriptableObject reference.
@@ -246,7 +252,7 @@ warning. Xem [FishingSystem.md](FishingSystem.md).
 
 ## Quest/tutorial persistence
 
-- Lưu objective counter và quest status, không lưu UI state.
+- Lưu objective counter, quest status và stable ID của quest đang track; không lưu trạng thái widget/UI.
 - Restore không phát reward hoặc objective-completed event.
 - Tutorial lưu step hiện tại và completed flag.
 - Main Quest unlock phải suy ra/validate từ prerequisite hoặc lưu story flag có reconciliation.

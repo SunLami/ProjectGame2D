@@ -19,10 +19,13 @@ public sealed class QuestManager : MonoBehaviour
     private IItemResolver _itemResolver;
     private bool _subscribed;
     private bool _mainQuestUnlocked;
+    private string _trackedQuestId;
 
     public event Action<string> QuestAccepted;
     public event Action<string> QuestProgressChanged;
     public event Action<string> QuestCompleted;
+    public event Action<string> QuestTrackingChanged;
+    public event Action<string> QuestAbandoned;
     public event Action MainQuestUnlocked;
 
     /// <summary>Static mirror of QuestCompleted so cross-system consumers (e.g. TutorialManager,
@@ -33,6 +36,7 @@ public sealed class QuestManager : MonoBehaviour
 
     public IQuestResolver Catalog => _catalog;
     public bool IsMainQuestUnlocked => _mainQuestUnlocked;
+    public string TrackedQuestId => _trackedQuestId;
 
     private IItemResolver ItemResolver => _itemResolver ??= new ResourcesItemResolver();
 
@@ -191,18 +195,16 @@ public sealed class QuestManager : MonoBehaviour
         if (_catalog == null)
             yield break;
 
-        foreach (QuestDefinition quest in _catalog.AllQuests)
+        if (TryGetTrackedState(out QuestRuntimeState trackedState))
         {
-            if (!string.IsNullOrEmpty(quest.TurnInNpcId) && GetStatus(quest.QuestId) == QuestStatus.ReadyToTurnIn)
-                yield return quest.TurnInNpcId;
-        }
+            QuestDefinition trackedQuest = trackedState.Definition;
+            if (trackedState.Status == QuestStatus.ReadyToTurnIn
+                && !string.IsNullOrEmpty(trackedQuest.TurnInNpcId))
+            {
+                yield return trackedQuest.TurnInNpcId;
+            }
 
-        foreach (QuestRuntimeState state in _runtime.Values)
-        {
-            if (state.Status != QuestStatus.Active)
-                continue;
-
-            QuestObjectiveDefinition objective = state.CurrentObjective;
+            QuestObjectiveDefinition objective = trackedState.CurrentObjective;
             if (objective != null && objective.Type == QuestObjectiveType.Talk && !string.IsNullOrEmpty(objective.TargetId))
                 yield return objective.TargetId;
         }
@@ -221,18 +223,24 @@ public sealed class QuestManager : MonoBehaviour
     /// priority over "go stand somewhere."</summary>
     public IEnumerable<string> GetActionableAreaIds()
     {
-        foreach (QuestRuntimeState state in _runtime.Values)
+        if (!TryGetTrackedState(out QuestRuntimeState state) || state.Status != QuestStatus.Active)
+            yield break;
+
+        QuestObjectiveDefinition objective = state.CurrentObjective;
+        if (objective != null
+            && !string.IsNullOrEmpty(objective.TargetAreaId)
+            && (objective.Type == QuestObjectiveType.Kill || objective.Type == QuestObjectiveType.Gather))
         {
-            if (state.Status != QuestStatus.Active)
-                continue;
-
-            QuestObjectiveDefinition objective = state.CurrentObjective;
-            if (objective == null || string.IsNullOrEmpty(objective.TargetAreaId))
-                continue;
-
-            if (objective.Type == QuestObjectiveType.Kill || objective.Type == QuestObjectiveType.Gather)
-                yield return objective.TargetAreaId;
+            yield return objective.TargetAreaId;
         }
+    }
+
+    private bool TryGetTrackedState(out QuestRuntimeState state)
+    {
+        state = null;
+        return !string.IsNullOrEmpty(_trackedQuestId)
+            && _runtime.TryGetValue(_trackedQuestId, out state)
+            && (state.Status == QuestStatus.Active || state.Status == QuestStatus.ReadyToTurnIn);
     }
 
     /// <summary>Computed status: Locked/Available are derived from prerequisites every call
@@ -290,7 +298,57 @@ public sealed class QuestManager : MonoBehaviour
         _runtime[questId] = new QuestRuntimeState(definition);
         QuestAccepted?.Invoke(questId);
         QuestProgressChanged?.Invoke(questId);
+        if (string.IsNullOrEmpty(_trackedQuestId))
+            SetTrackedQuest(questId);
         return true;
+    }
+
+    public bool IsTracked(string questId) =>
+        !string.IsNullOrEmpty(questId)
+        && string.Equals(_trackedQuestId, questId, StringComparison.Ordinal);
+
+    public bool TryTrackQuest(string questId)
+    {
+        QuestStatus status = GetStatus(questId);
+        if (status != QuestStatus.Active && status != QuestStatus.ReadyToTurnIn)
+            return false;
+        if (IsTracked(questId))
+            return false;
+
+        SetTrackedQuest(questId);
+        return true;
+    }
+
+    public bool TryUntrackQuest(string questId)
+    {
+        if (!IsTracked(questId))
+            return false;
+
+        SetTrackedQuest(null);
+        return true;
+    }
+
+    public bool TryAbandonQuest(string questId)
+    {
+        if (string.IsNullOrEmpty(questId)
+            || !_runtime.TryGetValue(questId, out QuestRuntimeState state)
+            || (state.Status != QuestStatus.Active && state.Status != QuestStatus.ReadyToTurnIn)
+            || string.IsNullOrEmpty(state.Definition.GiverNpcId))
+        {
+            return false;
+        }
+
+        _runtime.Remove(questId);
+        if (IsTracked(questId))
+            SetTrackedQuest(null);
+        QuestAbandoned?.Invoke(questId);
+        return true;
+    }
+
+    private void SetTrackedQuest(string questId)
+    {
+        _trackedQuestId = questId;
+        QuestTrackingChanged?.Invoke(questId);
     }
 
     private static bool CanUseDebugQuest
@@ -341,6 +399,8 @@ public sealed class QuestManager : MonoBehaviour
         QuestCompleted?.Invoke(questId);
         QuestTurnedIn?.Invoke(questId);
         QuestProgressChanged?.Invoke(questId);
+        if (IsTracked(questId))
+            SetTrackedQuest(null);
         ReconcileMainQuestUnlock(fireEvent: true);
         return true;
     }
@@ -417,7 +477,7 @@ public sealed class QuestManager : MonoBehaviour
 
     public QuestSaveData ToSaveData()
     {
-        var data = new QuestSaveData();
+        var data = new QuestSaveData { trackedQuestId = _trackedQuestId };
         foreach (KeyValuePair<string, QuestRuntimeState> pair in _runtime)
         {
             if (pair.Value.Definition.IsDebugQuest)
@@ -439,6 +499,7 @@ public sealed class QuestManager : MonoBehaviour
     public void RestoreState(QuestSaveData data)
     {
         _runtime.Clear();
+        _trackedQuestId = null;
 
         if (_catalog != null && data?.quests != null)
         {
@@ -458,6 +519,13 @@ public sealed class QuestManager : MonoBehaviour
                 state.RestoreProgress(entry.status, entry.currentObjectiveIndex, entry.objectiveCounters);
                 _runtime[entry.questId] = state;
             }
+        }
+
+        if (!string.IsNullOrEmpty(data?.trackedQuestId)
+            && _runtime.TryGetValue(data.trackedQuestId, out QuestRuntimeState tracked)
+            && (tracked.Status == QuestStatus.Active || tracked.Status == QuestStatus.ReadyToTurnIn))
+        {
+            _trackedQuestId = data.trackedQuestId;
         }
 
         ReconcileMainQuestUnlock(fireEvent: false);

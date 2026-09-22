@@ -29,6 +29,7 @@ public static class SaveMigration
         new V4ToV5_IntroducesQuests(),
         new V5ToV6_IntroducesWorld(),
         new V6ToV7_IntroducesInventoryItemInstances(),
+        new V7ToV8_IntroducesTrackedQuest(),
     };
 
     /// <summary>True if this version can be upgraded to CurrentSaveVersion by Migrate(). Does not
@@ -129,6 +130,28 @@ public static class SaveMigration
         {
             data.inventory ??= new InventorySaveData();
             data.inventory.slots ??= new List<InventorySaveData.SlotData>();
+        }
+    }
+
+    private sealed class V7ToV8_IntroducesTrackedQuest : ISaveMigrationStep
+    {
+        public int FromVersion => 7;
+        public int ToVersion => 8;
+
+        public void Apply(GameSaveData data)
+        {
+            data.quests ??= new QuestSaveData();
+            if (!string.IsNullOrEmpty(data.quests.trackedQuestId) || data.quests.quests == null)
+                return;
+
+            foreach (QuestProgressSaveData quest in data.quests.quests)
+            {
+                if (quest.status == QuestStatus.Active || quest.status == QuestStatus.ReadyToTurnIn)
+                {
+                    data.quests.trackedQuestId = quest.questId;
+                    break;
+                }
+            }
         }
     }
 }
