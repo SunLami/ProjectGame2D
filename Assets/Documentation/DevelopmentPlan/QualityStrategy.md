@@ -153,6 +153,16 @@ Mỗi domain content cần kiểm tra:
 - Handler bỏ qua domain event không match definition parameters.
 - Restore không phát event làm tăng objective/grant reward.
 
+### Quick bar và Farming gate
+
+- Quick bar assignment/select round-trip bằng stable `itemId`; quantity hiển thị derive từ Inventory.
+- Hai `SeedItemSO`/`CropDefinition` variants đi qua cùng plant/growth/harvest runtime.
+- Plant chỉ consume seed sau khi plot, range và selected item hợp lệ.
+- Growth stage derive từ UTC timestamp qua save/load; missing crop/plot ID fail soft.
+- Harvest capacity fail giữ crop Mature; success grant đúng một lần sau loot fly và đưa plot về Empty.
+- Pointer plant/harvest được phân loại non-combat, không phát attack trigger/event hoặc tiêu stamina.
+- `DemoScene` và candidate world scene có stable plot IDs duy nhất; content validator phải pass.
+
 ## Bug severity
 
 - **P0:** mất/corrupt save, load nhầm slot, không vào game/build.

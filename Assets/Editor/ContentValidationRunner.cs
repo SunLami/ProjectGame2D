@@ -20,6 +20,7 @@ public static class ContentValidationRunner
 
         HashSet<string> knownItemIds = ValidateItems(items, report);
         ValidateFishingDefinitions(report);
+        ValidateFarmingDefinitions(report);
         ValidateEquipmentCatalogs(equipment, report);
         ValidateItemDatabases(report);
         ValidateTileData(report);
@@ -28,6 +29,7 @@ public static class ContentValidationRunner
         ValidateShopDefinitions(report, knownItemIds);
         ValidateRecipeDefinitions(report, knownItemIds);
         ValidatePersistentWorldObjects(report);
+        ValidateFarmPlots(report);
 
         string summary = $"Content validation finished: {report.ErrorCount} error(s), "
             + $"{report.WarningCount} warning(s), {report.CheckedAssetCount} asset(s) checked.";
@@ -163,6 +165,71 @@ public static class ContentValidationRunner
                 if (entry != null && entry.Weight <= 0f)
                     report.Error(path, $"fish[{i}] weight must be greater than zero.", spot);
             }
+        }
+    }
+
+    private static void ValidateFarmingDefinitions(ValidationReport report)
+    {
+        List<CropDefinition> crops = LoadAssets<CropDefinition>();
+        var ids = new HashSet<string>(StringComparer.Ordinal);
+        foreach (CropDefinition crop in crops)
+        {
+            report.Check(crop);
+            string path = AssetDatabase.GetAssetPath(crop);
+            if (string.IsNullOrWhiteSpace(crop.CropId))
+                report.Error(path, "cropId is empty.", crop);
+            else if (!StableIdPattern.IsMatch(crop.CropId))
+                report.Error(path, $"cropId '{crop.CropId}' does not match the stable ID convention.", crop);
+            else if (!ids.Add(crop.CropId))
+                report.Error(path, $"cropId '{crop.CropId}' is duplicated.", crop);
+            if (crop.HarvestItem == null)
+                report.Error(path, "harvest item is missing.", crop);
+            if (crop.Stages == null || crop.Stages.Length < 2)
+                report.Error(path, "crop requires at least two growth stages.", crop);
+            else
+                for (int i = 0; i < crop.Stages.Length; i++)
+                    if (crop.Stages[i] == null || crop.Stages[i].sprite == null)
+                        report.Error(path, $"stages[{i}] is missing a sprite.", crop);
+        }
+
+        foreach (SeedItemSO seed in LoadAssets<SeedItemSO>())
+        {
+            report.Check(seed);
+            if (seed.Crop == null)
+                report.Error(AssetDatabase.GetAssetPath(seed), "seed has no CropDefinition.", seed);
+        }
+
+        var cataloged = new HashSet<CropDefinition>();
+        List<FarmingCatalog> catalogs = LoadAssets<FarmingCatalog>();
+        if (crops.Count > 0 && catalogs.Count == 0)
+            report.Error("Assets", "CropDefinition assets exist but no FarmingCatalog exists.");
+        foreach (FarmingCatalog catalog in catalogs)
+        {
+            report.Check(catalog);
+            if (catalog.Crops == null || catalog.Crops.Length < 2)
+                report.Error(AssetDatabase.GetAssetPath(catalog), "farming catalog must prove at least two crop variants.", catalog);
+            else
+                foreach (CropDefinition crop in catalog.Crops)
+                    if (crop == null) report.Error(AssetDatabase.GetAssetPath(catalog), "catalog contains a null crop.", catalog);
+                    else if (!cataloged.Add(crop)) report.Error(AssetDatabase.GetAssetPath(catalog), $"crop '{crop.name}' is cataloged more than once.", catalog);
+        }
+        foreach (CropDefinition crop in crops)
+            if (!cataloged.Contains(crop)) report.Error(AssetDatabase.GetAssetPath(crop), "crop is missing from every FarmingCatalog.", crop);
+    }
+
+    private static void ValidateFarmPlots(ValidationReport report)
+    {
+        var ids = new HashSet<string>(StringComparer.Ordinal);
+        foreach (FarmPlot plot in FindSceneObjects<FarmPlot>())
+        {
+            report.Check(plot);
+            string path = plot.gameObject.scene.name;
+            if (string.IsNullOrWhiteSpace(plot.PlotId))
+                report.Error(path, $"farm plot '{plot.name}' has an empty plotId.", plot);
+            else if (!StableIdPattern.IsMatch(plot.PlotId))
+                report.Error(path, $"plotId '{plot.PlotId}' does not match the stable ID convention.", plot);
+            else if (!ids.Add(plot.PlotId))
+                report.Error(path, $"plotId '{plot.PlotId}' is duplicated in loaded scenes.", plot);
         }
     }
 
@@ -713,7 +780,7 @@ public static class ContentValidationRunner
     }
 
     private static List<T> FindSceneObjects<T>() where T : UnityEngine.Object =>
-        new(UnityEngine.Object.FindObjectsByType<T>(FindObjectsInactive.Include, FindObjectsSortMode.None));
+        new(UnityEngine.Object.FindObjectsByType<T>(FindObjectsInactive.Include));
 
     private static void ValidateRequiredArray<T>(
         string path,

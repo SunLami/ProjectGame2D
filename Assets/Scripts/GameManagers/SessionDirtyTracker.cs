@@ -74,6 +74,8 @@ public sealed class SessionDirtyTracker : MonoBehaviour
             _questManager.MainQuestUnlocked += HandleDirtyingEvent;
         }
         WorldDomainEvents.WorldObjectChanged += HandleDirtyingEvent;
+        if (QuickBarManager.Instance != null) QuickBarManager.Instance.Changed += HandleDirtyingEvent;
+        FarmingDomainEvents.FarmStateChanged += HandleDirtyingEvent;
 
         _subscribed = true;
     }
@@ -105,6 +107,8 @@ public sealed class SessionDirtyTracker : MonoBehaviour
             _questManager.MainQuestUnlocked -= HandleDirtyingEvent;
         }
         WorldDomainEvents.WorldObjectChanged -= HandleDirtyingEvent;
+        if (QuickBarManager.Instance != null) QuickBarManager.Instance.Changed -= HandleDirtyingEvent;
+        FarmingDomainEvents.FarmStateChanged -= HandleDirtyingEvent;
 
         _subscribed = false;
     }

@@ -45,11 +45,18 @@ public sealed class GameCursorManager : MonoBehaviour
     private QuestNpcInteractionUI _hoveredQuestNpc;
     private ChestInteractable _hoveredChest;
     private FishingSpotInteractable _hoveredFishingSpot;
+    private FarmPlot _hoveredFarmPlot;
 
     public static GameCursorManager Instance { get; private set; }
     public GameCursorType CurrentCursor => _current;
-    public bool IsPointerOverNonCombatInteraction =>
-        _current is GameCursorType.Interact or GameCursorType.Talk;
+    public bool IsPointerOverNonCombatInteraction
+    {
+        get
+        {
+            GameCursorType live = ResolveCursor();
+            return live is GameCursorType.Interact or GameCursorType.Talk or GameCursorType.Gathering;
+        }
+    }
 
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
     private static void Bootstrap()
@@ -93,6 +100,13 @@ public sealed class GameCursorManager : MonoBehaviour
             _hoveredQuestNpc.TryInteract();
         }
         else if (_current == GameCursorType.Interact
+            && _hoveredFarmPlot != null
+            && Mouse.current != null
+            && Mouse.current.leftButton.wasPressedThisFrame)
+        {
+            _hoveredFarmPlot.TryInteract(QuickBarManager.Instance?.SelectedItem);
+        }
+        else if (_current == GameCursorType.Interact
             && _hoveredFishingSpot != null
             && Mouse.current != null
             && Mouse.current.leftButton.wasPressedThisFrame)
@@ -110,10 +124,12 @@ public sealed class GameCursorManager : MonoBehaviour
 
     private GameCursorType ResolveCursor()
     {
+        if (_hoveredFarmPlot != null) _hoveredFarmPlot.SetHighlighted(false);
         _hoveredGatheringNode = null;
         _hoveredQuestNpc = null;
         _hoveredChest = null;
         _hoveredFishingSpot = null;
+        _hoveredFarmPlot = null;
         if (Mouse.current == null
             || GameStateManager.Instance == null
             || GameStateManager.Instance.CurrentState != GameState.Playing
@@ -140,6 +156,12 @@ public sealed class GameCursorManager : MonoBehaviour
 
             if (target.Cursor == GameCursorType.Gathering)
                 _hoveredGatheringNode = collider.GetComponentInParent<ResourceNodeInteractable>(true);
+            else if (target.Cursor == GameCursorType.Interact
+                && collider.GetComponentInParent<FarmPlot>(true) is FarmPlot farmPlot)
+            {
+                _hoveredFarmPlot = farmPlot;
+                _hoveredFarmPlot.SetHighlighted(true);
+            }
             else if (target.Cursor == GameCursorType.Talk)
                 _hoveredQuestNpc = collider.GetComponentInParent<QuestNpcInteractionUI>(true);
             else if (target.Cursor == GameCursorType.Interact

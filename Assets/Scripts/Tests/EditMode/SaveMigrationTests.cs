@@ -112,6 +112,34 @@ public sealed class SaveMigrationTests
     }
 
     [Test]
+    public void V7_AddsQuickBarAndFarmingThroughSequentialSteps()
+    {
+        var legacy = new GameSaveData { saveVersion = 7, saveId = "legacy-v7" };
+
+        GameSaveData migrated = SaveMigration.Migrate(legacy);
+
+        Assert.AreEqual(GameSaveData.CurrentSaveVersion, migrated.saveVersion);
+        Assert.IsNotNull(migrated.quickBar);
+        Assert.AreEqual(QuickBarSaveData.SlotCount, migrated.quickBar.assignedItemIds.Count);
+        Assert.IsNotNull(migrated.farming);
+        Assert.AreEqual(0, migrated.farming.plots.Count);
+    }
+
+    [Test]
+    public void V8_PreservesQuickBarWhileAddingEmptyFarming()
+    {
+        var quickBar = new QuickBarSaveData { selectedIndex = 4 };
+        quickBar.assignedItemIds[4] = "item.seed.carrot";
+        var legacy = new GameSaveData { saveVersion = 8, saveId = "legacy-v8", quickBar = quickBar };
+
+        GameSaveData migrated = SaveMigration.Migrate(legacy);
+
+        Assert.AreSame(quickBar, migrated.quickBar);
+        Assert.AreEqual("item.seed.carrot", migrated.quickBar.assignedItemIds[4]);
+        Assert.IsNotNull(migrated.farming);
+    }
+
+    [Test]
     public void AlreadyCurrentVersion_MigrateIsANoOp()
     {
         var current = new GameSaveData { saveVersion = GameSaveData.CurrentSaveVersion, saveId = "already-current" };

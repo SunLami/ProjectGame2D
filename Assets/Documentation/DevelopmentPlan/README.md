@@ -50,6 +50,7 @@ cập nhật tài liệu liên quan trước hoặc cùng lúc với code.
     từ DemoScene sang MapNhat dùng chung GameStateManager; cần chốt D-019 trước khi triển khai.
 19. [Gameplay Timeline](GameplayTimeline.md): chuỗi Timeline gameplay sau Intro, hiện author Scene 01 qua cầu.
 20. [Fishing System](FishingSystem.md): data cá, unique fish instance, minigame, Inventory/save và quy trình authoring.
+21. [Farming System](FarmingSystem.md): quick bar contract, fixed plots, crop growth/harvest và save.
 
 ## Quy tắc quản trị tài liệu
 

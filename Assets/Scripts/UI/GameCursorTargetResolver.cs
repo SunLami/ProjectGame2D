@@ -35,6 +35,17 @@ public static class GameCursorTargetResolver
             return true;
         }
 
+        FarmPlot farmPlot = hoveredComponent.GetComponentInParent<FarmPlot>(true);
+        if (farmPlot != null)
+        {
+            target = new GameCursorTarget(
+                GameCursorType.Interact,
+                farmPlot.transform,
+                true,
+                farmPlot.IsInteractionAvailable(QuickBarManager.Instance?.SelectedItem));
+            return true;
+        }
+
         Enemy enemy = hoveredComponent.GetComponentInParent<Enemy>(true);
         if (enemy != null)
         {
