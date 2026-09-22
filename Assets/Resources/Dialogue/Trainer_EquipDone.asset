@@ -18,8 +18,45 @@ MonoBehaviour:
   - _nodeId: praise
     _speakerName: Trainer
     _portrait: {fileID: 0}
-    _text: Well done, your sword is equipped! Now let's see what you can do
-      against those training dummies over there.
+    _text: Well done, your sword is equipped! That's a good stance you've got --
+      let's see if it holds up under pressure.
+    _nextNodeId: hub
+    _outcomeId:
+    _choices: []
+  - _nodeId: hub
+    _speakerName: Trainer
+    _portrait: {fileID: 0}
+    _text: Feeling ready, or do you have questions first?
+    _nextNodeId:
+    _outcomeId:
+    _choices:
+    - _text: Tell me about the training dummies.
+      _nextNodeId: about_dummies
+    - _text: Any tips before I fight?
+      _nextNodeId: tips
+    - _text: I'm ready for a challenge.
+      _nextNodeId: offer
+  - _nodeId: about_dummies
+    _speakerName: Trainer
+    _portrait: {fileID: 0}
+    _text: Straw and old armor plating, nothing that bleeds. They won't hit back,
+      but they'll show you exactly where your swings fall short.
+    _nextNodeId: hub
+    _outcomeId:
+    _choices: []
+  - _nodeId: tips
+    _speakerName: Trainer
+    _portrait: {fileID: 0}
+    _text: Keep your footing steady and don't overcommit on a swing. A clean hit
+      beats a wild one every time.
+    _nextNodeId: hub
+    _outcomeId:
+    _choices: []
+  - _nodeId: offer
+    _speakerName: Trainer
+    _portrait: {fileID: 0}
+    _text: That's the spirit! Head over to the training dummies and show me what
+      you've got.
     _nextNodeId:
     _outcomeId: trainer.quest_kill.offered
     _choices: []

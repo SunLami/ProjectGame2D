@@ -18,8 +18,46 @@ MonoBehaviour:
   - _nodeId: greeting
     _speakerName: Trainer
     _portrait: {fileID: 0}
-    _text: Welcome! I'm the trainer here. Before you head out on any adventure,
-      you'll need a sword to defend yourself.
+    _text: Ah, a new face around the training grounds. I don't believe we've been
+      introduced, traveler.
+    _nextNodeId: hub
+    _outcomeId:
+    _choices: []
+  - _nodeId: hub
+    _speakerName: Trainer
+    _portrait: {fileID: 0}
+    _text: What would you like to know?
+    _nextNodeId:
+    _outcomeId:
+    _choices:
+    - _text: Who are you?
+      _nextNodeId: about_trainer
+    - _text: What is this place?
+      _nextNodeId: about_grounds
+    - _text: I'm ready to start training.
+      _nextNodeId: offer
+  - _nodeId: about_trainer
+    _speakerName: Trainer
+    _portrait: {fileID: 0}
+    _text: I've trained every recruit who's passed through this camp for the better
+      part of twenty years. Most of them are still alive, so I must be doing
+      something right.
+    _nextNodeId: hub
+    _outcomeId:
+    _choices: []
+  - _nodeId: about_grounds
+    _speakerName: Trainer
+    _portrait: {fileID: 0}
+    _text: These grounds have seen better days, but the dummies out back still
+      swing hard enough to knock sense into anyone who underestimates them.
+    _nextNodeId: hub
+    _outcomeId:
+    _choices: []
+  - _nodeId: offer
+    _speakerName: Trainer
+    _portrait: {fileID: 0}
+    _text: Good. Before you head out on any adventure, you'll need a sword to
+      defend yourself. Let's see if you're worth the steel.
     _nextNodeId:
     _outcomeId: trainer.greeting.offered
     _choices: []
