@@ -233,6 +233,14 @@ Migration V6→V7 giữ nguyên slot cũ và để payload mới null. Restore c
 rỗng và cân nặng dương, ép quantity = 1, clamp cân nặng theo definition; record hỏng bị bỏ qua kèm
 warning. Xem [FishingSystem.md](FishingSystem.md).
 
+**Quick bar và Farming save hiện trạng (2026-09-22):** schema V8 bổ sung `QuickBarSaveData`
+gồm đúng tám stable `itemId` assignment và `selectedIndex`; schema V9 bổ sung `FarmingSaveData`
+gồm các record `{ plotId, cropId, plantedAtUtcTicks }` cho plot đang có cây. Migration V7→V8 và
+V8→V9 chỉ thêm default, không diễn giải lại inventory/world record cũ. Restore quick bar chạy sau
+inventory để quantity/icon lấy từ inventory đã ổn định; restore farming chạy sau world restore.
+Growth derive từ UTC elapsed, không lưu stage index hoặc sprite. Missing item/crop/plot ID bị bỏ qua
+kèm warning và không làm hỏng toàn save. Xem [FarmingSystem.md](FarmingSystem.md).
+
 ## Inventory/equipment persistence
 
 - Serialize item bằng stable `itemId`, không serialize ScriptableObject reference.

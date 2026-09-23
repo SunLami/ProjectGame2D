@@ -1,0 +1,27 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c5c1c8d90a4356d48a339824827cb51c, type: 3}
+  m_Name: Crop.Eggplant
+  m_EditorClassIdentifier: ProjectGame2D.Runtime::CropDefinition
+  _cropId: crop.eggplant
+  _harvestItem: {fileID: 11400000, guid: d65a95dc60d3a18448085cfd020c18bf, type: 2}
+  _minimumHarvestQuantity: 1
+  _maximumHarvestQuantity: 3
+  _stages:
+  - sprite: {fileID: 5342973406481538332, guid: e80683258193b01499aba884287b28e0, type: 3}
+    durationSeconds: 20
+  - sprite: {fileID: -5343777985933255334, guid: e80683258193b01499aba884287b28e0, type: 3}
+    durationSeconds: 20
+  - sprite: {fileID: -526773507545474756, guid: e80683258193b01499aba884287b28e0, type: 3}
+    durationSeconds: 20
+  - sprite: {fileID: 1318573946295524760, guid: e80683258193b01499aba884287b28e0, type: 3}
+    durationSeconds: 0.1

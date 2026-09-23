@@ -20,6 +20,7 @@ public sealed class PlayerSpawnReadinessSource : MonoBehaviour, IGameplayReadine
     [SerializeField] private SpawnRegistry _spawnRegistry;
     [SerializeField] private InventorySeeder _inventorySeeder;
     [SerializeField] private WorldObjectRegistry _worldRegistry;
+    [SerializeField] private FarmingManager _farmingManager;
 
     public string SourceId => _sourceId;
     public bool IsReady { get; private set; }
@@ -28,13 +29,15 @@ public sealed class PlayerSpawnReadinessSource : MonoBehaviour, IGameplayReadine
 
     internal void ConfigureForTests(
         PlayerStat playerStat, Transform playerTransform, SpawnRegistry spawnRegistry,
-        InventorySeeder inventorySeeder = null, WorldObjectRegistry worldRegistry = null)
+        InventorySeeder inventorySeeder = null, WorldObjectRegistry worldRegistry = null,
+        FarmingManager farmingManager = null)
     {
         _playerStat = playerStat;
         _playerTransform = playerTransform;
         _spawnRegistry = spawnRegistry;
         _inventorySeeder = inventorySeeder;
         _worldRegistry = worldRegistry;
+        _farmingManager = farmingManager;
     }
 
     private void Start()
@@ -101,6 +104,16 @@ public sealed class PlayerSpawnReadinessSource : MonoBehaviour, IGameplayReadine
             }
         }
 
+        // 3b. Quick-bar assignment is stable itemId state and restores only after Inventory/item
+        // resolution is available. Missing content is reported and leaves that assignment empty.
+        if (QuickBarManager.Instance != null)
+        {
+            List<string> missingQuickBarItems = new();
+            QuickBarManager.Instance.RestoreState(session.SaveData.quickBar, missingQuickBarItems);
+            if (missingQuickBarItems.Count > 0)
+                Debug.LogWarning($"Skipped unresolved quick-bar item(s): {string.Join(", ", missingQuickBarItems)}", this);
+        }
+
         // 4. Equipment -- restored directly, never through the public Equip() UI path.
         if (EquipmentManager.Instance != null && session.SaveData.equipment?.slots != null)
         {
@@ -154,6 +167,21 @@ public sealed class PlayerSpawnReadinessSource : MonoBehaviour, IGameplayReadine
                     + $"in this scene and were skipped: {string.Join(", ", missingWorldIds)}", this);
             }
         }
+
+
+        // 10. Farming plots restore after world state and before Playing. Growth stage derives
+        // from crop definition + UTC timestamp, so restore never simulates intermediate frames.
+        _farmingManager ??= FarmingManager.Instance;
+        if (_farmingManager != null && session.SaveData.farming != null)
+        {
+            List<string> missingPlots = new();
+            List<string> missingCrops = new();
+            _farmingManager.RestoreState(session.SaveData.farming, missingPlots, missingCrops);
+            if (missingPlots.Count > 0)
+                Debug.LogWarning($"Skipped missing farm plot(s): {string.Join(", ", missingPlots)}", this);
+            if (missingCrops.Count > 0)
+                Debug.LogWarning($"Skipped unresolved crop(s): {string.Join(", ", missingCrops)}", this);
+        }
     }
 
     private void RestorePosition(PlayerLocationSaveData location)
@@ -198,6 +226,11 @@ public sealed class PlayerSpawnReadinessSource : MonoBehaviour, IGameplayReadine
             snapshot.quests = QuestManager.Instance.ToSaveData();
         if (_worldRegistry != null)
             snapshot.world = _worldRegistry.ToSaveData();
+        if (QuickBarManager.Instance != null)
+            snapshot.quickBar = QuickBarManager.Instance.ToSaveData();
+        _farmingManager ??= FarmingManager.Instance;
+        if (_farmingManager != null)
+            snapshot.farming = _farmingManager.ToSaveData();
 
         SaveOperationResult result = repository.WriteSave(session.SlotId, snapshot);
         if (result.Success)

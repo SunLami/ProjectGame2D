@@ -41,7 +41,9 @@ session tạm thời; không ghi kết quả vào definition.
   `FishDefinitionSO` để không làm mất metadata instance.
 - `InventorySaveData.SlotData.fish` là payload tùy chọn. Item thường để null; fish hợp lệ phải có
   `instanceId` và `weightGrams > 0`.
-- Save schema hiện là version 7. Migration V6→V7 giữ nguyên inventory cũ và bổ sung payload nullable;
+- Fish instance payload được giới thiệu ở version 7; save schema toàn game hiện là version 9.
+  Migration V6→V7 giữ nguyên inventory cũ và bổ sung payload nullable; các migration V7→V9 của
+  quick bar/farming là additive và không thay đổi fish payload;
   save cũ không sinh cá giả.
 - Restore cá luôn clamp cân nặng theo definition hiện tại, giữ nguyên `instanceId`, ép quantity = 1.
   Fish payload hỏng bị bỏ qua kèm warning thay vì tạo item nửa hợp lệ.
