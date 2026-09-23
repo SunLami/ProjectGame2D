@@ -286,11 +286,26 @@ Paused
   buttons. Header `QUEST LOG`, close button, filter, row, reward và action đều là GameObject thật trong
   `GameplayUIRoot.prefab` để designer chỉnh trực tiếp trong Prefab Mode; runtime chỉ bind dữ liệu.
 - Mockup scroll lưu tại `Assets/Documentation/DevelopmentPlan/quest_log_window_scroll_mockup_v2.png`;
-  board production là `Assets/Resources/UI/Quest/QuestLog1920/quest_log_board_scroll_v2.png` và atlas
-  không bake text nằm tại `Assets/Resources/UI/Quest/QuestLog1920/quest_log_atlas_source.png`.
+  board production là `Assets/Resources/UI/Quest/QuestLog1920/quest_log_board_dynamic_actions_v3.png`
+  và atlas không bake text nằm tại `Assets/Resources/UI/Quest/QuestLog1920/quest_log_atlas_source.png`.
+  Board không bake action-button frame; `TrackQuestButton` và `AbandonQuestButton` sở hữu sprite
+  `quest_log_action_button.png`, nên khi runtime ẩn Button thì cả viền và text cùng biến mất.
 - Detail panel có `TRACK QUEST`/`UNTRACK QUEST` và `ABANDON QUEST`. Abandon luôn qua confirmation,
   reset toàn bộ tiến độ và nhắc người chơi quay lại đúng giver NPC để nhận lại. Quest không có
   `giverNpcId` không được abandon để tránh trạng thái progression không thể phục hồi.
+- `QuestAcceptPopup` là popup dọc giữa màn hình, RectTransform `320×400` trên Canvas reference
+  `800×600`, tương đương khoảng `768×960` physical pixel ở target `1920×1080`. Board dùng cùng gỗ
+  sẫm, viền vàng, sapphire xanh và lá xanh của PlayerHUD/UnifiedGameplayHUD/QuestTracker; gameplay
+  vẫn lộ rõ quanh popup và overlay chỉ dim nhẹ để giữ focus.
+- Header, category icon, quest title, `OBJECTIVES`, objective rows, `REWARDS`, reward slots và hai
+  button `ACCEPT`/`DECLINE` đều là GameObject thật trong `Assets/Prefabs/UI/QuestAcceptPopup.prefab`
+  để designer chỉnh bằng Prefab Mode. Asset board không bake text hoặc dữ liệu quest; runtime bind
+  category/objective/reward icon, progress, Gold và EXP mà không sở hữu progression hay save data.
+- Board production của popup nằm tại
+  `Assets/Resources/UI/Quest/QuestAccept1920/quest_accept_board_dynamic_rewards_v2.png`. Board không
+  bake reward socket; runtime chỉ tạo đúng số item reward thực tế, căn giữa và co slot khi danh sách
+  dài. Vùng objective được chừa chiều cao cho nhiều dòng; quest ít objective không được tự kéo reward
+  lên vì sẽ làm thay đổi nhịp bố cục giữa các quest.
 
 ### Dialogue UI visual direction
 

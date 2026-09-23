@@ -7,10 +7,11 @@ using UnityEngine.UI;
 public static class QuestLogWindowPrefabBuilder
 {
     private const string PrefabPath = "Assets/Prefabs/UI/GameplayUIRoot.prefab";
-    private static readonly Color Cream = new(0.22f, 0.12f, 0.055f, 1f);
+    private const string BoardPath = "Assets/Resources/UI/Quest/QuestLog1920/quest_log_board_dynamic_actions_v3.png";
+    private const string ActionButtonPath = "Assets/Resources/UI/Quest/QuestLog1920/quest_log_action_button.png";
+    private static readonly Color Cream = new(0.96f, 0.91f, 0.76f, 1f);
     private static readonly Color Gold = new(0.83f, 0.60f, 0.24f, 1f);
-    private static readonly Color Muted = new(0.42f, 0.31f, 0.20f, 1f);
-    private static readonly Color Blue = new(0.03f, 0.28f, 0.67f, 1f);
+    private static readonly Color Muted = new(0.68f, 0.63f, 0.60f, 1f);
 
     [MenuItem("Tools/ProjectGame2D/UI/Rebuild Quest Log Window 1920")]
     public static void Build()
@@ -49,7 +50,7 @@ public static class QuestLogWindowPrefabBuilder
 
         RectTransform rect = window.GetComponent<RectTransform>();
         Center(rect, new Vector2(560f, 340f), Vector2.zero);
-        Image image = EnsureImage(window.gameObject, Load("Assets/Resources/UI/Quest/QuestLog1920/quest_log_board_scroll_v2.png"));
+        Image image = EnsureImage(window.gameObject, Load(BoardPath));
         image.type = Image.Type.Simple;
         image.preserveAspect = true;
         image.color = Color.white;
@@ -65,7 +66,7 @@ public static class QuestLogWindowPrefabBuilder
         legacy.fontStyle = FontStyles.SmallCaps;
         legacy.color = Cream;
         legacy.alignment = TextAlignmentOptions.Center;
-        TopStretch(legacy.rectTransform, 54f, 20f, 54f, 10f);
+        TopStretch(legacy.rectTransform, 54f, 20f, 49f, 5f);
 
         Transform oldBanner = legacy.transform.Find("SkinQuestTitleBanner");
         if (oldBanner != null) UnityEngine.Object.DestroyImmediate(oldBanner.gameObject);
@@ -91,14 +92,15 @@ public static class QuestLogWindowPrefabBuilder
 
     private static void ConfigureList(Transform panel, TMP_FontAsset font)
     {
-        Center(panel.GetComponent<RectTransform>(), new Vector2(190f, 270f), new Vector2(-170f, -22f));
+        Center(panel.GetComponent<RectTransform>(), new Vector2(190f, 270f), new Vector2(-158f, -22f));
         Image panelImage = EnsureImage(panel.gameObject, null);
         panelImage.color = Color.clear;
 
         Transform obsoleteFilters = panel.Find("Filters");
         if (obsoleteFilters != null) UnityEngine.Object.DestroyImmediate(obsoleteFilters.gameObject);
 
-        Transform content = Require(panel, "Content");
+        Transform content = panel.Find("Viewport/Content") ?? panel.Find("Content");
+        if (content == null) throw new InvalidOperationException("Missing Quest Log object: QuestListPanel/Viewport/Content");
         Transform viewport = panel.Find("Viewport");
         if (viewport == null)
         {
@@ -126,6 +128,8 @@ public static class QuestLogWindowPrefabBuilder
         {
             vertical.spacing = 4f;
             vertical.padding = new RectOffset(0, 0, 0, 0);
+            vertical.childControlWidth = true;
+            vertical.childForceExpandWidth = true;
             vertical.childControlHeight = true;
             vertical.childForceExpandHeight = false;
         }
@@ -142,32 +146,53 @@ public static class QuestLogWindowPrefabBuilder
         scrollRect.movementType = ScrollRect.MovementType.Clamped;
         scrollRect.scrollSensitivity = 22f;
         scrollRect.verticalScrollbar = scrollbar;
-        scrollRect.verticalScrollbarVisibility = ScrollRect.ScrollbarVisibility.Permanent;
+        scrollRect.verticalScrollbarVisibility = ScrollRect.ScrollbarVisibility.AutoHideAndExpandViewport;
         scrollRect.verticalScrollbarSpacing = 0f;
 
         Transform row = Require(content, "QuestRowTemplate");
         RectTransform rowRect = row.GetComponent<RectTransform>();
-        rowRect.sizeDelta = new Vector2(0f, 43f);
+        rowRect.sizeDelta = new Vector2(0f, 50f);
         LayoutElement rowLayout = row.GetComponent<LayoutElement>() ?? row.gameObject.AddComponent<LayoutElement>();
-        rowLayout.preferredHeight = 43f;
-        Image rowImage = EnsureImage(row.gameObject, Load("Assets/Resources/UI/MainMenu/LightFantasy/landing_action_button.png"));
-        rowImage.type = Image.Type.Sliced;
-        rowImage.color = Color.white;
+        rowLayout.minWidth = -1f;
+        rowLayout.preferredWidth = -1f;
+        rowLayout.flexibleWidth = 1f;
+        rowLayout.preferredHeight = 50f;
+        Image rowImage = EnsureImage(row.gameObject, null);
+        rowImage.color = new Color(0.075f, 0.068f, 0.085f, 0.94f);
+        Outline rowOutline = row.GetComponent<Outline>() ?? row.gameObject.AddComponent<Outline>();
+        rowOutline.effectColor = new Color(0.42f, 0.31f, 0.25f, 0.9f);
+        rowOutline.effectDistance = new Vector2(1f, -1f);
+        Button rowButton = row.GetComponent<Button>();
+        if (rowButton != null)
+        {
+            MainMenuButtonHoverVisual legacyHover = row.GetComponent<MainMenuButtonHoverVisual>();
+            if (legacyHover != null)
+                UnityEngine.Object.DestroyImmediate(legacyHover);
+            rowButton.transition = Selectable.Transition.ColorTint;
+            rowButton.targetGraphic = rowImage;
+            ColorBlock colors = rowButton.colors;
+            colors.normalColor = Color.white;
+            colors.highlightedColor = new Color(1.18f, 1.05f, 0.98f, 1f);
+            colors.selectedColor = new Color(0.48f, 0.24f, 0.30f, 1f);
+            colors.pressedColor = new Color(0.35f, 0.18f, 0.22f, 1f);
+            rowButton.colors = colors;
+        }
 
         Image icon = ChildImage(row, "CategoryIcon", Load("Assets/Resources/UI/Quest/Tracker1920/category_main.png"));
-        Place(icon.rectTransform, new Vector2(30f, 30f), new Vector2(20f, -21.5f), new Vector2(0f, 1f));
+        Place(icon.rectTransform, new Vector2(28f, 28f), new Vector2(10f, -10f), new Vector2(0f, 1f));
         icon.preserveAspect = true;
 
         TMP_Text title = Require(row, "Title").GetComponent<TMP_Text>();
-        Style(title, font, 8.5f, Color.white, TextAlignmentOptions.Left);
-        Rect(title.rectTransform, new Vector2(118f, 19f), new Vector2(42f, -7f));
+        Style(title, font, 9f, Color.white, TextAlignmentOptions.Left);
+        Rect(title.rectTransform, new Vector2(114f, 17f), new Vector2(40f, -7f));
         TMP_Text status = Require(row, "Status").GetComponent<TMP_Text>();
-        Style(status, font, 6f, new Color(0.82f, 0.90f, 1f, 1f), TextAlignmentOptions.Left);
-        Rect(status.rectTransform, new Vector2(95f, 12f), new Vector2(42f, -26f));
-        TMP_Text category = ChildText(row, "Category", font, 5.5f, Gold);
-        Rect(category.rectTransform, new Vector2(46f, 12f), new Vector2(104f, -26f));
+        Style(status, font, 7f, new Color(0.82f, 0.90f, 1f, 1f), TextAlignmentOptions.Left);
+        Rect(status.rectTransform, new Vector2(76f, 13f), new Vector2(40f, -29f));
+        TMP_Text category = ChildText(row, "Category", font, 7f, Gold);
+        category.alignment = TextAlignmentOptions.Center;
+        Rect(category.rectTransform, new Vector2(48f, 13f), new Vector2(113f, -29f));
         Image pin = ChildImage(row, "TrackedPin", Load("Assets/Resources/UI/Quest/Tracker1920/objective_location.png"));
-        Place(pin.rectTransform, new Vector2(13f, 13f), new Vector2(-11f, -21.5f), new Vector2(1f, 1f));
+        Place(pin.rectTransform, new Vector2(12f, 12f), new Vector2(-10f, -25f), new Vector2(1f, 1f));
         pin.preserveAspect = true;
 
         TMP_Text empty = Require(panel, "EmptyText").GetComponent<TMP_Text>();
@@ -219,44 +244,44 @@ public static class QuestLogWindowPrefabBuilder
         panelImage.color = Color.clear;
 
         Image icon = ChildImage(panel, "CategoryIcon", Load("Assets/Resources/UI/Quest/Tracker1920/category_main.png"));
-        Place(icon.rectTransform, new Vector2(42f, 42f), new Vector2(30f, -31f), new Vector2(0f, 1f));
+        Place(icon.rectTransform, new Vector2(28f, 28f), new Vector2(29f, -30.5f), new Vector2(0f, 1f));
         icon.preserveAspect = true;
 
         TMP_Text title = Require(panel, "Title").GetComponent<TMP_Text>();
-        Style(title, font, 14f, Cream, TextAlignmentOptions.Left);
-        Rect(title.rectTransform, new Vector2(248f, 24f), new Vector2(57f, -13f));
-        TMP_Text category = ChildText(panel, "CategoryLabel", font, 7f, Gold);
-        Rect(category.rectTransform, new Vector2(130f, 15f), new Vector2(58f, -38f));
+        Style(title, font, 13.5f, Cream, TextAlignmentOptions.Left);
+        Rect(title.rectTransform, new Vector2(276f, 23f), new Vector2(36f, -10f));
+        TMP_Text category = ChildText(panel, "CategoryLabel", font, 8.5f, Gold);
+        Rect(category.rectTransform, new Vector2(128f, 15f), new Vector2(66f, -37f));
         TMP_Text status = Require(panel, "Status").GetComponent<TMP_Text>();
-        Style(status, font, 7f, new Color(0.45f, 0.80f, 0.55f, 1f), TextAlignmentOptions.Right);
-        Rect(status.rectTransform, new Vector2(120f, 15f), new Vector2(190f, -38f));
+        Style(status, font, 8.5f, new Color(0.45f, 0.80f, 0.55f, 1f), TextAlignmentOptions.Right);
+        Rect(status.rectTransform, new Vector2(110f, 15f), new Vector2(198f, -37f));
 
-        TMP_Text objectiveHeading = ChildText(panel, "ObjectivesHeading", font, 9f, Gold);
+        TMP_Text objectiveHeading = ChildText(panel, "ObjectivesHeading", font, 10.5f, Gold);
         objectiveHeading.text = "OBJECTIVES";
-        Rect(objectiveHeading.rectTransform, new Vector2(150f, 18f), new Vector2(16f, -70f));
+        Rect(objectiveHeading.rectTransform, new Vector2(120f, 18f), new Vector2(36f, -68f));
         Image objectiveIcon = ChildImage(panel, "ObjectiveIcon", Load("Assets/Resources/UI/Quest/Tracker1920/objective_kill.png"));
-        Place(objectiveIcon.rectTransform, new Vector2(25f, 25f), new Vector2(28f, -105f), new Vector2(0f, 1f));
+        Place(objectiveIcon.rectTransform, new Vector2(26f, 26f), new Vector2(30f, -90f), new Vector2(0f, 1f));
         objectiveIcon.preserveAspect = true;
 
         TMP_Text objectives = Require(panel, "Objectives").GetComponent<TMP_Text>();
         Style(objectives, font, 8.5f, Cream, TextAlignmentOptions.TopLeft);
-        Rect(objectives.rectTransform, new Vector2(270f, 62f), new Vector2(48f, -91f));
+        Rect(objectives.rectTransform, new Vector2(260f, 48f), new Vector2(64f, -97f));
 
         Transform rewards = ReplaceContainer(panel, "Rewards");
         RectTransform rewardsRect = rewards.GetComponent<RectTransform>();
         rewardsRect.anchorMin = new Vector2(0f, 1f);
         rewardsRect.anchorMax = new Vector2(1f, 1f);
         rewardsRect.pivot = new Vector2(0.5f, 1f);
-        rewardsRect.offsetMin = new Vector2(16f, -205f);
-        rewardsRect.offsetMax = new Vector2(-16f, -164f);
-        TMP_Text rewardTitle = ChildText(rewards, "Title", font, 8f, Gold);
+        rewardsRect.offsetMin = new Vector2(16f, -214f);
+        rewardsRect.offsetMax = new Vector2(-16f, -173f);
+        TMP_Text rewardTitle = ChildText(rewards, "Title", font, 9.5f, Gold);
         rewardTitle.text = "REWARDS";
         rewardTitle.alignment = TextAlignmentOptions.Center;
         rewardTitle.rectTransform.anchorMin = new Vector2(0f, 1f);
         rewardTitle.rectTransform.anchorMax = new Vector2(1f, 1f);
         rewardTitle.rectTransform.offsetMin = new Vector2(0f, -17f);
         rewardTitle.rectTransform.offsetMax = Vector2.zero;
-        TMP_Text rewardSummary = ChildText(rewards, "RewardSummary", font, 7.5f, Cream);
+        TMP_Text rewardSummary = ChildText(rewards, "RewardSummary", font, 9f, Cream);
         rewardSummary.alignment = TextAlignmentOptions.Center;
         rewardSummary.rectTransform.anchorMin = new Vector2(0f, 0f);
         rewardSummary.rectTransform.anchorMax = new Vector2(1f, 0f);
@@ -264,10 +289,10 @@ public static class QuestLogWindowPrefabBuilder
         rewardSummary.rectTransform.offsetMax = new Vector2(0f, 21f);
 
         Button track = Require(panel, "TrackQuestButton").GetComponent<Button>();
-        Place(track.GetComponent<RectTransform>(), new Vector2(116f, 30f), new Vector2(73f, 20f), new Vector2(0f, 0f));
+        Place(track.GetComponent<RectTransform>(), new Vector2(76f, 22f), new Vector2(46f, 20f), new Vector2(0f, 0f));
         StyleButton(track, font, Gold, "TRACK QUEST");
         Button abandon = Require(panel, "AbandonQuestButton").GetComponent<Button>();
-        Place(abandon.GetComponent<RectTransform>(), new Vector2(116f, 30f), new Vector2(-73f, 20f), new Vector2(1f, 0f));
+        Place(abandon.GetComponent<RectTransform>(), new Vector2(76f, 22f), new Vector2(-26f, 20f), new Vector2(1f, 0f));
         StyleButton(abandon, font, new Color(0.55f, 0.13f, 0.12f, 1f), "ABANDON");
     }
 
@@ -287,15 +312,20 @@ public static class QuestLogWindowPrefabBuilder
 
     private static void StyleButton(Button button, TMP_FontAsset font, Color tint, string fallback)
     {
-        Image image = EnsureImage(button.gameObject, Load("Assets/Resources/UI/MainMenu/LightFantasy/landing_action_button.png"));
-        image.type = Image.Type.Sliced;
-        image.color = tint;
+        Image image = EnsureImage(button.gameObject, Load(ActionButtonPath));
+        image.type = Image.Type.Simple;
+        image.preserveAspect = false;
+        image.color = new Color(tint.r, tint.g, tint.b, 1f);
+        image.raycastTarget = true;
         TMP_Text label = button.GetComponentInChildren<TMP_Text>(true);
         if (label != null)
         {
-            Style(label, font, 8f, Color.white, TextAlignmentOptions.Center);
+            Style(label, font, 8.5f, Color.white, TextAlignmentOptions.Center);
             if (string.IsNullOrWhiteSpace(label.text)) label.text = fallback;
-            Stretch(label.rectTransform, 3f);
+            label.rectTransform.anchorMin = Vector2.zero;
+            label.rectTransform.anchorMax = Vector2.one;
+            label.rectTransform.offsetMin = new Vector2(3f, -2f);
+            label.rectTransform.offsetMax = new Vector2(-3f, -8f);
         }
     }
 
@@ -333,6 +363,8 @@ public static class QuestLogWindowPrefabBuilder
     {
         text.font = font;
         text.fontSize = size;
+        text.enableAutoSizing = false;
+        text.margin = Vector4.zero;
         text.color = color;
         text.alignment = alignment;
         text.enableWordWrapping = true;
@@ -349,6 +381,17 @@ public static class QuestLogWindowPrefabBuilder
 
     private static Sprite Load(string path)
     {
+        if (AssetImporter.GetAtPath(path) is TextureImporter importer
+            && (importer.textureType != TextureImporterType.Sprite || importer.mipmapEnabled))
+        {
+            importer.textureType = TextureImporterType.Sprite;
+            importer.spriteImportMode = SpriteImportMode.Single;
+            importer.alphaIsTransparency = true;
+            importer.mipmapEnabled = false;
+            importer.textureCompression = TextureImporterCompression.Uncompressed;
+            importer.maxTextureSize = 2048;
+            importer.SaveAndReimport();
+        }
         AssetDatabase.ImportAsset(path, ImportAssetOptions.ForceSynchronousImport);
         Sprite sprite = AssetDatabase.LoadAssetAtPath<Sprite>(path);
         if (sprite != null) return sprite;

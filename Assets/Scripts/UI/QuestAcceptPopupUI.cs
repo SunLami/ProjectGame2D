@@ -74,7 +74,11 @@ public sealed class QuestAcceptPopupUI : MonoBehaviour
             return false;
 
         _onDecision = onDecision;
-        _questPromptText.text = $"Accept “{quest.DisplayName}”?";
+        _questPromptText.text = quest.DisplayName;
+        Transform card = _questPromptText.transform.parent;
+        Image categoryIcon = card.Find("QuestCategoryIcon")?.GetComponent<Image>();
+        if (categoryIcon != null)
+            categoryIcon.sprite = LoadCategorySprite(quest);
         BuildObjectives(quest);
         BuildRewards(quest);
         _root.SetActive(true);
@@ -92,6 +96,9 @@ public sealed class QuestAcceptPopupUI : MonoBehaviour
         {
             GameObject row = Instantiate(_objectiveRowTemplate, _objectiveContainer);
             row.SetActive(true);
+            Image icon = row.transform.Find("Icon")?.GetComponent<Image>();
+            if (icon != null)
+                icon.sprite = LoadObjectiveSprite(objective.Type);
             row.transform.Find("Progress").GetComponent<TMP_Text>().text = $"0/{objective.TargetCount}";
             row.transform.Find("Label").GetComponent<TMP_Text>().text = objective.Description;
             _spawnedObjectiveRows.Add(row);
@@ -112,6 +119,15 @@ public sealed class QuestAcceptPopupUI : MonoBehaviour
         if (_rewardContainer != null && _rewardSlotTemplate != null)
         {
             _itemResolver ??= new ResourcesItemResolver();
+            int visibleItemCount = 0;
+            foreach (QuestRewardItemEntry entry in rewards.Items)
+                if (!string.IsNullOrEmpty(entry.ItemId))
+                    visibleItemCount++;
+
+            float slotSize = visibleItemCount > 0
+                ? Mathf.Clamp((244f - (Mathf.Max(0, visibleItemCount - 1) * 6f)) / visibleItemCount, 24f, 42f)
+                : 42f;
+
             foreach (QuestRewardItemEntry entry in rewards.Items)
             {
                 if (string.IsNullOrEmpty(entry.ItemId))
@@ -119,6 +135,12 @@ public sealed class QuestAcceptPopupUI : MonoBehaviour
 
                 GameObject slot = Instantiate(_rewardSlotTemplate, _rewardContainer);
                 slot.SetActive(true);
+                LayoutElement slotLayout = slot.GetComponent<LayoutElement>();
+                if (slotLayout != null)
+                {
+                    slotLayout.preferredWidth = slotSize;
+                    slotLayout.preferredHeight = slotSize;
+                }
                 Image icon = slot.transform.Find("Icon").GetComponent<Image>();
                 TMP_Text qty = slot.transform.Find("Qty").GetComponent<TMP_Text>();
                 bool resolved = _itemResolver.TryResolve(entry.ItemId, out ItemSO item) && item.icon != null;
@@ -147,6 +169,32 @@ public sealed class QuestAcceptPopupUI : MonoBehaviour
                 Destroy(go);
         }
         spawned.Clear();
+    }
+
+    private static Sprite LoadCategorySprite(QuestDefinition quest)
+    {
+        string name = quest.IsMainQuest ? "category_main" : quest.IsDailyQuest ? "category_daily" : "category_side";
+        return LoadSprite("UI/Quest/Tracker1920/" + name);
+    }
+
+    private static Sprite LoadObjectiveSprite(QuestObjectiveType type)
+    {
+        string name = type switch
+        {
+            QuestObjectiveType.Kill => "objective_kill",
+            QuestObjectiveType.Gather or QuestObjectiveType.Obtain => "objective_collect",
+            QuestObjectiveType.Talk => "objective_talk",
+            _ => "objective_location"
+        };
+        return LoadSprite("UI/Quest/Tracker1920/" + name);
+    }
+
+    private static Sprite LoadSprite(string path)
+    {
+        Sprite sprite = Resources.Load<Sprite>(path);
+        if (sprite != null) return sprite;
+        Sprite[] sprites = Resources.LoadAll<Sprite>(path);
+        return sprites.Length > 0 ? sprites[0] : null;
     }
 
     private void HandleAccept() => Close(true);

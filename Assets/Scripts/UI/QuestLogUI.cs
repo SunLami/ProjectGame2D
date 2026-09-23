@@ -415,6 +415,13 @@ public sealed class QuestLogUI : MonoBehaviour
         TMP_Text rewards = detail.Find("Rewards/RewardSummary")?.GetComponent<TMP_Text>();
         if (rewards != null)
             rewards.text = FormatRewards(quest.Rewards);
+        Image objectiveIcon = detail.Find("ObjectiveIcon")?.GetComponent<Image>();
+        if (objectiveIcon != null && quest.Objectives.Count > 0)
+        {
+            _questManager.TryGetProgress(quest.QuestId, out QuestProgressSnapshot progress);
+            int index = Mathf.Clamp(progress.CurrentObjectiveIndex, 0, quest.Objectives.Count - 1);
+            objectiveIcon.sprite = LoadObjectiveSprite(quest.Objectives[index].Type);
+        }
 
         bool actionable = status == QuestStatus.Active || status == QuestStatus.ReadyToTurnIn;
         SetQuestActionVisibility(actionable, actionable && !string.IsNullOrEmpty(quest.GiverNpcId));
@@ -432,6 +439,22 @@ public sealed class QuestLogUI : MonoBehaviour
         foreach (QuestRewardItemEntry item in rewards.Items)
             parts.Add($"{item.Quantity}x {item.ItemId}");
         return parts.Count > 0 ? string.Join("     ", parts) : "No rewards";
+    }
+
+    private static Sprite LoadObjectiveSprite(QuestObjectiveType type)
+    {
+        string name = type switch
+        {
+            QuestObjectiveType.Kill => "objective_kill",
+            QuestObjectiveType.Gather or QuestObjectiveType.Obtain => "objective_collect",
+            QuestObjectiveType.Talk => "objective_talk",
+            _ => "objective_location"
+        };
+        string path = "UI/Quest/Tracker1920/" + name;
+        Sprite sprite = Resources.Load<Sprite>(path);
+        if (sprite != null) return sprite;
+        Sprite[] sprites = Resources.LoadAll<Sprite>(path);
+        return sprites.Length > 0 ? sprites[0] : null;
     }
 
     private void SetQuestActionVisibility(bool showTrack, bool showAbandon)
@@ -503,7 +526,7 @@ public sealed class QuestLogUI : MonoBehaviour
 
         if (compact && compactIndex >= 0 && compactIndex < quest.Objectives.Count)
         {
-            AppendObjective(builder, quest, snapshot, compactIndex, showCounter: true);
+            AppendObjective(builder, quest, snapshot, compactIndex, showCounter: true, showBullet: true);
             return builder.ToString();
         }
 
@@ -517,7 +540,8 @@ public sealed class QuestLogUI : MonoBehaviour
                 quest,
                 snapshot,
                 i,
-                showCounter: hasProgress && i == currentIndex);
+                showCounter: hasProgress && i == currentIndex,
+                showBullet: false);
         }
         return builder.ToString();
     }
@@ -527,10 +551,13 @@ public sealed class QuestLogUI : MonoBehaviour
         QuestDefinition quest,
         QuestProgressSnapshot snapshot,
         int index,
-        bool showCounter)
+        bool showCounter,
+        bool showBullet)
     {
         QuestObjectiveDefinition objective = quest.Objectives[index];
-        builder.Append("- ").Append(objective.Description);
+        if (showBullet)
+            builder.Append("- ");
+        builder.Append(objective.Description);
 
         if (!showCounter || index >= snapshot.ObjectiveCounters.Count)
             return;
