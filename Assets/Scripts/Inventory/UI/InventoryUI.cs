@@ -10,10 +10,13 @@ public class InventoryUI : MonoBehaviour
     private int _currentPage;
 
     private int SlotsPerPage => _slotUIs.Count;
-    private int PageCount => Mathf.Max(1, Mathf.CeilToInt(InventoryManager.Instance.Slots.Count / (float)SlotsPerPage));
+    private int PageCount => InventoryManager.Instance == null || SlotsPerPage == 0
+        ? 1
+        : Mathf.Max(1, Mathf.CeilToInt(InventoryManager.Instance.Slots.Count / (float)SlotsPerPage));
 
     private void OnEnable()
     {
+        if (InventoryManager.Instance == null) return;
         InventoryManager.Instance.OnInventoryChanged += Refresh;
 
         if (_slotUIs.Count == 0)
@@ -59,7 +62,7 @@ public class InventoryUI : MonoBehaviour
 
     private void Refresh()
     {
-        if (_slotUIs.Count == 0) return;
+        if (_slotUIs.Count == 0 || InventoryManager.Instance == null) return;
 
         int offset = _currentPage * SlotsPerPage;
         for (int i = 0; i < _slotUIs.Count; i++)

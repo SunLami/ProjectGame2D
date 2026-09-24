@@ -166,26 +166,41 @@ Paused
 
 - `InventoryUIController.prefab` giữ nguyên navigation, drag/drop, equipment binding và gameplay-state
   contract; reskin không được chuyển ownership sang presentation.
-- Inventory dùng cùng ngôn ngữ Light Fantasy với Main Menu: gỗ sồi ấm, nền xanh hoàng gia, viền vàng
-  bình minh và pixel edge sắc; label động tiếp tục dùng TMP/Digital Disco.
-- Asset thay thế giữ nguyên `RectTransform` để không làm thay đổi layout DemoScene, nhưng dùng texture HD
-  theo tỷ lệ trình bày để tránh phóng đại sprite legacy quá nhỏ: Inventory board `768x640`, Equipment
-  panel `256x640`, item/equipment slot `96x96`, Close `48x48`.
+- Inventory dùng cùng ngôn ngữ Light Fantasy tối của PlayerHUD/UnifiedGameplayHUD/QuestTracker: gỗ
+  walnut sẫm, lòng panel charcoal, viền vàng cổ, sapphire xanh và lá xanh tiết chế; label động tiếp
+  tục dùng TMP/Digital Disco.
+- Inventory presentation dùng một unified board: character/equipment/stats well bên trái, item grid và
+  currency footer bên phải, nối bằng một divider chung. `InventoryCharacterPreviewUI` dùng camera phụ
+  render chính Player runtime trong Hierarchy vào RenderTexture; Animator tạm chạy unscaled khi cửa sổ
+  mở nên idle và appearance/equipment hiện tại được phản ánh trực tiếp. Preview không sở hữu equipment state.
+- Unified board v5 dùng tỷ lệ landscape gần ảnh tham chiếu: cửa sổ runtime `600x335`, character/equipment
+  well trái với đúng bảy socket (Head/Body/Foot và Weapon/Shield/Necklace/Ring), grid `6x5` nhìn thấy bên phải,
+  stat well sạch và đúng một currency well Gold. Item/equipment cùng dùng slot v4 phẳng, viền vàng mảnh,
+  lòng warm taupe và safe area icon 76%; không còn frame cam dày hoặc gem lớn lặp ở từng cell.
 - Viền Inventory dùng biến thể `thin`: bề dày gỗ/vàng và ornament góc được giảm để ưu tiên vùng nội
   dung, tránh khung tranh chấp thị giác với lưới item/equipment.
-- Palette nền Inventory dùng hệ màu ấm thay cho navy: panel chính là parchment tan dịu gần `#CDA77A`,
-  lòng slot dùng warm taupe đậm hơn để giữ affordance, và badge Gold dùng caramel đậm để bảo đảm độ
-  tương phản với icon coin cùng số vàng; viền gỗ/vàng và điểm nhấn xanh nhỏ vẫn được giữ làm accent.
+- Palette nền Inventory chuyển sang charcoal/walnut tối; lòng slot giữ warm taupe để duy trì
+  affordance và badge Gold tiếp tục bảo đảm tương phản với icon coin cùng số vàng.
 - `TitleInventory` dùng wordmark sprite HD `INVENTORY` đồng bộ gỗ sồi/xanh hoàng gia/viền vàng với
   Main Menu; title là nội dung cố định, còn mọi label/dữ liệu động vẫn dùng TMP/Digital Disco.
-- Cụm `Gold` dùng badge pixel-art xanh hoàng gia, viền gỗ/vàng mảnh nằm sau icon và TMP động; badge
-  nới 5 UI unit theo chiều ngang và 4 UI unit theo chiều dọc để currency nổi bật, không chặn raycast.
-- `GridScrollView` có inner frame riêng với viền gỗ/vàng mảnh để phân định rõ vùng item; `GridFrame` là
-  border-only overlay có lòng alpha trong suốt, không nhận raycast, nằm ngoài `Viewport` và nới 12 UI
-  unit ở cả bốn cạnh để không đè lên viền các `GridSlot` ngoài cùng; nền `GridScrollView` và `Viewport`
-  đều trong suốt để không còn lớp xanh nằm dưới các slot.
+- Footer board v5 chỉ có một currency well tương ứng Gold hiện tại. `CurrencyRow` căn giữa và chỉ chứa
+  các currency đang được hệ thống cung cấp; hiện tại chỉ bật icon và TMP Gold động. Currency mới phải thêm một
+  entry runtime/prefab tương ứng thì horizontal layout mới sinh thêm ô, không hiển thị placeholder rỗng.
+- `GridScrollView` dùng vùng inset đã có trên unified board; grid runtime là 6 cột, cell `41x41`, spacing
+  `4x4`, vẫn scroll cho phần slot vượt quá năm hàng nhìn thấy. Board có một opaque backdrop riêng để
+  alpha trang trí không làm lộ scene bên dưới; backdrop luôn đứng sau board sau mọi lần chạy builder.
+- Khối stats dưới character well là dữ liệu TMP runtime (`InventoryStatsUI`), bố trí 2 cột x 3 hàng với
+  icon nhỏ và các giá trị HP/ATK/DEF/SPD/CRIT/STA; cập nhật từ `PlayerStat` và không sở hữu gameplay data.
+- Mỗi equipment slot trống hiển thị silhouette tối theo đúng loại item; hint nằm trong slot runtime,
+  tự ẩn khi có equipment thật và hiện lại khi tháo item, không bake vào board hoặc thay equipment state.
 - Source prefab là nguồn chuẩn; DemoScene `_UI/InventoryUIController` giữ prefab connection và không tạo
   scene-only visual override.
+- Mỗi `InventorySlotUI` hiển thị tooltip khi hover item và ẩn khi pointer rời slot hoặc bắt đầu drag.
+  Tooltip là hierarchy thật trong `InventoryUIController.prefab`, đọc dữ liệu động từ `ItemSO` và
+  `EquipmentItemSO`, nằm dưới cursor, theo `PointerMove` và tự lật/clamp theo Canvas để không tràn màn
+  hình 1920×1080; asset ảnh không
+  bake tên, icon, stat hoặc description. Tooltip dùng panel charcoal bán trong suốt, viền vàng mảnh
+  và tối đa một sapphire nhỏ; không dùng crest/lá/ornament lớn vì chỉ là hover feedback tạm thời.
 
 ### Gameplay Settings visual direction
 
