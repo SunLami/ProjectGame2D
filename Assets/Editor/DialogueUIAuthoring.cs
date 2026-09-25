@@ -8,7 +8,7 @@ using UnityEngine.UI;
 
 public static class DialogueUIAuthoring
 {
-    private const string PrefabPath = "Assets/Prefabs/UI/DialogueUI.prefab";
+    private const string PrefabPath = "Assets/Prefabs/UI/DialogueUI_v2.prefab";
     private const string ScenePath = "Assets/Scenes/DemoScene.unity";
     private const string DemoDialoguePath = "Assets/Resources/Dialogue/TownElderGreeting.asset";
 
@@ -16,10 +16,8 @@ public static class DialogueUIAuthoring
     public static void Build()
     {
         EnsureFolder("Assets/Prefabs/UI");
-        Sprite frame = LoadSprite("Assets/Resources/UI/Dialogue/LightFantasy/dialogue_frame_hd.png");
-        Sprite nameplate = LoadSprite("Assets/Resources/UI/Dialogue/LightFantasy/dialogue_nameplate_hd.png");
-        Sprite choice = LoadSprite("Assets/Resources/UI/Dialogue/LightFantasy/dialogue_choice_button_compact_v2.png");
-        Sprite indicator = LoadSprite("Assets/Resources/UI/Dialogue/LightFantasy/dialogue_continue_indicator_hd.png");
+        Sprite frame = LoadSprite("Assets/Resources/UI/Dialogue/DarkInventoryStyle/dialogue_frame_v4.png");
+        Sprite indicator = LoadSprite("Assets/Resources/UI/Dialogue/DarkInventoryStyle/dialogue_continue_v3.png");
         TMP_FontAsset font = AssetDatabase.LoadAssetAtPath<TMP_FontAsset>("Assets/Fonts/DigitalDisco SDF v3.asset");
         DialogueDefinition demoDialogue = CreateDemoDialogue();
         BindDemoNpcPrefab(demoDialogue);
@@ -36,90 +34,91 @@ public static class DialogueUIAuthoring
         GameObject overlay = UI("DialogueOverlay", root.transform);
         Stretch(overlay.GetComponent<RectTransform>());
         Image blocker = overlay.AddComponent<Image>();
-        blocker.color = new Color(0f, 0f, 0f, 0.42f);
+        blocker.color = new Color(0f, 0f, 0f, 0.08f);
 
         GameObject panel = UI("Panel", overlay.transform);
         RectTransform panelRect = panel.GetComponent<RectTransform>();
         panelRect.anchorMin = panelRect.anchorMax = new Vector2(0.5f, 0f);
         panelRect.pivot = new Vector2(0.5f, 0f);
-        panelRect.anchoredPosition = new Vector2(0f, 42f);
-        panelRect.sizeDelta = new Vector2(700f, 190f);
+        panelRect.anchoredPosition = new Vector2(0f, 24f);
+        panelRect.sizeDelta = new Vector2(700f, 270f);
+        panelRect.localScale = new Vector3(0.5f, 0.5f, 1f);
 
-        Image portraitBacking = Image("PortraitBacking", panel.transform, null, new Color32(22, 42, 62, 255));
-        SetRect(portraitBacking.rectTransform, new Vector2(-234f, 0f), new Vector2(154f, 154f));
         Image portrait = Image("Portrait", panel.transform, null, Color.white);
-        SetRect(portrait.rectTransform, new Vector2(-234f, 0f), new Vector2(140f, 140f));
+        SetRect(portrait.rectTransform, new Vector2(-278f, 10f), new Vector2(96f, 96f));
         portrait.preserveAspect = true;
         portrait.enabled = false;
 
-        Image textBacking = Image("TextBacking", panel.transform, null, new Color32(244, 220, 166, 255));
-        SetRect(textBacking.rectTransform, new Vector2(96f, -1f), new Vector2(448f, 164f));
-        textBacking.raycastTarget = false;
-
         Image frameImage = Image("Frame", panel.transform, frame, Color.white);
-        SetRect(frameImage.rectTransform, Vector2.zero, new Vector2(700f, 394f));
+        SetRect(frameImage.rectTransform, Vector2.zero, new Vector2(700f, 270f));
+        frameImage.type = UnityEngine.UI.Image.Type.Simple;
         frameImage.preserveAspect = true;
         frameImage.raycastTarget = false;
 
-        Image nameplateImage = Image("Nameplate", panel.transform, nameplate, Color.white);
-        SetRect(nameplateImage.rectTransform, new Vector2(-48f, 80f), new Vector2(230f, 100f));
-        nameplateImage.preserveAspect = true;
-        TMP_Text speaker = Text("SpeakerName", nameplateImage.transform, font, 16f, TextAlignmentOptions.Center, new Color32(78, 43, 21, 255));
-        Stretch(speaker.rectTransform, 34f, 34f, 10f, 10f);
+        TMP_Text speaker = Text("SpeakerName", panel.transform, font, 10f, TextAlignmentOptions.Center, new Color32(244, 220, 166, 255));
+        SetRect(speaker.rectTransform, new Vector2(235f, -112f), new Vector2(160f, 18f));
         speaker.textWrappingMode = TextWrappingModes.NoWrap;
         speaker.overflowMode = TextOverflowModes.Ellipsis;
         speaker.text = "VILLAGE ELDER";
 
-        TMP_Text body = Text("BodyText", panel.transform, font, 15f, TextAlignmentOptions.TopLeft, new Color32(56, 40, 27, 255));
+        TMP_Text body = Text("BodyText", panel.transform, font, 12f, TextAlignmentOptions.TopLeft, new Color32(244, 232, 200, 255));
         RectTransform bodyRect = body.rectTransform;
         bodyRect.anchorMin = bodyRect.anchorMax = new Vector2(0.5f, 0.5f);
         bodyRect.pivot = new Vector2(0.5f, 0.5f);
-        bodyRect.anchoredPosition = new Vector2(98f, 45f);
-        bodyRect.sizeDelta = new Vector2(360f, 28f);
+        bodyRect.anchoredPosition = new Vector2(0f, 30f);
+        bodyRect.sizeDelta = new Vector2(600f, 64f);
         body.textWrappingMode = TextWrappingModes.Normal;
         body.overflowMode = TextOverflowModes.Ellipsis;
         body.lineSpacing = 1f;
         body.text = "Welcome, traveler. Our village has work for capable hands.";
 
         Image continueImage = Image("ContinueIndicator", panel.transform, indicator, Color.white);
-        SetRect(continueImage.rectTransform, new Vector2(285f, -55f), new Vector2(30f, 30f));
+        SetRect(continueImage.rectTransform, new Vector2(0f, -72f), new Vector2(26f, 21f));
         continueImage.raycastTarget = false;
 
         GameObject choiceRoot = UI("ChoiceRoot", panel.transform);
         RectTransform choiceRootRect = choiceRoot.GetComponent<RectTransform>();
         choiceRootRect.anchorMin = choiceRootRect.anchorMax = new Vector2(0.5f, 0.5f);
         choiceRootRect.pivot = new Vector2(0.5f, 0.5f);
-        choiceRootRect.anchoredPosition = new Vector2(98f, -25f);
-        choiceRootRect.sizeDelta = new Vector2(220f, 118f);
+        choiceRootRect.anchoredPosition = new Vector2(0f, -32f);
+        choiceRootRect.sizeDelta = new Vector2(620f, 116f);
         VerticalLayoutGroup layout = choiceRoot.AddComponent<VerticalLayoutGroup>();
-        layout.spacing = 2f;
+        layout.spacing = 4f;
         layout.childAlignment = TextAnchor.UpperCenter;
         layout.childControlHeight = true;
         layout.childControlWidth = true;
         layout.childForceExpandHeight = false;
         layout.childForceExpandWidth = true;
 
-        GameObject templateObject = UI("ChoiceTemplate", choiceRoot.transform);
-        LayoutElement element = templateObject.AddComponent<LayoutElement>();
-        element.preferredHeight = 22f;
-        Image choiceImage = templateObject.AddComponent<Image>();
-        choiceImage.sprite = choice;
-        choiceImage.type = UnityEngine.UI.Image.Type.Sliced;
-        Button choiceButton = templateObject.AddComponent<Button>();
-        ColorBlock colors = choiceButton.colors;
-        colors.normalColor = Color.white;
-        colors.highlightedColor = new Color32(210, 232, 255, 255);
-        colors.pressedColor = new Color32(202, 176, 126, 255);
-        colors.disabledColor = new Color32(130, 125, 116, 170);
-        colors.fadeDuration = 0.08f;
-        choiceButton.colors = colors;
-        TMP_Text choiceLabel = Text("Label", templateObject.transform, font, 10.5f, TextAlignmentOptions.Center, new Color32(58, 40, 25, 255));
-        Stretch(choiceLabel.rectTransform, 16f, 16f, 3f, 3f);
-        choiceLabel.enableAutoSizing = true;
-        choiceLabel.fontSizeMin = 8f;
-        choiceLabel.fontSizeMax = 10.5f;
-        choiceLabel.textWrappingMode = TextWrappingModes.NoWrap;
-        choiceLabel.overflowMode = TextOverflowModes.Ellipsis;
+        Button choiceButton = null;
+        for (int index = 0; index < 4; index++)
+        {
+            GameObject templateObject = UI(index == 0 ? "ChoiceTemplate" : $"ChoiceSlot{index + 1}", choiceRoot.transform);
+            LayoutElement element = templateObject.AddComponent<LayoutElement>();
+            element.preferredHeight = 26f;
+            Image hitArea = templateObject.AddComponent<Image>();
+            hitArea.color = new Color(0f, 0f, 0f, 0f);
+            GameObject hoverFrame = UI("HoverFrame", templateObject.transform);
+            Stretch(hoverFrame.GetComponent<RectTransform>());
+            CreateHoverEdge("Top", hoverFrame.transform, true, true);
+            CreateHoverEdge("Bottom", hoverFrame.transform, true, false);
+            CreateHoverEdge("Left", hoverFrame.transform, false, false);
+            CreateHoverEdge("Right", hoverFrame.transform, false, true);
+            hoverFrame.SetActive(false);
+            templateObject.AddComponent<DialogueChoiceHighlight>();
+            Button button = templateObject.AddComponent<Button>();
+            if (choiceButton == null) choiceButton = button;
+            button.transition = Selectable.Transition.None;
+            TMP_Text choiceLabel = Text("Label", templateObject.transform, font, 10f, TextAlignmentOptions.MidlineLeft, Color.white);
+            Stretch(choiceLabel.rectTransform, 24f, 12f, 3f, 3f);
+            choiceLabel.enableAutoSizing = true;
+            choiceLabel.fontSizeMin = 7f;
+            choiceLabel.fontSizeMax = 10f;
+            choiceLabel.textWrappingMode = TextWrappingModes.NoWrap;
+            choiceLabel.overflowMode = TextOverflowModes.Ellipsis;
+            choiceLabel.raycastTarget = false;
+            button.targetGraphic = hitArea;
+        }
 
         DialogueUI dialogue = root.GetComponent<DialogueUI>();
         SerializedObject data = new(dialogue);
@@ -127,15 +126,16 @@ public static class DialogueUIAuthoring
         data.FindProperty("_portrait").objectReferenceValue = portrait;
         data.FindProperty("_speakerName").objectReferenceValue = speaker;
         data.FindProperty("_bodyText").objectReferenceValue = body;
-        data.FindProperty("_bodyTextWithChoicesPosition").vector2Value = new Vector2(98f, 45f);
-        data.FindProperty("_bodyTextWithChoicesSize").vector2Value = new Vector2(360f, 28f);
-        data.FindProperty("_bodyTextWithChoicesFontSize").floatValue = 13f;
-        data.FindProperty("_bodyTextWithoutChoicesFontSize").floatValue = 15f;
-        data.FindProperty("_bodyTextWithoutChoicesPosition").vector2Value = new Vector2(98f, -7f);
-        data.FindProperty("_bodyTextWithoutChoicesSize").vector2Value = new Vector2(360f, 96f);
+        data.FindProperty("_bodyTextWithChoicesPosition").vector2Value = new Vector2(0f, 30f);
+        data.FindProperty("_bodyTextWithChoicesSize").vector2Value = new Vector2(600f, 64f);
+        data.FindProperty("_bodyTextWithChoicesFontSize").floatValue = 12f;
+        data.FindProperty("_bodyTextWithoutChoicesFontSize").floatValue = 14f;
+        data.FindProperty("_bodyTextWithoutChoicesPosition").vector2Value = new Vector2(0f, -5f);
+        data.FindProperty("_bodyTextWithoutChoicesSize").vector2Value = new Vector2(600f, 130f);
         data.FindProperty("_continueIndicator").objectReferenceValue = continueImage.gameObject;
         data.FindProperty("_choiceRoot").objectReferenceValue = choiceRoot.transform;
         data.FindProperty("_choiceTemplate").objectReferenceValue = choiceButton;
+        data.FindProperty("_panelTransform").objectReferenceValue = panelRect;
         data.ApplyModifiedPropertiesWithoutUndo();
 
         GameObject prefab = PrefabUtility.SaveAsPrefabAsset(root, PrefabPath);
@@ -260,6 +260,30 @@ public static class DialogueUIAuthoring
         return text;
     }
 
+    private static void CreateHoverEdge(string name, Transform parent, bool horizontal, bool atMaximum)
+    {
+        Image edge = Image(name, parent, null, new Color32(220, 170, 65, 255));
+        RectTransform rect = edge.rectTransform;
+        if (horizontal)
+        {
+            float y = atMaximum ? 1f : 0f;
+            rect.anchorMin = new Vector2(0f, y);
+            rect.anchorMax = new Vector2(1f, y);
+            rect.pivot = new Vector2(0.5f, y);
+            rect.sizeDelta = new Vector2(0f, 1f);
+        }
+        else
+        {
+            float x = atMaximum ? 1f : 0f;
+            rect.anchorMin = new Vector2(x, 0f);
+            rect.anchorMax = new Vector2(x, 1f);
+            rect.pivot = new Vector2(x, 0.5f);
+            rect.sizeDelta = new Vector2(1f, 0f);
+        }
+        rect.anchoredPosition = Vector2.zero;
+        edge.raycastTarget = false;
+    }
+
     private static void SetRect(RectTransform rect, Vector2 position, Vector2 size)
     {
         rect.anchorMin = rect.anchorMax = new Vector2(0.5f, 0.5f);
@@ -291,6 +315,10 @@ public static class DialogueUIAuthoring
                 importer.alphaIsTransparency = true;
                 importer.mipmapEnabled = false;
                 importer.textureCompression = TextureImporterCompression.Uncompressed;
+                importer.filterMode = FilterMode.Point;
+                importer.spriteBorder = path.Contains("option")
+                    ? new Vector4(150f, 120f, 150f, 120f)
+                    : new Vector4(70f, 70f, 70f, 70f);
                 importer.SaveAndReimport();
             }
         }

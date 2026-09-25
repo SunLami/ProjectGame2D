@@ -167,6 +167,17 @@ Daily Quest chưa triển khai nhưng foundation cần hỗ trợ:
 
 Không thêm daily reset logic vào Tutorial/QuestManager core ở phase hiện tại.
 
+## Track, untrack và abandon
+
+- Tối đa một quest `Active`/`ReadyToTurnIn` được track. Direction indicator và HUD tracker chỉ đọc
+  quest đó; untrack không thay đổi tiến độ.
+- Quest mới nhận tự track nếu chưa có quest nào đang track. Hoàn thành/turn-in quest đang track sẽ
+  tự clear lựa chọn.
+- Abandon chỉ hợp lệ cho quest Active/Ready có `giverNpcId`: runtime record và toàn bộ objective
+  progress bị xóa. Quest trở lại `Available` nếu prerequisite vẫn thỏa, nhưng chỉ được nhận lại qua
+  `QuestNpcInteractionService` tại đúng giver NPC; không có resume progress.
+- Quest không có giver (auto/system/tutorial nội bộ) không được abandon vì không có đường nhận lại.
+
 ## Authoring validation
 
 Editor validation bắt buộc:

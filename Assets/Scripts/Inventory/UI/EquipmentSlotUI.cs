@@ -6,6 +6,7 @@ public class EquipmentSlotUI : MonoBehaviour, IPointerClickHandler, IDropHandler
 {
     [SerializeField] private EquipSlot _slot;
     [SerializeField] private Image _iconImage;
+    [SerializeField] private Image _placeholderImage;
 
     private GameObject _dragIcon;
 
@@ -13,6 +14,12 @@ public class EquipmentSlotUI : MonoBehaviour, IPointerClickHandler, IDropHandler
 
     private void OnEnable()
     {
+        if (EquipmentManager.Instance == null)
+        {
+            if (_iconImage != null) _iconImage.enabled = false;
+            return;
+        }
+
         EquipmentManager.Instance.OnEquipmentChanged += Refresh;
         Refresh();
     }
@@ -27,9 +34,11 @@ public class EquipmentSlotUI : MonoBehaviour, IPointerClickHandler, IDropHandler
 
     private void Refresh()
     {
+        if (EquipmentManager.Instance == null || _iconImage == null) return;
         EquipmentItemSO item = EquipmentManager.Instance.GetEquipped(_slot);
         _iconImage.sprite = item != null ? item.icon : null;
         _iconImage.enabled = item != null;
+        if (_placeholderImage != null) _placeholderImage.enabled = item == null;
     }
 
     public void OnPointerClick(PointerEventData eventData)

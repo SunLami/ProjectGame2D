@@ -28,6 +28,11 @@ public sealed class QuestDefinition : ScriptableObject
     [Tooltip("Stable npcId that accepts turn-in while this quest is ReadyToTurnIn.")]
     [SerializeField] private string _turnInNpcId;
 
+    [Tooltip("Turns in itself the instant its objectives become ReadyToTurnIn, with no NPC visit "
+        + "required -- for a quest whose completion is itself the signal (e.g. \"equip a weapon\"), "
+        + "as opposed to one meant to be handed in face-to-face.")]
+    [SerializeField] private bool _autoTurnIn;
+
     public string QuestId => _questId;
     public string DisplayName => _displayName;
     public IReadOnlyList<string> PrerequisiteQuestIds => _prerequisiteQuestIds ?? Array.Empty<string>();
@@ -39,4 +44,5 @@ public sealed class QuestDefinition : ScriptableObject
     public bool IsDebugQuest => _isDebugQuest;
     public string GiverNpcId => _giverNpcId;
     public string TurnInNpcId => _turnInNpcId;
+    public bool AutoTurnIn => _autoTurnIn;
 }

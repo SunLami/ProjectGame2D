@@ -29,8 +29,9 @@ public static class SaveMigration
         new V4ToV5_IntroducesQuests(),
         new V5ToV6_IntroducesWorld(),
         new V6ToV7_IntroducesInventoryItemInstances(),
-        new V7ToV8_IntroducesQuickBar(),
-        new V8ToV9_IntroducesFarming(),
+        new V7ToV8_IntroducesTrackedQuest(),
+        new V8ToV9_IntroducesQuickBar(),
+        new V9ToV10_IntroducesFarming(),
     };
 
     /// <summary>True if this version can be upgraded to CurrentSaveVersion by Migrate(). Does not
@@ -134,18 +135,40 @@ public static class SaveMigration
         }
     }
 
-    private sealed class V7ToV8_IntroducesQuickBar : ISaveMigrationStep
+    private sealed class V7ToV8_IntroducesTrackedQuest : ISaveMigrationStep
     {
         public int FromVersion => 7;
         public int ToVersion => 8;
 
-        public void Apply(GameSaveData data) => data.quickBar ??= new QuickBarSaveData();
+        public void Apply(GameSaveData data)
+        {
+            data.quests ??= new QuestSaveData();
+            if (!string.IsNullOrEmpty(data.quests.trackedQuestId) || data.quests.quests == null)
+                return;
+
+            foreach (QuestProgressSaveData quest in data.quests.quests)
+            {
+                if (quest.status == QuestStatus.Active || quest.status == QuestStatus.ReadyToTurnIn)
+                {
+                    data.quests.trackedQuestId = quest.questId;
+                    break;
+                }
+            }
+        }
     }
 
-    private sealed class V8ToV9_IntroducesFarming : ISaveMigrationStep
+    private sealed class V8ToV9_IntroducesQuickBar : ISaveMigrationStep
     {
         public int FromVersion => 8;
         public int ToVersion => 9;
+
+        public void Apply(GameSaveData data) => data.quickBar ??= new QuickBarSaveData();
+    }
+
+    private sealed class V9ToV10_IntroducesFarming : ISaveMigrationStep
+    {
+        public int FromVersion => 9;
+        public int ToVersion => 10;
 
         public void Apply(GameSaveData data) => data.farming ??= new FarmingSaveData();
     }

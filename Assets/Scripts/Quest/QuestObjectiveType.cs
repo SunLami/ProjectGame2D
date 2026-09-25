@@ -7,5 +7,6 @@ public enum QuestObjectiveType
     Craft,
     Purchase,
     Gather,
-    Kill
+    Kill,
+    Equip
 }

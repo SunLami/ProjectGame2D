@@ -1,0 +1,36 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2a7a75faac2e50c44ac9f79fb2dfa85e, type: 3}
+  m_Name: Quest_EquipWeapon
+  m_EditorClassIdentifier: ProjectGame2D.Runtime::QuestDefinition
+  _questId: quest.equip_weapon
+  _displayName: Equip Your Weapon
+  _prerequisiteQuestIds:
+  - quest.trainer_greeting
+  _objectives:
+  - _type: 6
+    _targetId: sword_lvl1
+    _targetAreaId: 
+    _targetCount: 1
+    _obtainMode: 0
+    _description: Equip Sword Lv1
+  _rewards:
+    _items: []
+    _gold: 0
+    _experience: 5
+  _isTutorialQuest: 0
+  _isMainQuest: 0
+  _isDailyQuest: 0
+  _isDebugQuest: 0
+  _giverNpcId: 
+  _turnInNpcId: 
+  _autoTurnIn: 1

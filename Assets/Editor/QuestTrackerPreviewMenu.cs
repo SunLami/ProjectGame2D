@@ -18,15 +18,9 @@ public static class QuestTrackerPreviewMenu
 
         var quests = new List<TrackedQuestView>
         {
-            View("preview.main.01", "The Crown's Missing Heir", QuestCategory.Main),
-            View("preview.main.02", "Shadows Over Orynthals", QuestCategory.Main),
-            View("preview.side.01", "Potion Supply", QuestCategory.Side),
-            View("preview.side.02", "Wayward Scouts", QuestCategory.Side),
-            View("preview.side.03", "The Old Forest Shrine", QuestCategory.Side),
-            View("preview.side.04", "A Blacksmith's Favor", QuestCategory.Side),
-            View("preview.daily.01", "Gather Medicinal Leaves", QuestCategory.Daily),
-            View("preview.daily.02", "Clear the Slime Nest", QuestCategory.Daily),
-            View("preview.daily.03", "Deliver Town Supplies", QuestCategory.Daily)
+            View("preview.main.01", "The Crown's Missing Heir", QuestCategory.Main, QuestObjectiveType.Kill, "Defeat forest wolves", 3, 5),
+            View("preview.side.01", "Potion Supply", QuestCategory.Side, QuestObjectiveType.Gather, "Collect medicinal herbs", 8, 10),
+            View("preview.daily.01", "Village Check-In", QuestCategory.Daily, QuestObjectiveType.Talk, "Talk to Elder Rowan", 0, 1)
         };
         quests.Sort(QuestTrackerOrdering.Compare);
 
@@ -40,4 +34,8 @@ public static class QuestTrackerPreviewMenu
 
     private static TrackedQuestView View(string id, string title, QuestCategory category) =>
         new(id, title, "Track the current objective and return when it is complete. 0 / 5", category);
+
+    private static TrackedQuestView View(string id, string title, QuestCategory category,
+        QuestObjectiveType type, string objective, int current, int target) =>
+        new(id, title, objective, category, type, current, target, false);
 }

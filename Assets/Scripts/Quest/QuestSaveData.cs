@@ -5,4 +5,5 @@ using System.Collections.Generic;
 public sealed class QuestSaveData
 {
     public List<QuestProgressSaveData> quests = new();
+    public string trackedQuestId;
 }

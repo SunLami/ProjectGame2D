@@ -1,5 +1,99 @@
 # Codex → Claude Handoff
 
+Update 2026-09-22 — khoảng cách Quest row còn thấy dù layout spacing đã là `1` vì
+`landing_action_button.png` chứa alpha padding lớn trên/dưới. Đã dùng compensated spacing `-15` trên
+Quest list riêng để phần khung nhìn thấy cách nhau xấp xỉ 1px; không sửa shared MainMenu asset.
+
+Update 2026-09-22 — theo feedback trực tiếp của owner, giảm spacing của
+`QuestListPanel/Content.VerticalLayoutGroup` từ `4` xuống `1`; không đổi kích thước/font ở lượt này.
+
+Update 2026-09-22 — Quest list density: `QuestListPanel/Content` trước đó có
+`childControlHeight=false`, nên bỏ qua preferred height và dùng RectTransform row cao `100` cộng
+spacing `8`. Lần chỉnh chỉ xuống `58` đã làm lộ thêm lỗi Title/Status vẫn giữ offset cũ và tràn khỏi
+khung. Layout cuối đã đồng bộ toàn row: cao/preferred height `44`, spacing `4`, Title/Status chia đều
+hai nửa và căn giữa, font `9`/`7.5`; danh sách gọn và chữ không còn nằm ngoài button.
+
+Update 2026-09-22 — HUD layering: sửa sibling order trong `GameplayUIRoot.prefab` từ
+`PlayerHUD → ... gameplay overlays ... → UnifiedGameplayHUD` thành
+`PlayerHUD → UnifiedGameplayHUD → gameplay overlays`. Cả hai HUD giờ render phía sau Quest Log và
+các gameplay menu khác trên Canvas chung; không đổi sorting layer, Canvas hay gameplay logic.
+
+Status: `QUEST_TRACKING_AND_ABANDON_READY`
+
+Ngày: 2026-09-22
+Feature: Quest Log — Track/Untrack/Abandon
+
+- `QuestManager` hiện sở hữu đúng một `trackedQuestId`; quest đầu tiên tự track, người chơi có thể
+  Track/Untrack quest Active/Ready khác. Quest tracker và Quest Direction Indicator chỉ theo quest
+  đang track; Available quest giver vẫn được chỉ dẫn để người chơi nhận nhiệm vụ.
+- Abandon chỉ cho quest Active/Ready có `giverNpcId`, xóa toàn bộ runtime objective progress và đưa
+  quest về Available theo prerequisite. Nhận lại bắt buộc qua `QuestNpcInteractionService` tại đúng
+  giver NPC và bắt đầu lại từ 0. Quest Completed hoặc không có giver không được abandon.
+- `GameplayUIRoot.prefab` có nút `TRACK QUEST`/`UNTRACK QUEST`, `ABANDON QUEST` và confirmation modal.
+  Tái sử dụng asset Light Fantasy hiện có (`landing_action_button`, `slot_delete_button`,
+  `session_confirmation_board_hd`), vì vậy không cần sinh raster asset mới.
+- Save schema tăng v7→v8 với `QuestSaveData.trackedQuestId`; migration save v7 chọn quest Active/Ready
+  đầu tiên. Tracking/abandon đều đánh dấu session dirty.
+- Runtime, EditMode và PlayMode test assemblies build PASS. Có test cho round-trip tracking,
+  abandon/reaccept đúng NPC, guard quest không giver/completed và migration V7→V8.
+
+---
+
+Status trước: `QUEST_DIRECTION_ART_READY`
+
+Ngày: 2026-09-19
+Feature: Training Area onboarding — Quest Direction Indicator pixel-art sprites
+
+Update 2026-09-22: theo yêu cầu trực tiếp của owner, ground arrow không còn đứng cố định tại tâm
+Player. `QuestDirectionIndicator.ShowGroundArrow()` giờ đặt RectTransform trên chu vi bán kính
+`_groundArrowOrbitRadius = 0.75` world unit theo vector tới quest, đồng thời vẫn xoay sprite theo
+cùng hướng. Đây là thay đổi presentation được owner chủ động yêu cầu sau handoff cũ; không đổi logic
+Quest/Tutorial, target resolution hay trạng thái progression.
+
+Verification update: `ProjectGame2D.Runtime.csproj` build PASS (0 error; 22 warning có sẵn). Unity
+live test gọi `ShowGroundArrow()` với phải/trên/trái/dưới cho kết quả position lần lượt
+`(0.75,0)`, `(0,0.75)`, `(-0.75,0)`, `(0,-0.75)`, mọi trường hợp radius đúng `0.750` và rotation
+Z đúng `270/0/90/180`. Scene readback xác nhận radius `0.75`, target `QuestGroundArrow`, sprite dùng
+chung `quest_target_arrow.png`; Console không có lỗi `QuestDirectionIndicator`.
+
+Update 2026-09-22 (arrived marker removed): theo yêu cầu trực tiếp tiếp theo của owner, đã bỏ hoàn
+toàn mũi tên trỏ xuống khi Player đã ở trong khu vực quest. Nhánh `IsPlayerInside(areaId)` giờ ẩn
+ground/edge indicator và không hiện marker thay thế. Đã xóa hierarchy `QuestArrivedMarker` khỏi
+`MapNhat`, cùng các field/method bobbing tương ứng trong `QuestDirectionIndicator`. Arrow xoay quanh
+Player khi chưa tới nơi, NPC marker và mannequin marker không đổi.
+
+## Hoàn thành
+
+- Theo yêu cầu cập nhật ngày 2026-09-22, đã hợp nhất còn đúng **1 sprite arrow duy nhất**:
+  `Assets/Resources/UI/QuestDirection/quest_target_arrow.png` (48x48). Hai asset ground/edge riêng
+  đã xóa. Import dùng Sprite, Point filter, mipmap off, uncompressed và alpha thật.
+- Đã gán trực tiếp trong `Assets/Scenes/MapNhat.unity` cho toàn bộ field của
+  `QuestDirectionIndicator`: `_npcHeadMarkerImage`, `_groundArrowImage`, `_edgeIndicatorImage`.
+- Đã gán target arrow vào `_arrowImage` của
+  `Assets/Prefabs/World/Attacked_Manequin1.prefab` (`MannequinAttackIndicator`).
+- Cả `_npcHeadMarkerImage`, `_groundArrowImage`, `_edgeIndicatorImage` và mannequin `_arrowImage`
+  cùng tham chiếu đúng một target-arrow sprite;
+  đã đưa tint của các `Image` liên quan về trắng để giữ nguyên palette.
+- Chỉ sửa presentation logic của direction indicator theo yêu cầu owner; không đổi Quest/Tutorial
+  progression hoặc target resolution.
+
+## Ghi chú orientation
+
+Target-arrow source hướng lên. Ground/edge dùng rotation runtime hiện hữu để luôn chỉ về vị trí
+quest; `MannequinAttackIndicator.Awake()` và `NpcHeadMarker` xoay 180° để chỉ xuống.
+
+## Verification
+
+- Sprite processor QC: target arrow hợp lệ, không edge touch/paste clamp, alpha chroma-key sạch.
+- Unity Editor import PASS: sprite 48x48, Point, mipmap off, Uncompressed, PPU 48.
+- Serialized audit trên `MapNhat` và mannequin prefab: cả 4 field Image dùng chung GUID
+  `3c0cc2bc1a69412c8ebf4e384a29e8d1`; `NpcHeadMarker` rotation Z = 180°.
+- Console không có lỗi import/binding liên quan asset. Console đang có lỗi runtime cũ không thuộc
+  scope từ `SoundFXManager`/`MapManager` thiếu key `Grass_No_Outline`; không chỉnh vì yêu cầu cấm
+  đụng logic khác.
+
+---
+
 Status: `VERIFIED`
 
 Ngày: 2026-08-22

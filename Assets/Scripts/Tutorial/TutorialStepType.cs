@@ -14,5 +14,11 @@ public enum TutorialStepType
 
     /// <summary>Completed when the player enters the area named by TutorialStepDefinition.TargetAreaId
     /// (fired by AreaTriggerZone). Generalizes the doc's "TravelToTown" example to any area.</summary>
-    ReachArea
+    ReachArea,
+
+    /// <summary>Completed when the quest named by TutorialStepDefinition.TargetQuestId is turned in
+    /// (QuestManager.QuestCompleted) -- lets an authored tutorial chain pause on a Tutorial Quest
+    /// chain step (e.g. "go talk to the NPC") without the two systems otherwise depending on each
+    /// other.</summary>
+    WaitForQuest
 }

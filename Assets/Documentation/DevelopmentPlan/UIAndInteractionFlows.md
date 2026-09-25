@@ -128,6 +128,9 @@ navigation/state.
 
 ### Character Popup visual direction
 
+- Trong `GameplayUIRoot.prefab`, `PlayerHUD` và `UnifiedGameplayHUD` phải đứng trước các gameplay
+  overlay/menu trong sibling order. Vì dùng chung một Canvas, thứ tự này bảo đảm Inventory, Quest Log,
+  Settings và các confirmation panel luôn render phủ lên toàn bộ HUD khi mở.
 - `UnifiedGameplayHUD.prefab/CharacterPopup` là popup Character chuẩn của gameplay, mở/tắt bằng phím
   `C` hoặc `BottomHUD/StatButton`; lifecycle tiếp tục đi qua `GameStateManager` với
   `GameplayMenuPage.Character`, không tự pause world hoặc sở hữu input gameplay.
@@ -161,84 +164,118 @@ Paused
 
 ### Inventory visual direction
 
+`DarkLightFantasyUIStyleGuide.md` là nguồn chuẩn art direction gameplay UI theo D-041. Không duy trì
+scene Style Guide riêng; mỗi UI được migration trực tiếp trên prefab nguồn, kiểm tra trong MapNhat ở
+1920×1080 và giữ nguyên controller, callback, GameState cùng gameplay data ownership.
+
 - `InventoryUIController.prefab` giữ nguyên navigation, drag/drop, equipment binding và gameplay-state
   contract; reskin không được chuyển ownership sang presentation.
-- Inventory dùng cùng ngôn ngữ Light Fantasy với Main Menu: gỗ sồi ấm, nền xanh hoàng gia, viền vàng
-  bình minh và pixel edge sắc; label động tiếp tục dùng TMP/Digital Disco.
-- Asset thay thế giữ nguyên `RectTransform` để không làm thay đổi layout DemoScene, nhưng dùng texture HD
-  theo tỷ lệ trình bày để tránh phóng đại sprite legacy quá nhỏ: Inventory board `768x640`, Equipment
-  panel `256x640`, item/equipment slot `96x96`, Close `48x48`.
+- Inventory dùng cùng ngôn ngữ Light Fantasy tối của PlayerHUD/UnifiedGameplayHUD/QuestTracker: gỗ
+  walnut sẫm, lòng panel charcoal, viền vàng cổ, sapphire xanh và lá xanh tiết chế; label động tiếp
+  tục dùng TMP/Digital Disco.
+- Inventory presentation dùng một unified board: character/equipment/stats well bên trái, item grid và
+  currency footer bên phải, nối bằng một divider chung. `InventoryCharacterPreviewUI` dùng camera phụ
+  render chính Player runtime trong Hierarchy vào RenderTexture; Animator tạm chạy unscaled khi cửa sổ
+  mở nên idle và appearance/equipment hiện tại được phản ánh trực tiếp. Preview không sở hữu equipment state.
+- Unified board v5 dùng tỷ lệ landscape gần ảnh tham chiếu: cửa sổ runtime `600x335`, character/equipment
+  well trái với đúng bảy socket (Head/Body/Foot và Weapon/Shield/Necklace/Ring), grid `6x5` nhìn thấy bên phải,
+  stat well sạch và đúng một currency well Gold. Item/equipment cùng dùng slot v4 phẳng, viền vàng mảnh,
+  lòng warm taupe và safe area icon 76%; không còn frame cam dày hoặc gem lớn lặp ở từng cell.
 - Viền Inventory dùng biến thể `thin`: bề dày gỗ/vàng và ornament góc được giảm để ưu tiên vùng nội
   dung, tránh khung tranh chấp thị giác với lưới item/equipment.
-- Palette nền Inventory dùng hệ màu ấm thay cho navy: panel chính là parchment tan dịu gần `#CDA77A`,
-  lòng slot dùng warm taupe đậm hơn để giữ affordance, và badge Gold dùng caramel đậm để bảo đảm độ
-  tương phản với icon coin cùng số vàng; viền gỗ/vàng và điểm nhấn xanh nhỏ vẫn được giữ làm accent.
+- Palette nền Inventory chuyển sang charcoal/walnut tối; lòng slot giữ warm taupe để duy trì
+  affordance và badge Gold tiếp tục bảo đảm tương phản với icon coin cùng số vàng.
 - `TitleInventory` dùng wordmark sprite HD `INVENTORY` đồng bộ gỗ sồi/xanh hoàng gia/viền vàng với
   Main Menu; title là nội dung cố định, còn mọi label/dữ liệu động vẫn dùng TMP/Digital Disco.
-- Cụm `Gold` dùng badge pixel-art xanh hoàng gia, viền gỗ/vàng mảnh nằm sau icon và TMP động; badge
-  nới 5 UI unit theo chiều ngang và 4 UI unit theo chiều dọc để currency nổi bật, không chặn raycast.
-- `GridScrollView` có inner frame riêng với viền gỗ/vàng mảnh để phân định rõ vùng item; `GridFrame` là
-  border-only overlay có lòng alpha trong suốt, không nhận raycast, nằm ngoài `Viewport` và nới 12 UI
-  unit ở cả bốn cạnh để không đè lên viền các `GridSlot` ngoài cùng; nền `GridScrollView` và `Viewport`
-  đều trong suốt để không còn lớp xanh nằm dưới các slot.
+- `CloseBtn` là Button thật nằm trong safe inset góc trên phải, hiển thị asset
+  `inventory_close_thin_hd.png` và tiếp tục gọi `InventoryWindowUI.CloseWindow`; board không bake dấu X.
+- Footer board v5 chỉ có một currency well tương ứng Gold hiện tại. `CurrencyRow` căn giữa và chỉ chứa
+  các currency đang được hệ thống cung cấp; hiện tại chỉ bật icon và TMP Gold động. Currency mới phải thêm một
+  entry runtime/prefab tương ứng thì horizontal layout mới sinh thêm ô, không hiển thị placeholder rỗng.
+- `GridScrollView` dùng vùng inset đã có trên unified board; grid runtime là 6 cột, cell `39x39`, spacing
+  `7x4`, trong viewport `286x214` được đẩy lên 5 px. Năm hàng nhìn thấy chiếm 211 px theo chiều dọc,
+  chừa safe inset để toàn bộ viền hàng cuối không bị khung panel che; grid vẫn scroll cho phần slot vượt quá năm hàng. Board có một opaque backdrop riêng để
+  alpha trang trí không làm lộ scene bên dưới; backdrop luôn đứng sau board sau mọi lần chạy builder.
+- Khối stats dưới character well là dữ liệu TMP runtime (`InventoryStatsUI`), bố trí 2 cột x 3 hàng với
+  sáu icon riêng HP/ATK/DEF/SPD/CRIT/STA cùng các giá trị động; cập nhật từ `PlayerStat` và không sở hữu
+  gameplay data. `UnifiedGameplayHUD/StatButton` tiếp tục dùng `stat_icon.png` của HUD và được bind tại
+  source prefab, không dùng một trong sáu icon chi tiết của bảng InventoryStats. Mỗi cột stats dùng ba
+  trục cố định icon/label/value; icon `14x14` và khoảng cách ngang không phụ thuộc silhouette nguồn để
+  các icon rộng như ATK/SPD không chạm chữ hoặc giá trị. Value dùng width `48`, auto-size `6.5–8.5`
+  và cột phải có inset riêng để chuỗi dài như `100/100` không vượt viền stat well.
+- Mỗi equipment slot trống hiển thị silhouette tối theo đúng loại item; hint nằm trong slot runtime,
+  tự ẩn khi có equipment thật và hiện lại khi tháo item, không bake vào board hoặc thay equipment state.
 - Source prefab là nguồn chuẩn; DemoScene `_UI/InventoryUIController` giữ prefab connection và không tạo
   scene-only visual override.
+- Mỗi `InventorySlotUI` hiển thị tooltip khi hover item và ẩn khi pointer rời slot hoặc bắt đầu drag.
+  Tooltip là hierarchy thật trong `InventoryUIController.prefab`, đọc dữ liệu động từ `ItemSO` và
+  `EquipmentItemSO`, nằm dưới cursor, theo `PointerMove` và tự lật/clamp theo Canvas để không tràn màn
+  hình 1920×1080; asset ảnh không
+  bake tên, icon, stat hoặc description. Tooltip dùng panel charcoal bán trong suốt, viền vàng mảnh
+  và tối đa một sapphire nhỏ; không dùng crest/lá/ornament lớn vì chỉ là hover feedback tạm thời.
 
 ### Gameplay Settings visual direction
 
 - DemoScene `_UI/SettingsUI` giữ nguyên `SettingsUI`, `SettingsService`, slider/toggle binding và gameplay
   menu lifecycle; reskin chỉ thay presentation trên scene object hiện có.
-- Panel giữ RectTransform `200×300` (asset legacy `100×150`) nhưng dùng texture HD cùng tỉ lệ, nền
-  parchment tan đồng bộ Inventory, viền gỗ/vàng và điểm nhấn xanh nhỏ đồng bộ MainMenu.
+- Panel giữ RectTransform `200×300` và dùng `GameplaySettings/DarkInventoryStyle/settings_board_v1.png`:
+  nền charcoal/walnut, viền vàng mảnh và sapphire tiết chế theo D-041/Inventory v5.
 - Save/Cancel giữ RectTransform `82×30` (asset legacy `41×15`), slider `110×14`, toggle khoảng `26×28`;
   label động vẫn dùng TMP/Digital Disco và control state tiếp tục do Unity UI sở hữu.
-- SFX và Music dùng icon sprite HD riêng, nền alpha trong suốt và giữ container `24×24` legacy để nhận
-  diện nhanh ở kích thước nhỏ mà không cần label chữ.
-- Title gameplay Settings dùng trực tiếp wordmark sprite `settings_title.png` dùng chung với MainMenu;
-  TMP title legacy được tắt, còn label và dữ liệu động vẫn giữ TMP/Digital Disco.
+- SFX và Music dùng icon pixel-art riêng trong
+  `GameplaySettings/DarkInventoryStyle/Icons/Processed/`, nền alpha trong suốt và giữ container `24×24`.
+- Title gameplay Settings là TMP/Digital Disco runtime trong title ledge của board; không bake chữ vào asset.
 - Gameplay Settings dùng safe area nội bộ: slider được hạ khỏi crest/ornament trên, toggle và action button
   cách đều theo trục dọc, Close nằm trong góc phải của board; không object tương tác nào vượt khỏi khung.
 - Slider gameplay render theo thứ tự `Fill Area → Background → Handle Slide Area`, để fill nằm dưới track
   và không che viền/background presentation đồng bộ MainMenu.
 - `settings_slider_track.png` là border-only overlay `2172×240` với lõi alpha trong suốt; MainMenu và
   gameplay Settings dùng chung asset để Fill phía dưới luôn nhìn thấy xuyên qua lòng track.
+- Save/Cancel/Close dùng `ColorTint` với hover sapphire hoặc danger-red rõ ràng; mọi label dùng cream/gold
+  đủ tương phản và đã kiểm tra không overflow trong Game View 1920×1080.
 
 ### Pause Menu visual direction
 
 - DemoScene `_UI/PauseMenu` giữ nguyên `PauseMenuUI`, gameplay-state navigation, save/load flow và các
   button callback; reskin chỉ thay presentation trên scene object hiện có.
-- Pause board giữ RectTransform legacy `164×340`, dùng texture HD portrait cùng tỷ lệ trình bày, nền
-  parchment tan, viền gỗ/vàng mảnh, huy hiệu xanh và lá xanh đồng bộ Inventory/Gameplay Settings.
+- Pause board giữ RectTransform legacy `164×340`, dùng
+  `PauseMenu/DarkInventoryStyle/pause_menu_board_v1.png`: nền charcoal/walnut, viền vàng mảnh và sapphire
+  tiết chế. Tiêu đề `PAUSED` là TMP runtime, không bake vào board.
 - Các action button giữ bề rộng legacy `139.4`; chiều cao được chuẩn hóa `28` để toàn bộ danh sách nằm
   gọn trong board. Label cố định dùng TMP/Digital Disco thay vì bake chữ vào sprite.
 - PauseMenu trình bày Resume/Inventory/Save/Load/Settings/Back to Menu/Exit; Shop và Craft không xuất hiện vì
   hai popup này được mở từ interaction context của NPC/crafting station theo kiến trúc tương tác gameplay.
-- Resume/Settings/Inventory/Save/Load/Back to Menu dùng primary button chung với MainMenu; Exit dùng danger button
-  đỏ, Close dùng icon thin chung với Inventory. Reskin không thay ownership save/session.
-- Các action button PauseMenu dùng `landing_action_button_hover.png` cho pointer Highlighted và
-  keyboard/gamepad Selected; sprite state không thay đổi RectTransform hoặc thứ tự layout.
+- Resume/Settings/Inventory/Save/Load/Back to Menu dùng button pixel-art tách riêng khỏi board; Exit dùng
+  danger tint đỏ, Close dùng icon thin chung với Inventory. Reskin không thay ownership save/session.
+- Các action button PauseMenu dùng `ColorTint`: hover/Selected sapphire rõ ràng, pressed nâu-vàng và danger
+  hover đỏ. State không thay đổi RectTransform hoặc thứ tự layout; tất cả button/text đã kiểm tra nằm trong board.
 
 ### SessionUX Save/Load overlay visual direction
 
 - `MenuWindow/SessionUX/LoadOverlay` giữ nguyên `PauseMenuUI` slot binding, save/load/delete action,
   confirmation và session ownership; reskin chỉ thay presentation trên DemoScene.
-- `LoadPanel` giữ RectTransform `776×430`; ba slot card dùng safe-area `240×320` tại X `-250/0/250`
-  để không vượt viền panel. Slot action dùng `190×44`, còn Back giữ hit target `220×62`.
-- Board và card dùng parchment tan, viền gỗ/vàng mảnh, accent xanh và lá đồng bộ PauseMenu, Inventory
-  và Gameplay Settings. Title mode dùng hai banner ảnh `session_save_title_banner_hd.png` và
-  `session_load_title_banner_hd.png`; `PauseMenuUI` đổi sprite theo Save/Load mode, còn TMP legacy chỉ giữ binding.
-- Nhãn cố định `SLOT 1–3` dùng trực tiếp `slot_badge_1.png` đến `slot_badge_3.png`; TMP title legacy
-  vẫn giữ binding nhưng tắt render, không thay RectTransform card do designer đã tinh chỉnh thủ công.
-- Primary/Back dùng button chung MainMenu, Delete dùng danger button đỏ; chỉ pointer Highlighted dùng
-  `landing_action_button_hover.png`. Keyboard/gamepad Selected giữ sprite Normal tương ứng để focus mặc
-  định không làm button trông như đang được hover. LoadOverlay để `MainMenuButtonHoverVisual` sở hữu đổi
-  sprite pointer thay vì `Selectable.SpriteSwap`, tránh Selected của slot đầu ghi đè hover; thay đổi visual
-  không tác động callback.
-- `ConfirmationPopup` giữ lớp dim RectTransform `800×450`, dùng board riêng `session_confirmation_board_hd.png`
-  với panel gọn `580×330`: parchment tan, khung gỗ/vàng mảnh, accent xanh và lá đồng bộ LoadOverlay. Message
-  cùng label action tiếp tục là TMP động; Save/Confirm dùng primary xanh, hành động bỏ qua lưu và Cancel dùng
-  danger đỏ. Safe area dùng title `460×64`, button `340×48`; layout tự gom lại theo mode hai hoặc ba action
-  để không object nào chạm hay vượt viền. Popup reskin không thay confirmation kind, callback hoặc session ownership.
+- `LoadPanel` dùng anchor cố định giữa màn hình và bố cục compact `430×250`; ba slot card `116×165`
+  tại X `-130/0/130`, đủ safe-area nhưng không để khoảng trống dư thừa. Builder chuẩn hóa local scale
+  của panel/card/button về `1` để scale legacy không phóng khung hoặc co card sai tỉ lệ. Slot action dùng
+  `96×24`, còn Back giữ hit target `120×28`.
+- Metadata động trong mỗi slot dùng safe-area `78×58`, dịch phải `4 px`, inset ngang `2 px` và TMP
+  auto-size `4.5–6.25`
+  không wrap; chuỗi dài như area, play time và timestamp phải nằm hoàn toàn trong viền card ở cả Save và Load.
+- Title Save/Load đặt giữa vùng đen của title ledge ở Y `-61`; nhãn `SLOT 1–3` nằm trong capsule nhỏ
+  của card ở Y `-3`, không được đè viền trên hoặc rơi xuống vùng status.
+- Board và card dùng nền charcoal/walnut, viền antique-gold mảnh và sapphire tiết chế, đồng bộ PauseMenu,
+  Inventory và Gameplay Settings. Title Save/Load và nhãn `SLOT 1–3` là TMP runtime nằm trong safe-area;
+  asset không bake text, badge, card hoặc control để designer tiếp tục chỉnh trong Editor.
+- Primary/Back dùng button pixel-art tách riêng; Delete dùng danger tint đỏ. Toàn bộ action dùng
+  `Selectable.ColorTint`: hover sapphire/đỏ, pressed nâu-vàng/đỏ sẫm. Builder gỡ hover component legacy
+  và tắt Outline legacy để state cũ không ghi đè ColorTint hoặc tạo viền xanh quanh button/card.
+- `ConfirmationPopup` giữ lớp dim toàn màn hình và dùng board pixel-art tách riêng
+  `session_confirmation_board_v3.png`, panel `500×245`: charcoal/walnut, antique-gold và sapphire đồng bộ
+  LoadOverlay. Asset không bake text hoặc button; message và action label tiếp tục là TMP động.
+- Message dùng safe-area `390×48` tại Y `62` với auto-size `10–15`; button tách riêng `230×24`.
+  Layout ba action ở Y `12/-22/-56`, layout hai action ở Y `-5/-45`; Save/Confirm dùng primary tint,
+  bỏ qua lưu và Cancel dùng
+  danger tint. Popup reskin không thay confirmation kind, callback hoặc session ownership.
 
 ### Tutorial overlay visual direction
 
@@ -256,41 +293,85 @@ Paused
 
 - DemoScene `QuestUIRoot` giữ nguyên `QuestLogUI`, QuestManager event binding, GameplayMenu lifecycle và
   callback Close; reskin chỉ thay presentation, không sở hữu quest progression hoặc save data.
-- `QuestTracker` là viewport cố định `190×230`, giữ nguyên vị trí trên HUD và không tăng kích thước khi
-  có thêm quest hoặc khi một quest được bung nội dung. Nền mặc định trong suốt; pointer hover toàn vùng
-  tracker mới hiện lớp xám đen mờ để tăng độ đọc mà không che world thường xuyên.
-- Tracker hiển thị các quest `Active`/`ReadyToTurnIn` thành danh sách dọc trong `ScrollRect` có mask,
+- `QuestTracker` là HUD không nền, không board và không lớp dim để không che gameplay. Vùng logic
+  `190×230` tương ứng `456×552` physical pixel ở target `1920×1080`; icon nguồn là `384×384` và được
+  thu nhỏ khi render để giữ cạnh sắc. Header gồm chevron button, icon cuộn quest, chữ `QUESTS` TMP và
+  đường vàng. Nhấn toàn bộ header sẽ mở/đóng danh sách; chevron đổi hướng theo trạng thái.
+- `Assets/Prefabs/UI/QuestTracker.prefab` là nguồn authoring: Header, Chevron, QuestIcon, GoldDivider,
+  Viewport, Content và QuestRowTemplate phải tồn tại thành GameObject thật để designer chỉnh vị trí,
+  kích thước và sprite trực tiếp trong Prefab Mode. Runtime chỉ clone RowTemplate và bind dữ liệu động;
+  Bootstrap nhận thay đổi qua nested prefab trong `GameplayUIRoot.prefab`, không tạo scene-only override.
+- Tracker chỉ hiển thị quest `Active`/`ReadyToTurnIn` đang được người chơi chọn Track thành danh sách dọc trong `ScrollRect` có mask,
   cuộn bằng mouse wheel khi nội dung vượt chiều cao. Thứ tự presentation bắt buộc là Main Quest → Side
-  Quest → Daily Quest; trong cùng loại sắp theo display name. Mỗi title tag là nút bung/thu độc lập:
-  trạng thái thu chỉ hiện title, trạng thái bung hiện objective hiện tại/mô tả ngắn. QuestLogWindow tiếp
-  tục sở hữu phần trình bày đầy đủ của quest.
+  Quest → Daily Quest; trong cùng loại sắp theo display name. Mỗi quest hiển thị icon category và
+  objective hiện tại hiển thị icon theo loại hành động, progress căn phải hoặc trạng thái `READY` màu
+  vàng. QuestLogWindow tiếp tục sở hữu phần trình bày đầy đủ của quest.
 - Trong Editor/Development Build, ba nút `TRACK MAIN QUEST`, `TRACK SIDE QUEST`, `TRACK DAILY QUEST`
   nằm ngay dưới `DEBUG LEVEL +1` và accept ba QuestDefinition `quest.debug.*` qua QuestManager để kiểm
   thử đồng thời Tracker/QuestLog. Debug quest không được persist hoặc làm session dirty và không nhận
   được trong non-development Player build.
-- `QuestLogWindow/Window` giữ RectTransform `650×380`; safe area nội bộ dùng `QuestListPanel` `190×255`
-  và `QuestDetailPanel` `340×255`, neo giữa board để không tràn đáy hoặc che nhau. Board, panel, close icon
-  và row button đồng bộ MainMenu, Inventory, Tutorial và SessionUX; không thay list/template binding.
-- Tiêu đề cố định dùng banner ảnh `quest_title_banner_hd.png` với chữ `QUEST`; TMP header legacy tắt
-  render. Detail fallback cũng dùng `QUEST`, còn quest title/status/objective tiếp tục là TMP động.
+- `QuestLogWindow/Window` dùng RectTransform `560×340` trên Canvas reference `800×600`, tương đương
+  khoảng `1344×816` physical pixel ở target `1920×1080`. Safe area chia `QuestListPanel` `190×270`
+  và `QuestDetailPanel` `330×270`; window nằm giữa nhưng vẫn để lộ gameplay quanh bốn cạnh.
+- `QuestListPanel` dùng `ScrollRect` dọc với `Viewport + RectMask2D`, `Content + ContentSizeFitter`
+  và scrollbar lane cố định phía phải. Row cao `43`, có category icon, title, status, category badge
+  và tracked-pin; scrollbar không được chồng lên nội dung row.
+- `QuestDetailPanel` có category icon/label, objective icon + tiến độ động, reward summary và action
+  buttons. Header `QUEST LOG`, close button, filter, row, reward và action đều là GameObject thật trong
+  `GameplayUIRoot.prefab` để designer chỉnh trực tiếp trong Prefab Mode; runtime chỉ bind dữ liệu.
+- Mockup scroll lưu tại `Assets/Documentation/DevelopmentPlan/quest_log_window_scroll_mockup_v2.png`;
+  board production là `Assets/Resources/UI/Quest/QuestLog1920/quest_log_board_dynamic_actions_v3.png`
+  và atlas không bake text nằm tại `Assets/Resources/UI/Quest/QuestLog1920/quest_log_atlas_source.png`.
+  Board không bake action-button frame; `TrackQuestButton` và `AbandonQuestButton` sở hữu sprite
+  `quest_log_action_button.png`, nên khi runtime ẩn Button thì cả viền và text cùng biến mất.
+- Detail panel có `TRACK QUEST`/`UNTRACK QUEST` và `ABANDON QUEST`. Abandon luôn qua confirmation,
+  reset toàn bộ tiến độ và nhắc người chơi quay lại đúng giver NPC để nhận lại. Quest không có
+  `giverNpcId` không được abandon để tránh trạng thái progression không thể phục hồi.
+- `QuestAcceptPopup` là popup dọc giữa màn hình, RectTransform `320×400` trên Canvas reference
+  `800×600`, tương đương khoảng `768×960` physical pixel ở target `1920×1080`. Board dùng cùng gỗ
+  sẫm, viền vàng, sapphire xanh và lá xanh của PlayerHUD/UnifiedGameplayHUD/QuestTracker; gameplay
+  vẫn lộ rõ quanh popup và overlay chỉ dim nhẹ để giữ focus.
+- Header, category icon, quest title, `OBJECTIVES`, objective rows, `REWARDS`, reward slots và hai
+  button `ACCEPT`/`DECLINE` đều là GameObject thật trong `Assets/Prefabs/UI/QuestAcceptPopup.prefab`
+  để designer chỉnh bằng Prefab Mode. Asset board không bake text hoặc dữ liệu quest; runtime bind
+  category/objective/reward icon, progress, Gold và EXP mà không sở hữu progression hay save data.
+- Board production của popup nằm tại
+  `Assets/Resources/UI/Quest/QuestAccept1920/quest_accept_board_dynamic_rewards_v2.png`. Board không
+  bake reward socket; runtime chỉ tạo đúng số item reward thực tế, căn giữa và co slot khi danh sách
+  dài. Vùng objective được chừa chiều cao cho nhiều dòng; quest ít objective không được tự kéo reward
+  lên vì sẽ làm thay đổi nhịp bố cục giữa các quest.
 
 ### Dialogue UI visual direction
 
-- Dialogue dùng bộ module tại `Resources/UI/Dialogue/LightFantasy`: khung hội thoại đáy màn hình có
-  portrait aperture bên trái, vùng text bên phải, nameplate rời, choice button rời và continue indicator.
-- Art direction giữ chung hệ Light Fantasy hiện tại: gỗ sồi ấm, parchment sáng, viền vàng cổ, lá xanh
-  tiết chế và sapphire xanh. Asset ảnh không bake tên NPC, nội dung hoặc lựa chọn.
-- Tên NPC, nội dung thoại và choice label luôn là TMP động với `DigitalDisco SDF v3`; hover/pressed/
-  disabled của choice dùng Unity `Button.colors` trên cùng sprite để không nhân bản texture không cần thiết.
+- Dialogue dùng frame production tại
+  `Resources/UI/Dialogue/DarkInventoryStyle/dialogue_frame_v4.png`: nền charcoal/walnut bán trong
+  suốt, viền vàng pixel-art mảnh, sapphire tiết chế và nameplate tích hợp góc phải dưới. Asset không
+  bake tên NPC, nội dung hoặc lựa chọn.
+- Tên NPC, nội dung thoại và choice label luôn là TMP động với `DigitalDisco SDF v3`. Choice bình
+  thường chỉ hiện text; toàn hàng vẫn là hit target. Hover hoặc keyboard/gamepad focus bật một viền
+  vàng pixel 1 px được dựng bằng object UI riêng, không đổi kích thước hay vị trí hàng.
 - Dialogue presentation không sở hữu quest outcome, shop/crafting transaction hoặc save data. Router/capability
   service cung cấp read model; UI chỉ render và phát intent lựa chọn/continue/cancel.
-- Ở reference Canvas `800x450`, frame neo bottom-center khoảng `700x190`, chừa bottom inset 42; text
-  và portrait nằm trong safe area của asset, continue indicator chỉ pulse khi page hiện tại reveal xong.
+- Ở reference Canvas `800×450`, frame authoring `700×270` neo bottom-center, bottom inset 24 và hiển
+  thị đồng đều ở scale `0.5`. Node có choice dùng body compact phía trên và tối đa 4 dòng choice phía
+  dưới; node không có choice ẩn toàn bộ choice root và mở rộng body xuống safe area. TMP auto-size
+  trong giới hạn, wrap/ellipsis thay vì tràn khung; continue indicator chỉ pulse khi page reveal xong.
 - Khi Dialogue mở, scene binding ẩn gameplay `UICanvas` hiện tại và ghi nhớ `activeSelf`; khi đóng hoặc
   Dialogue bị destroy, trạng thái trước đó được khôi phục chính xác. `EventSystem` và Dialogue Canvas
   riêng vẫn hoạt động, nên trên màn hình chỉ còn Dialogue UI mà không làm mất lifecycle của HUD.
 
 ### Commerce UI layout
+
+- Crafting navigation is an accordion with exactly seven equipment sections in the authored order:
+  `Head`, `Body`, `Foot`, `Ring`, `Necklace`, `Shield`, `Sword`. All section headers remain visible,
+  including empty sections. Activating a header expands only that section's blueprint rows; activating
+  a blueprint then populates output item details and ingredient requirements. Recipes whose output is
+  not one of those equipment slots are intentionally excluded from this equipment-crafting screen.
+- Blueprint rows show the output item icon and name. The details panel reserves a distinct output icon
+  and ingredient sockets; each occupied ingredient socket shows its item icon and `owned/required`
+  count. Before a blueprint is selected the detail area contains only instructional empty-state copy.
+  The crafting experience bar from the visual reference is not part of this project and must not be
+  authored or simulated.
 
 - DemoScene `CommerceUIRoot` giữ nguyên `ShopCraftingUI`, NPC capability service, transaction callback
   và PlayerInput modal lifecycle; thay đổi layout không chuyển ownership mua/bán/craft sang UI.
@@ -348,12 +429,9 @@ Delete và overwrite luôn có confirm chứa đúng slot/character để giảm
 - Playing: gameplay action map.
 - Paused/GameplayMenu: gameplay movement/combat bị khóa, UI action map hoạt động.
 - Dialogue: movement/combat khóa; dialogue UI nhận confirm/cancel.
-- Dialogue choices render inside the right-hand parchment, below a compact body-text region. Nodes
-  without choices expand body text into that lower region; choice buttons never float above or outside
-  the dialogue frame. Dynamic dialogue text and choice labels use Digital Disco at a compact readable
-  scale, preserving the portrait/name/body/decision hierarchy. The in-frame choice list supports up to
-  five single-line choices, with exactly one choice per row; labels auto-size within the
-  documented minimum and use ellipsis rather than expanding a button beyond the parchment safe area.
+- Dialogue choices render dưới vùng body compact. Node không có choice mở rộng body vào vùng dưới;
+  choice không được nổi ra ngoài frame. Danh sách hỗ trợ tối đa 4 choice một dòng; label auto-size
+  trong giới hạn và dùng ellipsis thay vì mở rộng hit area vượt safe area.
 - Cutscene: input theo skip policy riêng.
 
 Không chỉ dựa vào `Time.timeScale`. Input policy phải khóa cả callback Input System.

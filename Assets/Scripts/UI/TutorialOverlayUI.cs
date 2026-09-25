@@ -84,7 +84,12 @@ public sealed class TutorialOverlayUI : MonoBehaviour
     private void Refresh(TutorialStepDefinition step)
     {
         _skipConfirmation.SetActive(false);
-        bool hasActiveStep = step != null;
+
+        // A WaitForQuest step hands instruction/progress display off to the Quest Tracker UI
+        // instead of this banner -- it is real Quest content (e.g. "talk to an NPC" with a real
+        // reward), not filler input guidance, so it gets the real quest UI language instead of
+        // duplicating the same text through the Tutorial banner too.
+        bool hasActiveStep = step != null && step.Type != TutorialStepType.WaitForQuest;
         _instructionPanel.SetActive(hasActiveStep);
 
         if (hasActiveStep)

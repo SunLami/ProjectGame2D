@@ -22,6 +22,17 @@ Video nằm ở `Assets/Cinematics/Intro/Videos/`. Definition dùng stable ID
 Timeline biên tập nằm ở `Assets/Cinematics/Intro/Timelines/IntroCutsceneTimeline.playable` và prefab
 presentation nằm ở `Assets/Prefabs/Cinematics/IntroCutscene.prefab`.
 
+Dialogue presentation dùng chung visual language với Dialogue gameplay: frame
+`Assets/Resources/UI/Dialogue/DarkInventoryStyle/dialogue_frame_v4.png`, nền tối bán trong suốt,
+viền vàng pixel-art và sapphire tiết chế. `Storyteller`/speaker nằm trong nameplate phải dưới; body
+text nằm trong safe area và auto-size/ellipsis để không tràn. Ba action `NEXT`, `SKIP SCENE`,
+`SKIP INTRO` dùng chung sprite nền độc lập
+`dialogue_action_button_v1.png`; label vẫn là TMP runtime, không bake vào ảnh.
+`PresentationRoot` mặc định inactive trong prefab/scene để Game tab ở Edit Mode không hiện nền video
+trắng hoặc khung thoại; `IntroCutsceneController` chỉ bật presentation khi intro thực sự chạy.
+Body text dùng safe area theo viền artwork (không dùng toàn bộ bounds của panel), với lề ngang 120 px
+ở reference resolution để glyph không đè lên đường viền trang trí.
+
 ## Runtime contract
 
 - `NewGame` luôn phát Intro. `Development` phát Intro khi prefab bật `Play In Development`.
@@ -38,6 +49,13 @@ presentation nằm ở `Assets/Prefabs/Cinematics/IntroCutscene.prefab`.
   frame chuyển giao và ngăn flash frame world.
 - `MusicManager` bị suppress từ lúc intro bắt đầu; track nền của gameplay chỉ bắt đầu khi Outro hoàn
   tất và controller bàn giao về gameplay (`Finish`).
+- `EventSystem` dùng instance persistent do `GameBootstrap` sở hữu. Scene `IntroCutscene` không giữ
+  một `EventSystem` cục bộ để tránh hai hệ input cùng xử lý hover/click ở runtime.
+- `GameplayTimelineController` trong scene phải giữ hoặc tự khôi phục reference tới
+  `IntroCutsceneController`; sự kiện `Completed` bàn giao sang Timeline sáu scene trước khi Timeline
+  kết thúc và load `MapNhat`. Fallback chỉ dùng khi scene thật sự không có Gameplay Timeline.
+- Gameplay Timeline có button pixel-art `SKIP SCENE` kích thước 300×120 ở góc phải dưới. Button mặc định ẩn,
+  chỉ bật trong lúc Timeline chạy và gọi `SkipToNextScene()` để nhảy tới camera cut kế tiếp.
 
 ## Authoring và kiểm tra
 

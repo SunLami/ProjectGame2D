@@ -3,7 +3,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-public class InventorySlotUI : MonoBehaviour, IPointerClickHandler, IBeginDragHandler, IDragHandler, IEndDragHandler, IDropHandler
+public class InventorySlotUI : MonoBehaviour, IPointerClickHandler, IPointerEnterHandler, IPointerMoveHandler, IPointerExitHandler, IBeginDragHandler, IDragHandler, IEndDragHandler, IDropHandler
 {
     [SerializeField] private Image _iconImage;
     [SerializeField] private TMP_Text _quantityText;
@@ -47,6 +47,21 @@ public class InventorySlotUI : MonoBehaviour, IPointerClickHandler, IBeginDragHa
         }
     }
 
+    public void OnPointerEnter(PointerEventData eventData)
+    {
+        if (_slot == null || _slot.IsEmpty) return;
+        Vector2 pointerPosition = eventData != null ? eventData.position : (Vector2)Input.mousePosition;
+        InventoryItemTooltipUI.Instance?.Show(_slot.item, transform as RectTransform, pointerPosition);
+    }
+
+    public void OnPointerMove(PointerEventData eventData)
+    {
+        if (_slot == null || _slot.IsEmpty || eventData == null) return;
+        InventoryItemTooltipUI.Instance?.MoveToPointer(eventData.position);
+    }
+
+    public void OnPointerExit(PointerEventData eventData) => InventoryItemTooltipUI.Instance?.Hide();
+
     public void OnDrop(PointerEventData eventData)
     {
         if (eventData.pointerDrag == null) return;
@@ -69,6 +84,8 @@ public class InventorySlotUI : MonoBehaviour, IPointerClickHandler, IBeginDragHa
     public void OnBeginDrag(PointerEventData eventData)
     {
         if (_slot == null || _slot.IsEmpty) return;
+
+        InventoryItemTooltipUI.Instance?.Hide();
 
         Canvas canvas = GetComponentInParent<Canvas>();
         if (canvas == null) return;

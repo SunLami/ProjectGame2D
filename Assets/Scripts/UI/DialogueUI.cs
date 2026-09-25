@@ -17,10 +17,10 @@ public sealed class DialogueUI : MonoBehaviour
     [SerializeField] private TMP_Text _bodyText;
     [SerializeField] private Vector2 _bodyTextWithChoicesPosition = new(98f, 45f);
     [SerializeField] private Vector2 _bodyTextWithChoicesSize = new(360f, 28f);
-    [SerializeField] private float _bodyTextWithChoicesFontSize = 13f;
+    [SerializeField] private float _bodyTextWithChoicesFontSize = 12f;
     [SerializeField] private Vector2 _bodyTextWithoutChoicesPosition = new(98f, -7f);
     [SerializeField] private Vector2 _bodyTextWithoutChoicesSize = new(360f, 96f);
-    [SerializeField] private float _bodyTextWithoutChoicesFontSize = 15f;
+    [SerializeField] private float _bodyTextWithoutChoicesFontSize = 14f;
     [SerializeField] private GameObject _continueIndicator;
     [SerializeField] private Transform _choiceRoot;
     [SerializeField] private Button _choiceTemplate;
@@ -38,6 +38,7 @@ public sealed class DialogueUI : MonoBehaviour
     private Action<string> _completed;
     private Coroutine _typewriter;
     private Coroutine _panelPunch;
+    private Vector3 _panelBaseScale = Vector3.one;
     private bool _isRevealing;
     private DialogueHudGroup _hiddenHudGroup;
     private bool _hudWasActive;
@@ -54,6 +55,8 @@ public sealed class DialogueUI : MonoBehaviour
         Instance = this;
         if (_panelTransform == null)
             _panelTransform = _root.transform as RectTransform;
+        if (_panelTransform != null)
+            _panelBaseScale = _panelTransform.localScale;
         _root.SetActive(false);
         foreach (Button slot in _choiceRoot.GetComponentsInChildren<Button>(true))
             slot.gameObject.SetActive(false);
@@ -130,7 +133,7 @@ public sealed class DialogueUI : MonoBehaviour
             StopCoroutine(_panelPunch);
         _panelPunch = null;
         if (_panelTransform != null)
-            _panelTransform.localScale = Vector3.one;
+            _panelTransform.localScale = _panelBaseScale;
         _isRevealing = false;
         ClearChoices();
         _root.SetActive(false);
@@ -181,22 +184,33 @@ public sealed class DialogueUI : MonoBehaviour
             // before settling, so the pop reads as a spring rather than a linear resize.
             float eased = 1f - Mathf.Pow(1f - t, 3f);
             float scale = Mathf.Lerp(_nodeTransitionPunchScale, 1f, eased);
-            _panelTransform.localScale = new Vector3(scale, scale, 1f);
+            _panelTransform.localScale = new Vector3(
+                _panelBaseScale.x * scale,
+                _panelBaseScale.y * scale,
+                _panelBaseScale.z);
             yield return null;
         }
-        _panelTransform.localScale = Vector3.one;
+        _panelTransform.localScale = _panelBaseScale;
         _panelPunch = null;
     }
 
     private void ApplyBodyLayout(bool hasChoices)
     {
-        // The panel owns the text bounds. Choices are rendered in their own column,
-        // so dialogue text never resizes or moves when a node has answers.
+        RectTransform bodyRect = _bodyText.rectTransform;
+        bodyRect.anchoredPosition = hasChoices
+            ? _bodyTextWithChoicesPosition
+            : _bodyTextWithoutChoicesPosition;
+        bodyRect.sizeDelta = hasChoices
+            ? _bodyTextWithChoicesSize
+            : _bodyTextWithoutChoicesSize;
         _bodyText.enableAutoSizing = true;
         _bodyText.fontSizeMin = 8f;
-        _bodyText.fontSizeMax = _bodyTextWithChoicesFontSize;
+        _bodyText.fontSizeMax = hasChoices
+            ? _bodyTextWithChoicesFontSize
+            : _bodyTextWithoutChoicesFontSize;
         _bodyText.enableWordWrapping = true;
-        _bodyText.overflowMode = TextOverflowModes.Overflow;
+        _bodyText.overflowMode = TextOverflowModes.Ellipsis;
+        _choiceRoot.gameObject.SetActive(hasChoices);
     }
 
     private IEnumerator RevealText()
@@ -239,7 +253,7 @@ public sealed class DialogueUI : MonoBehaviour
             label.fontSizeMin = 7f;
             label.fontSizeMax = 10f;
             label.enableWordWrapping = false;
-            label.overflowMode = TextOverflowModes.Overflow;
+            label.overflowMode = TextOverflowModes.Ellipsis;
             string nextNodeId = choice.NextNodeId;
             button.onClick.RemoveAllListeners();
             button.onClick.AddListener(() => SelectChoice(nextNodeId));
@@ -262,6 +276,7 @@ public sealed class DialogueUI : MonoBehaviour
         {
             if (button == null)
                 continue;
+            button.GetComponent<DialogueChoiceHighlight>()?.ResetState();
             button.onClick.RemoveAllListeners();
             button.gameObject.SetActive(false);
         }
@@ -292,6 +307,15 @@ public sealed class DialogueUI : MonoBehaviour
     {
         if (_hiddenHudGroup == null)
             return;
+
+        // During Play Mode shutdown or scene teardown the remembered HUD can already be in the
+        // destruction queue. Reactivating it at that point produces a Unity lifecycle error.
+        if (!Application.isPlaying || !_hiddenHudGroup.gameObject.scene.isLoaded)
+        {
+            _hiddenHudGroup = null;
+            return;
+        }
+
         _hiddenHudGroup.gameObject.SetActive(_hudWasActive);
         _hiddenHudGroup = null;
     }
