@@ -8,6 +8,7 @@ public static class InventoryLightFantasySkinBuilder
 {
     private const string ControllerPrefab = "Assets/Prefabs/InventoryUIController.prefab";
     private const string SlotPrefab = "Assets/Prefabs/InventorySlotUI.prefab";
+    private const string UnifiedHudPrefab = "Assets/Resources/UI/Gameplay/UnifiedHUD/UnifiedGameplayHUD.prefab";
     private const string SkinRoot = "Assets/Resources/UI/Inventory/LightFantasy/";
     private const string QuestStyleRoot = "Assets/Resources/UI/Inventory/QuestStyle1920/";
 
@@ -22,7 +23,15 @@ public static class InventoryLightFantasySkinBuilder
         Sprite gridFrame = ImportSprite(SkinRoot + "inventory_grid_border_hd.png");
         Sprite goldBadge = ImportSprite(SkinRoot + "inventory_gold_badge_hd.png");
         Sprite tooltipBoard = equipment;
-        Sprite statIcon = ImportSprite("Assets/Resources/UI/Gameplay/UnifiedHUD/LightFantasy/stat_icon.png");
+        Sprite[] statIcons =
+        {
+            ImportSprite(QuestStyleRoot + "Stats/hp_icon.png"),
+            ImportSprite(QuestStyleRoot + "Stats/atk_icon.png"),
+            ImportSprite(QuestStyleRoot + "Stats/def_icon.png"),
+            ImportSprite(QuestStyleRoot + "Stats/spd_icon.png"),
+            ImportSprite(QuestStyleRoot + "Stats/crit_icon.png"),
+            ImportSprite(QuestStyleRoot + "Stats/sta_icon.png")
+        };
 
         EditPrefab(SlotPrefab, root =>
         {
@@ -59,9 +68,10 @@ public static class InventoryLightFantasySkinBuilder
 
             BuildTooltip(root.transform, tooltipBoard);
             BuildCharacterPreview(root.transform);
-            BuildStatsPanel(root.transform, statIcon);
+            BuildStatsPanel(root.transform, statIcons);
             HideBakedOverlayDuplicates(root.transform);
         });
+        RebindUnifiedHudStatButton();
 
         AssetDatabase.SaveAssets();
         Debug.Log("Inventory Light Fantasy skin applied to source prefabs.");
@@ -352,14 +362,14 @@ public static class InventoryLightFantasySkinBuilder
         equipment.SetAsLastSibling();
 
         RectTransform grid = Find(root, "GridScrollView").GetComponent<RectTransform>();
-        grid.anchoredPosition = new Vector2(126f, 8f);
-        grid.sizeDelta = new Vector2(286f, 226f);
+        grid.anchoredPosition = new Vector2(126f, 13f);
+        grid.sizeDelta = new Vector2(286f, 214f);
 
         GridLayoutGroup gridLayout = Find(root, "GridSlot").GetComponent<GridLayoutGroup>();
         gridLayout.constraint = GridLayoutGroup.Constraint.FixedColumnCount;
         gridLayout.constraintCount = 6;
-        gridLayout.cellSize = new Vector2(41f, 41f);
-        gridLayout.spacing = new Vector2(4f, 4f);
+        gridLayout.cellSize = new Vector2(39f, 39f);
+        gridLayout.spacing = new Vector2(7f, 4f);
 
         RectTransform title = Find(root, "TitleInventory").GetComponent<RectTransform>();
         title.anchoredPosition = new Vector2(0f, 145f);
@@ -423,7 +433,7 @@ public static class InventoryLightFantasySkinBuilder
         image.raycastTarget = false;
     }
 
-    private static void BuildStatsPanel(Transform root, Sprite iconSprite)
+    private static void BuildStatsPanel(Transform root, Sprite[] iconSprites)
     {
         Transform inventory = Find(root, "InventoryPanel").transform;
         Transform existing = inventory.Find("InventoryStats");
@@ -438,40 +448,40 @@ public static class InventoryLightFantasySkinBuilder
         panelRect.sizeDelta = new Vector2(226f, 82f);
 
         string[] labels = { "HP", "ATK", "DEF", "SPD", "CRIT", "STA" };
-        Color[] colors =
-        {
-            new(0.86f, 0.28f, 0.24f), new(0.94f, 0.55f, 0.19f), new(0.30f, 0.65f, 0.92f),
-            new(0.35f, 0.82f, 0.54f), new(0.75f, 0.43f, 0.96f), new(0.30f, 0.82f, 0.90f)
-        };
         TMP_Text[] values = new TMP_Text[labels.Length];
         for (int i = 0; i < labels.Length; i++)
         {
             int column = i % 2;
             int row = i / 2;
-            float x = -55f + column * 110f;
-            float y = 24f - row * 24f;
+            float y = 22f - row * 22f;
+            float iconX = column == 0 ? -99f : 7f;
+            float labelX = column == 0 ? -75f : 31f;
+            float valueX = column == 0 ? -28f : 77f;
             Image icon = CreateImage(panel.transform, labels[i] + "Icon");
-            icon.sprite = iconSprite;
-            icon.color = colors[i];
+            icon.sprite = iconSprites[i];
+            icon.color = Color.white;
             icon.preserveAspect = true;
             icon.raycastTarget = false;
             RectTransform iconRect = icon.rectTransform;
             iconRect.anchorMin = iconRect.anchorMax = iconRect.pivot = new Vector2(0.5f, 0.5f);
-            iconRect.anchoredPosition = new Vector2(x - 38f, y);
-            iconRect.sizeDelta = new Vector2(13f, 13f);
+            iconRect.anchoredPosition = new Vector2(iconX, y);
+            iconRect.sizeDelta = new Vector2(14f, 14f);
 
             TMP_Text label = CreateText(panel.transform, labels[i] + "Label", font, 7.5f,
                 new Color(0.72f, 0.65f, 0.54f), TextAlignmentOptions.Left);
             label.rectTransform.anchorMin = label.rectTransform.anchorMax = label.rectTransform.pivot = new Vector2(0.5f, 0.5f);
-            label.rectTransform.anchoredPosition = new Vector2(x - 18f, y);
-            label.rectTransform.sizeDelta = new Vector2(32f, 15f);
+            label.rectTransform.anchoredPosition = new Vector2(labelX, y);
+            label.rectTransform.sizeDelta = new Vector2(30f, 15f);
             label.text = labels[i];
 
             TMP_Text value = CreateText(panel.transform, labels[i] + "Value", font, 8.5f,
                 new Color(0.96f, 0.90f, 0.76f), TextAlignmentOptions.Right);
             value.rectTransform.anchorMin = value.rectTransform.anchorMax = value.rectTransform.pivot = new Vector2(0.5f, 0.5f);
-            value.rectTransform.anchoredPosition = new Vector2(x + 26f, y);
-            value.rectTransform.sizeDelta = new Vector2(52f, 16f);
+            value.rectTransform.anchoredPosition = new Vector2(valueX, y);
+            value.rectTransform.sizeDelta = new Vector2(48f, 16f);
+            value.enableAutoSizing = true;
+            value.fontSizeMin = 6.5f;
+            value.fontSizeMax = 8.5f;
             value.text = "--";
             values[i] = value;
         }
@@ -481,6 +491,21 @@ public static class InventoryLightFantasySkinBuilder
         property.arraySize = values.Length;
         for (int i = 0; i < values.Length; i++) property.GetArrayElementAtIndex(i).objectReferenceValue = values[i];
         serialized.ApplyModifiedPropertiesWithoutUndo();
+    }
+
+    private static void RebindUnifiedHudStatButton()
+    {
+        Sprite statIcon = ImportSprite("Assets/Resources/UI/Gameplay/UnifiedHUD/LightFantasy/stat_icon.png");
+        EditPrefab(UnifiedHudPrefab, root =>
+        {
+            GameObject statButton = Find(root.transform, "StatButton");
+            Image image = statButton.GetComponent<Image>();
+            if (image == null) throw new InvalidOperationException("StatButton requires an Image component.");
+            image.sprite = statIcon;
+            image.type = Image.Type.Simple;
+            image.preserveAspect = true;
+            image.color = Color.white;
+        });
     }
 
     private static void RemoveLegacyEquipmentArtwork(Transform root)
@@ -497,14 +522,15 @@ public static class InventoryLightFantasySkinBuilder
 
     private static void HideBakedOverlayDuplicates(Transform root)
     {
-        // The new board already contains its title plate, close glyph and grid well.
-        // Keep the existing controls for behaviour/raycasting but hide duplicate art.
+        // The new board already contains its title plate and grid well.
+        // Keep the real close control visible because the board does not bake a close glyph.
         Image title = Find(root, "TitleInventory").GetComponent<Image>();
         title.color = Color.clear;
         title.raycastTarget = false;
 
         Image close = Find(root, "CloseBtn").GetComponent<Image>();
-        close.color = Color.clear;
+        close.color = Color.white;
+        close.raycastTarget = true;
 
         Transform gridFrame = FindOptional(root, "GridFrame");
         if (gridFrame != null)

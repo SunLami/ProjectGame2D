@@ -8,8 +8,8 @@ using UnityEngine.UI;
 
 public static class PauseMenuLightFantasySkinBuilder
 {
-    private const string PauseRoot = "Assets/Resources/UI/PauseMenu/LightFantasy/";
-    private const string MainMenuRoot = "Assets/Resources/UI/MainMenu/LightFantasy/";
+    private const string PauseRoot = "Assets/Resources/UI/PauseMenu/DarkInventoryStyle/";
+    private const string DialogueRoot = "Assets/Resources/UI/Dialogue/DarkInventoryStyle/";
     private const string InventoryRoot = "Assets/Resources/UI/Inventory/LightFantasy/";
 
     private static readonly Dictionary<string, string> Labels = new Dictionary<string, string>
@@ -38,26 +38,26 @@ public static class PauseMenuLightFantasySkinBuilder
     [MenuItem("Tools/ProjectGame2D/UI/Apply Pause Menu Light Fantasy Skin")]
     public static void Apply()
     {
-        PauseMenuUI pauseMenu = UnityEngine.Object.FindAnyObjectByType<PauseMenuUI>(FindObjectsInactive.Include);
+        PauseMenuUI pauseMenu = FindLoadedSceneObject<PauseMenuUI>();
         if (pauseMenu == null)
         {
             throw new InvalidOperationException("PauseMenuUI was not found in the active scene.");
         }
 
-        Sprite board = ImportSprite(PauseRoot + "pause_menu_board_hd.png");
-        Sprite primaryButton = ImportSprite(MainMenuRoot + "landing_action_button.png");
-        Sprite hoverButton = ImportSprite(MainMenuRoot + "landing_action_button_hover.png");
-        Sprite dangerButton = ImportSprite(MainMenuRoot + "slot_delete_button.png");
+        Sprite board = ImportSprite(PauseRoot + "pause_menu_board_v1.png");
+        Sprite primaryButton = ImportSprite(DialogueRoot + "dialogue_action_button_v1.png");
         Sprite close = ImportSprite(InventoryRoot + "inventory_close_thin_hd.png");
 
         Transform root = pauseMenu.transform;
         GameObject panel = Find(root, "Panel");
         SetImage(panel, board, false);
         panel.GetComponent<RectTransform>().sizeDelta = new Vector2(164f, 340f);
+        EnsurePauseTitle(panel.transform);
 
         GameObject closeButton = Find(root, "CloseBtn");
         SetImage(closeButton, close, true);
         closeButton.GetComponent<RectTransform>().sizeDelta = new Vector2(28f, 28f);
+        StyleCloseButton(closeButton);
 
         GameObject shopButton = TryFind(root, "ShopBtn");
         if (shopButton != null) shopButton.SetActive(false);
@@ -79,21 +79,19 @@ public static class PauseMenuLightFantasySkinBuilder
             if (!Labels.TryGetValue(button.name, out string label)) continue;
 
             bool isDanger = button.name == "QuitDesktopBtn";
-            SetImage(button.gameObject, isDanger ? dangerButton : primaryButton, false);
+            SetImage(button.gameObject, primaryButton, false);
             button.targetGraphic = button.GetComponent<Image>();
-            button.transition = Selectable.Transition.SpriteSwap;
-            SpriteState spriteState = button.spriteState;
-            spriteState.highlightedSprite = hoverButton;
-            spriteState.selectedSprite = hoverButton;
-            button.spriteState = spriteState;
+            button.transition = Selectable.Transition.ColorTint;
 
             ColorBlock colors = button.colors;
-            colors.normalColor = button.interactable ? Color.white : new Color(0.62f, 0.58f, 0.45f, 0.88f);
-            colors.highlightedColor = new Color(0.82f, 1f, 0.84f, 1f);
-            colors.pressedColor = new Color(0.78f, 0.68f, 0.42f, 1f);
+            colors.normalColor = isDanger ? new Color(0.72f, 0.30f, 0.25f, 1f) : Color.white;
+            colors.highlightedColor = isDanger ? new Color(1f, 0.48f, 0.38f, 1f) : new Color(0.58f, 0.82f, 1f, 1f);
+            colors.pressedColor = isDanger ? new Color(0.52f, 0.18f, 0.16f, 1f) : new Color(0.68f, 0.55f, 0.30f, 1f);
             colors.disabledColor = new Color(0.58f, 0.55f, 0.44f, 0.72f);
             colors.colorMultiplier = 1f;
+            colors.fadeDuration = 0.08f;
             button.colors = colors;
+            EditorUtility.SetDirty(button);
 
             RectTransform buttonRect = button.GetComponent<RectTransform>();
             buttonRect.sizeDelta = new Vector2(buttonRect.sizeDelta.x, 28f);
@@ -149,12 +147,53 @@ public static class PauseMenuLightFantasySkinBuilder
         }
 
         text.text = label;
+        text.font = AssetDatabase.LoadAssetAtPath<TMP_FontAsset>("Assets/Fonts/DigitalDisco SDF v3.asset");
         text.alignment = TextAlignmentOptions.Center;
         text.fontSize = label.Length > 10 ? 10f : 12f;
         text.color = interactable
             ? new Color(1f, 0.94f, 0.72f, 1f)
             : new Color(0.38f, 0.31f, 0.22f, 0.78f);
         text.raycastTarget = false;
+    }
+
+    private static void StyleCloseButton(GameObject target)
+    {
+        Button button = target.GetComponent<Button>();
+        if (button == null) return;
+        button.targetGraphic = target.GetComponent<Image>();
+        button.transition = Selectable.Transition.ColorTint;
+        ColorBlock colors = button.colors;
+        colors.normalColor = Color.white;
+        colors.highlightedColor = new Color(1f, 0.86f, 0.38f, 1f);
+        colors.pressedColor = new Color(0.66f, 0.48f, 0.18f, 1f);
+        colors.disabledColor = new Color(0.45f, 0.42f, 0.34f, 0.65f);
+        colors.colorMultiplier = 1f;
+        colors.fadeDuration = 0.08f;
+        button.colors = colors;
+        EditorUtility.SetDirty(button);
+    }
+
+    private static void EnsurePauseTitle(Transform panel)
+    {
+        Transform existing = panel.Find("SkinPauseTitle");
+        GameObject titleObject = existing != null
+            ? existing.gameObject
+            : new GameObject("SkinPauseTitle", typeof(RectTransform), typeof(CanvasRenderer), typeof(TextMeshProUGUI));
+        titleObject.transform.SetParent(panel, false);
+        RectTransform rect = titleObject.GetComponent<RectTransform>();
+        rect.anchorMin = new Vector2(0.5f, 1f);
+        rect.anchorMax = new Vector2(0.5f, 1f);
+        rect.pivot = new Vector2(0.5f, 1f);
+        rect.anchoredPosition = new Vector2(0f, -22f);
+        rect.sizeDelta = new Vector2(128f, 24f);
+        TextMeshProUGUI text = titleObject.GetComponent<TextMeshProUGUI>();
+        text.text = "PAUSED";
+        text.font = AssetDatabase.LoadAssetAtPath<TMP_FontAsset>("Assets/Fonts/DigitalDisco SDF v3.asset");
+        text.fontSize = 14f;
+        text.color = new Color(1f, 0.84f, 0.38f, 1f);
+        text.alignment = TextAlignmentOptions.Center;
+        text.raycastTarget = false;
+        EditorUtility.SetDirty(text);
     }
 
     private static Sprite ImportSprite(string path)
@@ -198,5 +237,15 @@ public static class PauseMenuLightFantasySkinBuilder
         image.preserveAspect = preserveAspect;
         image.color = Color.white;
         EditorUtility.SetDirty(image);
+    }
+
+    private static T FindLoadedSceneObject<T>() where T : Component
+    {
+        foreach (T component in UnityEngine.Object.FindObjectsByType<T>(FindObjectsInactive.Include, FindObjectsSortMode.None))
+        {
+            if (component.gameObject.scene.IsValid() && component.gameObject.scene.isLoaded)
+                return component;
+        }
+        return null;
     }
 }

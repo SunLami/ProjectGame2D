@@ -7,31 +7,21 @@ using UnityEngine.UI;
 
 public static class SessionUXLoadOverlayLightFantasySkinBuilder
 {
-    private const string SessionRoot = "Assets/Resources/UI/SessionUX/LightFantasy/";
-    private const string MainMenuRoot = "Assets/Resources/UI/MainMenu/LightFantasy/";
+    private const string SessionRoot = "Assets/Resources/UI/SessionUX/DarkInventoryStyle/";
+    private const string DialogueRoot = "Assets/Resources/UI/Dialogue/DarkInventoryStyle/";
 
     [MenuItem("Tools/ProjectGame2D/UI/Apply SessionUX Load Overlay Light Fantasy Skin")]
     public static void Apply()
     {
-        PauseMenuUI pauseMenu = UnityEngine.Object.FindAnyObjectByType<PauseMenuUI>(FindObjectsInactive.Include);
+        PauseMenuUI pauseMenu = FindLoadedSceneObject<PauseMenuUI>();
         if (pauseMenu == null) throw new InvalidOperationException("PauseMenuUI was not found in the active scene.");
 
         Transform overlay = pauseMenu.transform.Find("MenuWindow/SessionUX/LoadOverlay");
         if (overlay == null) throw new InvalidOperationException("SessionUX/LoadOverlay was not found under PauseMenuUI.");
 
-        Sprite overlayBoard = ImportSprite(SessionRoot + "session_slot_overlay_board_hd.png");
-        Sprite slotCard = ImportSprite(SessionRoot + "session_slot_card_hd.png");
-        Sprite primaryButton = ImportSprite(MainMenuRoot + "landing_action_button.png");
-        Sprite hoverButton = ImportSprite(MainMenuRoot + "landing_action_button_hover.png");
-        Sprite dangerButton = ImportSprite(MainMenuRoot + "slot_delete_button.png");
-        Sprite loadTitleBanner = ImportSprite(SessionRoot + "session_load_title_banner_hd.png");
-        Sprite saveTitleBanner = ImportSprite(SessionRoot + "session_save_title_banner_hd.png");
-        Sprite[] slotBadges =
-        {
-            ImportSprite(MainMenuRoot + "slot_badge_1.png"),
-            ImportSprite(MainMenuRoot + "slot_badge_2.png"),
-            ImportSprite(MainMenuRoot + "slot_badge_3.png")
-        };
+        Sprite overlayBoard = ImportSprite(SessionRoot + "session_slot_overlay_board_v1.png");
+        Sprite slotCard = ImportSprite(SessionRoot + "session_slot_card_v1.png");
+        Sprite primaryButton = ImportSprite(DialogueRoot + "dialogue_action_button_v1.png");
 
         Image dim = overlay.GetComponent<Image>();
         if (dim != null)
@@ -42,39 +32,60 @@ public static class SessionUXLoadOverlayLightFantasySkinBuilder
 
         Transform panel = RequireDirectChild(overlay, "LoadPanel");
         SetImage(panel.gameObject, overlayBoard, false);
+        RectTransform panelRect = panel.GetComponent<RectTransform>();
+        panelRect.anchorMin = new Vector2(0.5f, 0.5f);
+        panelRect.anchorMax = new Vector2(0.5f, 0.5f);
+        panelRect.pivot = new Vector2(0.5f, 0.5f);
+        panelRect.anchoredPosition = Vector2.zero;
+        panelRect.localScale = Vector3.one;
+        panelRect.sizeDelta = new Vector2(430f, 250f);
+        DisableOutline(panel.gameObject);
 
         Transform overlayTitleTransform = RequireDirectChild(panel, "Title");
         RectTransform overlayTitleRect = overlayTitleTransform.GetComponent<RectTransform>();
-        overlayTitleRect.anchoredPosition = new Vector2(overlayTitleRect.anchoredPosition.x, -92f);
-        overlayTitleRect.sizeDelta = new Vector2(560f, 52f);
+        overlayTitleRect.localScale = Vector3.one;
+        overlayTitleRect.anchoredPosition = new Vector2(0f, -61f);
+        overlayTitleRect.sizeDelta = new Vector2(240f, 28f);
         overlayTitleTransform.SetAsLastSibling();
         TMP_Text overlayTitle = overlayTitleTransform.GetComponent<TMP_Text>();
-        overlayTitle.enabled = false;
-        Image overlayTitleBanner = EnsureOverlayTitleBanner(overlayTitleTransform, loadTitleBanner);
+        overlayTitle.enabled = true;
+        StyleText(overlayTitle, 14f, new Color(1f, 0.84f, 0.38f, 1f), TextAlignmentOptions.Center);
+        Image overlayTitleBanner = EnsureOverlayTitleBanner(overlayTitleTransform, null);
+        overlayTitleBanner.enabled = false;
 
         for (int index = 1; index <= 3; index++)
         {
             Transform slot = RequireDirectChild(panel, "Slot" + index);
             RectTransform slotRect = slot.GetComponent<RectTransform>();
-            slotRect.sizeDelta = new Vector2(240f, 320f);
-            slotRect.anchoredPosition = new Vector2((index - 2) * 250f, -8f);
+            slotRect.localScale = Vector3.one;
+            slotRect.sizeDelta = new Vector2(116f, 165f);
+            slotRect.anchoredPosition = new Vector2((index - 2) * 130f, -3f);
             SetImage(slot.gameObject, slotCard, false);
+            DisableOutline(slot.gameObject);
 
             Transform titleTransform = RequireDirectChild(slot, "Title");
             RectTransform titleRect = titleTransform.GetComponent<RectTransform>();
-            SetTopAnchoredRect(titleRect, new Vector2(220f, 40f), -45f);
+            SetTopAnchoredRect(titleRect, new Vector2(82f, 14f), -3f);
             TMP_Text title = titleTransform.GetComponent<TMP_Text>();
-            title.enabled = false;
-            EnsureSlotBadge(titleTransform, slotBadges[index - 1]);
+            title.enabled = true;
+            Transform oldBadge = titleTransform.Find("SkinSlotBadge");
+            if (oldBadge != null) oldBadge.gameObject.SetActive(false);
             Transform statusTransform = RequireDirectChild(slot, "Status");
-            SetTopAnchoredRect(statusTransform.GetComponent<RectTransform>(), new Vector2(220f, 36f), -85f);
+            SetTopAnchoredRect(statusTransform.GetComponent<RectTransform>(), new Vector2(102f, 20f), -45f);
             TMP_Text status = statusTransform.GetComponent<TMP_Text>();
             Transform detailsTransform = RequireDirectChild(slot, "Details");
-            SetTopAnchoredRect(detailsTransform.GetComponent<RectTransform>(), new Vector2(208f, 110f), -158f);
+            RectTransform detailsRect = detailsTransform.GetComponent<RectTransform>();
+            SetTopAnchoredRect(detailsRect, new Vector2(78f, 58f), -77f);
+            detailsRect.anchoredPosition = new Vector2(4f, detailsRect.anchoredPosition.y);
             TMP_Text details = detailsTransform.GetComponent<TMP_Text>();
-            StyleText(title, 18f, new Color(0.25f, 0.12f, 0.04f, 1f), TextAlignmentOptions.Center);
-            StyleText(status, 16f, new Color(0.58f, 0.30f, 0.055f, 1f), TextAlignmentOptions.Center);
-            StyleText(details, 12f, new Color(0.25f, 0.14f, 0.07f, 1f), TextAlignmentOptions.TopLeft);
+            StyleText(title, 7.5f, new Color(1f, 0.84f, 0.38f, 1f), TextAlignmentOptions.Center);
+            StyleText(status, 8.5f, new Color(1f, 0.93f, 0.72f, 1f), TextAlignmentOptions.Center);
+            StyleText(details, 6.25f, new Color(0.86f, 0.89f, 0.94f, 1f), TextAlignmentOptions.TopLeft);
+            details.enableAutoSizing = true;
+            details.fontSizeMin = 4.5f;
+            details.fontSizeMax = 6.25f;
+            details.textWrappingMode = TextWrappingModes.NoWrap;
+            details.margin = new Vector4(2f, 0f, 2f, 0f);
 
             foreach (Button slotButton in slot.GetComponentsInChildren<Button>(true))
             {
@@ -82,43 +93,48 @@ public static class SessionUXLoadOverlayLightFantasySkinBuilder
                 buttonRect.anchorMin = new Vector2(0.5f, 0f);
                 buttonRect.anchorMax = new Vector2(0.5f, 0f);
                 buttonRect.pivot = new Vector2(0.5f, 0.5f);
-                buttonRect.sizeDelta = new Vector2(190f, 44f);
-                buttonRect.anchoredPosition = new Vector2(0f, slotButton.name == "DeleteButton" ? 88f : 38f);
+                buttonRect.localScale = Vector3.one;
+                buttonRect.sizeDelta = new Vector2(96f, 24f);
+                buttonRect.anchoredPosition = new Vector2(0f, slotButton.name == "DeleteButton" ? 48f : 18f);
+                DisableOutline(slotButton.gameObject);
             }
         }
 
         foreach (Button button in overlay.GetComponentsInChildren<Button>(true))
         {
             bool danger = button.name == "DeleteButton";
-            SetImage(button.gameObject, danger ? dangerButton : primaryButton, false);
+            SetImage(button.gameObject, primaryButton, false);
+            DisableOutline(button.gameObject);
             button.targetGraphic = button.GetComponent<Image>();
-            button.transition = Selectable.Transition.None;
-            SpriteState state = button.spriteState;
-            state.highlightedSprite = hoverButton;
-            state.selectedSprite = danger ? dangerButton : primaryButton;
-            button.spriteState = state;
-
+            button.transition = Selectable.Transition.ColorTint;
+            ColorBlock colors = button.colors;
+            colors.normalColor = danger ? new Color(0.72f, 0.30f, 0.25f, 1f) : Color.white;
+            colors.highlightedColor = danger ? new Color(1f, 0.48f, 0.38f, 1f) : new Color(0.58f, 0.82f, 1f, 1f);
+            colors.pressedColor = danger ? new Color(0.52f, 0.18f, 0.16f, 1f) : new Color(0.68f, 0.55f, 0.30f, 1f);
+            colors.disabledColor = new Color(0.45f, 0.42f, 0.34f, 0.65f);
+            colors.fadeDuration = 0.08f;
+            button.colors = colors;
             MainMenuButtonHoverVisual hoverVisual = button.GetComponent<MainMenuButtonHoverVisual>();
-            if (hoverVisual == null) hoverVisual = button.gameObject.AddComponent<MainMenuButtonHoverVisual>();
-            SerializedObject hoverVisualObject = new SerializedObject(hoverVisual);
-            hoverVisualObject.FindProperty("_hoverSprite").objectReferenceValue = hoverButton;
-            hoverVisualObject.ApplyModifiedPropertiesWithoutUndo();
+            if (hoverVisual != null) UnityEngine.Object.DestroyImmediate(hoverVisual);
+            EditorUtility.SetDirty(button);
 
             TMP_Text label = button.GetComponentInChildren<TMP_Text>(true);
             if (label != null)
             {
-                StyleText(label, 18f, new Color(1f, 0.94f, 0.72f, 1f), TextAlignmentOptions.Center);
+                StyleText(label, 8f, new Color(1f, 0.94f, 0.72f, 1f), TextAlignmentOptions.Center);
             }
         }
 
         RectTransform backRect = RequireDirectChild(panel, "BackButton").GetComponent<RectTransform>();
-        backRect.anchoredPosition = new Vector2(backRect.anchoredPosition.x, 66f);
+        backRect.localScale = Vector3.one;
+        backRect.sizeDelta = new Vector2(120f, 28f);
+        backRect.anchoredPosition = new Vector2(0f, 31f);
         backRect.SetAsLastSibling();
 
         SerializedObject serializedPauseMenu = new SerializedObject(pauseMenu);
         serializedPauseMenu.FindProperty("_slotOverlayTitleBanner").objectReferenceValue = overlayTitleBanner;
-        serializedPauseMenu.FindProperty("_saveSlotTitleBanner").objectReferenceValue = saveTitleBanner;
-        serializedPauseMenu.FindProperty("_loadSlotTitleBanner").objectReferenceValue = loadTitleBanner;
+        serializedPauseMenu.FindProperty("_saveSlotTitleBanner").objectReferenceValue = null;
+        serializedPauseMenu.FindProperty("_loadSlotTitleBanner").objectReferenceValue = null;
         serializedPauseMenu.ApplyModifiedPropertiesWithoutUndo();
 
         EditorUtility.SetDirty(pauseMenu.gameObject);
@@ -138,6 +154,7 @@ public static class SessionUXLoadOverlayLightFantasySkinBuilder
     private static void StyleText(TMP_Text text, float size, Color color, TextAlignmentOptions alignment)
     {
         if (text == null) return;
+        text.font = AssetDatabase.LoadAssetAtPath<TMP_FontAsset>("Assets/Fonts/DigitalDisco SDF v3.asset");
         text.fontSize = size;
         text.color = color;
         text.alignment = alignment;
@@ -152,6 +169,12 @@ public static class SessionUXLoadOverlayLightFantasySkinBuilder
         rect.pivot = new Vector2(0.5f, 0.5f);
         rect.sizeDelta = size;
         rect.anchoredPosition = new Vector2(0f, y);
+    }
+
+    private static void DisableOutline(GameObject target)
+    {
+        Outline outline = target.GetComponent<Outline>();
+        if (outline != null) outline.enabled = false;
     }
 
     private static void EnsureSlotBadge(Transform titleTransform, Sprite badge)
@@ -190,6 +213,14 @@ public static class SessionUXLoadOverlayLightFantasySkinBuilder
         image.raycastTarget = false;
         bannerObject.transform.SetAsLastSibling();
         return image;
+    }
+
+    private static T FindLoadedSceneObject<T>() where T : Component
+    {
+        foreach (T component in UnityEngine.Object.FindObjectsByType<T>(FindObjectsInactive.Include, FindObjectsSortMode.None))
+            if (component.gameObject.scene.IsValid() && component.gameObject.scene.isLoaded)
+                return component;
+        return null;
     }
 
     private static Sprite ImportSprite(string path)

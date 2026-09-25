@@ -576,9 +576,9 @@ public static class ContentValidationRunner
             else if (!StableIdPattern.IsMatch(shop.ShopId))
                 report.Error(path, $"shopId '{shop.ShopId}' does not match the stable ID convention.", shop);
 
-            if (shop.Stock.Count == 0)
+            if (shop.Stock.Count == 0 && shop.BuyItems.Count == 0)
             {
-                report.Error(path, "stock must contain at least one entry.", shop);
+                report.Error(path, "Buy Items (or legacy stock) must contain at least one entry.", shop);
                 continue;
             }
 
@@ -599,6 +599,9 @@ public static class ContentValidationRunner
                 if (entry.Price < 0)
                     report.Error(path, $"stock[{i}] ('{entry.ItemId}') price must not be negative.", shop);
             }
+
+            ValidateShopItemList(path, "Buy Items", shop.BuyItems, requireBuyPrice: true, shop, report);
+            ValidateShopItemList(path, "Sell Items", shop.SellItems, requireBuyPrice: false, shop, report);
         }
 
         List<ShopCatalog> shopCatalogs = LoadAssets<ShopCatalog>();
@@ -627,6 +630,40 @@ public static class ContentValidationRunner
             if (!catalogedShops.Contains(shop))
                 report.Error(AssetDatabase.GetAssetPath(shop), "shop is missing from every ShopCatalog.", shop);
         }
+    }
+
+    private static void ValidateShopItemList(
+        string path,
+        string label,
+        IReadOnlyList<ItemSO> items,
+        bool requireBuyPrice,
+        ShopDefinition shop,
+        ValidationReport report)
+    {
+        var seen = new HashSet<ItemSO>();
+        for (int i = 0; i < items.Count; i++)
+        {
+            ItemSO item = items[i];
+            if (item == null)
+            {
+                report.Error(path, $"{label}[{i}] has no ItemSO reference.", shop);
+                continue;
+            }
+            if (!seen.Add(item))
+                report.Error(path, $"{label} contains duplicate item '{item.name}'.", shop);
+            if (requireBuyPrice && item.MaxBuyPrice <= 0 && !HasLegacyStockPrice(shop, item.itemId))
+                report.Error(path, $"Buy item '{item.name}' has no Buy Min/Max price and no legacy stock price.", shop);
+            if (!requireBuyPrice && item.MaxSellPrice <= 0 && !HasLegacyStockPrice(shop, item.itemId))
+                report.Error(path, $"Sell item '{item.name}' has no Sell Min/Max price and no legacy stock fallback.", shop);
+        }
+    }
+
+    private static bool HasLegacyStockPrice(ShopDefinition shop, string itemId)
+    {
+        foreach (ShopStockEntry entry in shop.Stock)
+            if (entry != null && entry.ItemId == itemId)
+                return true;
+        return false;
     }
 
     private static void ValidateRecipeDefinitions(ValidationReport report, HashSet<string> knownItemIds)

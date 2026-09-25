@@ -219,4 +219,35 @@ public sealed class ShopManagerPlayModeTests
         Assert.AreEqual(ShopTransactionResult.InsufficientItemQuantity, result);
         Assert.AreEqual(0, InventoryManager.Instance.Gold);
     }
+
+    [Test]
+    public void ExplicitBuyAndSellLists_AreIndependentAndDataDriven()
+    {
+        ItemSO buyOnly = MakeItem("item.buy_only");
+        ItemSO sellOnly = MakeItem("item.sell_only");
+        SetPrivate(buyOnly, "_minBuyPrice", 7);
+        SetPrivate(buyOnly, "_maxBuyPrice", 7);
+        SetPrivate(sellOnly, "_minSellPrice", 3);
+        SetPrivate(sellOnly, "_maxSellPrice", 3);
+
+        var resolver = new FakeItemResolver();
+        resolver.Register(buyOnly);
+        resolver.Register(sellOnly);
+        ShopDefinition shop = MakeShop("shop.explicit", "npc.explicit");
+        SetPrivate(shop, "_buyItems", new[] { buyOnly });
+        SetPrivate(shop, "_sellItems", new[] { sellOnly });
+        _manager.ConfigureForTests(MakeCatalog(shop), resolver);
+        InventoryManager.Instance.AddGold(20);
+        InventoryManager.Instance.AddItem(sellOnly, 1);
+
+        Assert.IsTrue(_manager.TryPurchase("shop.explicit", buyOnly.itemId, 1, out ShopTransactionResult buyResult));
+        Assert.AreEqual(ShopTransactionResult.Success, buyResult);
+        Assert.IsFalse(_manager.TryPurchase("shop.explicit", sellOnly.itemId, 1, out ShopTransactionResult rejectedBuy));
+        Assert.AreEqual(ShopTransactionResult.ItemNotInStock, rejectedBuy);
+
+        Assert.IsTrue(_manager.TrySell("shop.explicit", sellOnly.itemId, 1, out ShopTransactionResult sellResult));
+        Assert.AreEqual(ShopTransactionResult.Success, sellResult);
+        Assert.IsFalse(_manager.TrySell("shop.explicit", buyOnly.itemId, 1, out ShopTransactionResult rejectedSell));
+        Assert.AreEqual(ShopTransactionResult.ItemNotInStock, rejectedSell);
+    }
 }
