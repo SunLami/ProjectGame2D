@@ -9,6 +9,10 @@ using UnityEngine.UI;
 public static class CharacterPopupAuthoring
 {
     private const string PrefabPath = "Assets/Resources/UI/Gameplay/UnifiedHUD/UnifiedGameplayHUD.prefab";
+    private const string UnifiedBoardPath = "Assets/Resources/UI/Character/DarkInventoryStyle/character_popup_unified_v1.png";
+    private const string InnerTitlePath = "Assets/Resources/UI/Character/DarkInventoryStyle/character_inner_title_v1.png";
+    private const string StatSectionPath = "Assets/Resources/UI/Character/DarkInventoryStyle/character_stat_section_v1.png";
+    private const string SlotPath = "Assets/Resources/UI/Inventory/QuestStyle1920/inventory_slot_reference_v4.png";
 
     [MenuItem("Tools/ProjectGame2D/UI/Rebuild Character Popup")]
     public static void Rebuild()
@@ -52,14 +56,18 @@ public static class CharacterPopupAuthoring
 
     private static void BuildPopup(GameObject root, RectTransform popup)
     {
-        Sprite equipmentFrame = LoadSprite("Assets/Resources/UI/Inventory/LightFantasy/equipment_panel_hd.png");
-        Sprite board = LoadSprite("Assets/Resources/UI/Inventory/LightFantasy/inventory_board_thin_hd.png");
-        Sprite slot = LoadSprite("Assets/Resources/UI/Inventory/LightFantasy/inventory_slot_thin_hd.png");
+        Sprite unifiedBoard = LoadSprite(UnifiedBoardPath);
+        Sprite innerTitle = LoadSlicedSprite(InnerTitlePath, new Vector4(72f, 72f, 72f, 72f));
+        Sprite statSection = LoadSlicedSprite(StatSectionPath, new Vector4(56f, 56f, 56f, 56f));
+        Sprite slot = LoadSprite(SlotPath);
         Sprite close = LoadSprite("Assets/Resources/UI/Inventory/LightFantasy/inventory_close_thin_hd.png");
 
         RectTransform window = CreateRect("Window", popup, Vector2.zero, new Vector2(760f, 410f));
-        List<Image> equipmentIcons = BuildEquipmentPanel(window, equipmentFrame, slot);
-        StatTextBindings stats = BuildStatsPanel(root, window, board, close);
+        Image windowBoard = window.gameObject.AddComponent<Image>();
+        windowBoard.sprite = unifiedBoard;
+        windowBoard.raycastTarget = false;
+        List<Image> equipmentIcons = BuildEquipmentPanel(window, innerTitle, slot);
+        StatTextBindings stats = BuildStatsPanel(root, window, innerTitle, statSection, close);
 
         CharacterPopupUI popupUi = popup.GetComponent<CharacterPopupUI>() ?? popup.gameObject.AddComponent<CharacterPopupUI>();
         SerializedObject popupSo = new SerializedObject(popupUi);
@@ -86,21 +94,17 @@ public static class CharacterPopupAuthoring
         hudSo.ApplyModifiedPropertiesWithoutUndo();
     }
 
-    private static List<Image> BuildEquipmentPanel(RectTransform window, Sprite frameSprite, Sprite slotSprite)
+    private static List<Image> BuildEquipmentPanel(RectTransform window, Sprite titleSprite, Sprite slotSprite)
     {
         RectTransform panel = CreateRect("EquipmentPanel", window, new Vector2(-222f, 0f), new Vector2(280f, 400f));
-        Image frame = panel.gameObject.AddComponent<Image>();
-        frame.sprite = frameSprite;
-        frame.raycastTarget = false;
 
-        RectTransform parchment = CreateRect("ParchmentInterior", panel, new Vector2(0f, -8f), new Vector2(224f, 316f));
-        Image parchmentImage = parchment.gameObject.AddComponent<Image>();
-        parchmentImage.color = new Color(0.70f, 0.49f, 0.31f, 0.94f);
-        parchmentImage.raycastTarget = false;
-        parchment.SetAsFirstSibling();
-
-        TMP_Text title = CreateText("Title", panel, new Vector2(0f, 130f), new Vector2(190f, 30f), "EQUIPMENT", 18f, TextAlignmentOptions.Center);
-        title.color = new Color(0.08f, 0.20f, 0.48f, 1f);
+        RectTransform titleFrame = CreateRect("TitleFrame", panel, new Vector2(0f, 130f), new Vector2(190f, 30f));
+        Image titleImage = titleFrame.gameObject.AddComponent<Image>();
+        titleImage.sprite = titleSprite;
+        titleImage.type = Image.Type.Sliced;
+        titleImage.raycastTarget = false;
+        TMP_Text title = CreateText("Title", titleFrame, Vector2.zero, new Vector2(178f, 26f), "EQUIPMENT", 18f, TextAlignmentOptions.Center);
+        title.color = new Color(0.86f, 0.69f, 0.30f, 1f);
         title.fontStyle = FontStyles.Bold;
 
         (EquipSlot Slot, string Name, Vector2 Position)[] definitions =
@@ -130,34 +134,38 @@ public static class CharacterPopupAuthoring
             icons.Add(icon);
 
             TMP_Text label = CreateText("Label", slot, new Vector2(0f, -37f), new Vector2(74f, 15f), name.ToUpperInvariant(), 8f, TextAlignmentOptions.Center);
-            label.color = new Color(0.25f, 0.13f, 0.06f, 0.88f);
+            label.color = new Color(0.82f, 0.78f, 0.68f, 0.88f);
         }
         return icons;
     }
 
-    private static StatTextBindings BuildStatsPanel(GameObject root, RectTransform window, Sprite boardSprite, Sprite closeSprite)
+    private static StatTextBindings BuildStatsPanel(GameObject root, RectTransform window, Sprite titleSprite, Sprite sectionSprite, Sprite closeSprite)
     {
         RectTransform panel = CreateRect("CharacterStatsPanel", window, new Vector2(145f, 0f), new Vector2(450f, 400f));
-        Image board = panel.gameObject.AddComponent<Image>();
-        board.sprite = boardSprite;
-        board.raycastTarget = false;
 
-        TMP_Text title = CreateText("Title", panel, new Vector2(0f, 130f), new Vector2(310f, 34f), "CHARACTER STATS", 20f, TextAlignmentOptions.Center);
-        title.color = new Color(0.08f, 0.20f, 0.48f, 1f);
+        RectTransform titleFrame = CreateRect("TitleFrame", panel, new Vector2(0f, 130f), new Vector2(310f, 34f));
+        Image titleImage = titleFrame.gameObject.AddComponent<Image>();
+        titleImage.sprite = titleSprite;
+        titleImage.type = Image.Type.Sliced;
+        titleImage.raycastTarget = false;
+        TMP_Text title = CreateText("Title", titleFrame, Vector2.zero, new Vector2(298f, 30f), "CHARACTER STATS", 20f, TextAlignmentOptions.Center);
+        title.color = new Color(0.86f, 0.69f, 0.30f, 1f);
         title.fontStyle = FontStyles.Bold;
 
         RectTransform badge = CreateRect("LevelBadge", panel, new Vector2(0f, 98f), new Vector2(330f, 28f));
         Image badgeImage = badge.gameObject.AddComponent<Image>();
-        badgeImage.color = new Color(0.10f, 0.24f, 0.52f, 0.92f);
+        badgeImage.sprite = titleSprite;
+        badgeImage.type = Image.Type.Sliced;
+        badgeImage.color = new Color(0.72f, 0.82f, 1f, 1f);
         badgeImage.raycastTarget = false;
         TMP_Text level = CreateText("LevelValue", badge, Vector2.zero, new Vector2(310f, 24f), "LV. 1", 15f, TextAlignmentOptions.Center);
         level.color = new Color(1f, 0.88f, 0.47f, 1f);
         level.fontStyle = FontStyles.Bold;
 
-        TMP_Text vitals = CreateSection(panel, "Vitals", 55f, 66f, "Health\nStamina", "100 / 100\n100 / 100");
-        TMP_Text combat = CreateSection(panel, "Combat", -22f, 82f, "Attack\nDefense\nCritical Chance\nCritical Damage", "10.0\n2.0\n5.0%\nx1.50");
-        TMP_Text mobility = CreateSection(panel, "Mobility", -91f, 62f, "Move Speed\nSprint Multiplier\nDodge Chance", "2.0\nx2.00\n0.0%");
-        TMP_Text recovery = CreateSection(panel, "Recovery", -139f, 38f, "Damage Reduction\nHealth Regeneration", "0.0%\n0.0 /s");
+        TMP_Text vitals = CreateSection(panel, sectionSprite, "Vitals", 55f, 66f, "Health\nStamina", "100 / 100\n100 / 100");
+        TMP_Text combat = CreateSection(panel, sectionSprite, "Combat", -22f, 82f, "Attack\nDefense\nCritical Chance\nCritical Damage", "10.0\n2.0\n5.0%\nx1.50");
+        TMP_Text mobility = CreateSection(panel, sectionSprite, "Mobility", -91f, 62f, "Move Speed\nSprint Multiplier\nDodge Chance", "2.0\nx2.00\n0.0%");
+        TMP_Text recovery = CreateSection(panel, sectionSprite, "Recovery", -139f, 38f, "Damage Reduction\nHealth Regeneration", "0.0%\n0.0 /s");
 
         RectTransform closeRect = CreateRect("CloseButton", panel, new Vector2(194f, 166f), new Vector2(34f, 34f));
         Image closeImage = closeRect.gameObject.AddComponent<Image>();
@@ -169,15 +177,17 @@ public static class CharacterPopupAuthoring
         return new StatTextBindings(level, vitals, combat, mobility, recovery);
     }
 
-    private static TMP_Text CreateSection(RectTransform parent, string name, float y, float height, string labels, string values)
+    private static TMP_Text CreateSection(RectTransform parent, Sprite sectionSprite, string name, float y, float height, string labels, string values)
     {
         RectTransform section = CreateRect(name, parent, new Vector2(0f, y), new Vector2(350f, height));
         Image background = section.gameObject.AddComponent<Image>();
-        background.color = new Color(0.32f, 0.19f, 0.105f, 0.16f);
+        background.sprite = sectionSprite;
+        background.type = Image.Type.Sliced;
+        background.color = Color.white;
         background.raycastTarget = false;
 
         TMP_Text header = CreateText("Header", section, new Vector2(0f, height * 0.5f - 13f), new Vector2(324f, 20f), name.ToUpperInvariant(), 11f, TextAlignmentOptions.Left);
-        header.color = new Color(0.08f, 0.25f, 0.55f, 1f);
+        header.color = new Color(0.86f, 0.69f, 0.30f, 1f);
         header.fontStyle = FontStyles.Bold;
 
         int rowCount = labels.Split('\n').Length;
@@ -187,7 +197,7 @@ public static class CharacterPopupAuthoring
         labelText.lineSpacing = 12f;
         TMP_Text valueText = CreateText("Values", section, new Vector2(104f, bodyY), new Vector2(120f, bodyHeight), values, 10f, TextAlignmentOptions.TopRight);
         valueText.lineSpacing = 12f;
-        valueText.color = new Color(0.08f, 0.18f, 0.42f, 1f);
+        valueText.color = new Color(0.78f, 0.86f, 1f, 1f);
         valueText.fontStyle = FontStyles.Bold;
         return valueText;
     }
@@ -225,6 +235,23 @@ public static class CharacterPopupAuthoring
         if (sprite == null)
             throw new InvalidOperationException("Missing sprite: " + path);
         return sprite;
+    }
+
+    private static Sprite LoadSlicedSprite(string path, Vector4 border)
+    {
+        TextureImporter importer = AssetImporter.GetAtPath(path) as TextureImporter;
+        if (importer != null)
+        {
+            importer.textureType = TextureImporterType.Sprite;
+            importer.spriteImportMode = SpriteImportMode.Single;
+            importer.spriteBorder = border;
+            importer.filterMode = FilterMode.Point;
+            importer.mipmapEnabled = false;
+            importer.alphaIsTransparency = true;
+            importer.textureCompression = TextureImporterCompression.Uncompressed;
+            importer.SaveAndReimport();
+        }
+        return LoadSprite(path);
     }
 
     private readonly struct StatTextBindings

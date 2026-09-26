@@ -7,7 +7,7 @@ using UnityEngine.UI;
 
 public static class TutorialOverlayLightFantasySkinBuilder
 {
-    private const string TutorialRoot = "Assets/Resources/UI/Tutorial/LightFantasy/";
+    private const string TutorialRoot = "Assets/Resources/UI/Tutorial/DarkInventoryStyle/";
     private const string MainMenuRoot = "Assets/Resources/UI/MainMenu/LightFantasy/";
 
     [MenuItem("Tools/ProjectGame2D/UI/Apply Tutorial Overlay Light Fantasy Skin")]
@@ -21,9 +21,9 @@ public static class TutorialOverlayLightFantasySkinBuilder
         Transform confirmation = RequireChild(root, "SkipConfirmation");
         Transform dialog = RequireChild(confirmation, "Dialog");
 
-        Sprite instructionBoard = ImportSprite(TutorialRoot + "tutorial_instruction_panel_hd.png");
-        Sprite tutorialTitle = ImportSprite(TutorialRoot + "tutorial_title_banner_hd.png");
-        Sprite skipDialog = ImportSprite(TutorialRoot + "tutorial_skip_dialog_hd.png");
+        Sprite instructionBoard = ImportSprite(TutorialRoot + "tutorial_instruction_panel_v1.png");
+        Sprite tutorialTitle = ImportSprite("Assets/Resources/UI/Tutorial/LightFantasy/tutorial_title_banner_hd.png");
+        Sprite skipDialog = ImportSprite("Assets/Resources/UI/Tutorial/LightFantasy/tutorial_skip_dialog_hd.png");
         Sprite primaryButton = ImportSprite(MainMenuRoot + "landing_action_button.png");
         Sprite dangerButton = ImportSprite(MainMenuRoot + "slot_delete_button.png");
         Sprite hoverButton = ImportSprite(MainMenuRoot + "landing_action_button_hover.png");
@@ -40,7 +40,7 @@ public static class TutorialOverlayLightFantasySkinBuilder
 
         TMP_Text instructionText = RequireChild(instruction, "InstructionText").GetComponent<TMP_Text>();
         SetTopLeftRect(instructionText.rectTransform, new Vector2(248f, 30f), new Vector2(18f, -52f));
-        StyleText(instructionText, 12f, new Color(0.28f, 0.14f, 0.055f, 1f), TextAlignmentOptions.TopLeft);
+        StyleText(instructionText, 12f, new Color(0.93f, 0.89f, 0.78f, 1f), TextAlignmentOptions.TopLeft);
 
         Button skipButton = RequireChild(instruction, "SkipButton").GetComponent<Button>();
         StyleButton(skipButton, dangerButton, hoverButton, new Vector2(-45f, 20f), new Vector2(72f, 28f));

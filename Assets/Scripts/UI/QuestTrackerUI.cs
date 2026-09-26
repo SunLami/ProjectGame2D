@@ -67,6 +67,13 @@ public sealed class QuestTrackerUI : MonoBehaviour
         if (authoredHeader != null)
         {
             _chevron = authoredHeader.Find("Chevron")?.GetComponent<Image>();
+            if (_chevron != null && _chevron.sprite == null)
+                _chevron.sprite = LoadSprite(_isOpen ? "chevron_down" : "chevron_right");
+
+            Image questIcon = authoredHeader.Find("QuestIcon")?.GetComponent<Image>();
+            if (questIcon != null && questIcon.sprite == null)
+                questIcon.sprite = LoadSprite("quest_scroll");
+
             Button authoredButton = authoredHeader.GetComponent<Button>();
             if (authoredButton != null)
             {
