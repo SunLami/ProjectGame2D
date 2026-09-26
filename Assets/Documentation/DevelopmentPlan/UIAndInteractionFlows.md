@@ -134,13 +134,17 @@ navigation/state.
 - `UnifiedGameplayHUD.prefab/CharacterPopup` là popup Character chuẩn của gameplay, mở/tắt bằng phím
   `C` hoặc `BottomHUD/StatButton`; lifecycle tiếp tục đi qua `GameStateManager` với
   `GameplayMenuPage.Character`, không tự pause world hoặc sở hữu input gameplay.
-- Bên trái sao chép nguyên presentation/layout của `InventoryUIController.prefab/InventoryWindow/EquipmentPanel`
-  (frame, parchment, ornament, silhouette và tọa độ slot), rồi scale đồng đều để vừa CharacterPopup.
-  Bảy slot Head, Weapon, Body, Shield, Necklace, Ring, Foot vẫn ở chế độ chỉ đọc: các slot chỉ giữ
+- `CharacterPopup/Window` dùng một outer board Dark Inventory thống nhất `760×410`, chia vùng Equipment
+  `280×400` và Character Stats `450×400` bằng divider dọc nằm trong outer board. Outer board chỉ sở hữu
+  silhouette, nền và divider; không bake title frame, level frame, stat section hoặc equipment slot.
+- Mọi inner frame là `Image` riêng để designer chỉnh `RectTransform` độc lập: Equipment title,
+  Character Stats title và LevelBadge dùng sprite 9-slice `character_inner_title_v1.png`; Vitals,
+  Combat, Mobility và Recovery dùng bốn instance 9-slice của `character_stat_section_v1.png` với chiều
+  cao theo nội dung. Bảy slot Head, Weapon, Body, Shield, Necklace, Ring, Foot vẫn ở chế độ chỉ đọc: các slot chỉ giữ
   `Image` để hiển thị item từ `EquipmentManager`; không giữ `EquipmentSlotUI`, click, drag/drop hoặc
   unequip callback.
 - Bên phải là bảng Character Stats chia nhóm Vitals, Combat, Mobility và Recovery. Label căn trái,
-  value căn phải, header xanh và dữ liệu động dùng TMP/Digital Disco; dữ liệu đọc từ `PlayerStat` và
+  value căn phải, header antique gold và dữ liệu động dùng TMP/Digital Disco; dữ liệu đọc từ `PlayerStat` và
   tự refresh khi stat/equipment thay đổi.
 - Popup dùng dim overlay chặn raycast phía sau, Close button trả về state trước. Prefab là nguồn chuẩn;
   DemoScene chỉ giữ prefab instance và không có visual override riêng cho popup.
@@ -301,6 +305,8 @@ scene Style Guide riêng; mỗi UI được migration trực tiếp trên prefab
   Viewport, Content và QuestRowTemplate phải tồn tại thành GameObject thật để designer chỉnh vị trí,
   kích thước và sprite trực tiếp trong Prefab Mode. Runtime chỉ clone RowTemplate và bind dữ liệu động;
   Bootstrap nhận thay đổi qua nested prefab trong `GameplayUIRoot.prefab`, không tạo scene-only override.
+  Nếu nested prefab bị mất tham chiếu sprite, runtime khôi phục `QuestIcon` và `Chevron` từ
+  `Resources/UI/Quest/Tracker1920` để không render thành ô trắng mặc định của `Image`.
 - Tracker chỉ hiển thị quest `Active`/`ReadyToTurnIn` đang được người chơi chọn Track thành danh sách dọc trong `ScrollRect` có mask,
   cuộn bằng mouse wheel khi nội dung vượt chiều cao. Thứ tự presentation bắt buộc là Main Quest → Side
   Quest → Daily Quest; trong cùng loại sắp theo display name. Mỗi quest hiển thị icon category và

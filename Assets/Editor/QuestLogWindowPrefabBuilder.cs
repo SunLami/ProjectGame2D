@@ -7,7 +7,7 @@ using UnityEngine.UI;
 public static class QuestLogWindowPrefabBuilder
 {
     private const string PrefabPath = "Assets/Prefabs/UI/GameplayUIRoot.prefab";
-    private const string BoardPath = "Assets/Resources/UI/Quest/QuestLog1920/quest_log_board_dynamic_actions_v3.png";
+    private const string BoardPath = "Assets/Resources/UI/Quest/DarkInventoryStyle/quest_log_board_v1.png";
     private const string ActionButtonPath = "Assets/Resources/UI/Quest/QuestLog1920/quest_log_action_button.png";
     private static readonly Color Cream = new(0.96f, 0.91f, 0.76f, 1f);
     private static readonly Color Gold = new(0.83f, 0.60f, 0.24f, 1f);

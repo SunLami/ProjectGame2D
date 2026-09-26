@@ -239,3 +239,14 @@ Code foundation nên cung cấp extension point nhưng không tự chọn gamepl
   icon nguyên liệu và số lượng `đang có/cần`.
 - UI crafting equipment không hiển thị recipe Consumable/Material/Other và không có thanh kinh nghiệm
   crafting. Transaction/data ownership vẫn thuộc `CraftingManager`; UI chỉ render và phát intent.
+
+# D-044 — Character Popup unified outer board, independent inner frames
+
+- **Status:** Accepted từ yêu cầu — 2026-09-26.
+- Character Popup dùng một outer board Dark Inventory thống nhất cho toàn `Window 760×410`, giữ hai
+  vùng nội dung Equipment và Character Stats cùng divider dọc.
+- Outer board không bake các khung nội dung. Title, LevelBadge, bốn stat section và bảy equipment slot
+  là các `Image` riêng; title/level và stat section dùng sprite 9-slice để đổi kích thước độc lập mà
+  không phải gen lại outer board.
+- Text, icon trang bị, value động và CloseButton tiếp tục là object runtime; thay đổi chỉ thuộc
+  presentation, không đổi `CharacterPopupUI`, `EquipmentManager`, `PlayerStat` hoặc menu lifecycle.
