@@ -69,8 +69,13 @@ navigation/state.
 
 ### MainMenu visual direction
 
-- Art direction là **Light Fantasy bình minh**, kể khoảnh khắc nhân vật rời cổng làng để bắt đầu hành
-  trình; không dùng palette đêm/gothic cho landing page.
+- **Theo D-054 (2026-09-26), art direction đổi sang Dark Inventory Style** (charcoal/walnut tối,
+  antique gold mảnh, sapphire tiết chế — cùng ngôn ngữ D-041 đang dùng cho gameplay UI), thay cho
+  "Light Fantasy bình minh" mô tả bên dưới (giữ lại để tham chiếu lịch sử/asset cũ trong lúc migrate
+  từng phần). Video background và keyframe fallback dawn hiện tại chưa có quyết định thay thế cuối
+  cùng — xem kế hoạch asset trong `Handoffs/ClaudeToCodex.md`.
+- ~~Art direction là **Light Fantasy bình minh**, kể khoảnh khắc nhân vật rời cổng làng để bắt đầu hành
+  trình; không dùng palette đêm/gothic cho landing page.~~ (đã override bởi D-054)
 - Static fallback chuẩn hiện tại là `mainmenu_new_journey_dawn_v8.png`; video loop phải giữ cùng bố
   cục để UI bên trái không bị tranh chấp thị giác.
 - Logo, landing board và button dùng chung ngôn ngữ vật liệu: gỗ sồi ấm, vải/xanh hoàng gia, viền vàng
@@ -80,21 +85,30 @@ navigation/state.
   các background graphic không nhận raycast.
 - Landing button giữ sprite xanh dương ở Normal/keyboard-selected; chỉ pointer hover mới đổi sang sprite
   xanh lá, và phải khôi phục xanh dương khi pointer rời nút hoặc UI bị disable.
-- `SlotPage` dùng thẻ hồ sơ dọc đồng bộ landing: khung gỗ sồi, nẹp vàng, nền xanh hoàng gia và huy hiệu
-  ở đầu thẻ. Metadata save vẫn là TMP/Digital Disco để dữ liệu động không bị bake vào asset; primary/Back
-  dùng button xanh, còn Delete dùng cùng hình học với palette đỏ cảnh báo. Reskin không thay đổi binding,
-  confirm flow hoặc save-slot contract.
-- Tiêu đề mode của `SlotPage` (`NEW GAME`/`CONTINUE`) và nhãn cố định `SLOT 1–3` dùng wordmark/badge
-  sprite để khóa căn chỉnh và art direction; status, metadata và action label vẫn dùng TMP vì là dữ liệu động.
-- `SettingsPage` dùng settings board gỗ sồi/xanh hoàng gia/viền vàng và title wordmark sprite; slider,
-  toggle và Save/Cancel giữ component tương tác Unity nhưng presentation dùng palette xanh–vàng và button
-  sprite đồng bộ MainMenu. Reskin không chuyển ownership ra khỏi `SettingsService`.
-- SFX và Music dùng chung slider track/handle sprite để hình học, hit target và feedback nhất quán; giá trị
-  runtime vẫn do `UnityEngine.UI.Slider` và `SettingsService` sở hữu.
-- Fullscreen dùng cặp checkbox sprite unchecked/checked cùng hình học; `UnityEngine.UI.Toggle` sở hữu việc
-  bật/tắt checkmark và tiếp tục gửi giá trị vào `SettingsService`.
-- `ConfirmOverlay` và `ErrorOverlay` dùng dialog board cùng bộ gỗ sồi/xanh hoàng gia/viền vàng; message
-  vẫn là TMP vì thay đổi theo thao tác. Confirm/Close dùng button xanh, Cancel dùng button đỏ cảnh báo.
+- **Theo D-054, `SettingsPage`/`SlotPage`/`ConfirmOverlay`/`ErrorOverlay` đã chuyển sang Dark Inventory
+  Style** (asset `_v1` dưới `Assets/Resources/UI/MainMenu/DarkInventoryStyle/`, xem kết quả tích hợp ở
+  entry `VERIFIED_MAINMENU_SETTINGS_SLOT_CONFIRM_INTEGRATION` trong `Handoffs/ClaudeToCodex.md`); mô tả
+  "gỗ sồi/xanh hoàng gia" bên dưới chỉ còn đúng cho phần chưa migrate.
+- `SlotPage` dùng thẻ hồ sơ dọc `save_slot_card_v1` (charcoal/walnut, nẹp gold). Metadata save vẫn là
+  TMP/Digital Disco để dữ liệu động không bị bake vào asset; Primary/Back dùng `landing_action_button_v1`,
+  Delete dùng `slot_delete_button_v1` (danger muted-red). Reskin không thay đổi binding, confirm flow
+  hoặc save-slot contract.
+- Tiêu đề mode của `SlotPage` (`NEW GAME`/`CONTINUE`) dùng wordmark sprite (`slot_page_new_game_title_v1`/
+  `slot_page_continue_title_v1`, gán qua field `_newGameTitleSprite`/`_continueTitleSprite` trên
+  `MainMenuSaveSlotsUI`, script tự đổi theo mode). Nhãn cố định `SLOT 1–3` dùng cấu trúc 2 con tách biệt
+  dưới `Title`: `Badge` (Image nền `slot_badge_v1`, dùng chung cho cả 3 slot) và `Label` (TMP text "SLOT n")
+  — **không đặt Image và TextMeshProUGUI trên cùng một GameObject cho trường hợp này**, vì cả hai đều bắt
+  buộc `CanvasRenderer` riêng và một GameObject chỉ có một `CanvasRenderer` dùng chung, khiến chỉ một trong
+  hai render được. Status, metadata và action label vẫn dùng TMP vì là dữ liệu động.
+- `SettingsPage` dùng `settings_board_v1`/`settings_title_v1` (Dark Inventory); slider, toggle và
+  Save/Cancel giữ component tương tác Unity nhưng presentation dùng sprite `_v1` đồng bộ MainMenu. Reskin
+  không chuyển ownership ra khỏi `SettingsService`.
+- SFX và Music dùng chung `settings_slider_track_v1`/`settings_slider_handle_v1` để hình học, hit target
+  và feedback nhất quán; giá trị runtime vẫn do `UnityEngine.UI.Slider` và `SettingsService` sở hữu.
+- Fullscreen dùng cặp `settings_checkbox_unchecked_v1`/`settings_checkbox_checked_v1` cùng hình học;
+  `UnityEngine.UI.Toggle` sở hữu việc bật/tắt checkmark và tiếp tục gửi giá trị vào `SettingsService`.
+- `ConfirmOverlay` và `ErrorOverlay` dùng chung `overlay_dialog_board_v1`; message vẫn là TMP vì thay đổi
+  theo thao tác. Confirm/Close dùng `landing_action_button_v1`, Cancel dùng `slot_delete_button_v1`.
 - `LoadingOverlay` khóa input và hiển thị thanh tiến trình responsive neo từ 8% đến 92% chiều rộng Canvas.
   Fill chạy trái→phải theo `AsyncOperation.progress` của `SceneFlowService` (chuẩn hóa dải Unity 0..0.9),
   kèm phần trăm 0–100%. Scene activation được giữ lại cho tới khi UI đã render 100% và feedback hoàn tất
@@ -138,14 +152,21 @@ navigation/state.
   `280×400` và Character Stats `450×400` bằng divider dọc nằm trong outer board. Outer board chỉ sở hữu
   silhouette, nền và divider; không bake title frame, level frame, stat section hoặc equipment slot.
 - Mọi inner frame là `Image` riêng để designer chỉnh `RectTransform` độc lập: Equipment title,
-  Character Stats title và LevelBadge dùng sprite 9-slice `character_inner_title_v1.png`; Vitals,
-  Combat, Mobility và Recovery dùng bốn instance 9-slice của `character_stat_section_v1.png` với chiều
-  cao theo nội dung. Bảy slot Head, Weapon, Body, Shield, Necklace, Ring, Foot vẫn ở chế độ chỉ đọc: các slot chỉ giữ
-  `Image` để hiển thị item từ `EquipmentManager`; không giữ `EquipmentSlotUI`, click, drag/drop hoặc
-  unequip callback.
-- Bên phải là bảng Character Stats chia nhóm Vitals, Combat, Mobility và Recovery. Label căn trái,
-  value căn phải, header antique gold và dữ liệu động dùng TMP/Digital Disco; dữ liệu đọc từ `PlayerStat` và
-  tự refresh khi stat/equipment thay đổi.
+  Character Stats title (`310×34` tại Y=132) và LevelBadge (`330×28` tại Y=94, cách title frame ~6px)
+  dùng sprite 9-slice `character_inner_title_v1.png`; Vitals (`350×54`, Y=51), Combat (`350×72`, Y=-16),
+  Mobility (`350×58`, Y=-85) và Recovery (`350×50`, Y=-143, cách nhau 4px) dùng bốn instance 9-slice của
+  `character_stat_section_v1.png`. Theo D-051, cả hai bitmap này được import ở `SpriteImportMode.Multiple`
+  với đúng 1 sprite entry và rect crop đo bằng pixel (không phải `Single`, vốn luôn bỏ qua rect tùy chỉnh
+  và dùng nguyên canvas kể cả phần padding trong suốt, làm 9-slice co lại sai). Bảy slot Head, Weapon,
+  Body, Shield, Necklace, Ring, Foot vẫn ở chế độ chỉ đọc: các slot chỉ giữ `Image` để hiển thị item từ
+  `EquipmentManager`; label mỗi slot `74×14` tại `(0,-34)` so với slot; không giữ `EquipmentSlotUI`,
+  click, drag/drop hoặc unequip callback.
+- Bên phải là bảng Character Stats chia nhóm Vitals, Combat, Mobility và Recovery. Mỗi section: Header
+  cao 16px tại `height/2-10`; Labels/Values cao `height-24` tại Y=-6 chung, `lineSpacing=1` (không dùng
+  12 như bản đầu vì gây tràn frame). Label căn trái, value căn phải, header antique gold và dữ liệu động
+  dùng TMP/Digital Disco; dữ liệu đọc từ `PlayerStat` và tự refresh khi stat/equipment thay đổi.
+- `CloseButton` (`34×34`) là con trực tiếp của `Window` (không phải `CharacterStatsPanel`), Anchor/Pivot
+  Top Right, `(-30,-30)`, để luôn nằm trong vùng charcoal và không đè ornament/gem góc của outer board.
 - Popup dùng dim overlay chặn raycast phía sau, Close button trả về state trước. Prefab là nguồn chuẩn;
   DemoScene chỉ giữ prefab instance và không có visual override riêng cho popup.
 
@@ -285,13 +306,49 @@ scene Style Guide riêng; mỗi UI được migration trực tiếp trên prefab
 
 - DemoScene `TutorialOverlayRoot` giữ nguyên `TutorialOverlayUI`, `TutorialManager`, step binding và
   Skip callback; reskin chỉ thay presentation, không sở hữu tutorial progression hoặc `Time.timeScale`.
-- `InstructionPanel` dùng RectTransform `360×92`, tăng nhẹ chiều cao so với legacy để khung và instruction
-  có safe area rõ ràng; board `tutorial_instruction_panel_hd.png` giữ parchment tan, gỗ/vàng mảnh, accent
-  xanh nhỏ và lá tiết chế. Header TMP legacy tắt render và được thay bằng wordmark ảnh
-  `tutorial_title_banner_hd.png`; instruction vẫn là TMP động. Skip dùng danger đỏ và hover chung MainMenu.
+- Theo D-049, `InstructionPanel` dùng RectTransform `360×92` và board Dark Inventory Style
+  `Resources/UI/Tutorial/DarkInventoryStyle/tutorial_instruction_panel_v1.png`; board chỉ là
+  background/frame, import ở `SpriteImportMode.Multiple` với rect crop đo bằng pixel (D-051) để bỏ
+  phần padding trong suốt của bitmap thay vì kéo giãn cả canvas. `Header` là TMP/Digital Disco thật
+  hiển thị `TUTORIAL` (antique gold), Anchor Top Center/Pivot Center, `120×20` tại `(0,-9)`, không bake
+  wordmark vào bitmap và không tái dùng banner LightFantasy cũ. `InstructionText` Anchor/Pivot Middle
+  Left, `245×32` tại `(18,-5)`, alignment Midline Left. `SkipButton` Anchor/Pivot Middle Right, `72×28`
+  tại `(-48,-5)`, label stretch-fill toàn bộ nút để căn giữa tuyệt đối; Instruction và Skip dùng chung
+  trục center-Y. `TutorialOverlayUI` ẩn `InstructionPanel` khi `GameStateManager` đang ở
+  `GameState.GameplayMenu` để tránh đè lên nội dung Character Popup/Inventory đứng sau Tutorial trong
+  sibling order của `GameplayUIRoot`; đây chỉ là presentation gate, không đổi step binding hay Skip
+  callback. Skip dùng danger đỏ và hover chung MainMenu.
 - `SkipConfirmation/Dialog` giữ RectTransform `570×245`, dùng `tutorial_skip_dialog_hd.png` với safe
   area dưới crest cho title/message TMP; Confirm Skip dùng danger đỏ, Keep Playing dùng primary xanh.
   Lớp dim chặn raycast trong lúc xác nhận và không thay đổi tutorial save contract.
+
+### Minimap và FullMap visual direction
+
+- Theo D-053 (thay D-052 dùng Camera runtime — bỏ vì lệch tỉ lệ khung hình, dễ ra viền đen, tốn render
+  mỗi frame), Minimap (`UnifiedGameplayHUD.prefab/Minimap`, góc phải trên, hình tròn `96×96`, luôn hiện
+  khi `GameState.Playing` và tự ẩn khi bất kỳ `GameplayMenu` nào mở) và FullMap (`MapPopup`, mở/đóng
+  bằng `GameplayMenuPage.Map` qua phím `M` hoặc `BottomHUD/QuickSlotMap`, phủ kín 1920×1080) đều dùng
+  chung một ảnh map tĩnh bake sẵn: `Tools/ProjectGame2D/UI/Bake Map Snapshot`
+  (`MapSnapshotBaker.cs`) chụp một lần toàn bộ `BorderMap` (tự ẩn Player lúc chụp) thành
+  `Assets/Resources/UI/Map/map_snapshot.png`. Player được biểu diễn bằng một icon marker hình thoi
+  riêng (không phải camera sống chụp lại sprite Player thật).
+- `MinimapController` hiển thị `RawImage` cuộn theo Player qua `uvRect` (crop một vùng nhỏ của
+  `map_snapshot.png`), bên trong một `Mask` hình tròn; marker tự bù vị trí khi vùng crop bị kẹp ở rìa
+  bản đồ để luôn đúng chỗ. `FullMapController` hiển thị nguyên `Image` chứa cả ảnh bên trong
+  `RectMask2D`, scale kiểu "cover" (`Mathf.Min` giữa hai trục) để phủ kín màn hình không viền đen, zoom
+  bằng lăn chuột đổi `localScale`. Cả hai dùng chung `MapWorldBounds` (đo
+  `BorderMap.GetComponent<Collider2D>().bounds` runtime, không hardcode) để quy đổi world position của
+  Player sang toạ độ normalized (0..1) khớp `map_snapshot.png`.
+- `MapZoneManager` + `MapZoneTrigger` (tách biệt với `AreaTriggerZone`/`AreaZoneRegistry` — hệ đó phục
+  vụ Tutorial "reach area" và quest direction indicator, dùng lại sẽ gây side-effect ngoài ý muốn) theo
+  dõi tên khu vực Player đang đứng cho label trên Minimap; mặc định "Heart Village" cho bản đồ hiện có
+  tới khi đặt thêm `MapZoneTrigger` chia nhỏ khu vực. Ngày hiển thị lấy trực tiếp `DateTime.Now`
+  (`d MMM`, ví dụ "26 Sep") — không có hệ lịch/mùa giả lập riêng, khớp trực tiếp tỷ lệ 1 ngày thật = 1
+  ngày game mà UTC crop (D-037) đã dùng.
+- UI hiện tại dùng placeholder (panel màu phẳng, viền tròn vẽ runtime bằng `RuntimeCircleSprite` —
+  không phải bitmap); khung Minimap tròn, icon la bàn, nút zoom +/- và style CloseButton FullMap theo
+  Dark Inventory Style cần Codex gen sau (xem `Handoffs/ClaudeToCodex.md`) — không ảnh hưởng logic
+  crop/zoom/zone/marker.
 
 ### Quest UI visual direction
 
@@ -325,11 +382,14 @@ scene Style Guide riêng; mỗi UI được migration trực tiếp trên prefab
 - `QuestDetailPanel` có category icon/label, objective icon + tiến độ động, reward summary và action
   buttons. Header `QUEST LOG`, close button, filter, row, reward và action đều là GameObject thật trong
   `GameplayUIRoot.prefab` để designer chỉnh trực tiếp trong Prefab Mode; runtime chỉ bind dữ liệu.
-- Mockup scroll lưu tại `Assets/Documentation/DevelopmentPlan/quest_log_window_scroll_mockup_v2.png`;
-  board production là `Assets/Resources/UI/Quest/QuestLog1920/quest_log_board_dynamic_actions_v3.png`
-  và atlas không bake text nằm tại `Assets/Resources/UI/Quest/QuestLog1920/quest_log_atlas_source.png`.
-  Board không bake action-button frame; `TrackQuestButton` và `AbandonQuestButton` sở hữu sprite
-  `quest_log_action_button.png`, nên khi runtime ẩn Button thì cả viền và text cùng biến mất.
+- Theo D-050, board production là `Assets/Resources/UI/Quest/DarkInventoryStyle/quest_log_board_v1.png`
+  (Dark Inventory Style), thay cho board LightFantasy `QuestLog1920` trước đây; mockup scroll cũ vẫn lưu
+  tại `Assets/Documentation/DevelopmentPlan/quest_log_window_scroll_mockup_v2.png` làm tham chiếu bố cục.
+  Board chỉ chứa outer frame, nền hai vùng và divider; không bake action-button frame. `TrackQuestButton`
+  và `AbandonQuestButton` tiếp tục sở hữu sprite riêng `Assets/Resources/UI/Quest/QuestLog1920/quest_log_action_button.png`,
+  nên khi runtime ẩn Button thì cả viền và text cùng biến mất. `QuestLogWindowPrefabBuilder.Load` luôn
+  ép `SpriteImportMode.Single` + Point filtering khi import board, để tránh trường hợp Unity tự nhận
+  diện bitmap thành nhiều sub-sprite và builder vô tình lấy nhầm một mảnh sprite phụ.
 - Detail panel có `TRACK QUEST`/`UNTRACK QUEST` và `ABANDON QUEST`. Abandon luôn qua confirmation,
   reset toàn bộ tiến độ và nhắc người chơi quay lại đúng giver NPC để nhận lại. Quest không có
   `giverNpcId` không được abandon để tránh trạng thái progression không thể phục hồi.

@@ -382,10 +382,13 @@ public static class QuestLogWindowPrefabBuilder
     private static Sprite Load(string path)
     {
         if (AssetImporter.GetAtPath(path) is TextureImporter importer
-            && (importer.textureType != TextureImporterType.Sprite || importer.mipmapEnabled))
+            && (importer.textureType != TextureImporterType.Sprite
+                || importer.spriteImportMode != SpriteImportMode.Single
+                || importer.mipmapEnabled))
         {
             importer.textureType = TextureImporterType.Sprite;
             importer.spriteImportMode = SpriteImportMode.Single;
+            importer.filterMode = FilterMode.Point;
             importer.alphaIsTransparency = true;
             importer.mipmapEnabled = false;
             importer.textureCompression = TextureImporterCompression.Uncompressed;

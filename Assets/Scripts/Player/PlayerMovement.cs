@@ -24,6 +24,10 @@ public partial class Player
     private Vector2 _lastFacingDirection = Vector2.down;
     private Vector2 _facingDirection = Vector2.down;
 
+    // Axis-snapped (0,±1)/(±1,0) facing, exposed read-only for presentation that needs it (e.g. the
+    // Minimap/FullMap player marker orientation) without letting anything outside Player mutate it.
+    public Vector2 FacingDirection => _lastFacingDirection;
+
     private float CurrentMoveSpeed => _stats.MoveSpeed
         * (_isRunning && _stats.HasStamina ? _stats.SprintMultiplier : 1f);
 

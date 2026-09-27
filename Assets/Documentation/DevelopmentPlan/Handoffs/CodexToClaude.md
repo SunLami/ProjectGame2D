@@ -1,5 +1,124 @@
 # Codex → Claude Handoff
 
+## MainMenu Settings / Slot / Confirm — Dark Inventory Style assets
+
+Status: `MAINMENU_SETTINGS_SLOT_CONFIRM_ART_READY`
+
+Ngày: 2026-09-27
+
+Codex chỉ gen và chuẩn hóa bitmap PNG theo D-054; không sửa code, prefab, scene, video hoặc các asset
+Landing `_v1` đã có.
+
+### SettingsPage
+
+- `Assets/Resources/UI/MainMenu/DarkInventoryStyle/settings_board_v1.png` — 1122×1402.
+- `Assets/Resources/UI/MainMenu/DarkInventoryStyle/settings_title_v1.png` — 2048×768.
+- `Assets/Resources/UI/MainMenu/DarkInventoryStyle/settings_checkbox_unchecked_v1.png` — 1254×1254.
+- `Assets/Resources/UI/MainMenu/DarkInventoryStyle/settings_checkbox_checked_v1.png` — 1254×1254.
+- `Assets/Resources/UI/MainMenu/DarkInventoryStyle/settings_slider_track_v1.png` — 2048×226.
+- `Assets/Resources/UI/MainMenu/DarkInventoryStyle/settings_slider_handle_v1.png` — 1254×1254.
+
+### SlotPage
+
+- `Assets/Resources/UI/MainMenu/DarkInventoryStyle/save_slot_card_v1.png` — 1086×1448.
+- `Assets/Resources/UI/MainMenu/DarkInventoryStyle/slot_badge_v1.png` — 1983×793; không bake text/số,
+  dùng chung cho cả ba slot.
+- `Assets/Resources/UI/MainMenu/DarkInventoryStyle/slot_delete_button_v1.png` — 1944×809; muted-red
+  danger face, không bake label.
+- `Assets/Resources/UI/MainMenu/DarkInventoryStyle/slot_page_new_game_title_v1.png` — 2048×683.
+- `Assets/Resources/UI/MainMenu/DarkInventoryStyle/slot_page_continue_title_v1.png` — 2048×744.
+
+### ConfirmOverlay / ErrorOverlay
+
+- `Assets/Resources/UI/MainMenu/DarkInventoryStyle/overlay_dialog_board_v1.png` — 900×600; không bake
+  message hoặc button.
+
+Tất cả 12 asset: RGBA/alpha transparency, Sprite Mode `Single`, Filter Mode `Point`, Mipmap `Off`,
+Compression `None`, PPU 100, Max Size 4096, `Border = 0,0,0,0`; gán bằng `Image.Type = Simple`.
+Không có sai khác kích thước hoặc border so với bảng yêu cầu trong `ClaudeToCodex.md`.
+
+---
+
+## MainMenu Landing — Dark Inventory Style assets (D-054)
+
+Status: `LANDING_DARK_INVENTORY_ASSETS_READY`
+
+Ngày: 2026-09-26
+
+Codex chỉ gen/chuẩn hóa asset; không sửa script, prefab, scene, video background hoặc keyframe fallback.
+
+- Logo: `Assets/Resources/UI/MainMenu/DarkInventoryStyle/orynthals_logo_v1.png` — 2172×724 RGBA.
+- Slogan: `Assets/Resources/UI/MainMenu/DarkInventoryStyle/orynthals_slogan_v1.png` — 2139×181 RGBA;
+  giữ nguyên text `BEYOND THE GATE, YOUR STORY BEGINS.` và outline charcoal/sapphire để đọc trên
+  video sáng.
+- Landing board: `Assets/Resources/UI/MainMenu/DarkInventoryStyle/landing_actions_board_v1.png` —
+  1122×1402 RGBA; **đã regen theo silhouette cổng làng**: mái ngói sapphire, xà/trụ walnut,
+  hai banner và hai đèn treo; lòng charcoal opaque + gold mảnh, không bake button/text.
+- Button Normal: `Assets/Resources/UI/MainMenu/DarkInventoryStyle/landing_action_button_v1.png` —
+  1944×809 RGBA.
+- Button Hover: `Assets/Resources/UI/MainMenu/DarkInventoryStyle/landing_action_button_hover_v1.png` —
+  1944×809 RGBA; giữ cùng silhouette/khung với Normal, chỉ tăng sapphire focus/glow.
+
+Import của cả 5 asset: Sprite Mode `Single`, Filter Mode `Point`, Mipmap `Off`, Compression `None`,
+alpha transparency bật, PPU 100, Max Size 4096. **Không author 9-slice** (`Border = 0,0,0,0`);
+Claude gán `Image.type = Simple` và giữ RectTransform/layout hiện tại. Không thay đổi
+`mainmenu_background.mp4` hoặc `mainmenu_new_journey_dawn_v8.png`.
+
+---
+
+Status: `MINIMAP_TAG_ART_READY`
+
+Ngày: 2026-09-26
+Feature: Minimap Zone Name / Date shared 9-slice tag
+
+- Asset: `Assets/Resources/UI/Map/DarkInventoryStyle/minimap_tag_v1.png`
+- Sprite: `minimap_tag_v1`, 352×56 RGBA; dùng chung cho `ZonePlate` (~88×14 logic px) và
+  `DatePlate` (~60×14 logic px).
+- Gán `Image.type = Sliced` cho cả hai Image.
+- Border 9-slice đã author trong `.meta`: **Left 20, Right 20, Top 12, Bottom 12** pixel trên file gốc.
+- `Pixels Per Unit = 400`, nên border quy đổi xấp xỉ 5 logic px hai đầu và 3 logic px
+  trên/dưới khi Canvas reference dùng 100 PPU. Không cần thay kích thước RectTransform hiện tại.
+- Import: Sprite Single, Point, mipmap off, Compression None, alpha transparency on, pivot center.
+- QC: phần giữa phẳng/không ornament để stretch ngang và giữ TMP dễ đọc; alpha bbox nằm trong
+  canvas, không edge touch. Không sửa script/prefab/scene.
+
+---
+
+Status: `MAP_ART_READY`
+
+Ngày: 2026-09-26
+Feature: Minimap + FullMap Dark Inventory Style assets
+
+## Asset sẵn sàng để gán Inspector
+
+- `Assets/Resources/UI/Map/DarkInventoryStyle/minimap_frame_v1.png`
+  - Sprite: `minimap_frame_v1`, 384×384 RGBA.
+  - Gán `MinimapController._frameImage` / `UnifiedGameplayHUD.prefab/Minimap/Frame`.
+- `Assets/Resources/UI/Map/DarkInventoryStyle/minimap_mask_v1.png`
+  - Sprite: `minimap_mask_v1`, 384×384 RGBA; circle trắng đặc, alpha 0 bên ngoài, không viền.
+  - Gán `MinimapController._maskImage` / `Minimap/MapView`. Bán kính mask khớp lòng trong frame; không dùng chung file frame.
+- `Assets/Resources/UI/Map/DarkInventoryStyle/map_close_button_v1.png`
+  - Sprite: `map_close_button_v1`, 176×176 RGBA.
+  - Gán `MapPopup/CloseButton` `Image.sprite`.
+- `Assets/Resources/UI/Map/DarkInventoryStyle/player_marker_v1.png`
+  - Sprite: `player_marker_v1`, 64×64 RGBA, mũi tên hướng lên.
+  - Asset nâng cấp tùy chọn cho marker Minimap/FullMap; nếu logic hiện tại không xoay theo facing, icon vẫn đọc rõ như marker vị trí.
+
+## Import contract
+
+Cả bốn texture đã có `.meta` chuẩn hóa: `Texture Type = Sprite (2D and UI)`, `Sprite Mode = Single`,
+`Filter Mode = Point`, `Generate Mip Maps = Off`, `Compression = None`, `Alpha Is Transparency = On`,
+pivot center. Không sửa script/prefab/scene; Claude chỉ cần gán sprite và bỏ runtime placeholder theo handoff.
+
+## Asset generation/QC
+
+Frame, Close button và Player marker được sinh bằng built-in ImageGen với ba sprite Dark Inventory Style
+hiện có làm visual reference, sau đó chỉ cleanup alpha fringe/crop/nearest-neighbor resize. Mask là
+stencil chức năng tạo xác định theo lòng trong frame. QC xác nhận PNG RGBA, alpha 0 ngoài silhouette,
+frame center trong suốt và mask chỉ có alpha 0/255.
+
+---
+
 Update 2026-09-22 — khoảng cách Quest row còn thấy dù layout spacing đã là `1` vì
 `landing_action_button.png` chứa alpha padding lớn trên/dưới. Đã dùng compensated spacing `-15` trên
 Quest list riêng để phần khung nhìn thấy cách nhau xấp xỉ 1px; không sửa shared MainMenu asset.
