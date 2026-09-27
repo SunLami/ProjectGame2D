@@ -21,8 +21,7 @@ public static class TutorialOverlayLightFantasySkinBuilder
         Transform confirmation = RequireChild(root, "SkipConfirmation");
         Transform dialog = RequireChild(confirmation, "Dialog");
 
-        Sprite instructionBoard = ImportSprite(TutorialRoot + "tutorial_instruction_panel_v1.png");
-        Sprite tutorialTitle = ImportSprite("Assets/Resources/UI/Tutorial/LightFantasy/tutorial_title_banner_hd.png");
+        Sprite instructionBoard = ImportSprite(TutorialRoot + "tutorial_instruction_panel_v1.png", new Rect(2f, 80f, 1435f, 213f));
         Sprite skipDialog = ImportSprite("Assets/Resources/UI/Tutorial/LightFantasy/tutorial_skip_dialog_hd.png");
         Sprite primaryButton = ImportSprite(MainMenuRoot + "landing_action_button.png");
         Sprite dangerButton = ImportSprite(MainMenuRoot + "slot_delete_button.png");
@@ -34,16 +33,19 @@ public static class TutorialOverlayLightFantasySkinBuilder
         instructionRect.anchoredPosition = new Vector2(instructionRect.anchoredPosition.x, 80f);
 
         TMP_Text header = RequireChild(instruction, "Header").GetComponent<TMP_Text>();
-        SetTopLeftRect(header.rectTransform, new Vector2(148f, 46f), new Vector2(14f, -5f));
-        header.enabled = false;
-        EnsureTitleBanner(header.transform, tutorialTitle);
+        SetRect(header.rectTransform, new Vector2(0.5f, 1f), new Vector2(0.5f, 0.5f), new Vector2(120f, 20f), new Vector2(0f, -9f));
+        header.enabled = true;
+        header.text = "TUTORIAL";
+        StyleText(header, 14f, new Color(0.86f, 0.69f, 0.30f, 1f), TextAlignmentOptions.Center);
+        header.fontStyle = FontStyles.Bold;
+        RemoveStaleTitleBanner(header.transform);
 
         TMP_Text instructionText = RequireChild(instruction, "InstructionText").GetComponent<TMP_Text>();
-        SetTopLeftRect(instructionText.rectTransform, new Vector2(248f, 30f), new Vector2(18f, -52f));
-        StyleText(instructionText, 12f, new Color(0.93f, 0.89f, 0.78f, 1f), TextAlignmentOptions.TopLeft);
+        SetRect(instructionText.rectTransform, new Vector2(0f, 0.5f), new Vector2(0f, 0.5f), new Vector2(245f, 32f), new Vector2(18f, -5f));
+        StyleText(instructionText, 12f, new Color(0.93f, 0.89f, 0.78f, 1f), TextAlignmentOptions.MidlineLeft);
 
         Button skipButton = RequireChild(instruction, "SkipButton").GetComponent<Button>();
-        StyleButton(skipButton, dangerButton, hoverButton, new Vector2(-45f, 20f), new Vector2(72f, 28f));
+        StyleButton(skipButton, dangerButton, hoverButton, new Vector2(1f, 0.5f), new Vector2(-48f, -5f), new Vector2(72f, 28f));
 
         Image dim = confirmation.GetComponent<Image>();
         dim.sprite = null;
@@ -73,13 +75,22 @@ public static class TutorialOverlayLightFantasySkinBuilder
         Debug.Log("TutorialOverlayRoot Light Fantasy skin applied.");
     }
 
-    private static void StyleButton(Button button, Sprite normal, Sprite hover, Vector2 position, Vector2 size)
+    private static void StyleButton(Button button, Sprite normal, Sprite hover, Vector2 position, Vector2 size) =>
+        StyleButton(button, normal, hover, null, position, size);
+
+    private static void StyleButton(Button button, Sprite normal, Sprite hover, Vector2? anchor, Vector2 position, Vector2 size)
     {
         SetImage(button.gameObject, normal, false, true);
         button.targetGraphic = button.GetComponent<Image>();
         button.transition = Selectable.Transition.None;
 
         RectTransform rect = button.GetComponent<RectTransform>();
+        if (anchor.HasValue)
+        {
+            rect.anchorMin = anchor.Value;
+            rect.anchorMax = anchor.Value;
+            rect.pivot = anchor.Value;
+        }
         rect.anchoredPosition = position;
         rect.sizeDelta = size;
 
@@ -94,13 +105,24 @@ public static class TutorialOverlayLightFantasySkinBuilder
 
         TMP_Text label = button.GetComponentInChildren<TMP_Text>(true);
         StyleText(label, 14f, new Color(1f, 0.94f, 0.72f, 1f), TextAlignmentOptions.Center);
+        if (anchor.HasValue)
+        {
+            // Absolute centering: stretch-fill the button rect instead of trusting whatever offset
+            // the label previously had, so the SKIP text sits dead-center regardless of button size.
+            RectTransform labelRect = label.rectTransform;
+            labelRect.anchorMin = Vector2.zero;
+            labelRect.anchorMax = Vector2.one;
+            labelRect.pivot = new Vector2(0.5f, 0.5f);
+            labelRect.offsetMin = Vector2.zero;
+            labelRect.offsetMax = Vector2.zero;
+        }
     }
 
-    private static void SetTopLeftRect(RectTransform rect, Vector2 size, Vector2 position)
+    private static void SetRect(RectTransform rect, Vector2 anchor, Vector2 pivot, Vector2 size, Vector2 position)
     {
-        rect.anchorMin = new Vector2(0f, 1f);
-        rect.anchorMax = new Vector2(0f, 1f);
-        rect.pivot = new Vector2(0f, 1f);
+        rect.anchorMin = anchor;
+        rect.anchorMax = anchor;
+        rect.pivot = pivot;
         rect.sizeDelta = size;
         rect.anchoredPosition = position;
     }
@@ -114,22 +136,11 @@ public static class TutorialOverlayLightFantasySkinBuilder
         rect.anchoredPosition = new Vector2(0f, y);
     }
 
-    private static void EnsureTitleBanner(Transform headerTransform, Sprite sprite)
+    private static void RemoveStaleTitleBanner(Transform headerTransform)
     {
-        Transform existing = headerTransform.Find("SkinTutorialTitleBanner");
-        GameObject bannerObject = existing != null
-            ? existing.gameObject
-            : new GameObject("SkinTutorialTitleBanner", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
-        bannerObject.transform.SetParent(headerTransform, false);
-
-        RectTransform rect = bannerObject.GetComponent<RectTransform>();
-        rect.anchorMin = Vector2.zero;
-        rect.anchorMax = Vector2.one;
-        rect.offsetMin = Vector2.zero;
-        rect.offsetMax = Vector2.zero;
-
-        SetImage(bannerObject, sprite, true, false);
-        bannerObject.transform.SetAsLastSibling();
+        Transform stale = headerTransform.Find("SkinTutorialTitleBanner");
+        if (stale != null)
+            UnityEngine.Object.DestroyImmediate(stale.gameObject);
     }
 
     private static void StyleText(TMP_Text text, float fontSize, Color color, TextAlignmentOptions alignment)
@@ -163,17 +174,44 @@ public static class TutorialOverlayLightFantasySkinBuilder
         EditorUtility.SetDirty(image);
     }
 
-    private static Sprite ImportSprite(string path)
+    private static Sprite ImportSprite(string path) => ImportSprite(path, null);
+
+    private static Sprite ImportSprite(string path, Rect? contentRect)
     {
         AssetDatabase.ImportAsset(path, ImportAssetOptions.ForceSynchronousImport);
         TextureImporter importer = AssetImporter.GetAtPath(path) as TextureImporter;
         if (importer == null) throw new InvalidOperationException($"Texture importer not found: {path}");
         importer.textureType = TextureImporterType.Sprite;
-        importer.spriteImportMode = SpriteImportMode.Single;
+        importer.spriteImportMode = contentRect.HasValue ? SpriteImportMode.Multiple : SpriteImportMode.Single;
         importer.filterMode = FilterMode.Point;
         importer.textureCompression = TextureImporterCompression.Uncompressed;
         importer.mipmapEnabled = false;
         importer.alphaIsTransparency = true;
+
+        if (contentRect.HasValue)
+        {
+            // SpriteImportMode.Single ignores any custom rect written to `spritesheet` -- it always
+            // reports the full texture as the sprite rect (verified empirically). This bitmap carries
+            // ~80px of transparent padding above/below the visible board art, so an untrimmed rect
+            // stretches that empty margin into the rendered Image, leaving the real board smaller
+            // than the InstructionPanel RectTransform and floating other children (e.g. the Header)
+            // outside its visible bounds. Multiple mode with one named entry is the only way to get
+            // Unity to honor a custom rect without touching the source pixels.
+#pragma warning disable CS0618
+            importer.spritesheet = new SpriteMetaData[]
+            {
+                new SpriteMetaData
+                {
+                    name = System.IO.Path.GetFileNameWithoutExtension(path),
+                    rect = contentRect.Value,
+                    border = Vector4.zero,
+                    pivot = new Vector2(0.5f, 0.5f),
+                    alignment = (int)SpriteAlignment.Center
+                }
+            };
+#pragma warning restore CS0618
+        }
+
         importer.SaveAndReimport();
         return AssetDatabase.LoadAssetAtPath<Sprite>(path);
     }

@@ -57,8 +57,11 @@ public static class CharacterPopupAuthoring
     private static void BuildPopup(GameObject root, RectTransform popup)
     {
         Sprite unifiedBoard = LoadSprite(UnifiedBoardPath);
-        Sprite innerTitle = LoadSlicedSprite(InnerTitlePath, new Vector4(72f, 72f, 72f, 72f));
-        Sprite statSection = LoadSlicedSprite(StatSectionPath, new Vector4(56f, 56f, 56f, 56f));
+        // Border values measured from the source bitmaps' actual diagonal corner-bevel bounds
+        // (pixel-sampled), not the placeholder 72/72/72/72 and 56/56/56/56 that exceeded the
+        // sprites' own trimmed height (138px and 120px), guaranteeing 9-slice corner distortion.
+        Sprite innerTitle = LoadSlicedSprite(InnerTitlePath, new Vector4(32f, 28f, 32f, 28f), new Rect(2f, 22f, 997f, 132f));
+        Sprite statSection = LoadSlicedSprite(StatSectionPath, new Vector4(16f, 12f, 16f, 12f), new Rect(0f, 51f, 798f, 121f));
         Sprite slot = LoadSprite(SlotPath);
         Sprite close = LoadSprite("Assets/Resources/UI/Inventory/LightFantasy/inventory_close_thin_hd.png");
 
@@ -67,7 +70,8 @@ public static class CharacterPopupAuthoring
         windowBoard.sprite = unifiedBoard;
         windowBoard.raycastTarget = false;
         List<Image> equipmentIcons = BuildEquipmentPanel(window, innerTitle, slot);
-        StatTextBindings stats = BuildStatsPanel(root, window, innerTitle, statSection, close);
+        StatTextBindings stats = BuildStatsPanel(window, innerTitle, statSection);
+        BuildCloseButton(root, window, close);
 
         CharacterPopupUI popupUi = popup.GetComponent<CharacterPopupUI>() ?? popup.gameObject.AddComponent<CharacterPopupUI>();
         SerializedObject popupSo = new SerializedObject(popupUi);
@@ -133,26 +137,27 @@ public static class CharacterPopupAuthoring
             icon.enabled = false;
             icons.Add(icon);
 
-            TMP_Text label = CreateText("Label", slot, new Vector2(0f, -37f), new Vector2(74f, 15f), name.ToUpperInvariant(), 8f, TextAlignmentOptions.Center);
+            TMP_Text label = CreateText("Label", slot, new Vector2(0f, -34f), new Vector2(74f, 14f), name.ToUpperInvariant(), 7.5f, TextAlignmentOptions.Top);
             label.color = new Color(0.82f, 0.78f, 0.68f, 0.88f);
         }
         return icons;
     }
 
-    private static StatTextBindings BuildStatsPanel(GameObject root, RectTransform window, Sprite titleSprite, Sprite sectionSprite, Sprite closeSprite)
+    private static StatTextBindings BuildStatsPanel(RectTransform window, Sprite titleSprite, Sprite sectionSprite)
     {
         RectTransform panel = CreateRect("CharacterStatsPanel", window, new Vector2(145f, 0f), new Vector2(450f, 400f));
 
-        RectTransform titleFrame = CreateRect("TitleFrame", panel, new Vector2(0f, 130f), new Vector2(310f, 34f));
+        RectTransform titleFrame = CreateRect("TitleFrame", panel, new Vector2(0f, 132f), new Vector2(310f, 34f));
         Image titleImage = titleFrame.gameObject.AddComponent<Image>();
         titleImage.sprite = titleSprite;
         titleImage.type = Image.Type.Sliced;
         titleImage.raycastTarget = false;
-        TMP_Text title = CreateText("Title", titleFrame, Vector2.zero, new Vector2(298f, 30f), "CHARACTER STATS", 20f, TextAlignmentOptions.Center);
+        // 310 wide frame with >=10px inset on each side.
+        TMP_Text title = CreateText("Title", titleFrame, Vector2.zero, new Vector2(290f, 30f), "CHARACTER STATS", 20f, TextAlignmentOptions.Center);
         title.color = new Color(0.86f, 0.69f, 0.30f, 1f);
         title.fontStyle = FontStyles.Bold;
 
-        RectTransform badge = CreateRect("LevelBadge", panel, new Vector2(0f, 98f), new Vector2(330f, 28f));
+        RectTransform badge = CreateRect("LevelBadge", panel, new Vector2(0f, 94f), new Vector2(330f, 28f));
         Image badgeImage = badge.gameObject.AddComponent<Image>();
         badgeImage.sprite = titleSprite;
         badgeImage.type = Image.Type.Sliced;
@@ -162,19 +167,22 @@ public static class CharacterPopupAuthoring
         level.color = new Color(1f, 0.88f, 0.47f, 1f);
         level.fontStyle = FontStyles.Bold;
 
-        TMP_Text vitals = CreateSection(panel, sectionSprite, "Vitals", 55f, 66f, "Health\nStamina", "100 / 100\n100 / 100");
-        TMP_Text combat = CreateSection(panel, sectionSprite, "Combat", -22f, 82f, "Attack\nDefense\nCritical Chance\nCritical Damage", "10.0\n2.0\n5.0%\nx1.50");
-        TMP_Text mobility = CreateSection(panel, sectionSprite, "Mobility", -91f, 62f, "Move Speed\nSprint Multiplier\nDodge Chance", "2.0\nx2.00\n0.0%");
-        TMP_Text recovery = CreateSection(panel, sectionSprite, "Recovery", -139f, 38f, "Damage Reduction\nHealth Regeneration", "0.0%\n0.0 /s");
+        TMP_Text vitals = CreateSection(panel, sectionSprite, "Vitals", 51f, 54f, "Health\nStamina", "100 / 100\n100 / 100");
+        TMP_Text combat = CreateSection(panel, sectionSprite, "Combat", -16f, 72f, "Attack\nDefense\nCritical Chance\nCritical Damage", "10.0\n2.0\n5.0%\nx1.50");
+        TMP_Text mobility = CreateSection(panel, sectionSprite, "Mobility", -85f, 58f, "Move Speed\nSprint Multiplier\nDodge Chance", "2.0\nx2.00\n0.0%");
+        TMP_Text recovery = CreateSection(panel, sectionSprite, "Recovery", -143f, 50f, "Damage Reduction\nHealth Regeneration", "0.0%\n0.0 /s");
 
-        RectTransform closeRect = CreateRect("CloseButton", panel, new Vector2(194f, 166f), new Vector2(34f, 34f));
+        return new StatTextBindings(level, vitals, combat, mobility, recovery);
+    }
+
+    private static void BuildCloseButton(GameObject root, RectTransform window, Sprite closeSprite)
+    {
+        RectTransform closeRect = CreateRect("CloseButton", window, Vector2.one, Vector2.one, new Vector2(-30f, -30f), new Vector2(34f, 34f));
         Image closeImage = closeRect.gameObject.AddComponent<Image>();
         closeImage.sprite = closeSprite;
         Button closeButton = closeRect.gameObject.AddComponent<Button>();
         closeButton.targetGraphic = closeImage;
         UnityEventTools.AddPersistentListener(closeButton.onClick, root.GetComponent<UnifiedGameplayHudController>().ClosePopup);
-
-        return new StatTextBindings(level, vitals, combat, mobility, recovery);
     }
 
     private static TMP_Text CreateSection(RectTransform parent, Sprite sectionSprite, string name, float y, float height, string labels, string values)
@@ -186,29 +194,32 @@ public static class CharacterPopupAuthoring
         background.color = Color.white;
         background.raycastTarget = false;
 
-        TMP_Text header = CreateText("Header", section, new Vector2(0f, height * 0.5f - 13f), new Vector2(324f, 20f), name.ToUpperInvariant(), 11f, TextAlignmentOptions.Left);
+        TMP_Text header = CreateText("Header", section, new Vector2(0f, height * 0.5f - 10f), new Vector2(324f, 16f), name.ToUpperInvariant(), 10.5f, TextAlignmentOptions.MidlineLeft);
         header.color = new Color(0.86f, 0.69f, 0.30f, 1f);
         header.fontStyle = FontStyles.Bold;
 
-        int rowCount = labels.Split('\n').Length;
-        float bodyHeight = rowCount * 18f;
-        float bodyY = height * 0.5f - 24f - bodyHeight * 0.5f;
-        TMP_Text labelText = CreateText("Labels", section, new Vector2(-72f, bodyY), new Vector2(170f, bodyHeight), labels, 10f, TextAlignmentOptions.TopLeft);
-        labelText.lineSpacing = 12f;
-        TMP_Text valueText = CreateText("Values", section, new Vector2(104f, bodyY), new Vector2(120f, bodyHeight), values, 10f, TextAlignmentOptions.TopRight);
-        valueText.lineSpacing = 12f;
+        float bodyHeight = height - 24f;
+        const float bodyY = -6f;
+        TMP_Text labelText = CreateText("Labels", section, new Vector2(-72f, bodyY), new Vector2(170f, bodyHeight), labels, 9.5f, TextAlignmentOptions.TopLeft);
+        labelText.lineSpacing = 1f;
+        labelText.color = new Color(0.90f, 0.87f, 0.80f, 1f);
+        TMP_Text valueText = CreateText("Values", section, new Vector2(104f, bodyY), new Vector2(120f, bodyHeight), values, 9.5f, TextAlignmentOptions.TopRight);
+        valueText.lineSpacing = 1f;
         valueText.color = new Color(0.78f, 0.86f, 1f, 1f);
         valueText.fontStyle = FontStyles.Bold;
         return valueText;
     }
 
-    private static RectTransform CreateRect(string name, Transform parent, Vector2 position, Vector2 size)
+    private static RectTransform CreateRect(string name, Transform parent, Vector2 position, Vector2 size) =>
+        CreateRect(name, parent, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), position, size);
+
+    private static RectTransform CreateRect(string name, Transform parent, Vector2 anchor, Vector2 pivot, Vector2 position, Vector2 size)
     {
         var go = new GameObject(name, typeof(RectTransform));
         var rect = (RectTransform)go.transform;
         rect.SetParent(parent, false);
-        rect.anchorMin = rect.anchorMax = new Vector2(0.5f, 0.5f);
-        rect.pivot = new Vector2(0.5f, 0.5f);
+        rect.anchorMin = rect.anchorMax = anchor;
+        rect.pivot = pivot;
         rect.anchoredPosition = position;
         rect.sizeDelta = size;
         return rect;
@@ -231,27 +242,65 @@ public static class CharacterPopupAuthoring
 
     private static Sprite LoadSprite(string path)
     {
-        Sprite sprite = AssetDatabase.LoadAssetAtPath<Sprite>(path);
-        if (sprite == null)
-            throw new InvalidOperationException("Missing sprite: " + path);
-        return sprite;
-    }
-
-    private static Sprite LoadSlicedSprite(string path, Vector4 border)
-    {
-        TextureImporter importer = AssetImporter.GetAtPath(path) as TextureImporter;
-        if (importer != null)
+        if (AssetImporter.GetAtPath(path) is TextureImporter importer
+            && (importer.textureType != TextureImporterType.Sprite
+                || importer.spriteImportMode != SpriteImportMode.Single
+                || importer.mipmapEnabled))
         {
             importer.textureType = TextureImporterType.Sprite;
             importer.spriteImportMode = SpriteImportMode.Single;
-            importer.spriteBorder = border;
             importer.filterMode = FilterMode.Point;
             importer.mipmapEnabled = false;
             importer.alphaIsTransparency = true;
             importer.textureCompression = TextureImporterCompression.Uncompressed;
             importer.SaveAndReimport();
         }
-        return LoadSprite(path);
+
+        Sprite sprite = AssetDatabase.LoadAssetAtPath<Sprite>(path);
+        if (sprite == null)
+            throw new InvalidOperationException("Missing sprite: " + path);
+        return sprite;
+    }
+
+    private static Sprite LoadSlicedSprite(string path, Vector4 border, Rect contentRect)
+    {
+        TextureImporter importer = AssetImporter.GetAtPath(path) as TextureImporter;
+        if (importer != null)
+        {
+            importer.textureType = TextureImporterType.Sprite;
+            importer.spriteBorder = border;
+            importer.filterMode = FilterMode.Point;
+            importer.mipmapEnabled = false;
+            importer.alphaIsTransparency = true;
+            importer.textureCompression = TextureImporterCompression.Uncompressed;
+
+            // SpriteImportMode.Single ignores any custom rect written to `spritesheet` -- it always
+            // reports the full texture as the sprite rect (verified empirically). These bitmaps
+            // carry transparent padding around the visible art, so a full-canvas rect stretches that
+            // empty margin into the 9-slice's middle, squashing the real artwork into a fraction of
+            // the target rect. Multiple mode with a single named entry is the only way to get Unity
+            // to honor a custom rect without touching the source pixels.
+            importer.spriteImportMode = SpriteImportMode.Multiple;
+#pragma warning disable CS0618
+            importer.spritesheet = new SpriteMetaData[]
+            {
+                new SpriteMetaData
+                {
+                    name = System.IO.Path.GetFileNameWithoutExtension(path),
+                    rect = contentRect,
+                    border = border,
+                    pivot = new Vector2(0.5f, 0.5f),
+                    alignment = (int)SpriteAlignment.Center
+                }
+            };
+#pragma warning restore CS0618
+            importer.SaveAndReimport();
+        }
+
+        Sprite sprite = AssetDatabase.LoadAssetAtPath<Sprite>(path);
+        if (sprite == null)
+            throw new InvalidOperationException("Missing sliced sprite: " + path);
+        return sprite;
     }
 
     private readonly struct StatTextBindings
