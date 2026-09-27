@@ -329,9 +329,9 @@ public class PauseMenuUI : MonoBehaviour
         RectTransform withoutSaveRect = _confirmationWithoutSaveButton.GetComponent<RectTransform>();
         RectTransform cancelRect = _confirmationCancelButton.GetComponent<RectTransform>();
 
-        saveRect.anchoredPosition = new Vector2(0f, showWithoutSave ? 25f : 10f);
-        withoutSaveRect.anchoredPosition = new Vector2(0f, -40f);
-        cancelRect.anchoredPosition = new Vector2(0f, showWithoutSave ? -105f : -65f);
+        saveRect.anchoredPosition = new Vector2(0f, showWithoutSave ? 12f : -5f);
+        withoutSaveRect.anchoredPosition = new Vector2(0f, -22f);
+        cancelRect.anchoredPosition = new Vector2(0f, showWithoutSave ? -56f : -45f);
     }
 
     private void ConfirmWithoutSave()

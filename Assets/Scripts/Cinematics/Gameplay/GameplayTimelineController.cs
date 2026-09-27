@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Playables;
 using UnityEngine.Timeline;
+using UnityEngine.UI;
 
 [DefaultExecutionOrder(-800)]
 public sealed class GameplayTimelineController : MonoBehaviour
@@ -83,6 +84,7 @@ public sealed class GameplayTimelineController : MonoBehaviour
     [SerializeField] private string _hudRootName = "GameplayUIRoot";
     private GameObject _hudRoot;
     private bool _hudRootPreviousActive;
+    private Button _skipSceneButton;
 
     private void Awake()
     {
@@ -99,6 +101,15 @@ public sealed class GameplayTimelineController : MonoBehaviour
             // Timeline is single-use for this cutscene, so auto-stopping at the end is correct.
             _director.extrapolationMode = DirectorWrapMode.None;
             _director.stopped += HandleStopped;
+        }
+
+        if (_skipSceneButtonRoot != null)
+        {
+            _skipSceneButton = _skipSceneButtonRoot.GetComponent<Button>()
+                ?? _skipSceneButtonRoot.GetComponentInChildren<Button>(true);
+            if (_skipSceneButton != null)
+                _skipSceneButton.onClick.AddListener(SkipToNextScene);
+            _skipSceneButtonRoot.SetActive(false);
         }
     }
 
@@ -145,6 +156,12 @@ public sealed class GameplayTimelineController : MonoBehaviour
 
     private void Start()
     {
+        // Scene/prefab installers may replace the IntroCutscene instance and invalidate the
+        // serialized reference. Resolve the live controller before deciding whether this
+        // Timeline must wait for Intro.Completed.
+        if (_introCutscene == null)
+            _introCutscene = FindAnyObjectByType<IntroCutsceneController>();
+
         // _introCutscene is a scene reference, not a live subscription check: even when its
         // GameObject is active, only re-subscribe here -- Awake/Configure already wired this
         // once, and this just guards against double calls to Play. When the IntroCutscene
@@ -181,6 +198,8 @@ public sealed class GameplayTimelineController : MonoBehaviour
             _introCutscene.Completed -= Play;
         if (_director != null)
             _director.stopped -= HandleStopped;
+        if (_skipSceneButton != null)
+            _skipSceneButton.onClick.RemoveListener(SkipToNextScene);
     }
 
     public void Play()

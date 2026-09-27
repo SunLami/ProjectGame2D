@@ -13,6 +13,8 @@ public sealed class AreaTriggerZone : MonoBehaviour
 
     public static event Action<string> PlayerEnteredArea;
 
+    public string AreaId => _areaId;
+
     internal static void RaiseEnteredForTests(string areaId) => PlayerEnteredArea?.Invoke(areaId);
 
     private void Reset()
@@ -22,11 +24,31 @@ public sealed class AreaTriggerZone : MonoBehaviour
             zoneCollider.isTrigger = true;
     }
 
+    private void OnEnable() => AreaZoneRegistry.Register(_areaId, transform);
+
+    private void OnDisable()
+    {
+        AreaZoneRegistry.Unregister(_areaId, transform);
+        AreaZoneRegistry.SetPlayerInside(_areaId, false);
+    }
+
     private void OnTriggerEnter2D(Collider2D other)
     {
         if (string.IsNullOrEmpty(_areaId) || !other.CompareTag("Player"))
             return;
 
+        AreaZoneRegistry.SetPlayerInside(_areaId, true);
         PlayerEnteredArea?.Invoke(_areaId);
+    }
+
+    // Not part of the original one-shot-pulse contract (see class remarks) -- only feeds
+    // AreaZoneRegistry's inside/outside state for the direction indicator's "you've arrived"
+    // marker, not a new domain event; nothing else needs to know when the player leaves.
+    private void OnTriggerExit2D(Collider2D other)
+    {
+        if (string.IsNullOrEmpty(_areaId) || !other.CompareTag("Player"))
+            return;
+
+        AreaZoneRegistry.SetPlayerInside(_areaId, false);
     }
 }

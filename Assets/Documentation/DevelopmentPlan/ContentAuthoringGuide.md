@@ -156,11 +156,17 @@ per-quest code path.
 |---|---|
 | `shopId` | Stable ID, e.g. `shop.town.blacksmith`. |
 | `npcId` | Stable `npcId` that owns this shop — `ShopNpcInteractionService` matches on this, not a scene reference. |
-| `stock` | Array of `ShopStockEntry` (item + price). Every stock `itemId` must resolve through the item catalog — the validator checks this against known item IDs. |
-| `sellPriceMultiplier` | 0–1, applied to a stock entry's own price when the player sells that item back. Selling is only supported for items that are in this shop's own stock list (see `ShopManager.TrySell` remarks) — that's a deliberate scope limit, not a bug to author around. |
+| `buyItems` | ItemSO references displayed by the Buy tab. Drag a new ItemSO into this list to add it to that NPC's shop without changing runtime code. The item's Buy Min/Max fields provide its quote range. |
+| `sellItems` | ItemSO references accepted by the Sell tab. Drag a new ItemSO into this list to let that NPC buy it from the player. Outputs of recipes offered by the same NPC are accepted in addition to this list. |
+| `stock` | Legacy itemId + fixed-price entries retained for existing content/tests. New content should use `buyItems`/`sellItems` and ItemSO price ranges. |
+| `sellPriceMultiplier` | Legacy fallback used only when an old stock item has no ItemSO Sell Min/Max range. |
 
 There is no separate shop runtime/save state in this phase — stock never depletes, so nothing beyond
 the definition is needed for a new shop.
+
+MapNhat market shop definitions are authored at `Assets/Shops/Definitions/Shop_TraderFruits.asset`,
+`Shop_TraderBread.asset`, `Shop_TraderDrinks.asset`, and `Shop_TraderMagic.asset`. Edit those four
+assets directly when changing the Buy/Sell catalogs for their matching NPCs.
 
 ### Recipe
 

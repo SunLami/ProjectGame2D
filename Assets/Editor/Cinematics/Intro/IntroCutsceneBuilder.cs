@@ -15,6 +15,8 @@ public static class IntroCutsceneBuilder
     private const string DefinitionPath = "Assets/Cinematics/Intro/Definitions/IntroCutsceneDefinition.asset";
     private const string TimelinePath = "Assets/Cinematics/Intro/Timelines/IntroCutsceneTimeline.playable";
     private const string PrefabPath = "Assets/Prefabs/Cinematics/IntroCutscene.prefab";
+    private const string DialogueFramePath = "Assets/Resources/UI/Dialogue/DarkInventoryStyle/dialogue_frame_v4.png";
+    private const string DialogueButtonPath = "Assets/Resources/UI/Dialogue/DarkInventoryStyle/dialogue_action_button_v1.png";
 
     [MenuItem("Tools/Project Game 2D/Cinematics/Create Or Update Intro Cutscene")]
     public static void CreateOrUpdate()
@@ -42,13 +44,66 @@ public static class IntroCutsceneBuilder
         if (existing != null)
             UnityEngine.Object.DestroyImmediate(existing.gameObject);
 
-        PrefabUtility.InstantiatePrefab(prefab, UnityEngine.SceneManagement.SceneManager.GetActiveScene());
-        if (UnityEngine.Object.FindAnyObjectByType<EventSystem>() == null)
-            CreateEventSystem();
+        GameObject instance = (GameObject)PrefabUtility.InstantiatePrefab(
+            prefab, UnityEngine.SceneManagement.SceneManager.GetActiveScene());
+        IntroCutsceneController installedIntro = instance.GetComponent<IntroCutsceneController>();
+
+        // Replacing the intro prefab invalidates scene references held by the six-scene gameplay
+        // Timeline. Restore that handoff so Completed starts the Timeline instead of using the
+        // fallback scene load.
+        foreach (GameplayTimelineController timelineController in UnityEngine.Object.FindObjectsByType<GameplayTimelineController>(
+            FindObjectsInactive.Include, FindObjectsSortMode.None))
+        {
+            if (timelineController.gameObject.scene != UnityEngine.SceneManagement.SceneManager.GetActiveScene())
+                continue;
+
+            SerializedObject timelineSerialized = new(timelineController);
+            timelineSerialized.FindProperty("_introCutscene").objectReferenceValue = installedIntro;
+            timelineSerialized.FindProperty("_skipSceneButtonRoot").objectReferenceValue =
+                CreateTimelineSkipButton(timelineController.transform);
+            timelineSerialized.ApplyModifiedPropertiesWithoutUndo();
+        }
+        // GameBootstrap owns the persistent EventSystem. Keeping another scene-local instance
+        // produces duplicate-event-system errors when the Intro scene starts.
+        foreach (EventSystem eventSystem in UnityEngine.Object.FindObjectsByType<EventSystem>(FindObjectsInactive.Include, FindObjectsSortMode.None))
+        {
+            if (eventSystem.gameObject.scene == UnityEngine.SceneManagement.SceneManager.GetActiveScene())
+                UnityEngine.Object.DestroyImmediate(eventSystem.gameObject);
+        }
 
         EditorSceneManager.MarkSceneDirty(UnityEngine.SceneManagement.SceneManager.GetActiveScene());
         EditorSceneManager.SaveScene(UnityEngine.SceneManagement.SceneManager.GetActiveScene());
         Debug.Log("Intro Cutscene installed in the active scene.");
+    }
+
+    private static GameObject CreateTimelineSkipButton(Transform timelineRoot)
+    {
+        Transform existing = timelineRoot.Find("GameplayTimelineUI");
+        if (existing != null)
+            UnityEngine.Object.DestroyImmediate(existing.gameObject);
+
+        GameObject canvasObject = new("GameplayTimelineUI", typeof(RectTransform), typeof(Canvas),
+            typeof(CanvasScaler), typeof(GraphicRaycaster));
+        canvasObject.transform.SetParent(timelineRoot, false);
+        Canvas canvas = canvasObject.GetComponent<Canvas>();
+        canvas.renderMode = RenderMode.ScreenSpaceOverlay;
+        canvas.sortingOrder = 250;
+        CanvasScaler scaler = canvasObject.GetComponent<CanvasScaler>();
+        scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
+        scaler.referenceResolution = new Vector2(1920f, 1080f);
+        scaler.screenMatchMode = CanvasScaler.ScreenMatchMode.MatchWidthOrHeight;
+        scaler.matchWidthOrHeight = 0.5f;
+
+        Sprite sprite = LoadUiSprite(DialogueButtonPath);
+        TMP_FontAsset font = AssetDatabase.LoadAssetAtPath<TMP_FontAsset>("Assets/Fonts/DigitalDisco SDF v3.asset");
+        Button button = CreateButton("TimelineSkipSceneButton", canvasObject.transform, "SKIP SCENE",
+            sprite, font, new Vector2(760f, -445f));
+        button.GetComponent<RectTransform>().sizeDelta = new Vector2(300f, 120f);
+        TMP_Text label = button.GetComponentInChildren<TMP_Text>();
+        label.fontSizeMin = 18f;
+        label.fontSizeMax = 28f;
+        button.gameObject.SetActive(false);
+        return button.gameObject;
     }
 
     private static IntroCutsceneDefinition CreateDefinition()
@@ -163,22 +218,52 @@ public static class IntroCutsceneBuilder
         presentationRect.anchorMax = Vector2.one;
         presentationRect.offsetMin = Vector2.zero;
         presentationRect.offsetMax = Vector2.zero;
+        // Keep the Game view clean while authoring. IntroCutsceneController remains active on
+        // the prefab root and enables this presentation only after Play Mode starts the intro.
+        presentationRoot.SetActive(false);
 
         GameObject videoObject = CreateRawImage("VideoSurface", presentationRoot.transform);
         RawImage surface = videoObject.GetComponent<RawImage>();
         VideoPlayer video = videoObject.AddComponent<VideoPlayer>();
 
-            GameObject panel = CreatePanel("DialoguePanel", presentationRoot.transform, new Color(0.025f, 0.055f, 0.09f, 0.9f), new Vector2(0.05f, 0.035f), new Vector2(0.95f, 0.29f), Vector2.zero, Vector2.zero);
-            Image panelImage = panel.GetComponent<Image>();
-            Sprite dialogueFrame = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/Dialogue/FantasyDialogueFrame_v2.png");
-            panelImage.sprite = dialogueFrame;
-            panelImage.type = Image.Type.Simple;
-            panelImage.preserveAspect = false;
-        TMP_Text speaker = CreateText("SpeakerText", panel.transform, 38, new Color(1f, 0.78f, 0.28f), TextAlignmentOptions.Left, new Vector2(0.035f, 0.66f), new Vector2(0.65f, 0.95f), "");
-        TMP_Text body = CreateText("BodyText", panel.transform, 29, Color.white, TextAlignmentOptions.TopLeft, new Vector2(0.035f, 0.12f), new Vector2(0.94f, 0.7f), "");
-        Button next = CreateButton("NextButton", panel.transform, "NEXT", new Vector2(0.79f, 0.69f), new Vector2(0.96f, 0.93f));
-        Button skipScene = CreateButton("SkipSceneButton", panel.transform, "SKIP SCENE", new Vector2(0.72f, 0.41f), new Vector2(0.96f, 0.63f));
-        Button skipIntro = CreateButton("SkipIntroButton", panel.transform, "SKIP INTRO", new Vector2(0.72f, 0.15f), new Vector2(0.96f, 0.35f));
+        Sprite dialogueFrame = LoadUiSprite(DialogueFramePath);
+        Sprite dialogueButton = LoadUiSprite(DialogueButtonPath);
+        TMP_FontAsset dialogueFont = AssetDatabase.LoadAssetAtPath<TMP_FontAsset>("Assets/Fonts/DigitalDisco SDF v3.asset");
+
+        GameObject panel = CreatePanel("DialoguePanel", presentationRoot.transform, Color.white,
+            new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), Vector2.zero, Vector2.zero);
+        RectTransform panelRect = panel.GetComponent<RectTransform>();
+        panelRect.pivot = new Vector2(0.5f, 0f);
+        panelRect.anchoredPosition = new Vector2(0f, 28f);
+        panelRect.sizeDelta = new Vector2(1000f, 333f);
+        Image panelImage = panel.GetComponent<Image>();
+        panelImage.sprite = dialogueFrame;
+        panelImage.type = Image.Type.Simple;
+        panelImage.preserveAspect = true;
+
+        TMP_Text speaker = CreateText("SpeakerText", panel.transform, 16, new Color32(244, 220, 166, 255),
+            TextAlignmentOptions.Center, Vector2.zero, Vector2.zero, "");
+        SetRect(speaker.rectTransform, new Vector2(330f, -142f), new Vector2(210f, 24f));
+        speaker.font = dialogueFont;
+        speaker.enableAutoSizing = true;
+        speaker.fontSizeMin = 11f;
+        speaker.fontSizeMax = 16f;
+        speaker.overflowMode = TextOverflowModes.Ellipsis;
+
+        TMP_Text body = CreateText("BodyText", panel.transform, 18, new Color32(244, 232, 200, 255),
+            TextAlignmentOptions.TopLeft, Vector2.zero, Vector2.zero, "");
+        // The frame's visible inner border sits farther in than the texture bounds. Keep the
+        // dialogue inside that artwork safe area instead of merely inside the panel RectTransform.
+        SetRect(body.rectTransform, new Vector2(0f, 38f), new Vector2(760f, 110f));
+        body.font = dialogueFont;
+        body.enableAutoSizing = true;
+        body.fontSizeMin = 13f;
+        body.fontSizeMax = 18f;
+        body.overflowMode = TextOverflowModes.Ellipsis;
+
+        Button next = CreateButton("NextButton", panel.transform, "NEXT", dialogueButton, dialogueFont, new Vector2(-300f, -108f));
+        Button skipScene = CreateButton("SkipSceneButton", panel.transform, "SKIP SCENE", dialogueButton, dialogueFont, new Vector2(-105f, -108f));
+        Button skipIntro = CreateButton("SkipIntroButton", panel.transform, "SKIP INTRO", dialogueButton, dialogueFont, new Vector2(90f, -108f));
         GameObject fadeObject = CreatePanel("FadeOverlay", presentationRoot.transform, new Color(0f, 0f, 0f, 0f), Vector2.zero, Vector2.one, Vector2.zero, Vector2.zero);
         Image fadeOverlay = fadeObject.GetComponent<Image>();
         fadeOverlay.raycastTarget = false;
@@ -257,14 +342,56 @@ public static class IntroCutsceneBuilder
         return text;
     }
 
-    private static Button CreateButton(string name, Transform parent, string label, Vector2 anchorMin, Vector2 anchorMax)
+    private static Button CreateButton(string name, Transform parent, string label, Sprite sprite, TMP_FontAsset font, Vector2 position)
     {
-        GameObject buttonObject = CreatePanel(name, parent, new Color(0.12f, 0.27f, 0.38f, 0.96f), anchorMin, anchorMax, Vector2.zero, Vector2.zero);
+        GameObject buttonObject = CreatePanel(name, parent, Color.white, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), Vector2.zero, Vector2.zero);
+        SetRect(buttonObject.GetComponent<RectTransform>(), position, new Vector2(168f, 56f));
+        Image image = buttonObject.GetComponent<Image>();
+        image.sprite = sprite;
+        image.type = Image.Type.Simple;
         Button button = buttonObject.AddComponent<Button>();
-        button.targetGraphic = buttonObject.GetComponent<Image>();
-        TMP_Text text = CreateText("Label", buttonObject.transform, 22, Color.white, TextAlignmentOptions.Center, Vector2.zero, Vector2.one, label);
+        button.targetGraphic = image;
+        ColorBlock colors = button.colors;
+        colors.normalColor = Color.white;
+        colors.highlightedColor = new Color32(255, 242, 190, 255);
+        colors.selectedColor = colors.highlightedColor;
+        colors.pressedColor = new Color32(190, 165, 115, 255);
+        button.colors = colors;
+        TMP_Text text = CreateText("Label", buttonObject.transform, 15, new Color32(244, 232, 200, 255), TextAlignmentOptions.Center, Vector2.zero, Vector2.one, label);
+        text.font = font;
+        text.enableAutoSizing = true;
+        text.fontSizeMin = 10f;
+        text.fontSizeMax = 15f;
+        text.overflowMode = TextOverflowModes.Ellipsis;
         text.raycastTarget = false;
         return button;
+    }
+
+    private static void SetRect(RectTransform rect, Vector2 position, Vector2 size)
+    {
+        rect.anchorMin = rect.anchorMax = new Vector2(0.5f, 0.5f);
+        rect.pivot = new Vector2(0.5f, 0.5f);
+        rect.anchoredPosition = position;
+        rect.sizeDelta = size;
+    }
+
+    private static Sprite LoadUiSprite(string path)
+    {
+        if (AssetImporter.GetAtPath(path) is TextureImporter importer)
+        {
+            importer.textureType = TextureImporterType.Sprite;
+            importer.spriteImportMode = SpriteImportMode.Single;
+            importer.alphaIsTransparency = true;
+            importer.mipmapEnabled = false;
+            importer.textureCompression = TextureImporterCompression.Uncompressed;
+            importer.filterMode = FilterMode.Point;
+            importer.SaveAndReimport();
+        }
+
+        Sprite sprite = AssetDatabase.LoadAssetAtPath<Sprite>(path);
+        if (sprite == null)
+            throw new MissingReferenceException($"Intro cutscene UI sprite is missing: {path}");
+        return sprite;
     }
 
     private static VideoClip LoadVideo(string fileName)
@@ -273,12 +400,6 @@ public static class IntroCutsceneBuilder
         if (clip == null)
             Debug.LogError($"Missing intro video: {fileName}.mp4");
         return clip;
-    }
-
-    private static void CreateEventSystem()
-    {
-        GameObject eventSystem = new("EventSystem", typeof(EventSystem), typeof(StandaloneInputModule));
-        Undo.RegisterCreatedObjectUndo(eventSystem, "Create EventSystem");
     }
 
     private readonly struct SegmentSeed

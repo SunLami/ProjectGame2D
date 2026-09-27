@@ -162,6 +162,7 @@ public class EquipmentManager : MonoBehaviour
         RefreshPlayerStats();
         OnEquipmentChanged?.Invoke();
         ItemEquipped?.Invoke(item);
+        QuestDomainEvents.RaiseItemEquipped(item.itemId);
         return true;
     }
 

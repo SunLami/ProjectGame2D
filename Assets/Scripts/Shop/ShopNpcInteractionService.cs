@@ -43,6 +43,28 @@ public sealed class ShopNpcInteractionService
         return _shopManager.TryPurchase(shopId, itemId, quantity, out result);
     }
 
+    public bool TryCreateBuyQuote(string npcId, string shopId, string itemId, int quantity, out int unitPrice, out ShopTransactionResult result)
+    {
+        unitPrice = 0;
+        if (!TryGetShop(npcId, out ShopDefinition shop) || shop.ShopId != shopId)
+        {
+            result = ShopTransactionResult.ShopNotFound;
+            return false;
+        }
+        return _shopManager.TryCreateBuyQuote(shopId, itemId, quantity, out unitPrice, out result);
+    }
+
+    public bool TryPurchaseQuoted(string npcId, string shopId, string itemId, int quantity, int unitPrice, out int totalCost, out ShopTransactionResult result)
+    {
+        totalCost = 0;
+        if (!TryGetShop(npcId, out ShopDefinition shop) || shop.ShopId != shopId)
+        {
+            result = ShopTransactionResult.ShopNotFound;
+            return false;
+        }
+        return _shopManager.TryPurchaseQuoted(shopId, itemId, quantity, unitPrice, out totalCost, out result);
+    }
+
     /// <summary>Sells through npcId's own shop only -- rejects a shopId this npcId does not own.</summary>
     public bool TrySell(string npcId, string shopId, string itemId, int quantity, out ShopTransactionResult result)
     {
@@ -52,5 +74,27 @@ public sealed class ShopNpcInteractionService
             return false;
         }
         return _shopManager.TrySell(shopId, itemId, quantity, out result);
+    }
+
+    public bool TryCreateSellQuote(string npcId, string shopId, string itemId, int quantity, out int unitPrice, out ShopTransactionResult result)
+    {
+        unitPrice = 0;
+        if (!TryGetShop(npcId, out ShopDefinition shop) || shop.ShopId != shopId)
+        {
+            result = ShopTransactionResult.ShopNotFound;
+            return false;
+        }
+        return _shopManager.TryCreateSellQuote(shopId, itemId, quantity, out unitPrice, out result);
+    }
+
+    public bool TrySellQuoted(string npcId, string shopId, string itemId, int quantity, int unitPrice, out int totalValue, out ShopTransactionResult result)
+    {
+        totalValue = 0;
+        if (!TryGetShop(npcId, out ShopDefinition shop) || shop.ShopId != shopId)
+        {
+            result = ShopTransactionResult.ShopNotFound;
+            return false;
+        }
+        return _shopManager.TrySellQuoted(shopId, itemId, quantity, unitPrice, out totalValue, out result);
     }
 }

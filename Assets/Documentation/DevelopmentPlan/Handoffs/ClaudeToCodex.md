@@ -1,6 +1,315 @@
 # Claude → Codex Handoff
 
-Status: `READY_FOR_CODEX_FINAL_QUEST_VERIFICATION_ONLY`
+Status: `VERIFIED_MAINMENU_SETTINGS_SLOT_CONFIRM_INTEGRATION`
+
+Ngày: 2026-09-27
+Feature: Tích hợp 12 asset Dark Inventory Style (`MAINMENU_SETTINGS_SLOT_CONFIRM_ART_READY` trong
+CodexToClaude.md) vào SettingsPage, SlotPage (New Game + Continue), ConfirmOverlay/ErrorOverlay
+trong `MainMenu.unity` — đã gán xong, verify Play Mode thật, PASS toàn bộ.
+
+## Kết quả tích hợp
+
+**Rewire miễn phí trước khi gán asset mới** (không cần Codex gen lại): 7 nút đang tái dùng
+`landing_action_button`/`landing_action_button_hover` cũ đổi sang `_v1` đã có sẵn — `ConfirmButton`,
+`SaveButton`, 3× `PrimaryButton` (Slot1/2/3), `CloseButton` (ErrorOverlay), `BackButton`.
+
+**Field đã gán 12 sprite mới** (trực tiếp trong scene `MainMenu.unity`, `Image.Type = Simple`,
+đúng RectTransform/anchor hiện có):
+- `SettingsPage/Content` ← `settings_board_v1`; `SettingsPage/Title` ← `settings_title_v1`.
+- `FullScreenToggle/Background` ← `settings_checkbox_unchecked_v1`; `.../Checkmark` ←
+  `settings_checkbox_checked_v1`.
+- `MusicSlider` và `SfxSlider` Background ← `settings_slider_track_v1`; Handle ←
+  `settings_slider_handle_v1` (dùng chung 1 cặp track/handle cho cả hai slider).
+- `SlotsRow/Slot1|2|3` (card nền) ← `save_slot_card_v1`; `.../DeleteButton` ← `slot_delete_button_v1`.
+- `SlotHeader/SlotPageTitle` ← `slot_page_new_game_title_v1` mặc định; `MainMenuSaveSlotsUI`
+  `_newGameTitleSprite`/`_continueTitleSprite` (SerializedObject) trỏ đúng `slot_page_new_game_title_v1`
+  / `slot_page_continue_title_v1` để script tự đổi theo mode lúc runtime (không đổi logic
+  `MainMenuSaveSlotsUI.cs`).
+- `ConfirmOverlay/Dialog` và `ErrorOverlay/Dialog` ← `overlay_dialog_board_v1`;
+  `ConfirmOverlay/.../CancelButton` ← `slot_delete_button_v1` (Confirm dùng `landing_action_button_v1`
+  đã rewire ở trên).
+
+**Bug phát hiện và fix khi tích hợp `slot_badge_v1`** (không có trong asset cũ vì lý do khác):
+`SlotsRow/Slot{1,2,3}/Title` trước đây có cả `Image` (sprite `slot_badge_1/2/3` bake sẵn chữ "SLOT n")
+và `TextMeshProUGUI` (text "SLOT n") **trên cùng một GameObject**, với TMP bị disable từ trước —
+tức số slot vốn được bake vào bitmap cũ, TMP chỉ là phần thừa không dùng. Asset mới `slot_badge_v1`
+không bake chữ (đúng theo style guide), nên bật TMP lên thì lộ ra vấn đề kiến trúc: `Image` và
+`TextMeshProUGUI` trên cùng GameObject dùng chung một `CanvasRenderer` (component bắt buộc của cả
+hai), nên chỉ một trong hai render được — bật TMP làm badge nền biến mất/chớp tắt tuỳ frame.
+Fix: tách `Title` thành container rỗng chứa 2 con riêng — `Badge` (Image, sibling đầu, nền) và
+`Label` (TextMeshProUGUI, sibling cuối, hiển thị "SLOT 1/2/3") — đúng pattern đã dùng sẵn ở
+`DeleteButton/Label`, `PrimaryButton/Label`. Áp dụng cho cả Slot1/Slot2/Slot3.
+
+## Kết quả Play Mode (Game View 1920×1080, verify qua `manage_camera screenshot` + gọi trực tiếp
+`Button.onClick.Invoke()` để test navigation không cần chuột)
+
+- SettingsPage: board/title/checkbox/2 slider render đúng, không chữ bị che; Cancel đưa về Landing
+  đúng.
+- New Game SlotPage: title "NEW GAME" đúng; 3 card `save_slot_card_v1`; badge "SLOT 1/2/3" đọc rõ sau
+  fix Badge/Label; Overwrite/Delete đúng style (olive/danger).
+- Continue SlotPage: title "CONTINUE" đúng; 3 slot Load/Delete đúng style; không regression.
+- ConfirmOverlay: bấm Delete → dialog `overlay_dialog_board_v1` hiện đúng, message rõ, Confirm/Cancel
+  đúng màu; bấm Cancel → `ConfirmOverlay.activeInHierarchy` về `false`, dismiss đúng.
+- Console: không exception/warning mới ngoài cảnh báo codec `Color primaries 0` cũ (không liên quan,
+  đã biết từ trước, không phải regression của lượt này).
+- Không đổi `mainmenu_background.mp4`/`mainmenu_new_journey_dawn_v8.png`; không đổi
+  `MainMenuSaveSlotsUI.cs`/`SettingsService`/navigation/callback ngoài việc gán 2 field sprite nêu
+  trên.
+
+## Ghi chú vận hành
+
+Trong lúc verify có xuất hiện `PlayerLoop called recursively` (lỗi engine từng gặp ở đợt Minimap,
+xem entry `VERIFIED_MAP_ART_INTEGRATION` phía dưới) sau một chuỗi gọi screenshot liên tục trong Play
+Mode — không liên quan đến asset/script đợt này. Xử lý bằng cách dừng Play Mode, áp lại thay đổi cấu
+trúc Badge/Label ở Edit Mode (an toàn, không mất do Play Mode không lưu), rồi vào lại Play Mode verify
+lần hai và PASS sạch, không còn lỗi.
+
+---
+
+Ngày: 2026-09-27
+Feature: Gen asset Dark Inventory Style cho 3 nhóm còn lại trong `MainMenu.unity` (theo D-054):
+SettingsPage, SlotPage (New Game + Continue), ConfirmOverlay/ErrorOverlay. Landing group đã xong và
+verify PASS trước đó (xem entry `VERIFIED_MAP_ART_INTEGRATION` phía dưới cho ví dụ định dạng report).
+
+## Bối cảnh
+
+- Owner xác nhận Landing group (logo, slogan, board, action button) đã lên Dark Inventory Style và
+  chạy tốt trong Play Mode. Các màn còn lại (Settings, New Game, Continue, Confirm Popup, Overwrite
+  Confirm, Quit Confirm) vẫn đang render bằng asset cũ `LightFantasy` (nền xanh/vàng ấm), lệch style
+  với phần đã đổi.
+- Claude đã tự rewire xong 7 nút đang tái dùng `landing_action_button`/`landing_action_button_hover`
+  sang bản `_v1` đã có sẵn (ConfirmButton, SaveButton, 3× PrimaryButton, CloseButton, BackButton) —
+  **không cần Codex gen lại các nút này**, chỉ còn các asset liệt kê dưới đây là thực sự thiếu.
+- Toàn bộ asset cũ đang ở `Assets/Resources/UI/MainMenu/LightFantasy/`, import Single/Point/no
+  mipmap/uncompressed, `Sprite Border = 0,0,0,0`, `Image.Type = Simple` (không sliced) trên tất cả
+  object dùng chúng trong scene — asset mới giữ đúng cùng cấu hình import và cùng kích thước pixel
+  1:1 để không phải sửa RectTransform/anchor.
+
+## Art direction (bắt buộc đọc trước khi vẽ)
+
+- Theo `Assets/Documentation/DevelopmentPlan/DarkLightFantasyUIStyleGuide.md` + quyết định D-054
+  (MainMenu chuyển hẳn sang Dark Inventory Style, không còn giữ "Light Fantasy bình minh").
+- Charcoal/walnut tối làm nền chính, viền antique gold mảnh, sapphire chỉ là accent nhỏ (title/góc),
+  không rải gem dày. Ornament tiết chế, nội dung (text/icon) phải nổi hơn khung.
+- Không bake text động vào sprite. Toàn bộ label, số slot, message hiện đang là TMP object thật —
+  giữ nguyên; asset mới chỉ là khung/nền/nút, không có chữ.
+- Giữ nguyên tuyệt đối `mainmenu_background.mp4` và `mainmenu_new_journey_dawn_v8.png` — nhóm này
+  không liên quan đến 2 file đó.
+
+## Asset cần gen — Nhóm 1: SettingsPage
+
+Output: `Assets/Resources/UI/MainMenu/DarkInventoryStyle/`
+
+| Tên file mới | Kích thước px (khớp asset cũ) | Vai trò |
+| --- | --- | --- |
+| `settings_board_v1.png` | 1122×1402 | Panel nền của SettingsPage (khung charcoal/walnut, viền gold mảnh) |
+| `settings_title_v1.png` | 2048×768 | Wordmark "SETTINGS" |
+| `settings_checkbox_unchecked_v1.png` | 1254×1254 | Checkbox Full Screen — trạng thái off |
+| `settings_checkbox_checked_v1.png` | 1254×1254 | Checkbox Full Screen — trạng thái on (có dấu check sapphire/gold) |
+| `settings_slider_track_v1.png` | 2048×226 | Track cho SFX/Music slider |
+| `settings_slider_handle_v1.png` | 1254×1254 | Handle tròn cho slider (gold rim) |
+
+## Asset cần gen — Nhóm 2: SlotPage (dùng chung cho New Game và Continue)
+
+| Tên file mới | Kích thước px | Vai trò |
+| --- | --- | --- |
+| `save_slot_card_v1.png` | 1086×1448 | Nền 1 card slot (dùng chung cho cả 3 slot, chỉ khác text/badge đè lên) |
+| `slot_badge_v1.png` | 1983×793 | Nền tag "SLOT n" phía trên card — **1 sprite dùng chung cho cả 3 slot** (số thứ tự đã là TMP text riêng đè lên, không cần 3 bản khác nhau như asset cũ `slot_badge_1/2/3`) |
+| `slot_delete_button_v1.png` | 1944×809 | Nút Delete — danger button muted-red theo style guide, cùng hình học/chiều cao với `landing_action_button_v1` để không méo khi Unity stretch |
+| `slot_page_new_game_title_v1.png` | 2048×683 | Wordmark tiêu đề trang khi ở mode New Game |
+| `slot_page_continue_title_v1.png` | 2048×744 | Wordmark tiêu đề trang khi ở mode Continue |
+
+## Asset cần gen — Nhóm 3: ConfirmOverlay / ErrorOverlay
+
+| Tên file mới | Kích thước px | Vai trò |
+| --- | --- | --- |
+| `overlay_dialog_board_v1.png` | 900×600 | Nền dialog dùng chung cho Confirm Popup, Overwrite Confirm, Quit Confirm, và Error Overlay |
+
+Lưu ý: nút Cancel/Confirm trong dialog này dùng chung `slot_delete_button_v1` (Cancel/danger) và
+`landing_action_button_v1` đã có (Confirm) — không cần asset nút riêng cho overlay này.
+
+## Việc Codex KHÔNG cần làm
+
+- Không cần gen lại nút nào đã có `_v1` (landing_action_button, landing_action_button_hover) — đã
+  rewire xong bằng code, không liên quan đến đợt gen này.
+- Không đổi `mainmenu_background.mp4`, `mainmenu_new_journey_dawn_v8.png`, logo/slogan/board Landing.
+- Không sửa `MainMenuSaveSlotsUI.cs`, `SettingsService`, navigation, callback hay bất kỳ logic C#
+  nào — chỉ gen bitmap PNG + chuẩn hoá import (Sprite Mode Single, Filter Point, Mipmap Off,
+  Compression None, alpha đúng), Claude sẽ tự gán vào scene.
+- Không sửa/ghi đè các thay đổi khác đang có trong worktree.
+
+## Báo lại khi xong
+
+Ghi entry mới ở đầu `Assets/Documentation/DevelopmentPlan/Handoffs/CodexToClaude.md` với Status
+`MAINMENU_SETTINGS_SLOT_CONFIRM_ART_READY`, liệt kê đúng tên file đã tạo (khớp bảng trên) và bất kỳ
+sai khác về kích thước/border nếu có lý do kỹ thuật cần đổi.
+
+---
+
+Status: `VERIFIED_MAP_ART_INTEGRATION`
+
+Ngày: 2026-09-26
+Feature: Tích hợp `minimap_frame_v1` / `minimap_mask_v1` / `map_close_button_v1` / `player_marker_v1`
+/ `minimap_tag_v1` vào Minimap + FullMap — đã gán xong, verify Play Mode thật, PASS toàn bộ.
+
+## Kết quả tích hợp asset Map (4 asset đợt 1 + 1 tag banner đợt 2)
+
+**Field/prefab đã gán** (`UnifiedGameplayHUD.prefab`, qua `MapUIAuthoring.Rebuild()`):
+- `Minimap/Frame` (Image) ← `minimap_frame_v1`, Type Simple.
+- `Minimap/MapView` (Image, có `Mask` showMaskGraphic=false) ← `minimap_mask_v1`, Type Simple;
+  `MapView` đổi từ inset 6px sang khớp y hệt rect của `Frame` (offset 0,0,0,0) vì ring và mask dùng
+  chung không gian canvas 384×384, mask được vẽ khít đúng lỗ tròn bên trong ring.
+- `Minimap/MapView/Content/PlayerMarker` và `MapPopup/Viewport/MapImage/PlayerMarker` (Image) ←
+  `player_marker_v1`, Type Simple, preserveAspect=true; bỏ hoàn toàn cấu trúc hình thoi 2 lớp
+  (Outline+Dot) dựng bằng code cũ.
+- `MapPopup/CloseButton` (Image) ← `map_close_button_v1`, Type Simple; xoá luôn child `Label` TMP
+  "X" thừa vì art đã có sẵn chữ X.
+- `Minimap/ZonePlate` và `Minimap/DatePlate` (Image, Type **Sliced**) ← `minimap_tag_v1` (border
+  20/12/20/12 từ chính sprite, không hardcode lại trong code); TMP `ZoneText`/`DateText` vẫn là TMP
+  runtime thật nằm đè lên, không bake chữ.
+- `MinimapController.Awake()`: sửa để chỉ gán `RuntimeCircleSprite` (fallback code-vẽ) khi
+  `_frameImage.sprite`/`_maskImage.sprite` đang `null` — không còn ghi đè sprite thật đã gán qua
+  Inspector/authoring.
+
+**Điều chỉnh layout đi kèm** (không đổi logic crop/bounds/zoom/zone/phím `M`/GameState):
+- `Minimap` root đẩy xuống thêm 20px theo Y (từ `(-14,-14)` sang `(-14,-34)`) vì ring thật dày hơn
+  placeholder cũ, cần chừa chỗ cho `ZonePlate` phía trên không đè lên ring.
+- `ZonePlate` neo top-center, nằm hoàn toàn phía trên vòng tròn (không còn kiểu "Top" align cắt vào
+  trong ring như bản nháp đầu); `DatePlate` neo bottom-center, nằm hoàn toàn phía dưới vòng tròn.
+- Thêm rotation marker theo hướng Player (owner yêu cầu thêm sau khi thấy bản đầu marker đứng yên):
+  lộ ra field `Player.FacingDirection` (đọc `_lastFacingDirection` có sẵn trong `PlayerMovement.cs`,
+  vốn đã snap 4 hướng cho Animator) — property public 1 dòng, không đổi hành vi di chuyển. Marker
+  luôn hướng lên khi facing Up, xoay đúng 90°/180°/270° cho Right/Down/Left.
+
+## Kết quả Play Mode (Game View 1920×1080, do owner xác nhận)
+
+Toàn bộ acceptance item đều PASS:
+- Minimap tròn đúng kích thước logic 96×96, map crop không tràn viền, không có nền vuông hở góc.
+- Frame/mask đồng tâm, khớp khít lỗ tròn trong ring.
+- Player marker đúng vị trí giữa map và khi crop bị kẹp sát 4 cạnh world bounds; marker xoay đúng
+  theo hướng di chuyển thật.
+- FullMap mở/đóng đúng bằng `M`, zoom bằng lăn chuột không regression, Close button 44×44 hiển thị
+  đúng và click đóng được.
+- `ZonePlate`/`DatePlate` hiển thị đúng "Heart Village" / "26 Sep", hai đầu banner giữ nguyên hình,
+  chỉ phần giữa co giãn; text căn giữa, không chạm viền vàng, không tràn.
+- Banner đồng bộ trực quan với `minimap_frame_v1`.
+- Không có Console error/warning mới liên quan Map UI hoặc asset import.
+- Import setting của cả 5 file xác nhận không đổi sau reimport: Single, Point, Mipmap Off,
+  Compression None, alpha đúng (đã đọc lại `.meta` sau `MapUIAuthoring.Rebuild()` để xác nhận).
+
+## Gap còn lại
+
+Không có gap chức năng. Việc còn mở duy nhất là quyết định thẩm mỹ nhỏ (không chặn gì): có thể tinh
+chỉnh thêm khoảng cách/kích thước `ZonePlate`/`DatePlate` nếu owner muốn sau khi nhìn trực tiếp nhiều
+lần chơi thử hơn, nhưng hiện tại đã đạt yêu cầu và không có lỗi kỹ thuật nào.
+
+---
+
+Status (mục cũ, đã đóng): `READY_FOR_CODEX_MAP_ART`
+
+Ngày: 2026-09-26
+Feature: Minimap (góc phải HUD) + FullMap (bấm `M`) -- logic/camera-thay-bằng-ảnh-tĩnh đã xong và
+verify qua Play Mode thật, chỉ cần art. Không cần Codex sửa script nào, chỉ gen sprite rồi báo lại để
+Claude gán vào field Inspector.
+
+## Bối cảnh
+
+Ban đầu dựng bằng Camera+RenderTexture sống (World Camera nhìn xuống world thật mỗi frame), nhưng sau
+khi review đã đổi kiến trúc sang **ảnh map tĩnh** (đúng chuẩn thể loại 2D RPG này dùng, giống ảnh mẫu
+owner gửi): `Tools/ProjectGame2D/UI/Bake Map Snapshot` chụp một lần toàn bộ `BorderMap` (Player tự ẩn
+lúc chụp) thành `Assets/Resources/UI/Map/map_snapshot.png` (2048×1553, đã bake xong, chất lượng tốt).
+Minimap hiển thị một vùng crop nhỏ cuộn theo Player (`RawImage.uvRect`) qua một `Mask` hình tròn;
+FullMap hiển thị toàn bộ ảnh phủ kín màn hình 1920×1080 (kiểu "cover", không viền đen), zoom bằng lăn
+chuột. Cả hai đều có icon Player hình thoi (marker riêng, không phải sprite Player thật) luôn đúng vị
+trí kể cả khi crop bị kẹp ở rìa bản đồ. Đã fix xong bug "Minimap bị đơ" (race điều kiện lúc
+`BorderMap` chưa load xong) và bug "viền đen 2 bên FullMap" (sai công thức cover/contain) -- cả hai đã
+verify lại bằng Play Mode thật, hoạt động đúng.
+
+Toàn bộ khung/icon hiện tại là placeholder dựng bằng code thuần (màu phẳng, `Outline` component, và
+một hình tròn vẽ bằng thuật toán runtime cho Mask -- xem `RuntimeCircleSprite.cs`), **không phải
+bitmap** -- cần Codex thay bằng art thật theo Dark Inventory Style.
+
+## Asset cần gen
+
+1. **Minimap frame** (gán vào `UnifiedGameplayHUD.prefab/Minimap`, component `Image` tên `Frame`,
+   field `MinimapController._frameImage`) -- khung tròn walnut/charcoal viền vàng mảnh, đường kính
+   logic hiện tại `96×96`. Có thể thêm icon la bàn nhỏ góc trên (không bắt buộc, thuần thẩm mỹ).
+2. **Minimap mask shape** (component `Image` tên `MapView` bên trong `Minimap`, field
+   `MinimapController._maskImage`) -- một sprite tròn trắng đặc (alpha 1 bên trong, 0 bên ngoài),
+   dùng làm `Mask` để crop ảnh map bên trong thành hình tròn khớp đúng viền `Frame` ở trên. Nếu
+   `Frame` đã là hình tròn đều, có thể dùng chung 1 sprite tròn cho cả hai field.
+3. **FullMap Close button** (`MapPopup/CloseButton`, component `Image`) -- nút X kiểu Dark Inventory
+   Style đồng bộ Character Popup/Quest Log, `44×44`, góc trên phải màn hình.
+4. **Player marker** (dùng chung cho cả Minimap và FullMap, `MapUIAuthoring.CreatePlayerMarker`) --
+   hiện là hình thoi 2 lớp (viền nâu đậm + lõi vàng) vẽ bằng `Image` phẳng xoay 45°. Nếu muốn icon đẹp
+   hơn (mũi tên chỉ hướng theo Player facing, hoặc chấm tròn có viền), gen 1 sprite ~16-24px, Point
+   filter, nền trong suốt.
+
+Không cần gen lại `map_snapshot.png` -- đó là ảnh chụp thật từ world, không phải art cần vẽ tay; chỉ
+tái-bake (chạy lại menu item) nếu địa hình world thay đổi lớn sau này.
+
+## Việc Codex KHÔNG cần làm
+
+- Không cần sửa `MinimapController.cs`, `FullMapController.cs`, `MapZoneManager.cs`,
+  `MapZoneTrigger.cs`, `MapWorldBounds.cs`, `RuntimeCircleSprite.cs`, `MapSnapshotBaker.cs`, hay
+  `MapUIAuthoring.cs` -- toàn bộ logic/camera/zoom/mask/marker đã chạy đúng và verify qua Play Mode
+  thật. Nếu cần field/kích thước mới để khớp art, báo lại Claude qua `CodexToClaude.md`.
+- Không cần tự đặt `RuntimeCircleSprite` sang không dùng nữa -- `MinimapController.Awake()` gán sprite
+  runtime vào `_frameImage`/`_maskImage` mỗi lần chạy; chỉ cần gán sprite thật của Codex trực tiếp vào
+  hai field đó qua Inspector (ghi đè lên trên), Claude sẽ xoá lời gọi `RuntimeCircleSprite.Get(...)`
+  trong `Awake()` khi nhận sprite thật để tránh ghi đè ngược lại mỗi lần Play.
+- Không cần đụng `GameStateManager`, `GameplayMenuPage.Map`, phím `M`, hay lifecycle mở/đóng FullMap --
+  toàn bộ đã nối sẵn qua `UnifiedGameplayHudController`.
+- Không cần lo phần zoom/pan FullMap hay scroll Minimap -- thuần code, không phụ thuộc art.
+
+---
+
+Status: `READY_FOR_CODEX_ARROW_ART`
+
+Ngày: 2026-09-19
+Feature: Training Area onboarding (Tutorial + Quest chain) backend xong, chỉ cần 4 sprite mũi tên/vòng tròn cho hệ thống quest direction indicator -- code đã chạy đúng với placeholder hình học sinh bằng code, chỉ cần thay `Image.sprite`.
+
+## Bối cảnh
+
+Đã dựng xong toàn bộ: Trainer NPC + 3 training dummy (HP/chết/respawn) trong `MapNhat` scene khu
+TrainingArea, chuỗi quest `quest.trainer_greeting` → `quest.equip_weapon` (auto turn-in) →
+`quest.trainer_killquest`, Tutorial 1-4 (Move/Sprint/OpenInventory/EquipItem) nối với quest qua
+`TutorialStepType.WaitForQuest` mới, và hệ thống Quest Direction Indicator 2 nhánh (NPC target / Area
+target). Toàn bộ đã verify qua Play Mode thật, không cần Codex sửa logic gì -- chỉ cần 4 sprite dưới
+đây, sau đó kéo thả vào đúng field Inspector là xong, không cần đụng script.
+
+## Asset cần gen (3 sprite, phong cách pixel art khớp game hiện tại)
+
+Đã bỏ thiết kế vòng tròn ground marker theo yêu cầu -- "đã đến khu vực" giờ chỉ còn 1 mũi tên nhấp nhô
+chỉ xuống dưới chân Player, dùng chung asset với mục 1 bên dưới.
+
+1. **Bobbing target arrow** (`Assets/Scripts/UI/QuestDirectionIndicator.cs` field `_npcHeadMarkerImage`
+   và `_arrivedMarkerArrowImage`, và `Assets/Scripts/World/MannequinAttackIndicator.cs` field
+   `_arrowImage`) -- mũi tên nhấp nhô trỏ xuống, dùng chung cho "trên đầu NPC cần nói chuyện", "trên
+   đầu hình nhân cần đánh", và "đã đến khu vực nhiệm vụ" (dưới chân Player). ~48x48px, nên có viền/glow
+   nhẹ để nổi trên nền cỏ/nền da NPC.
+2. **Ground direction arrow** (`QuestDirectionIndicator.cs` field `_groundArrowImage`) -- mũi tên dưới
+   chân Player chỉ hướng khi đang di chuyển tới mục tiêu (NPC ở xa hoặc khu vực nhiệm vụ, chưa tới
+   nơi). ~64x64px, nhìn từ góc top-down (game là top-down 2D).
+3. **Edge-of-screen arrow** (`QuestDirectionIndicator.cs` field `_edgeIndicatorImage`) -- icon mũi tên
+   bám rìa màn hình khi mục tiêu ở ngoài khung hình. ~40x40px, dạng compact, rõ hướng ở kích thước nhỏ.
+
+Placeholder hiện tại (tam giác màu vàng-xanh sinh bằng code trong
+`Assets/Scripts/UI/ProceduralArrowSprite.cs`) đã hoạt động đúng chức năng -- không có gì gấp về logic,
+đây thuần là nâng cấp hình ảnh.
+
+## Việc Codex KHÔNG cần làm
+
+- Không cần sửa `QuestDirectionIndicator.cs`, `MannequinAttackIndicator.cs`, `QuestManager.cs`,
+  `TutorialManager.cs`, `MannequinHurtbox.cs` hay bất kỳ script Quest/Tutorial nào -- toàn bộ logic đã
+  xong và verify qua Play Mode. Nếu cần field/API mới, báo lại Claude qua `CodexToClaude.md`.
+- Không cần tự đặt `ProceduralArrowSprite` sang trạng thái không dùng nữa -- nó tự động chỉ được dùng
+  làm fallback khi field `Image.sprite` đang trống (`if (...Image.sprite == null)` trong Awake của mỗi
+  script), nên gán sprite thật vào Inspector là đủ, không cần xoá code fallback.
+
+---
+
+
 
 Ngày: 2026-08-23
 Feature: Root cause thật đã tìm ra bằng instrumentation trực tiếp — KHÔNG phải GameInputCoordinator/GameStateManager, mà là Input System event bị rớt khi Editor mất focus

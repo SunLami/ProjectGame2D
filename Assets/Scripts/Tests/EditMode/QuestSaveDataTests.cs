@@ -6,7 +6,7 @@ public sealed class QuestSaveDataTests
     [Test]
     public void RoundTripsQuestProgressEntries()
     {
-        QuestSaveData data = new();
+        QuestSaveData data = new() { trackedQuestId = "quest.tutorial.crafting.001" };
         data.quests.Add(new QuestProgressSaveData
         {
             questId = "quest.tutorial.crafting.001",
@@ -23,6 +23,7 @@ public sealed class QuestSaveDataTests
         Assert.AreEqual(QuestStatus.Active, loaded.quests[0].status);
         Assert.AreEqual(1, loaded.quests[0].currentObjectiveIndex);
         CollectionAssert.AreEqual(new[] { 1, 0, 2 }, loaded.quests[0].objectiveCounters);
+        Assert.AreEqual("quest.tutorial.crafting.001", loaded.trackedQuestId);
     }
 
     [Test]

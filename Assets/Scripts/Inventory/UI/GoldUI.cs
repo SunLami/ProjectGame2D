@@ -7,6 +7,12 @@ public class GoldUI : MonoBehaviour
 
     private void OnEnable()
     {
+        if (InventoryManager.Instance == null)
+        {
+            if (_goldText != null) _goldText.text = "0";
+            return;
+        }
+
         InventoryManager.Instance.OnInventoryChanged += Refresh;
         Refresh();
     }
@@ -21,6 +27,7 @@ public class GoldUI : MonoBehaviour
 
     private void Refresh()
     {
+        if (InventoryManager.Instance == null || _goldText == null) return;
         _goldText.text = InventoryManager.Instance.Gold.ToString();
     }
 }

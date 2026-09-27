@@ -1,0 +1,62 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 14c148da086a4444f9dc223cd131312a, type: 3}
+  m_Name: Trainer_EquipDone
+  m_EditorClassIdentifier: ProjectGame2D.Runtime::DialogueDefinition
+  _dialogueId: dialogue.trainer.equip_done
+  _initialNodeId: praise
+  _nodes:
+  - _nodeId: praise
+    _speakerName: Trainer
+    _portrait: {fileID: 0}
+    _text: Well done, your sword is equipped! That's a good stance you've got --
+      let's see if it holds up under pressure.
+    _nextNodeId: hub
+    _outcomeId:
+    _choices: []
+  - _nodeId: hub
+    _speakerName: Trainer
+    _portrait: {fileID: 0}
+    _text: Feeling ready, or do you have questions first?
+    _nextNodeId:
+    _outcomeId:
+    _choices:
+    - _text: Tell me about the training dummies.
+      _nextNodeId: about_dummies
+    - _text: Any tips before I fight?
+      _nextNodeId: tips
+    - _text: I'm ready for a challenge.
+      _nextNodeId: offer
+  - _nodeId: about_dummies
+    _speakerName: Trainer
+    _portrait: {fileID: 0}
+    _text: Straw and old armor plating, nothing that bleeds. They won't hit back,
+      but they'll show you exactly where your swings fall short.
+    _nextNodeId: hub
+    _outcomeId:
+    _choices: []
+  - _nodeId: tips
+    _speakerName: Trainer
+    _portrait: {fileID: 0}
+    _text: Keep your footing steady and don't overcommit on a swing. A clean hit
+      beats a wild one every time.
+    _nextNodeId: hub
+    _outcomeId:
+    _choices: []
+  - _nodeId: offer
+    _speakerName: Trainer
+    _portrait: {fileID: 0}
+    _text: That's the spirit! Head over to the training dummies and show me what
+      you've got.
+    _nextNodeId:
+    _outcomeId: trainer.quest_kill.offered
+    _choices: []

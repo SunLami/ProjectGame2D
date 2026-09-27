@@ -233,10 +233,16 @@ Migration V6→V7 giữ nguyên slot cũ và để payload mới null. Restore c
 rỗng và cân nặng dương, ép quantity = 1, clamp cân nặng theo definition; record hỏng bị bỏ qua kèm
 warning. Xem [FishingSystem.md](FishingSystem.md).
 
-**Quick bar và Farming save hiện trạng (2026-09-22):** schema V8 bổ sung `QuickBarSaveData`
-gồm đúng tám stable `itemId` assignment và `selectedIndex`; schema V9 bổ sung `FarmingSaveData`
-gồm các record `{ plotId, cropId, plantedAtUtcTicks }` cho plot đang có cây. Migration V7→V8 và
-V8→V9 chỉ thêm default, không diễn giải lại inventory/world record cũ. Restore quick bar chạy sau
+**Quest tracking save (2026-09-22):** bump `CurrentSaveVersion` 7 → 8 và thêm
+`QuestSaveData.trackedQuestId`. Chỉ một quest `Active`/`ReadyToTurnIn` được track tại một thời điểm;
+`null` nghĩa là người chơi chủ động untrack. Migration V7→V8 chọn quest Active/Ready đầu tiên để
+giữ trải nghiệm tracker của save cũ. Abandon xóa runtime progress record nên quest trở lại trạng thái
+`Available` được derive từ prerequisite; không lưu một trạng thái Abandoned riêng.
+
+**Quick bar và Farming save hiện trạng (2026-09-22):** schema V9 bổ sung `QuickBarSaveData`
+gồm đúng tám stable `itemId` assignment và `selectedIndex`; schema V10 bổ sung `FarmingSaveData`
+gồm các record `{ plotId, cropId, plantedAtUtcTicks }` cho plot đang có cây. Migration V8→V9 và
+V9→V10 chỉ thêm default, không diễn giải lại inventory/world record cũ. Restore quick bar chạy sau
 inventory để quantity/icon lấy từ inventory đã ổn định; restore farming chạy sau world restore.
 Growth derive từ UTC elapsed, không lưu stage index hoặc sprite. Missing item/crop/plot ID bị bỏ qua
 kèm warning và không làm hỏng toàn save. Xem [FarmingSystem.md](FarmingSystem.md).
@@ -254,7 +260,7 @@ kèm warning và không làm hỏng toàn save. Xem [FarmingSystem.md](FarmingSy
 
 ## Quest/tutorial persistence
 
-- Lưu objective counter và quest status, không lưu UI state.
+- Lưu objective counter, quest status và stable ID của quest đang track; không lưu trạng thái widget/UI.
 - Restore không phát reward hoặc objective-completed event.
 - Tutorial lưu step hiện tại và completed flag.
 - Main Quest unlock phải suy ra/validate từ prerequisite hoặc lưu story flag có reconciliation.

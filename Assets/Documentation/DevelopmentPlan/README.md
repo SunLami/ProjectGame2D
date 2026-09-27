@@ -53,6 +53,8 @@ cập nhật tài liệu liên quan trước hoặc cùng lúc với code.
 21. [Farming System](FarmingSystem.md): quick bar contract, fixed plots, crop growth/harvest và save.
 22. [Farming Content Authoring Guide](FarmingContentAuthoringGuide.md): quy trình tạo harvest item,
     crop definition, seed item, catalog entry, nguồn cấp seed và checklist test.
+22. [Dark Light Fantasy UI Style Guide](DarkLightFantasyUIStyleGuide.md): visual language chuẩn lấy
+    Inventory v5 làm reference khi migration từng gameplay UI.
 
 ## Quy tắc quản trị tài liệu
 
