@@ -7,7 +7,9 @@ using UnityEngine.UI;
 public static class QuestAcceptPopupPrefabBuilder
 {
     private const string PrefabPath = "Assets/Prefabs/UI/QuestAcceptPopup.prefab";
-    private const string BoardPath = "Assets/Resources/UI/Quest/QuestAccept1920/quest_accept_board_dynamic_rewards_v2.png";
+    private const string BoardPath = "Assets/Resources/UI/Quest/QuestAccept1920/quest_accept_board_dynamic_rewards_v3.png";
+    private const string AcceptButtonPath = "Assets/Resources/UI/Quest/QuestAccept1920/quest_accept_button_accept_v1.png";
+    private const string DeclineButtonPath = "Assets/Resources/UI/Quest/QuestAccept1920/quest_accept_button_decline_v1.png";
     private const string RewardSlotPath = "Assets/Resources/UI/Inventory/LightFantasy/inventory_slot_hd.png";
     private static readonly Color Cream = new(0.96f, 0.91f, 0.76f, 1f);
     private static readonly Color Gold = new(0.83f, 0.60f, 0.24f, 1f);
@@ -168,7 +170,7 @@ public static class QuestAcceptPopupPrefabBuilder
     private static void ConfigureButtons(Transform card, TMP_FontAsset font)
     {
         Transform row = Require(card, "ButtonRow");
-        Rect(row.GetComponent<RectTransform>(), new Vector2(252f, 34f), new Vector2(34f, -318f));
+        Rect(row.GetComponent<RectTransform>(), new Vector2(252f, 40f), new Vector2(34f, -318f));
         HorizontalLayoutGroup horizontal = row.GetComponent<HorizontalLayoutGroup>();
         horizontal.padding = new RectOffset(0, 0, 0, 0);
         horizontal.spacing = 12f;
@@ -182,18 +184,22 @@ public static class QuestAcceptPopupPrefabBuilder
         Button accept = Require(row, "AcceptButton").GetComponent<Button>();
         row.SetSiblingIndex(row.parent.childCount - 1);
         decline.transform.SetAsLastSibling();
-        ConfigureButton(accept, font, "ACCEPT", 132f);
-        ConfigureButton(decline, font, "DECLINE", 108f);
+        // Accept/Decline are independent sprites (D-038, revised 2026-09-27): not baked into the
+        // board, so each keeps its own RectTransform designers can resize freely in Prefab Mode.
+        ConfigureButton(accept, font, "ACCEPT", Load(AcceptButtonPath), 120f, 40f);
+        ConfigureButton(decline, font, "DECLINE", Load(DeclineButtonPath), 120f, 40f);
     }
 
-    private static void ConfigureButton(Button button, TMP_FontAsset font, string text, float width)
+    private static void ConfigureButton(Button button, TMP_FontAsset font, string text, Sprite sprite, float width, float height)
     {
         LayoutElement layout = button.GetComponent<LayoutElement>();
         layout.preferredWidth = width;
-        layout.preferredHeight = 32f;
+        layout.preferredHeight = height;
         Image image = button.GetComponent<Image>();
-        image.sprite = null;
-        image.color = new Color(1f, 1f, 1f, 0.01f);
+        image.sprite = sprite;
+        image.type = Image.Type.Simple;
+        image.preserveAspect = true;
+        image.color = Color.white;
         button.transition = Selectable.Transition.ColorTint;
         TMP_Text label = button.GetComponentInChildren<TMP_Text>(true);
         Style(label, 9f, Color.white, TextAlignmentOptions.Center);

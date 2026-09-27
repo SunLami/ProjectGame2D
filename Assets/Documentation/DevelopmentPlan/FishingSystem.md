@@ -48,6 +48,54 @@ session tạm thời; không ghi kết quả vào definition.
 - Restore cá luôn clamp cân nặng theo definition hiện tại, giữ nguyên `instanceId`, ép quantity = 1.
   Fish payload hỏng bị bỏ qua kèm warning thay vì tạo item nửa hợp lệ.
 
+## Visual direction
+
+Theo D-055: `FishingFeatureAuthoring.CreateFeaturePrefab()` dựng UI bằng `Image` màu phẳng
+placeholder (chưa có bitmap). Đã thử 2 đợt gen asset Dark Inventory Style (`_v1` kích thước gốc bị
+chê quá mỏng/phẳng; `_v2` phóng to `MinigamePanel`/gauge để sửa nhưng phát sinh lệch bố cục do phải
+tính lại toạ độ tay). Owner quyết định **revert toàn bộ về code/asset gốc** (đã làm, khớp git HEAD)
+và làm lại theo hướng: **asset bám đúng kích thước logic gốc — không sửa bất kỳ `sizeDelta`/
+`anchoredPosition` nào trong `FishingFeatureAuthoring.cs`** khi tích hợp, để không còn rủi ro lệch bố
+cục; phong cách đơn giản hơn `_v2` (bớt ornament nhiều lớp) nhưng vẫn khắc phục đúng 2 lỗi thật của
+`_v1`: BitePrompt cần nền bán trong suốt phía sau ring (không để rỗng-giữa hoàn toàn), CatchZone cần
+màu tương phản mạnh, khác hẳn tông của MovementTrack để không bị chìm.
+
+Asset production (`Assets/Resources/UI/Fishing/DarkInventoryStyle/`), kích thước khớp 1:1 giá trị
+hardcode hiện có trong `FishingFeatureAuthoring.cs`:
+
+| File | Logic size (canvas 1920×1080) | Ghi chú |
+|---|---|---|
+| `fishing_waiting_panel_v3.png` | 500×74 | Bán trong suốt để thấy world; chứa TMP "Waiting for a bite..." |
+| `fishing_bite_prompt_v3.png` | 150×150 | Ring + nền bán trong suốt bên trong (rút kinh nghiệm từ lần trước), quanh TMP "!" |
+| `fishing_minigame_panel_v3.png` | 520×650 | Panel chứa Timer/MovementTrack/Slider/FishIcon |
+| `fishing_movement_track_v3.png` | 150×490 | Channel đặc (phần thân opaque chiếm phần lớn chiều rộng), Fish/CatchZone di chuyển trong đó |
+| `fishing_catch_zone_v3.png` | 128×120 (baseline) | Màu tương phản mạnh so với track; 9-slice border trên/dưới bắt buộc (chiều cao đổi runtime) |
+| `fishing_slider_track_v3.png` | 46×490 | Nền progress dọc (dùng với `Slider.fillRect` gốc, không phải `Image.Filled`) |
+| `fishing_slider_fill_v3.png` | 46×490 | Fill progress dọc |
+| `fishing_result_panel_v3.png` | 620×180 | Panel Success/Fail |
+
+Không đổi kích thước bitmap thật khác biệt logic size lần này — phải khớp đúng để zero code change.
+Không đổi `FishingMinigameController`/`FishingMinigameUI` public API, timing hay `GameState` policy.
+
+Sau khi `_v3` verify PASS, owner phát hiện thêm 2 vấn đề nội dung vẽ (không phải layout): board
+`fishing_waiting_panel_v3` chỉ vẽ đặc ~42%/60% canvas khiến TMP tràn ra ngoài khung; 2 file slider
+chỉ vẽ đặc ~30-35% chiều rộng khiến thanh gần như không đọc được tiến độ. Đã yêu cầu Codex vẽ lại 3
+file này lấp ≥80-90% canvas (giữ nguyên tên/kích thước) — verify PASS, đồng thời phát hiện
+`Fill Area` trong `CreateVerticalSlider` có padding 5px cứng từ code gốc (chưa từng gây chú ý khi
+còn màu phẳng) khiến fill hẹp hơn track — đã sửa `offsetMin/Max` về 0.
+
+### D-056: Reveal-on-catch (icon cá bí ẩn)
+
+Theo D-056: `FishIcon` trong `MovementTrack` không còn hiện `_selectedFish.icon` thật trong lúc chơi
+— dùng 1 sprite "cá bí ẩn" chung (`fishing_mystery_fish_icon.png`, đang chờ Codex, size khớp `FishIcon`
+hiện có `62×62`). Loại cá thật chỉ lộ ra ở `ResultFishIcon` (child mới trong `ResultPanel`, `90×90`
+tại `(85,0)` anchor trái-giữa, `ResultText` inset trái `140px` để không đè icon) khi
+`CompleteCatch()` thành công; thất bại/hết giờ/đầy túi không hiện icon. `FishingMinigameUI.ShowResult`
+nhận thêm tham số `Sprite revealedFishIcon = null` (optional, không phá caller cũ);
+`FishingMinigameController.BeginResult` truyền `_selectedFish.icon` khi thành công, `null` khi thất
+bại. Không đổi việc roll cá (vẫn random từ `FishingSpotDefinition.FishTable` lúc `BeginMinigame` như
+cũ) — chỉ ẩn thông tin khỏi UI cho tới lúc kết quả.
+
 ## Scene và prefab integration
 
 - Reusable prefab: `Assets/Prefabs/Fishing/FishingFeature.prefab`.

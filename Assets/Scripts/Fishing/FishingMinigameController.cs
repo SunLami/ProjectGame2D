@@ -210,17 +210,19 @@ public sealed class FishingMinigameController : MonoBehaviour
         }
 
         int value = _selectedFish.GetValueForWeight(weightGrams);
-        BeginResult($"Caught {_selectedFish.itemName}\n{weightGrams / 1000f:0.00} kg  -  {value} gold");
+        BeginResult(
+            $"Caught {_selectedFish.itemName}\n{weightGrams / 1000f:0.00} kg  -  {value} gold",
+            _selectedFish.icon);
     }
 
-    private void CompleteFailure(string message) => BeginResult(message);
+    private void CompleteFailure(string message) => BeginResult(message, null);
 
-    private void BeginResult(string message)
+    private void BeginResult(string message, Sprite revealedFishIcon)
     {
         if (_phase != SessionPhase.Minigame)
             return;
         _phase = SessionPhase.Result;
-        _ui?.ShowResult(message);
+        _ui?.ShowResult(message, revealedFishIcon);
         StartCoroutine(FinishAfterResult());
     }
 

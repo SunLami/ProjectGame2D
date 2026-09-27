@@ -1,5 +1,235 @@
 # Codex → Claude Handoff
 
+## Fishing mystery fish icon — readability revision
+
+Status: `FISHING_MYSTERY_FISH_ICON_ART_READY`
+
+Ngày: 2026-09-27
+
+- Đã ghi đè `Assets/Resources/UI/Fishing/DarkInventoryStyle/fishing_mystery_fish_icon.png` sau
+  review Play Mode: silhouette cũ quá nhỏ/tối trên MovementTrack.
+- Canvas giữ nguyên **124×124 px**, RGBA; metadata/GUID/import settings giữ nguyên.
+- Silhouette mới dùng thân graphite lớn, outline bạc sáng và chắc hơn, vây/tail tối giản, dấu `?`
+  antique-gold lớn hơn để đọc rõ ở kích thước runtime 62×62.
+- Alpha bbox mới `(4,12)-(120,108)`: **93.55% rộng / 77.42% cao**, thay cho bản cũ
+  87.1% rộng / 61.3% cao.
+- Pixel-art vẫn dùng lưới logic 31×31 + nearest-neighbor 4×. Không sửa code hay asset khác.
+
+---
+
+## Fishing mystery fish icon
+
+Status: `FISHING_MYSTERY_FISH_ICON_ART_READY`
+
+Ngày: 2026-09-27
+
+- Đã tạo `Assets/Resources/UI/Fishing/DarkInventoryStyle/fishing_mystery_fish_icon.png`, đúng
+  **124×124 px** (logic 62×62), RGBA.
+- Icon là silhouette cá graphite/charcoal đơn giản, hướng sang phải, có dấu `?` antique-gold nhỏ;
+  không dùng màu hoặc hoa văn từ icon cá thật.
+- Pixel-art được chuẩn hóa trên lưới logic 31×31 rồi nearest-neighbor upscale 4×, cùng mật độ chi
+  tiết với `fishing_bobber_bite_00.png`. Alpha bbox `(8,24)-(116,100)`, tương ứng khoảng
+  **87.1% rộng / 61.3% cao** canvas, đủ rõ ở `FishIcon` logic 62×62.
+- Import metadata: Sprite Mode `Single`, Filter `Point`, Mipmap `Off`, Compression `None`, PPU 100,
+  Border `0,0,0,0`.
+- Không sửa code và không thay đổi asset nào khác.
+
+---
+
+## Fishing UI V3 — padding fix
+
+Status: `FISHING_UI_V3_PADDING_FIX_ART_READY`
+
+Ngày: 2026-09-27
+
+Đã ghi đè đúng 3 PNG `_v3`, giữ nguyên canvas, tên file, palette, alpha/import metadata và phong
+cách pixel-art; chỉ scale nearest-neighbor + căn giữa phần nội dung để loại padding thừa:
+
+- `fishing_waiting_panel_v3.png` — canvas **1000×148**, alpha bbox mới
+  `(48,8)-(952,140)`: **90.40% rộng / 89.19% cao**.
+- `fishing_slider_track_v3.png` — canvas **92×980**, alpha bbox mới
+  `(6,2)-(86,978)`: **86.96% rộng / 99.59% cao**.
+- `fishing_slider_fill_v3.png` — canvas **92×980**, alpha bbox mới
+  `(6,0)-(86,980)`: **86.96% rộng / 100% cao**.
+
+Track và Fill dùng cùng bbox ngang `x=6..86`, nên thẳng tâm khi chồng trong `Slider.fillRect`.
+Không thay đổi 5 asset `_v3` còn lại, code, prefab hoặc `FishingSpot.River.asset`.
+
+---
+
+## Fishing UI V3 — locked-size art + bobber bite animation frames
+
+Status: `FISHING_UI_V3_LOCKED_SIZE_ART_READY`
+
+Ngày: 2026-09-27
+
+Đã tạo lại đúng 8 asset Fishing UI `_v3` trong
+`Assets/Resources/UI/Fishing/DarkInventoryStyle/`, khóa đúng bitmap 2× so với các giá trị logic
+hardcode gốc, không sửa code/prefab hoặc `FishingSpot.River.asset`:
+
+- `fishing_waiting_panel_v3.png` — **1000×148 px**.
+- `fishing_bite_prompt_v3.png` — **300×300 px**; exterior alpha 0, tâm charcoal có alpha tối đa
+  **242/255**, không bake dấu `!` hoặc icon để nhận phao animation riêng ở runtime.
+- `fishing_minigame_panel_v3.png` — **1040×1300 px**.
+- `fishing_movement_track_v3.png` — **300×980 px**; channel đặc tại hàng giữa chiếm khoảng
+  **78.7%** chiều rộng bitmap, không còn là đường kẻ mảnh.
+- `fishing_catch_zone_v3.png` — **256×240 px**; emerald rực + amber, tương phản mạnh với track
+  charcoal/sapphire. Border 9-slice: **Left 0, Bottom 32, Right 0, Top 32 px**.
+- `fishing_slider_track_v3.png` — **92×980 px**.
+- `fishing_slider_fill_v3.png` — **92×980 px**; một cột cyan/sapphire liên tục, phù hợp
+  `Slider.fillRect` gốc.
+- `fishing_result_panel_v3.png` — **1240×360 px**.
+
+Cả 8 file là RGBA, pixel-art logical 1/4 + nearest-neighbor 4×, Sprite Mode `Single`, Filter
+`Point`, Mipmap `Off`, Compression `None`, PPU 100. Waiting/Bite/Minigame/Result có alpha bake
+tối đa 242/255; không bake text.
+
+### Owner follow-up: thay TMP `!` bằng phao câu animation
+
+Owner đã thay yêu cầu TMP `!`: BitePrompt phải hiển thị phao câu ở chính giữa và giật/chìm xuống
+nước. Codex đã tạo 6 sprite frame riêng, mỗi frame **96×128 px**, RGBA/Single/Point/Mipmap Off/
+Compression None/PPU 100:
+
+- `fishing_bobber_bite_00.png` — nổi trung tính.
+- `fishing_bobber_bite_01.png` — bắt đầu bị kéo xuống.
+- `fishing_bobber_bite_02.png` — chìm thêm.
+- `fishing_bobber_bite_03.png` — thấp nhất, splash nhỏ.
+- `fishing_bobber_bite_04.png` — bật lên.
+- `fishing_bobber_bite_05.png` — ổn định lại.
+
+`fishing_bobber_bite_preview.gif` là preview loop của chuỗi trên. Nhịp đề xuất theo frame:
+**180ms, 90ms, 80ms, 100ms, 110ms, 180ms**, loop trong thời gian BitePrompt hiển thị.
+`fishing_bobber_bite_loop.anim` đã author sẵn sprite-key loop dài 0.74 giây cho component
+`UnityEngine.UI.Image`, dùng đúng 6 frame trên.
+Claude cần bỏ/ẩn TMP `!`, tạo `Image` phao riêng ở chính giữa BitePrompt và phát 6 frame này;
+không bake phao vào board để vẫn chỉnh được vị trí/kích thước/nhịp animation.
+
+---
+
+## Fishing BitePrompt V3 — dark backing fill
+
+Status: `FISHING_BITE_PROMPT_BACKING_ART_READY`
+
+Ngày: 2026-09-27
+
+- Đã tạo `Assets/Resources/UI/Fishing/DarkInventoryStyle/fishing_bite_prompt_v3.png`, đúng
+  **360×360 px**, RGBA.
+- Giữ nguyên byte-for-byte toàn bộ pixel ring/bevel/gem/phao/gợn nước đã duyệt từ `_v2`; chỉ
+  thay vùng alpha kín chứa tâm ring bằng fill charcoal tối `(20,18,17)` với alpha
+  **235/255 (92.2% opaque)** để TMP `!` có mặt phẳng tựa.
+- Phần ngoài ring vẫn alpha `0`; không thay đổi silhouette, kích thước hay vị trí khung.
+- Import metadata: Sprite Mode `Single`, Filter `Point`, Mipmap `Off`, Compression `None`,
+  PPU 100, Border `0,0,0,0`.
+- Không thay đổi 7 asset `_v2` còn lại và không sửa code/prefab.
+
+---
+
+## Fishing minigame UI V2 — visual correction assets
+
+Status: `FISHING_UI_V2_ART_READY`
+
+Ngày: 2026-09-27
+
+Đã gen 8 asset pixel-art `_v2` mới trong
+`Assets/Resources/UI/Fishing/DarkInventoryStyle/`; giữ nguyên toàn bộ `_v1`, không sửa code
+hoặc prefab.
+
+- `fishing_waiting_panel_v2.png` — 1000×148.
+- `fishing_bite_prompt_v2.png` — 360×360; ring dày nhiều lớp bevel/highlight/shadow, thêm
+  phao câu đỏ-trắng + dây câu ở đỉnh và gợn nước xanh ở đáy để đọc ngay là
+  thông báo cá cắn câu; tâm vẫn trống cho TMP `!`.
+- `fishing_minigame_panel_v2.png` — 1240×1560, tương ứng logic 620×780.
+- `fishing_movement_track_v2.png` — 360×1200; channel đặc chiếm xấp xỉ **78% bề
+  rộng bitmap**, thành bevel dày và hai đầu mút nhỏ đối xứng.
+- `fishing_catch_zone_v2.png` — 320×280; đổi sang **emerald-green rực + amber-gold**
+  thay vì sapphire/charcoal, tương phản mạnh với track và slider xanh. Border 9-slice:
+  **Left 0, Bottom 40, Right 0, Top 40 px**.
+- `fishing_slider_track_v2.png` — 128×1200; shaft dày là trọng tâm, end-cap tối giản.
+- `fishing_slider_fill_v2.png` — 128×1200; sau review owner đã regen thành **một cột
+  sapphire/cyan liền mạch duy nhất** từ đáy tới đỉnh, crop-safe cho `fillRect`
+  BottomToTop; không segment, không khối xanh lá giữa thanh, không divider và không end-cap
+  trang trí lấn át.
+- `fishing_result_panel_v2.png` — 1240×360.
+
+Cả 8 asset: RGBA, pixel-art logical 1/4 + nearest-neighbor 4×, Sprite Mode `Single`, Filter
+`Point`, Mipmap `Off`, Compression `None`, PPU 100. Bốn panel Waiting/Bite/Minigame/Result bake
+alpha tối đa **242/255 (94.9%)**. Không bake text, TMP label hoặc fish icon.
+
+---
+
+## Fishing minigame UI — Dark Inventory Style assets
+
+Status: `FISHING_UI_ART_READY`
+
+Ngày: 2026-09-27
+
+Codex chỉ gen và chuẩn hóa 8 bitmap PNG **pixel-art** theo D-041; không sửa code,
+prefab, gameplay, timing, `GameState` hoặc icon cá. Sau review owner, toàn bộ asset đã
+regen từ bản painted ban đầu sang pixel art thật: logical resolution 1/4, palette giới hạn,
+hard-alpha edge và nearest-neighbor upscale 4×; không còn anti-alias/vector-like rendering.
+
+- `Assets/Resources/UI/Fishing/DarkInventoryStyle/fishing_waiting_panel_v1.png` — 1000×148.
+- `Assets/Resources/UI/Fishing/DarkInventoryStyle/fishing_bite_prompt_v1.png` — 300×300.
+- `Assets/Resources/UI/Fishing/DarkInventoryStyle/fishing_minigame_panel_v1.png` — 1040×1300.
+- `Assets/Resources/UI/Fishing/DarkInventoryStyle/fishing_movement_track_v1.png` — 300×980.
+- `Assets/Resources/UI/Fishing/DarkInventoryStyle/fishing_catch_zone_v1.png` — 256×240.
+- `Assets/Resources/UI/Fishing/DarkInventoryStyle/fishing_slider_track_v1.png` — 92×980.
+- `Assets/Resources/UI/Fishing/DarkInventoryStyle/fishing_slider_fill_v1.png` — 92×980.
+- `Assets/Resources/UI/Fishing/DarkInventoryStyle/fishing_result_panel_v1.png` — 1240×360.
+
+Import của cả 8 asset: RGBA, Sprite Mode `Single`, Filter Mode `Point`, Mipmap `Off`, Compression
+`None`, PPU 100. `fishing_waiting_panel_v1`, `fishing_bite_prompt_v1`,
+`fishing_minigame_panel_v1` và `fishing_result_panel_v1` đã bake alpha tối đa **242/255
+(94.9% opaque)** ngay trong PNG; exterior vẫn alpha 0.
+
+`fishing_catch_zone_v1.png` có 9-slice border **Left 0, Bottom 32, Right 0, Top 32 px**; chỉ
+bảo toàn cap trên/dưới khi runtime đổi chiều cao, chiều rộng cố định. Các asset còn
+lại có Border `0,0,0,0`. Không asset nào bake text, số, dấu `!` hoặc fish icon.
+
+---
+
+## Abandon Quest confirmation — Dark Inventory Style board
+
+Status: `ABANDON_QUEST_CONFIRMATION_ART_READY`
+
+Ngày: 2026-09-27
+
+- Đã gen lại duy nhất board
+  `Assets/Resources/UI/SessionUX/DarkInventoryStyle/session_confirmation_board_v1.png` theo D-041:
+  nền charcoal/walnut opaque, viền antique gold mảnh, một sapphire accent nhỏ và ornament tiết
+  chế.
+- Board chừa safe area liền mạch cho message TMP 2–3 dòng ở giữa và hai nút runtime ở đáy;
+  không bake text, label, icon, button shape hoặc button outline.
+- Kích thước đúng **1672×941 px**, RGBA; không có sai khác kích thước.
+- Import metadata: Sprite Mode `Single`, Filter Mode `Point`, Mipmap `Off`, Compression `None`, PPU
+  100, `Border = 0,0,0,0`; không có sai khác border.
+- Không gen sprite nút; không sửa code, prefab, hierarchy, callback hoặc asset
+  Quest Log/Tracker/Minimap khác.
+
+---
+
+## Quest Accept Popup — Dark Inventory Style board
+
+Status: `QUEST_ACCEPT_POPUP_ART_READY`
+
+Ngày: 2026-09-27
+
+- Đã tạo `Assets/Resources/UI/Quest/QuestAccept1920/quest_accept_board_dynamic_rewards_v3.png`.
+- Theo yêu cầu owner cập nhật sau khi review: board chỉ bake khung ngoài, banner tiêu đề rỗng
+  và hai divider; **không còn bake nút**, text, icon hoặc reward socket.
+- Tạo hai button background riêng, cùng kích thước **2172×724 px**, RGBA, không bake label:
+  - `Assets/Resources/UI/Quest/QuestAccept1920/quest_accept_button_accept_v1.png` — sapphire/dark-blue.
+  - `Assets/Resources/UI/Quest/QuestAccept1920/quest_accept_button_decline_v1.png` — charcoal/walnut trung tính.
+- Kích thước đúng **1122×1402 px**, RGBA; không có sai khác kích thước.
+- Import metadata: Sprite Mode `Single`, Filter Mode `Point`, Mipmap `Off`, Compression `None`, PPU
+  100, `Border = 0,0,0,0`; không có sai khác border.
+- Board và hai button đều dùng Sprite Mode `Single`, Filter Mode `Point`, Mipmap `Off`,
+  Compression `None`, PPU 100, `Border = 0,0,0,0`.
+- Chỉ thêm/cập nhật ba bitmap trên, metadata, DecisionRegister và handoff; không đụng
+  `Tracker1920`, `inventory_slot_hd.png`, prefab, scene, code hoặc script.
+
+---
+
 ## MainMenu Settings / Slot / Confirm — Dark Inventory Style assets
 
 Status: `MAINMENU_SETTINGS_SLOT_CONFIRM_ART_READY`

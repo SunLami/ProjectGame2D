@@ -393,6 +393,15 @@ scene Style Guide riêng; mỗi UI được migration trực tiếp trên prefab
 - Detail panel có `TRACK QUEST`/`UNTRACK QUEST` và `ABANDON QUEST`. Abandon luôn qua confirmation,
   reset toàn bộ tiến độ và nhắc người chơi quay lại đúng giver NPC để nhận lại. Quest không có
   `giverNpcId` không được abandon để tránh trạng thái progression không thể phục hồi.
+- Dialog "Abandon Quest?" (GameObject `AbandonQuestConfirmation` hand-authored trong
+  `Assets/Prefabs/UI/GameplayUIRoot.prefab`, field `QuestLogUI._abandonConfirmationRoot`) dùng board
+  `Assets/Resources/UI/SessionUX/DarkInventoryStyle/session_confirmation_board_v1.png` (charcoal/
+  walnut, viền gold, theo D-041) — asset này chỉ dùng đúng dialog này. `ConfirmAbandonButton` dùng
+  `slot_delete_button_v1.png` (danger đỏ), `CancelAbandonButton` dùng `landing_action_button_v1.png`
+  (đã có từ đợt MainMenu). Message là TMP màu Cream `RGBA(0.96, 0.91, 0.76)` — cùng hằng số dùng ở
+  `QuestLogWindowPrefabBuilder`/`QuestAcceptPopupPrefabBuilder` để đồng bộ; **không dùng màu tối cho
+  text trên board tối** (bug từng gặp: giữ nguyên màu nâu sẫm cũ dành cho board parchment sáng khiến
+  message gần như không đọc được trên board charcoal mới).
 - `QuestAcceptPopup` là popup dọc giữa màn hình, RectTransform `320×400` trên Canvas reference
   `800×600`, tương đương khoảng `768×960` physical pixel ở target `1920×1080`. Board dùng cùng gỗ
   sẫm, viền vàng, sapphire xanh và lá xanh của PlayerHUD/UnifiedGameplayHUD/QuestTracker; gameplay
@@ -402,10 +411,15 @@ scene Style Guide riêng; mỗi UI được migration trực tiếp trên prefab
   để designer chỉnh bằng Prefab Mode. Asset board không bake text hoặc dữ liệu quest; runtime bind
   category/objective/reward icon, progress, Gold và EXP mà không sở hữu progression hay save data.
 - Board production của popup nằm tại
-  `Assets/Resources/UI/Quest/QuestAccept1920/quest_accept_board_dynamic_rewards_v2.png`. Board không
-  bake reward socket; runtime chỉ tạo đúng số item reward thực tế, căn giữa và co slot khi danh sách
-  dài. Vùng objective được chừa chiều cao cho nhiều dòng; quest ít objective không được tự kéo reward
-  lên vì sẽ làm thay đổi nhịp bố cục giữa các quest.
+  `Assets/Resources/UI/Quest/QuestAccept1920/quest_accept_board_dynamic_rewards_v3.png` (theo D-038
+  cập nhật 2026-09-27: board chỉ chứa frame/banner rỗng/divider, **không còn bake hình nút**). Board
+  không bake reward socket; runtime chỉ tạo đúng số item reward thực tế, căn giữa và co slot khi danh
+  sách dài. Vùng objective được chừa chiều cao cho nhiều dòng; quest ít objective không được tự kéo
+  reward lên vì sẽ làm thay đổi nhịp bố cục giữa các quest.
+- Nút `ACCEPT`/`DECLINE` là 2 Image/Button độc lập, sprite riêng
+  `quest_accept_button_accept_v1.png` (sapphire)/`quest_accept_button_decline_v1.png` (charcoal trung
+  tính), mỗi nút `120×40` theo đúng tỉ lệ 3:1 của bitmap nguồn `2172×724` để không bị méo hình; label
+  vẫn là TMP child riêng, không bake vào sprite nút.
 
 ### Dialogue UI visual direction
 

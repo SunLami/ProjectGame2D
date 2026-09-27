@@ -1,6 +1,7 @@
 using System.Linq;
 using TMPro;
 using UnityEditor;
+using UnityEditor.Animations;
 using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -15,6 +16,8 @@ public static class FishingFeatureAuthoring
     private const string SpotPath = RootFolder + "/Definitions/FishingSpot.River.asset";
     private const string FontPath = "Assets/Fonts/DigitalDisco SDF v3.asset";
     private const string FishSpriteRoot = "Assets/Tiles/Tilesets/Fishing and Gathering Pixel Art RPG Icons/PNG_n_Tiled/";
+    private const string UiFolder = "Assets/Resources/UI/Fishing/DarkInventoryStyle/";
+    private const string BobberControllerPath = PrefabFolder + "/FishingBobberBite.controller";
 
     [MenuItem("Tools/Project Game/Fishing/Build And Install MapNhat Fishing")]
     public static void BuildAndInstall()
@@ -118,6 +121,19 @@ public static class FishingFeatureAuthoring
     private static GameObject CreateFeaturePrefab()
     {
         TMP_FontAsset font = AssetDatabase.LoadAssetAtPath<TMP_FontAsset>(FontPath);
+        Sprite waitingPanelSprite = LoadSprite(UiFolder + "fishing_waiting_panel_v3.png");
+        Sprite bitePromptSprite = LoadSprite(UiFolder + "fishing_bite_prompt_v3.png");
+        Sprite minigamePanelSprite = LoadSprite(UiFolder + "fishing_minigame_panel_v3.png");
+        Sprite movementTrackSprite = LoadSprite(UiFolder + "fishing_movement_track_v3.png");
+        Sprite catchZoneSprite = LoadSprite(UiFolder + "fishing_catch_zone_v3.png");
+        Sprite sliderTrackSprite = LoadSprite(UiFolder + "fishing_slider_track_v3.png");
+        Sprite sliderFillSprite = LoadSprite(UiFolder + "fishing_slider_fill_v3.png");
+        Sprite resultPanelSprite = LoadSprite(UiFolder + "fishing_result_panel_v3.png");
+        Sprite bobberFrame0 = LoadSprite(UiFolder + "fishing_bobber_bite_00.png");
+        Sprite mysteryFishSprite = TryLoadSprite(UiFolder + "fishing_mystery_fish_icon.png");
+        AnimationClip bobberClip = AssetDatabase.LoadAssetAtPath<AnimationClip>(UiFolder + "fishing_bobber_bite_loop.anim");
+        RuntimeAnimatorController bobberController = GetOrCreateBobberController(bobberClip);
+
         GameObject root = new("FishingFeature");
         FishingMinigameController controller = root.AddComponent<FishingMinigameController>();
 
@@ -134,13 +150,20 @@ public static class FishingFeatureAuthoring
         GameObject uiRoot = CreateRect("FishingUI", canvasObject.transform, Vector2.zero, Vector2.one, Vector2.zero);
         FishingMinigameUI ui = uiRoot.AddComponent<FishingMinigameUI>();
 
-        GameObject waiting = CreatePanel("WaitingPanel", uiRoot.transform, new Vector2(0.5f, 0.82f), new Vector2(0.5f, 0.82f), new Vector2(500f, 74f), new Color(0.08f, 0.13f, 0.18f, 0.92f));
+        GameObject waiting = CreateSpritePanel("WaitingPanel", uiRoot.transform, new Vector2(0.5f, 0.82f), new Vector2(0.5f, 0.82f), new Vector2(500f, 74f), waitingPanelSprite);
         TMP_Text waitingText = CreateText("WaitingText", waiting.transform, font, "Waiting for a bite...", 30f, Color.white);
 
-        GameObject bite = CreatePanel("BitePrompt", uiRoot.transform, new Vector2(0.5f, 0.72f), new Vector2(0.5f, 0.72f), new Vector2(150f, 150f), new Color(0.08f, 0.13f, 0.18f, 0.92f));
-        CreateText("Exclamation", bite.transform, font, "!", 92f, new Color(1f, 0.83f, 0.15f));
+        GameObject bite = CreateSpritePanel("BitePrompt", uiRoot.transform, new Vector2(0.5f, 0.72f), new Vector2(0.5f, 0.72f), new Vector2(150f, 150f), bitePromptSprite);
+        GameObject bobberObject = CreateRect("BobberIcon", bite.transform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(48f, 64f));
+        Image bobberImage = bobberObject.AddComponent<Image>();
+        bobberImage.sprite = bobberFrame0;
+        bobberImage.preserveAspect = true;
+        bobberImage.color = Color.white;
+        bobberImage.raycastTarget = false;
+        Animator bobberAnimator = bobberObject.AddComponent<Animator>();
+        bobberAnimator.runtimeAnimatorController = bobberController;
 
-        GameObject minigame = CreatePanel("MinigamePanel", uiRoot.transform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(520f, 650f), new Color(0.12f, 0.17f, 0.22f, 0.96f));
+        GameObject minigame = CreateSpritePanel("MinigamePanel", uiRoot.transform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(520f, 650f), minigamePanelSprite);
         TMP_Text timer = CreateText("Timer", minigame.transform, font, "18s", 34f, Color.white);
         RectTransform timerRect = timer.rectTransform;
         timerRect.anchorMin = timerRect.anchorMax = new Vector2(0.5f, 1f);
@@ -148,23 +171,32 @@ public static class FishingFeatureAuthoring
         timerRect.anchoredPosition = new Vector2(0f, -22f);
         timerRect.sizeDelta = new Vector2(180f, 50f);
 
-        GameObject trackObject = CreatePanel("MovementTrack", minigame.transform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(150f, 490f), new Color(0.04f, 0.3f, 0.43f, 1f));
+        GameObject trackObject = CreateSpritePanel("MovementTrack", minigame.transform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(150f, 490f), movementTrackSprite);
         RectTransform track = trackObject.GetComponent<RectTransform>();
         track.anchoredPosition = new Vector2(-75f, -10f);
-        GameObject catchObject = CreatePanel("CatchZone", track, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(128f, 120f), new Color(0.25f, 0.78f, 0.34f, 0.72f));
+        GameObject catchObject = CreateSpritePanel("CatchZone", track, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(128f, 120f), catchZoneSprite);
         RectTransform catchZone = catchObject.GetComponent<RectTransform>();
+        Image catchZoneImage = catchObject.GetComponent<Image>();
+        catchZoneImage.type = Image.Type.Sliced;
         GameObject fishObject = CreateRect("FishIcon", track, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(62f, 62f));
         Image fishImage = fishObject.AddComponent<Image>();
         fishImage.preserveAspect = true;
         fishImage.raycastTarget = false;
         RectTransform fishIcon = fishObject.GetComponent<RectTransform>();
 
-        Slider progress = CreateVerticalSlider(minigame.transform);
+        Slider progress = CreateVerticalSlider(minigame.transform, sliderTrackSprite, sliderFillSprite);
         RectTransform progressRect = progress.GetComponent<RectTransform>();
         progressRect.anchoredPosition = new Vector2(105f, -10f);
 
-        GameObject result = CreatePanel("ResultPanel", uiRoot.transform, new Vector2(0.5f, 0.72f), new Vector2(0.5f, 0.72f), new Vector2(620f, 180f), new Color(0.08f, 0.13f, 0.18f, 0.96f));
+        GameObject result = CreateSpritePanel("ResultPanel", uiRoot.transform, new Vector2(0.5f, 0.72f), new Vector2(0.5f, 0.72f), new Vector2(620f, 180f), resultPanelSprite);
+        GameObject resultIconObject = CreateRect("ResultFishIcon", result.transform, new Vector2(0f, 0.5f), new Vector2(0f, 0.5f), new Vector2(90f, 90f));
+        resultIconObject.GetComponent<RectTransform>().anchoredPosition = new Vector2(85f, 0f);
+        Image resultFishImage = resultIconObject.AddComponent<Image>();
+        resultFishImage.preserveAspect = true;
+        resultFishImage.raycastTarget = false;
+        resultFishImage.enabled = false;
         TMP_Text resultText = CreateText("ResultText", result.transform, font, string.Empty, 30f, Color.white);
+        resultText.rectTransform.offsetMin = new Vector2(140f, 0f);
 
         SerializedObject uiSerialized = new(ui);
         uiSerialized.FindProperty("_waitingPanel").objectReferenceValue = waiting;
@@ -178,6 +210,8 @@ public static class FishingFeatureAuthoring
         uiSerialized.FindProperty("_fishIcon").objectReferenceValue = fishIcon;
         uiSerialized.FindProperty("_catchZone").objectReferenceValue = catchZone;
         uiSerialized.FindProperty("_fishImage").objectReferenceValue = fishImage;
+        uiSerialized.FindProperty("_mysteryFishSprite").objectReferenceValue = mysteryFishSprite;
+        uiSerialized.FindProperty("_resultFishImage").objectReferenceValue = resultFishImage;
         uiSerialized.FindProperty("_progressSlider").objectReferenceValue = progress;
         uiSerialized.ApplyModifiedPropertiesWithoutUndo();
 
@@ -242,11 +276,13 @@ public static class FishingFeatureAuthoring
         EditorSceneManager.SaveScene(scene);
     }
 
-    private static Slider CreateVerticalSlider(Transform parent)
+    private static Slider CreateVerticalSlider(Transform parent, Sprite trackSprite, Sprite fillSprite)
     {
         GameObject root = CreateRect("CatchProgress", parent, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(46f, 490f));
         Image background = root.AddComponent<Image>();
-        background.color = new Color(0.03f, 0.06f, 0.08f, 1f);
+        background.sprite = trackSprite;
+        background.type = Image.Type.Simple;
+        background.color = Color.white;
         Slider slider = root.AddComponent<Slider>();
         slider.direction = Slider.Direction.BottomToTop;
         slider.minValue = 0f;
@@ -254,23 +290,53 @@ public static class FishingFeatureAuthoring
 
         GameObject fillArea = CreateRect("Fill Area", root.transform, Vector2.zero, Vector2.one, Vector2.zero);
         RectTransform fillAreaRect = fillArea.GetComponent<RectTransform>();
-        fillAreaRect.offsetMin = new Vector2(5f, 5f);
-        fillAreaRect.offsetMax = new Vector2(-5f, -5f);
+        // Horizontal stays flush (0) so fill uses the full track width; vertical keeps a small inset
+        // so the fill doesn't paint over the track sprite's own top/bottom gold end-cap ornament.
+        fillAreaRect.offsetMin = new Vector2(0f, 12f);
+        fillAreaRect.offsetMax = new Vector2(0f, -12f);
         GameObject fill = CreateRect("Fill", fillArea.transform, Vector2.zero, Vector2.one, Vector2.zero);
         Image fillImage = fill.AddComponent<Image>();
-        fillImage.color = new Color(0.97f, 0.73f, 0.16f, 1f);
+        fillImage.sprite = fillSprite;
+        fillImage.type = Image.Type.Simple;
+        fillImage.color = Color.white;
         slider.fillRect = fill.GetComponent<RectTransform>();
         slider.targetGraphic = fillImage;
         slider.interactable = false;
         return slider;
     }
 
-    private static GameObject CreatePanel(string name, Transform parent, Vector2 anchorMin, Vector2 anchorMax, Vector2 size, Color color)
+    private static GameObject CreateSpritePanel(string name, Transform parent, Vector2 anchorMin, Vector2 anchorMax, Vector2 size, Sprite sprite)
     {
         GameObject panel = CreateRect(name, parent, anchorMin, anchorMax, size);
         Image image = panel.AddComponent<Image>();
-        image.color = color;
+        image.sprite = sprite;
+        image.type = Image.Type.Simple;
+        image.color = Color.white;
         return panel;
+    }
+
+    private static Sprite LoadSprite(string path)
+    {
+        Sprite sprite = AssetDatabase.LoadAssetAtPath<Sprite>(path);
+        if (sprite == null)
+            throw new System.InvalidOperationException("Fishing UI sprite not found: " + path);
+        return sprite;
+    }
+
+    private static Sprite TryLoadSprite(string path) => AssetDatabase.LoadAssetAtPath<Sprite>(path);
+
+    private static RuntimeAnimatorController GetOrCreateBobberController(AnimationClip clip)
+    {
+        AnimatorController existing = AssetDatabase.LoadAssetAtPath<AnimatorController>(BobberControllerPath);
+        if (existing != null)
+            return existing;
+
+        AnimatorController controller = AnimatorController.CreateAnimatorControllerAtPath(BobberControllerPath);
+        AnimatorStateMachine stateMachine = controller.layers[0].stateMachine;
+        AnimatorState state = stateMachine.AddState("BiteLoop");
+        state.motion = clip;
+        stateMachine.defaultState = state;
+        return controller;
     }
 
     private static TMP_Text CreateText(string name, Transform parent, TMP_FontAsset font, string value, float size, Color color)
