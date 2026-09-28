@@ -142,6 +142,28 @@ cũ) — chỉ ẩn thông tin khỏi UI cho tới lúc kết quả.
 3. Bán qua Buy tab của một `ShopDefinition` (ví dụ `Shop_Dunstan.asset`) như item thường -- không cần
    wiring runtime riêng, người chơi gán vào Quick Bar như mọi item khác.
 
+Ba mồi câu mặc định dùng icon pixel-art nền trong suốt dưới
+`Assets/Resources/Icons/FishingBait/`, import `Sprite (2D and UI)` với Point filtering:
+
+- `WormBait.asset` → `worm_bait_icon.png`.
+- `GrainBait.asset` → `grain_bait_icon.png`.
+- `SpoonLure.asset` → `spoon_lure_icon.png`.
+
+`Shop_Dunstan.asset` nhận bán lại đúng 10 loại cá trong River catch table; danh sách Sell không giữ
+slot null/dangling reference.
+
+Theo yêu cầu content, Buy Items của Dunstan chứa 3 mồi câu và cả 10 `FishDefinitionSO` trong River
+catch table. Việc list cá ở Buy không thay đổi contract fish instance: luồng purchase hiện vẫn cần
+giá Buy hợp lệ và đường thêm cá qua `TryAddFish` trước khi giao dịch cá có thể hoàn tất an toàn.
+
+Buy Min/Max của 10 cá được author từ cùng công thức giá trị runtime ở hai đầu khoảng cân nặng:
+`GetValueForWeight(MinimumWeightGrams)` và `GetValueForWeight(MaximumWeightGrams)`. Vì vậy label giá
+Shop khớp `PricePerKilogram`/weight hiện tại và tự cần cập nhật lại nếu một trong các dữ liệu đó đổi.
+
+Shop Buy UI giữ `Content` stretch ngang với `sizeDelta.x = 0`; nếu vừa stretch vừa giữ chiều rộng
+560px, rect thực tế thành 1120px và `Mask` chỉ lộ cột thứ hai của grid, khiến ba mồi trông như chỉ có
+một item dù `ShopDefinition` và các row runtime đều đúng.
+
 ## River catch table hiện tại
 
 `FishingSpot.River` dùng tổng weight đúng `100`, nên mỗi weight cũng chính là phần trăm xuất hiện.

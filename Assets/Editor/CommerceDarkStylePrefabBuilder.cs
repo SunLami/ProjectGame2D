@@ -612,6 +612,7 @@ public static class CommerceDarkStylePrefabBuilder
         rect.anchorMax = new Vector2(1, 1);
         rect.pivot = new Vector2(0.5f, 1);
         rect.anchoredPosition = Vector2.zero;
+        rect.sizeDelta = new Vector2(0, rect.sizeDelta.y);
     }
 
     private static void ClearChildren(Transform parent)
