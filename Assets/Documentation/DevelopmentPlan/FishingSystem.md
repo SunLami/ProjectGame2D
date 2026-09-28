@@ -5,7 +5,7 @@ Tài liệu này là source of truth cho cơ chế câu cá đầu tiên trong `
 ## Quyết định gameplay
 
 - Click trái vào `FishingSpotInteractable` trong tầm để bắt đầu; không tự chạy Player tới điểm câu.
-- **D-05x (2026-09-28): cần mồi câu để bắt đầu.** Trước khi bắt đầu phải có một `FishingBaitItemSO`
+- **D-059 (2026-09-28): cần mồi câu để bắt đầu.** Trước khi bắt đầu phải có một `FishingBaitItemSO`
   đang được chọn ở Quick Bar (số 1-8) với quantity > 0 -- không có mồi hợp lệ sẽ hiện thông báo
   "You don't have any bait to fish with." và không chuyển `GameState.FishingWaiting`. Đây là thay đổi
   so với quyết định gốc ("click tự do, không điều kiện tiên quyết") -- xem `DecisionRegister.md`. Quick
@@ -18,6 +18,9 @@ Tài liệu này là source of truth cho cơ chế câu cá đầu tiên trong `
   thể roll ra qua `RequiredBaitTier`. Luật permissive: mồi tier cao câu được cá tier đó và mọi tier thấp
   hơn (mồi Large câu được Small+Medium+Large; mồi Small chỉ câu Small). `FishingSpotDefinition.TryRollFish`
   nhận `maxTier` và lọc `FishEntries` trước khi roll trọng số.
+- Tên mồi production: `Worm Bait` (`Small`), `Grain Bait` (`Medium`) và `Spoon Lure` (`Large`). Stable
+  `itemId` cũ được giữ nguyên để không phá shop, Quick Bar hoặc save. Phân tầng cá theo rarity rank:
+  rank 1–4 yêu cầu Small, rank 5–7 yêu cầu Medium, rank 8–10 yêu cầu Large.
 - Trước khi bắt đầu phải có ít nhất một ô Inventory trống. Mỗi con cá chiếm đúng một ô vì cân nặng
   và giá trị là dữ liệu riêng của instance.
 - Giai đoạn chờ cá cắn dùng `GameState.FishingWaiting`: world vẫn chạy nhưng gameplay input bị khóa.
@@ -135,8 +138,36 @@ cũ) — chỉ ẩn thông tin khỏi UI cho tới lúc kết quả.
 1. Tạo `FishingBaitItemSO` (menu `Project Game 2D/Fishing/Fishing Bait Item`) dưới
    `Assets/Resources/Items/Fishing/`.
 2. Gán stable `itemId` (`item.consumable.bait_<tier>`), display name, icon, giá Buy/Sell và `Tier`.
+   Bộ mồi River mặc định là `Worm Bait`, `Grain Bait`, `Spoon Lure`; không đổi ba stable ID hiện có.
 3. Bán qua Buy tab của một `ShopDefinition` (ví dụ `Shop_Dunstan.asset`) như item thường -- không cần
    wiring runtime riêng, người chơi gán vào Quick Bar như mọi item khác.
+
+## River catch table hiện tại
+
+`FishingSpot.River` dùng tổng weight đúng `100`, nên mỗi weight cũng chính là phần trăm xuất hiện.
+Giá trị cá vẫn được tính bằng `round(pricePerKilogram * weightGrams / 1000)`.
+
+| Rank | Rarity | Asset | Display name | Stable ID | Catch | Mồi tối thiểu | Cân nặng | Gold/kg | Giá TB |
+|---:|---|---|---|---|---:|---|---:|---:|---:|
+| 1 | Common | SilverstreamDarter | Silverstream Darter | `fish.river.silverstream_darter` | 22% | Worm Bait | 100–300 g | 10 | 2.00 |
+| 2 | Common | RosefinBream | Rosefin Bream | `fish.river.rosefin_bream` | 18% | Worm Bait | 300–900 g | 9 | 5.40 |
+| 3 | Common | MossfinPerch | Mossfin Perch | `fish.river.mossfin_perch` | 16% | Worm Bait | 500–1,600 g | 8 | 8.40 |
+| 4 | Uncommon | SunscaleCarp | Sunscale Carp | `fish.river.sunscale_carp` | 13% | Worm Bait | 700–2,000 g | 10 | 13.50 |
+| 5 | Uncommon | GreenPike | Green Pike | `fish.river.green_pike` | 10% | Grain Bait | 1,800–5,000 g | 7 | 23.80 |
+| 6 | Rare | AmethystBass | Amethyst Bass | `fish.river.amethyst_bass` | 7% | Grain Bait | 900–2,500 g | 18 | 30.60 |
+| 7 | Rare | PearlstripeKoi | Pearlstripe Koi | `fish.river.pearlstripe_koi` | 6% | Grain Bait | 1,200–3,500 g | 17 | 39.95 |
+| 8 | Epic | ShadowfinBass | Shadowfin Bass | `fish.river.shadowfin_bass` | 4% | Spoon Lure | 1,500–4,000 g | 19 | 52.25 |
+| 9 | Epic | AzureMinnow | Azure Minnow | `fish.river.azure_minnow` | 3% | Spoon Lure | 600–1,800 g | 55 | 66.00 |
+| 10 | Legendary | EmberKoi | Ember Koi | `fish.river.ember_koi` | 1% | Spoon Lure | 1,500–4,500 g | 30 | 90.00 |
+
+Rank theo cột owner cung cấp quyết định catch rate và rarity tier. Economy cân theo giá bán
+trung bình mỗi con thay vì ép Gold/kg tăng đơn điệu, vì trọng lượng giữa các loài chênh lệch lớn;
+giá trung bình tăng liên tục từ rank 1 đến rank 10. Khoảng cân nặng cũng được cân lại theo
+silhouette để tránh Gold/kg bất thường ở cá nhỏ-hiếm. Expected value midpoint hiện khoảng
+`16.40 gold` trên mỗi lần bắt thành công.
+
+Các ID placeholder cũ `fish.river.Fish1`…`fish.river.Fish10` được giữ làm alias trong
+`ItemIdAliases`; save cũ resolve sang definition mới và lần save tiếp theo tự ghi canonical ID.
 
 ## Acceptance matrix
 

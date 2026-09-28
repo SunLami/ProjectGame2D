@@ -15,6 +15,8 @@ public static class ItemLookup
             lookup[item.itemId] = item;
         }
 
+        ItemIdAliases.AddLegacyAliases(lookup);
+
         return lookup;
     }
 }
