@@ -132,6 +132,7 @@ GameObject:
   - component: {fileID: 51734267}
   - component: {fileID: 51734266}
   - component: {fileID: 51734265}
+  - component: {fileID: 51734269}
   m_Layer: 0
   m_Name: PrimaryButton
   m_TagString: Untagged
@@ -261,6 +262,20 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 51734263}
   m_CullTransparentMesh: 1
+--- !u!114 &51734269
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 51734263}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d30e6d7f15fbd8e47b83af0148053e64, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ProjectGame2D.Runtime::ButtonSfx
+  _playHoverSfx: 1
+  _clickSound: 0
 --- !u!1 &60557787
 GameObject:
   m_ObjectHideFlags: 0
@@ -1072,6 +1087,7 @@ GameObject:
   - component: {fileID: 189053320}
   - component: {fileID: 189053319}
   - component: {fileID: 189053318}
+  - component: {fileID: 189053322}
   m_Layer: 0
   m_Name: DeleteButton
   m_TagString: Untagged
@@ -1201,6 +1217,20 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 189053316}
   m_CullTransparentMesh: 1
+--- !u!114 &189053322
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 189053316}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d30e6d7f15fbd8e47b83af0148053e64, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ProjectGame2D.Runtime::ButtonSfx
+  _playHoverSfx: 1
+  _clickSound: 1
 --- !u!1 &204171299
 GameObject:
   m_ObjectHideFlags: 0
@@ -1477,6 +1507,7 @@ GameObject:
   - component: {fileID: 230642044}
   - component: {fileID: 230642043}
   - component: {fileID: 230642042}
+  - component: {fileID: 230642045}
   m_Layer: 0
   m_Name: CancelButton
   m_TagString: Untagged
@@ -1586,6 +1617,20 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 230642040}
   m_CullTransparentMesh: 1
+--- !u!114 &230642045
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 230642040}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d30e6d7f15fbd8e47b83af0148053e64, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ProjectGame2D.Runtime::ButtonSfx
+  _playHoverSfx: 1
+  _clickSound: 1
 --- !u!1 &246666740
 GameObject:
   m_ObjectHideFlags: 0
@@ -2286,6 +2331,7 @@ GameObject:
   - component: {fileID: 464014027}
   - component: {fileID: 464014026}
   - component: {fileID: 464014025}
+  - component: {fileID: 464014028}
   m_Layer: 0
   m_Name: CancelButton
   m_TagString: Untagged
@@ -2395,6 +2441,20 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 464014023}
   m_CullTransparentMesh: 1
+--- !u!114 &464014028
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 464014023}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d30e6d7f15fbd8e47b83af0148053e64, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ProjectGame2D.Runtime::ButtonSfx
+  _playHoverSfx: 1
+  _clickSound: 1
 --- !u!1 &473139871
 GameObject:
   m_ObjectHideFlags: 0
@@ -2863,6 +2923,20 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 526595749}
   m_CullTransparentMesh: 1
+--- !u!114 &529489445
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 877800751}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d30e6d7f15fbd8e47b83af0148053e64, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ProjectGame2D.Runtime::ButtonSfx
+  _playHoverSfx: 1
+  _clickSound: 0
 --- !u!1 &602000374
 GameObject:
   m_ObjectHideFlags: 0
@@ -2876,6 +2950,7 @@ GameObject:
   - component: {fileID: 602000378}
   - component: {fileID: 602000377}
   - component: {fileID: 602000376}
+  - component: {fileID: 602000380}
   m_Layer: 0
   m_Name: PrimaryButton
   m_TagString: Untagged
@@ -3005,6 +3080,20 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 602000374}
   m_CullTransparentMesh: 1
+--- !u!114 &602000380
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 602000374}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d30e6d7f15fbd8e47b83af0148053e64, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ProjectGame2D.Runtime::ButtonSfx
+  _playHoverSfx: 1
+  _clickSound: 0
 --- !u!1 &632605644
 GameObject:
   m_ObjectHideFlags: 0
@@ -3154,6 +3243,7 @@ GameObject:
   - component: {fileID: 635329151}
   - component: {fileID: 635329150}
   - component: {fileID: 635329149}
+  - component: {fileID: 635329152}
   m_Layer: 0
   m_Name: SaveButton
   m_TagString: Untagged
@@ -3263,6 +3353,20 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 635329147}
   m_CullTransparentMesh: 1
+--- !u!114 &635329152
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 635329147}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d30e6d7f15fbd8e47b83af0148053e64, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ProjectGame2D.Runtime::ButtonSfx
+  _playHoverSfx: 1
+  _clickSound: 0
 --- !u!1 &677643755
 GameObject:
   m_ObjectHideFlags: 0
@@ -3818,6 +3922,7 @@ GameObject:
   - component: {fileID: 757484368}
   - component: {fileID: 757484367}
   - component: {fileID: 757484366}
+  - component: {fileID: 757484369}
   m_Layer: 0
   m_Name: BackButton
   m_TagString: Untagged
@@ -3927,6 +4032,20 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 757484364}
   m_CullTransparentMesh: 1
+--- !u!114 &757484369
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 757484364}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d30e6d7f15fbd8e47b83af0148053e64, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ProjectGame2D.Runtime::ButtonSfx
+  _playHoverSfx: 1
+  _clickSound: 1
 --- !u!1 &802402274
 GameObject:
   m_ObjectHideFlags: 0
@@ -4667,6 +4786,7 @@ GameObject:
   - component: {fileID: 877800754}
   - component: {fileID: 877800753}
   - component: {fileID: 2200000001}
+  - component: {fileID: 529489445}
   m_Layer: 0
   m_Name: ContinueButton
   m_TagString: Untagged
@@ -4903,6 +5023,7 @@ GameObject:
   - component: {fileID: 949188660}
   - component: {fileID: 949188659}
   - component: {fileID: 2200000002}
+  - component: {fileID: 2200000005}
   m_Layer: 0
   m_Name: QuitButton
   m_TagString: Untagged
@@ -6384,6 +6505,7 @@ GameObject:
   - component: {fileID: 1157418945}
   - component: {fileID: 1157418944}
   - component: {fileID: 2200000003}
+  - component: {fileID: 2200000006}
   m_Layer: 0
   m_Name: SettingsButton
   m_TagString: Untagged
@@ -6758,6 +6880,7 @@ GameObject:
   - component: {fileID: 1262550755}
   - component: {fileID: 1262550754}
   - component: {fileID: 1262550753}
+  - component: {fileID: 1262550757}
   m_Layer: 0
   m_Name: DeleteButton
   m_TagString: Untagged
@@ -6887,6 +7010,20 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1262550751}
   m_CullTransparentMesh: 1
+--- !u!114 &1262550757
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1262550751}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d30e6d7f15fbd8e47b83af0148053e64, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ProjectGame2D.Runtime::ButtonSfx
+  _playHoverSfx: 1
+  _clickSound: 1
 --- !u!1 &1296573239
 GameObject:
   m_ObjectHideFlags: 0
@@ -8400,6 +8537,7 @@ GameObject:
   - component: {fileID: 1597595752}
   - component: {fileID: 1597595751}
   - component: {fileID: 1597595750}
+  - component: {fileID: 1597595754}
   m_Layer: 0
   m_Name: DeleteButton
   m_TagString: Untagged
@@ -8529,6 +8667,20 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1597595748}
   m_CullTransparentMesh: 1
+--- !u!114 &1597595754
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1597595748}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d30e6d7f15fbd8e47b83af0148053e64, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ProjectGame2D.Runtime::ButtonSfx
+  _playHoverSfx: 1
+  _clickSound: 1
 --- !u!1 &1608095172
 GameObject:
   m_ObjectHideFlags: 0
@@ -8690,6 +8842,7 @@ GameObject:
   - component: {fileID: 1639901186}
   - component: {fileID: 1639901188}
   - component: {fileID: 1639901187}
+  - component: {fileID: 1639901189}
   m_Layer: 0
   m_Name: FullScreenToggle
   m_TagString: Untagged
@@ -8786,6 +8939,20 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   m_IsOn: 0
+--- !u!114 &1639901189
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1639901185}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d30e6d7f15fbd8e47b83af0148053e64, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ProjectGame2D.Runtime::ButtonSfx
+  _playHoverSfx: 1
+  _clickSound: 2
 --- !u!1 &1649911121
 GameObject:
   m_ObjectHideFlags: 0
@@ -9032,6 +9199,7 @@ GameObject:
   - component: {fileID: 1691215167}
   - component: {fileID: 1691215166}
   - component: {fileID: 2200000004}
+  - component: {fileID: 2200000007}
   m_Layer: 0
   m_Name: NewGameButton
   m_TagString: Untagged
@@ -9437,6 +9605,7 @@ GameObject:
   - component: {fileID: 1826199702}
   - component: {fileID: 1826199701}
   - component: {fileID: 1826199700}
+  - component: {fileID: 1826199704}
   m_Layer: 0
   m_Name: PrimaryButton
   m_TagString: Untagged
@@ -9566,6 +9735,20 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1826199698}
   m_CullTransparentMesh: 1
+--- !u!114 &1826199704
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1826199698}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d30e6d7f15fbd8e47b83af0148053e64, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ProjectGame2D.Runtime::ButtonSfx
+  _playHoverSfx: 1
+  _clickSound: 0
 --- !u!1 &1828528632
 GameObject:
   m_ObjectHideFlags: 0
@@ -10117,6 +10300,7 @@ GameObject:
   - component: {fileID: 1948514786}
   - component: {fileID: 1948514785}
   - component: {fileID: 1948514784}
+  - component: {fileID: 1948514788}
   m_Layer: 0
   m_Name: CloseButton
   m_TagString: Untagged
@@ -10246,6 +10430,20 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1948514782}
   m_CullTransparentMesh: 1
+--- !u!114 &1948514788
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1948514782}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d30e6d7f15fbd8e47b83af0148053e64, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ProjectGame2D.Runtime::ButtonSfx
+  _playHoverSfx: 1
+  _clickSound: 1
 --- !u!1 &1954658635
 GameObject:
   m_ObjectHideFlags: 0
@@ -10530,6 +10728,7 @@ GameObject:
   - component: {fileID: 2028735641}
   - component: {fileID: 2028735640}
   - component: {fileID: 2028735639}
+  - component: {fileID: 2028735642}
   m_Layer: 0
   m_Name: ConfirmButton
   m_TagString: Untagged
@@ -10639,6 +10838,20 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2028735637}
   m_CullTransparentMesh: 1
+--- !u!114 &2028735642
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2028735637}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d30e6d7f15fbd8e47b83af0148053e64, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ProjectGame2D.Runtime::ButtonSfx
+  _playHoverSfx: 1
+  _clickSound: 0
 --- !u!1 &2030496590
 GameObject:
   m_ObjectHideFlags: 0
@@ -11683,6 +11896,48 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MainMenuButtonHoverVisual
   _hoverSprite: {fileID: 21300000, guid: 0ceaf49876424360988ce19f461cf547, type: 3}
+--- !u!114 &2200000005
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 949188657}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d30e6d7f15fbd8e47b83af0148053e64, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ProjectGame2D.Runtime::ButtonSfx
+  _playHoverSfx: 1
+  _clickSound: 1
+--- !u!114 &2200000006
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1157418942}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d30e6d7f15fbd8e47b83af0148053e64, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ProjectGame2D.Runtime::ButtonSfx
+  _playHoverSfx: 1
+  _clickSound: 0
+--- !u!114 &2200000007
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1691215164}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d30e6d7f15fbd8e47b83af0148053e64, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ProjectGame2D.Runtime::ButtonSfx
+  _playHoverSfx: 1
+  _clickSound: 0
 --- !u!1 &2400000001
 GameObject:
   m_ObjectHideFlags: 0

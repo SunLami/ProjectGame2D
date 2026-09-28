@@ -55,6 +55,8 @@ cập nhật tài liệu liên quan trước hoặc cùng lúc với code.
     crop definition, seed item, catalog entry, nguồn cấp seed và checklist test.
 22. [Dark Light Fantasy UI Style Guide](DarkLightFantasyUIStyleGuide.md): visual language chuẩn lấy
     Inventory v5 làm reference khi migration từng gameplay UI.
+23. [Audio SFX System](AudioSfxSystem.md): catalog SFX one-shot cho MainMenu/IntroCutscene/MapNhat,
+    kiến trúc `SoundFXManager.PlaySfx`/`SoundFXLibrary`, convention ID/file và handoff gen audio cho Codex.
 
 ## Quy tắc quản trị tài liệu
 
