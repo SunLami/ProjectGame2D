@@ -270,6 +270,23 @@ public class InventoryManager : MonoBehaviour
         OnInventoryChanged?.Invoke();
     }
 
+    // Discards from the exact slot reference (unlike RemoveItem(item, amount), which removes from
+    // whichever matching slot it finds first) -- needed for drag-to-discard, where the player is
+    // discarding this specific stack, not "any" stack of the same item elsewhere in the inventory.
+    public bool DiscardFromSlot(InventorySlot slot, int amount)
+    {
+        if (slot == null || slot.IsEmpty || amount <= 0 || !_slots.Contains(slot))
+            return false;
+
+        int toRemove = Mathf.Min(slot.quantity, amount);
+        slot.quantity -= toRemove;
+        if (slot.quantity <= 0)
+            slot.Clear();
+
+        OnInventoryChanged?.Invoke();
+        return true;
+    }
+
     public void AddGold(int amount)
     {
         if (amount <= 0) return;

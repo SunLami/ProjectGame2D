@@ -7,6 +7,16 @@ public class InventoryWindowUI : MonoBehaviour
 
     [SerializeField] private GameObject _windowRoot;
 
+    // The visible framed panel (e.g. InventoryPanel) -- NOT _windowRoot, which stretches full-screen
+    // as the window's show/hide container. Lets InventorySlotUI test whether a drag was released
+    // inside the visible window vs dropped out into the world (drag-to-discard) -- see
+    // InventorySlotUI.OnEndDrag. Falls back to _windowRoot's rect if left unassigned.
+    [SerializeField] private RectTransform _windowBoundsRect;
+
+    public RectTransform WindowRect => _windowBoundsRect != null
+        ? _windowBoundsRect
+        : (_windowRoot != null ? (RectTransform)_windowRoot.transform : null);
+
     private void OnEnable()
     {
         if (GameStateManager.Instance == null)

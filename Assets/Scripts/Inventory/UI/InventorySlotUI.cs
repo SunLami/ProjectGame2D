@@ -125,5 +125,21 @@ public class InventorySlotUI : MonoBehaviour, IPointerClickHandler, IPointerEnte
         }
 
         _iconImage.color = Color.white;
+
+        // Drag-to-discard: released past the Inventory window's own bounds (out into the world),
+        // not just onto empty space between slots inside the window -- that still just snaps back.
+        if (_slot != null && !_slot.IsEmpty && IsDroppedOutsideInventoryWindow(eventData))
+            InventoryDiscardConfirmUI.Instance?.Open(_slot);
+    }
+
+    private bool IsDroppedOutsideInventoryWindow(PointerEventData eventData)
+    {
+        InventoryWindowUI window = GetComponentInParent<InventoryWindowUI>();
+        RectTransform windowRect = window != null ? window.WindowRect : null;
+        if (windowRect == null)
+            return false;
+
+        Camera eventCamera = eventData.pressEventCamera;
+        return !RectTransformUtility.RectangleContainsScreenPoint(windowRect, eventData.position, eventCamera);
     }
 }
