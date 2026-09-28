@@ -1,5 +1,6 @@
 using System.Reflection;
 using NUnit.Framework;
+using UnityEditor;
 using UnityEngine;
 
 public sealed class QuestCatalogTests
@@ -56,5 +57,24 @@ public sealed class QuestCatalogTests
         {
             Object.DestroyImmediate(catalog);
         }
+    }
+
+    [Test]
+    public void ProductionQuestFlow_GatesCenhelmTutorialBehindWigheardTraining()
+    {
+        QuestDefinition wigheardGreeting = AssetDatabase.LoadAssetAtPath<QuestDefinition>(
+            "Assets/Quests/Definitions/Quest_TrainerGreeting.asset");
+        QuestDefinition cenhelmTutorial = AssetDatabase.LoadAssetAtPath<QuestDefinition>(
+            "Assets/Quests/Definitions/Quest_TutorialCrafting001.asset");
+        QuestDefinition cenhelmMain = AssetDatabase.LoadAssetAtPath<QuestDefinition>(
+            "Assets/Quests/Definitions/Quest_Main001.asset");
+
+        Assert.NotNull(wigheardGreeting);
+        Assert.NotNull(cenhelmTutorial);
+        Assert.NotNull(cenhelmMain);
+        Assert.AreEqual(wigheardGreeting.GiverNpcId, wigheardGreeting.Objectives[0].TargetId,
+            "Wigheard's Talk objective must resolve to the same registered NPC that offers it.");
+        CollectionAssert.Contains(cenhelmTutorial.PrerequisiteQuestIds, "quest.trainer_killquest");
+        CollectionAssert.Contains(cenhelmMain.PrerequisiteQuestIds, cenhelmTutorial.QuestId);
     }
 }

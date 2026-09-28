@@ -496,6 +496,18 @@ scene Style Guide riêng; mỗi UI được migration trực tiếp trên prefab
 
 Popup xác nhận là UI navigation con, không tạo global `GameState` mới.
 
+### Placeholder world exit
+
+- `MapNhat/NorthExitToMapDuy` là trigger ở mép trên của lối đi phía bắc. Destination được author là
+  `MapDuy`, nhưng trong lúc scene đích chưa content-ready, trigger không được load scene.
+- Player đi hết lối lên và chạm trigger sẽ bị khóa input bằng `GameState.Cutscene`, phát animation
+  `walk_down` và tự đi xuống tới safe point được tính động từ cạnh đáy collider (giữ nguyên X lúc
+  bước vào, thấp hơn trigger 1 world-unit), rồi mới mở modal message `Comming Soon`. Modal dùng
+  `GameState.Dialogue` để khóa gameplay input và trả đúng về `Playing` khi đóng; không tự chỉnh
+  `Time.timeScale` hoặc ghi save.
+- Khi `MapDuy` hoàn tất, thay placeholder branch bằng `SceneFlowService` và spawn ID hợp lệ; giữ nguyên
+  scene destination authored trên gate, không gọi `SceneManager` trực tiếp từ presentation UI.
+
 ## Save slot presentation
 
 Mỗi slot hiển thị:

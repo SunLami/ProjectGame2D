@@ -172,10 +172,21 @@ public sealed class UnifiedGameplayHudController : MonoBehaviour
     {
         GameStateManager state = GameStateManager.Instance;
         bool menuOpen = state != null && state.CurrentState == GameState.GameplayMenu;
+        bool mapOpen = menuOpen && state.CurrentMenuPage == GameplayMenuPage.Map;
         if (_characterPopup != null)
             _characterPopup.SetActive(menuOpen && state.CurrentMenuPage == GameplayMenuPage.Character);
         if (_mapPopup != null)
-            _mapPopup.SetActive(menuOpen && state.CurrentMenuPage == GameplayMenuPage.Map);
+        {
+            _mapPopup.SetActive(mapOpen);
+            if (mapOpen)
+            {
+                // UnifiedGameplayHUD is a nested prefab while QuestTracker/direction markers are
+                // later siblings on GameplayUIRoot. Raise both levels so the opaque full map owns
+                // the complete screen instead of allowing those HUD elements to render above it.
+                transform.SetAsLastSibling();
+                _mapPopup.transform.SetAsLastSibling();
+            }
+        }
         if (_minimap != null)
             _minimap.SetActive(!menuOpen);
         UpdateCharacterStats();
