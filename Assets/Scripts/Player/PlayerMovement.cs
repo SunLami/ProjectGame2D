@@ -101,6 +101,21 @@ public partial class Player
         }
     }
 
+    /// <summary>Drives the regular walk animation while gameplay input is owned by a scripted
+    /// sequence. Position is still controlled by the caller.</summary>
+    public void BeginScriptedWalk(Vector2 direction)
+    {
+        StopMovement();
+        Vector2 facing = SnapToAxis(direction);
+        _animator.SetFloat(InputXHash, facing.x);
+        _animator.SetFloat(InputYHash, facing.y);
+        _lastMovementFacingDirection = facing;
+        SetFacingDirection(facing);
+        SetMoving(true);
+    }
+
+    public void EndScriptedWalk() => StopMovement();
+
     private void SetMoving(bool value)
     {
         _isMoving = value;

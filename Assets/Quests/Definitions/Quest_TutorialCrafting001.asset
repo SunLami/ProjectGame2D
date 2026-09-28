@@ -14,7 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: ProjectGame2D.Runtime::QuestDefinition
   _questId: quest.tutorial.crafting.001
   _displayName: The Blacksmith's Request
-  _prerequisiteQuestIds: []
+  _prerequisiteQuestIds:
+  - quest.trainer_killquest
   _objectives:
   - _type: 5
     _targetId: enemy.slime.green

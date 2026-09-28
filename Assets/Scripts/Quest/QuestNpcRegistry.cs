@@ -37,6 +37,26 @@ public static class QuestNpcRegistry
             transform = null;
             return false;
         }
-        return ById.TryGetValue(npcId, out transform) && transform != null;
+
+        if (ById.TryGetValue(npcId, out transform) && transform != null)
+            return true;
+
+        // OnEnable registration is the normal path. During Editor Play Mode, however, a script or
+        // asset reload can clear this static dictionary without toggling already-active scene NPCs,
+        // leaving the quest tracker alive but its direction target unresolved. Repair only a missed
+        // lookup, still matching the authored stable npcId rather than a GameObject/display name.
+        foreach (QuestNpcInteractionUI npc in Object.FindObjectsByType<QuestNpcInteractionUI>(
+            FindObjectsInactive.Exclude, FindObjectsSortMode.None))
+        {
+            if (!string.Equals(npc.NpcId, npcId, System.StringComparison.Ordinal))
+                continue;
+
+            transform = npc.transform;
+            ById[npcId] = transform;
+            return true;
+        }
+
+        transform = null;
+        return false;
     }
 }

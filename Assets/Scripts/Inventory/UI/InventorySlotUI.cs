@@ -14,6 +14,8 @@ public class InventorySlotUI : MonoBehaviour, IPointerClickHandler, IPointerEnte
     public ItemSO Item => _slot?.item;
     public InventorySlot Slot => _slot;
 
+    private void OnDisable() => InventoryItemTooltipUI.Instance?.Hide();
+
     public void SetSlot(InventorySlot slot)
     {
         _slot = slot;
