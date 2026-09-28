@@ -19,6 +19,18 @@ public sealed class SpawnRegistry : MonoBehaviour
         _entries = new[] { new Entry { spawnId = spawnId, point = point } };
     }
 
+    /// <summary>All authored spawn IDs, in Inspector order. Used by DevPanelController to build
+    /// its Teleport buttons; not used by any gameplay/save code.</summary>
+    public string[] GetSpawnIds()
+    {
+        if (_entries == null) return Array.Empty<string>();
+
+        var ids = new string[_entries.Length];
+        for (int i = 0; i < _entries.Length; i++)
+            ids[i] = _entries[i].spawnId;
+        return ids;
+    }
+
     public bool TryGetSpawn(string spawnId, out Vector3 position)
     {
         if (!string.IsNullOrWhiteSpace(spawnId) && _entries != null)

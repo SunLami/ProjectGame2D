@@ -80,6 +80,18 @@ public sealed class FishingMinigameController : MonoBehaviour
             return false;
         }
 
+        FishingBaitItemSO selectedBait = QuickBarManager.Instance?.SelectedItem as FishingBaitItemSO;
+        if (selectedBait == null || !InventoryManager.Instance.HasItem(selectedBait, 1))
+        {
+            _spot = spot;
+            _definition = definition;
+            _phase = SessionPhase.Result;
+            GameStateManager.Instance.PushState(GameState.FishingWaiting);
+            _ui?.ShowResult("You don't have any bait to fish with.");
+            StartCoroutine(FinishAfterResult());
+            return true;
+        }
+
         if (!InventoryManager.Instance.HasEmptySlot)
         {
             _spot = spot;
@@ -91,11 +103,13 @@ public sealed class FishingMinigameController : MonoBehaviour
             return true;
         }
 
-        if (!definition.TryRollFish(out _selectedFish))
+        if (!definition.TryRollFish(selectedBait.Tier, out _selectedFish))
         {
-            Debug.LogError($"Fishing spot '{definition.name}' has no valid fish entries.", definition);
+            Debug.LogError($"Fishing spot '{definition.name}' has no valid fish entries for bait tier {selectedBait.Tier}.", definition);
             return false;
         }
+
+        InventoryManager.Instance.RemoveItem(selectedBait, 1);
 
         _spot = spot;
         _definition = definition;

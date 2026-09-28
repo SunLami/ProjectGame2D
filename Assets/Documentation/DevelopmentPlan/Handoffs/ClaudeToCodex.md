@@ -1,5 +1,80 @@
 # Claude → Codex Handoff
 
+Status: `READY_FOR_CODEX`
+
+Ngày: 2026-09-28
+Feature: Farm Storage UI (D-060) Dark Inventory Style asset production — thay flat-color placeholder
+bằng bitmap thật, giống hướng đã làm cho Fishing UI (D-055/D-056).
+
+## Bối cảnh
+
+Backend `FarmStorageManager`/`FarmStorageUI` (kho riêng cho Farming, mở qua NPC Leofrun → dialogue
+choice "Gửi/lấy đồ") đã hoàn tất và hoạt động đúng trong Play Mode. UI hiện dựng bằng script
+`Assets/Editor/FarmStorageUIAuthoring.cs` (menu `Tools/Project Game/Farming/Build And Install Farm
+Storage UI`), toàn bộ là `Image` màu phẳng placeholder chưa từng có bitmap — giống điểm xuất phát của
+Fishing UI trước D-055. Prefab kết quả: `Assets/Prefabs/UI/FarmStorageUI.prefab`, đã cài vào
+`Bootstrap.unity` (`_UI/FarmStorageUI`, cạnh `DialogueUI`/`GameplayUIRoot`/`QuestAcceptPopupUI` — UI
+toàn app load từ Bootstrap, không phải scene gameplay).
+
+Yêu cầu hình ảnh: theo `DarkLightFantasyUIStyleGuide.md` (charcoal/walnut nền, viền antique gold mảnh,
+sapphire tiết chế), đồng bộ với Inventory/QuestTracker/Minimap/Dialogue/Fishing đã có — **nhưng bỏ hẳn
+phần Equipment** (đây không phải Inventory, không có equip slot nào), chỉ là khung kho 2 cột.
+
+## Bố cục và kích thước hiện tại (khớp 1:1 những gì `FarmStorageUIAuthoring.cs` đang hardcode)
+
+Canvas 1920×1080 (`CanvasScaler` ScaleWithScreenSize, match 0.5), sortingOrder 225.
+
+| Element | Path (dưới `FarmStorageUI/Backdrop/Panel`) | Kích thước logic | Ghi chú |
+|---|---|---|---|
+| Panel nền | `Panel` | 900×600, center | Hiện `Image` phẳng `PanelColor`; cần frame/border Dark Inventory Style |
+| 4 viền | `BorderTop/Bottom/Left/Right` | dày 2px mỗi cạnh | Có thể thay bằng 1 sprite frame 9-slice bao toàn panel thay vì 4 thanh mảnh, miễn giữ được cảm giác viền vàng mảnh |
+| Tiêu đề | `Title` | TMP text, không phải sprite | Giữ nguyên, chỉ cần đổi màu/font nếu style guide yêu cầu |
+| Nút đóng | `CloseButton` | 36×36 | Cần icon "X" Dark Inventory Style, hiện là ô màu đỏ phẳng |
+| Feedback text | `Feedback` | TMP text | Giữ nguyên |
+| Cột trái | `InventoryColumn` ("Your Items") | 420×460 | |
+| Cột phải | `StorageColumn` ("Storage") | 420×460 | |
+| Header mỗi cột | `<Column>/Header` | TMP text 400×26 | |
+| Khung scroll mỗi cột | `<Column>/ScrollView` | 400×400 | Hiện `Image` phẳng `HeaderColor` làm nền; có thể thay bằng sprite khung kho/túi |
+| Row item (dùng chung 2 cột) | `RowTemplate` (dưới `Panel`, instantiate runtime) | cao 40, full width cột | `Icon` 30×30 lề trái, `Label` chiếm phần còn lại; nền `RowColor` phẳng — cần sprite slot/row Dark Inventory Style, có `Button` transition ColorTint khi hover |
+
+## Việc Codex cần làm
+
+1. Gen bộ sprite theo bảng trên (panel frame, border/corner ornament, close button icon, scroll
+   background mỗi cột, row/slot background) — bám đúng kích thước logic ở trên để **không cần sửa bất
+   kỳ `sizeDelta`/`anchoredPosition` nào** trong `FarmStorageUIAuthoring.cs`, đúng bài học đã rút ra ở
+   D-055 (Fishing UI) khi gen mới không khớp kích thước gây lệch bố cục.
+2. Sửa `FarmStorageUIAuthoring.cs` để reference sprite mới thay vì `Color` phẳng (đổi tham số gọi
+   `Image(...)`/thêm `sprite`, có thể đổi `Image.Type` sang `Sliced` cho panel/row nếu cần 9-slice) rồi
+   chạy lại menu `Tools/Project Game/Farming/Build And Install Farm Storage UI` để rebuild prefab +
+   cài lại vào `Bootstrap._UI` (script tự xoá instance cũ trước khi cài instance mới, không tạo trùng).
+3. Test Play Mode thật: New Game (hoặc Continue) → tới NPC Leofrun → chọn "Gửi/lấy đồ" → panel hiện
+   đúng 2 cột, item render đúng icon/tên/số lượng, click deposit/withdraw hoạt động, nút Close/`Escape`
+   đóng đúng. Console sạch.
+
+## Việc Codex KHÔNG cần/không nên làm
+
+- Không đổi `Assets/Scripts/UI/FarmStorageUI.cs` (runtime logic: rebuild list, deposit/withdraw, mở/
+  đóng) hay `Assets/Scripts/Farming/FarmStorageManager.cs` (domain validation, save) — đây là contract
+  Claude sở hữu. Nếu thấy cần field mới (ví dụ quantity picker thay vì deposit/withdraw cả stack), báo
+  lại qua `CodexToClaude.md` thay vì tự thêm.
+- Không đổi tên hoặc bỏ bớt field serialize mà `FarmStorageUIAuthoring.cs` đang gán qua
+  `SerializedObject` (`_backdrop`, `_title`, `_feedbackText`, `_closeButton`,
+  `_inventoryListContent`, `_rowTemplate`, `_storageListContent`) — script build dựa vào đúng path này.
+- Không đổi vị trí cài đặt (`Bootstrap.unity` → `_UI/FarmStorageUI`) hay cấu trúc Canvas gốc (Backdrop
+  luôn bắt đầu `activeSelf = false`, root `FarmStorageUI` luôn `activeSelf = true` để `Awake()` chạy và
+  set `Instance` — tương tự lỗi vừa phát hiện ở `DialogueUI` bị tắt nhầm làm cả hệ dialogue project
+  ngừng hoạt động, đã fix trong session này).
+- Chưa cần làm quantity picker (deposit/withdraw từng phần) — hiện tại chỉ hỗ trợ cả stack, đủ để test
+  hình ảnh.
+
+## Tham khảo
+
+`FishingSystem.md` §Visual direction (D-055/D-056) cho quy trình gen asset tương tự đã áp dụng thành
+công; `FarmingSystem.md` §Farm storage (D-060) cho contract backend đầy đủ;
+`DarkLightFantasyUIStyleGuide.md` cho bảng màu/style chuẩn.
+
+---
+
 Status: `PLAYERHUD_BOTTOMHUD_REVERTED_TO_ORIGINAL_UI`
 
 Ngày: 2026-09-28

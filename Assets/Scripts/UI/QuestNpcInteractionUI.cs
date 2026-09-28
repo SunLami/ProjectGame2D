@@ -31,6 +31,8 @@ public sealed class QuestNpcInteractionUI : MonoBehaviour
         + "in at this NPC; falls back to _dialogue if nothing matches.")]
     [SerializeField] private QuestDialogueEntry[] _questDialogues;
 
+    public string NpcId => _npcId;
+
     private readonly HashSet<Collider2D> _playerColliders = new();
     private QuestManager _questManager;
     private QuestNpcInteractionService _service;
@@ -217,18 +219,11 @@ public sealed class QuestNpcInteractionUI : MonoBehaviour
         bool canOffer = !canTurnIn && _service.TryGetOfferedQuest(_npcId, out offered);
         _markerText.text = canTurnIn ? "?" : canOffer ? "!" : string.Empty;
 
-        bool showPrompt = _playerColliders.Count > 0
-            && GameStateManager.Instance != null
-            && GameStateManager.Instance.CurrentState == GameState.Playing
-            && (canTurnIn || canOffer);
-        _promptRoot.SetActive(showPrompt);
-        if (showPrompt)
-        {
-            QuestDefinition quest = canTurnIn ? turnIn : offered;
-            _promptText.text = canTurnIn
-                ? $"LEFT CLICK — TURN IN {quest.DisplayName}"
-                : $"LEFT CLICK — ACCEPT {quest.DisplayName}";
-        }
+        // The "LEFT CLICK -- ACCEPT/TURN IN <quest>" prompt bubble no longer shows (same call as
+        // TraderNpcInteractionUI.Refresh(), for the same reason: the Talk cursor + HoverOutline
+        // (D-030/D-055) already say this NPC is interactable). The "?"/"!" marker above their head
+        // stays -- it's the always-visible quest-availability indicator, not a hover prompt.
+        _promptRoot.SetActive(false);
     }
 
     private static string FormatTurnInFailure(QuestTurnInResult result) => result switch

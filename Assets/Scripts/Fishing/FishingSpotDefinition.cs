@@ -47,12 +47,17 @@ public sealed class FishingSpotDefinition : ScriptableObject
     public float MaximumCatchZoneSpeed => _maximumCatchZoneSpeed;
     public FishEntry[] FishEntries => _fish;
 
-    public bool TryRollFish(out FishDefinitionSO result)
+    public bool TryRollFish(out FishDefinitionSO result) => TryRollFish(FishingBaitTier.Large, out result);
+
+    /// <summary>Rolls a weighted fish restricted to entries whose RequiredBaitTier is at or below
+    /// maxTier -- a Large bait can still catch Small/Medium fish, a Small bait cannot reach Large
+    /// fish. See FishingSystem.md "Bait" for the accepted tier rule.</summary>
+    public bool TryRollFish(FishingBaitTier maxTier, out FishDefinitionSO result)
     {
         result = null;
         float totalWeight = 0f;
         foreach (FishEntry entry in _fish)
-            if (entry?.Fish != null && entry.Weight > 0f)
+            if (entry?.Fish != null && entry.Weight > 0f && entry.Fish.RequiredBaitTier <= maxTier)
                 totalWeight += entry.Weight;
 
         if (totalWeight <= 0f)
@@ -61,7 +66,7 @@ public sealed class FishingSpotDefinition : ScriptableObject
         float roll = UnityEngine.Random.value * totalWeight;
         foreach (FishEntry entry in _fish)
         {
-            if (entry?.Fish == null || entry.Weight <= 0f)
+            if (entry?.Fish == null || entry.Weight <= 0f || entry.Fish.RequiredBaitTier > maxTier)
                 continue;
             roll -= entry.Weight;
             if (roll <= 0f)

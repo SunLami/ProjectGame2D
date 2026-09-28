@@ -247,6 +247,11 @@ inventory để quantity/icon lấy từ inventory đã ổn định; restore fa
 Growth derive từ UTC elapsed, không lưu stage index hoặc sprite. Missing item/crop/plot ID bị bỏ qua
 kèm warning và không làm hỏng toàn save. Xem [FarmingSystem.md](FarmingSystem.md).
 
+**Farm storage save (2026-09-28, D-060):** schema V11 bổ sung `FarmStorageSaveData` gồm các record
+`{ itemId, quantity }` theo slot cố định, resolve qua `IItemResolver` giống Inventory/Quick bar.
+Migration V10→V11 chỉ thêm default rỗng. Restore chạy sau Farming plots; item không resolve được bị bỏ
+qua kèm warning, không làm hỏng toàn save. Xem [FarmingSystem.md](FarmingSystem.md#farm-storage-d-060).
+
 ## Inventory/equipment persistence
 
 - Serialize item bằng stable `itemId`, không serialize ScriptableObject reference.
