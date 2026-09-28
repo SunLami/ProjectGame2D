@@ -25,6 +25,36 @@ a backend change (new Claude phase), not something this guide should tell you to
 
 ## 1. Item authoring
 
+### Ring / Necklace display names — 2026-09-28
+
+Only `itemName` changed for levels 1–8, following the owner's approved table.
+Filenames, Unity GUIDs, stable IDs, descriptions, icons, recipes and stats remain
+unchanged; level 9–10 remain unchanged. Mapping in level order:
+
+| Level | Ring | Necklace |
+|---|---|---|
+| 1 | Azure Spark Ring | Azure Gleam Necklace |
+| 2 | Sunshard Ring | Suncrest Necklace |
+| 3 | Voidbloom Ring | Mystic Veil Necklace |
+| 4 | Verdant Oath Ring | Emerald Grove Necklace |
+| 5 | Azurebound Ring | Opaline Dream Necklace |
+| 6 | Emerald Vanguard Ring | Emerald Sentinel Necklace |
+| 7 | Golden Verdure Ring | Royal Charoite Necklace |
+| 8 | Prismatic Sovereign Ring | Crown of the Verdant King |
+
+Unity serialized-state comparison verified that only display names changed.
+Content validation before this change: 1103 errors, 60 warnings, 157 assets.
+
+### Ring Lv8 icon update — 2026-09-28
+
+`Resources/Items/Ring/RingLv8.asset` now references the approved generated
+`PrismaticSovereignRing.png` in the same folder (Single Sprite, Point filter,
+no mipmaps, uncompressed, source alpha preserved). Stable `ring_lvl8`, display
+name, equipment data and recipes remain unchanged. Unity verified the sprite
+reference and source alpha. Full content validation reports 1103 errors and 60
+warnings across 135 assets with either the original or replacement icon; these
+existing project validation failures remain outside this icon replacement.
+
 **Asset type:** `ItemSO` (`Assets/Scripts/Inventory/ItemSO.cs`) or `EquipmentItemSO` for equippable
 items — menu `Scriptable Objects/Item` / `Scriptable Objects/Equipment Item`.
 
