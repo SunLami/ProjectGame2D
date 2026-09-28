@@ -22,6 +22,9 @@ public class SoundFXLibrary : MonoBehaviour
     private void InitializeDictionary()
     {
         _soundFXDictionary = new Dictionary<string, List<AudioClip>>();
+        if (_soundFXGroups == null)
+            return;
+
         foreach (SoundFXGroup soundFXGroup in _soundFXGroups)
         {
             _soundFXDictionary[soundFXGroup.groupName] = soundFXGroup.audioClips;
@@ -30,7 +33,7 @@ public class SoundFXLibrary : MonoBehaviour
 
     public AudioClip GetRandomClip(string name)
     {
-        if (_soundFXDictionary.ContainsKey(name))
+        if (_soundFXDictionary != null && _soundFXDictionary.ContainsKey(name))
         {
             List<AudioClip> audioClips = _soundFXDictionary[name];
             if (audioClips.Count > 0)

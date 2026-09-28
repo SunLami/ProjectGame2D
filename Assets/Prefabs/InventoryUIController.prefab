@@ -5409,6 +5409,7 @@ GameObject:
   - component: {fileID: 308442433414144332}
   - component: {fileID: 6360572318937099381}
   - component: {fileID: 4352240461622722981}
+  - component: {fileID: 4065681690790807462}
   m_Layer: 0
   m_Name: CloseBtn
   m_TagString: Untagged
@@ -5529,6 +5530,20 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+--- !u!114 &4065681690790807462
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8051752548932609833}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d30e6d7f15fbd8e47b83af0148053e64, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ProjectGame2D.Runtime::ButtonSfx
+  _playHoverSfx: 1
+  _clickSound: 1
 --- !u!1 &8331521372160004048
 GameObject:
   m_ObjectHideFlags: 0

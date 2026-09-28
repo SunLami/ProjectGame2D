@@ -133,6 +133,13 @@ public sealed class GameStateManager : MonoBehaviour
         GameStateSnapshot previous = Current;
         Current = next;
 
+        bool popupWasOpen = IsPopupState(previous.State);
+        bool popupIsOpen = IsPopupState(Current.State);
+        if (!popupWasOpen && popupIsOpen)
+            SoundFXManager.PlaySfx("sfx.ui.popup_open");
+        else if (popupWasOpen && !popupIsOpen)
+            SoundFXManager.PlaySfx("sfx.ui.popup_close");
+
         GameStatePolicy policy = CurrentPolicy;
         Time.timeScale = policy.PausesWorld ? 0f : 1f;
         Cursor.visible = policy.ShowsCursor;
@@ -140,6 +147,9 @@ public sealed class GameStateManager : MonoBehaviour
 
         StateChanged?.Invoke(new GameStateChange(previous, Current));
     }
+
+    private static bool IsPopupState(GameState state) =>
+        state == GameState.Paused || state == GameState.GameplayMenu;
 
     private static bool IsValidSnapshot(GameState state, GameplayMenuPage menuPage)
     {

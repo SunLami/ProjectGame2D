@@ -151,6 +151,7 @@ public class PauseMenuUI : MonoBehaviour
         if (_slotOverlayTitleBanner != null)
             _slotOverlayTitleBanner.sprite = saveMode ? _saveSlotTitleBanner : _loadSlotTitleBanner;
         _loadOverlay.SetActive(true);
+        SoundFXManager.PlaySfx("sfx.ui.popup_open");
         RebuildLoadSlots(_sessionController.RefreshSlots());
         SelectFirstSlotAction();
     }
@@ -158,7 +159,10 @@ public class PauseMenuUI : MonoBehaviour
     private void CloseLoadOverlay()
     {
         bool wasSaveMode = _isSaveSlotMode;
+        bool wasOpen = _loadOverlay.activeSelf;
         _loadOverlay.SetActive(false);
+        if (wasOpen)
+            SoundFXManager.PlaySfx("sfx.ui.popup_close");
         _isSaveSlotMode = false;
         Select(wasSaveMode ? _saveButton : _loadButton);
     }
@@ -185,6 +189,7 @@ public class PauseMenuUI : MonoBehaviour
         _confirmationWithoutSaveButton.gameObject.SetActive(false);
         LayoutConfirmationActions(false);
         _confirmationPopup.SetActive(true);
+        SoundFXManager.PlaySfx("sfx.ui.popup_open");
         Select(_confirmationCancelButton);
     }
 
@@ -268,6 +273,7 @@ public class PauseMenuUI : MonoBehaviour
     private void HandleOperationFailed(GameplaySessionOperationResult result, string message)
     {
         _feedbackText.text = string.IsNullOrWhiteSpace(message) ? "The operation could not be completed." : message;
+        SoundFXManager.PlaySfx("sfx.ui.error");
         Refresh();
     }
 
@@ -282,6 +288,7 @@ public class PauseMenuUI : MonoBehaviour
         _confirmationWithoutSaveButton.gameObject.SetActive(true);
         LayoutConfirmationActions(true);
         _confirmationPopup.SetActive(true);
+        SoundFXManager.PlaySfx("sfx.ui.popup_open");
         Select(_confirmationCancelButton);
     }
 
@@ -367,10 +374,13 @@ public class PauseMenuUI : MonoBehaviour
 
     private void CloseConfirmation()
     {
+        bool wasOpen = _confirmationPopup.activeSelf;
         _confirmationKind = null;
         _slotConfirmationKind = SlotConfirmationKind.None;
         _pendingDeleteSlotId = 0;
         _confirmationPopup.SetActive(false);
+        if (wasOpen)
+            SoundFXManager.PlaySfx("sfx.ui.popup_close");
         _confirmationWithoutSaveButton.gameObject.SetActive(true);
     }
 
