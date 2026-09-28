@@ -5,6 +5,19 @@ Tài liệu này là source of truth cho cơ chế câu cá đầu tiên trong `
 ## Quyết định gameplay
 
 - Click trái vào `FishingSpotInteractable` trong tầm để bắt đầu; không tự chạy Player tới điểm câu.
+- **D-05x (2026-09-28): cần mồi câu để bắt đầu.** Trước khi bắt đầu phải có một `FishingBaitItemSO`
+  đang được chọn ở Quick Bar (số 1-8) với quantity > 0 -- không có mồi hợp lệ sẽ hiện thông báo
+  "You don't have any bait to fish with." và không chuyển `GameState.FishingWaiting`. Đây là thay đổi
+  so với quyết định gốc ("click tự do, không điều kiện tiên quyết") -- xem `DecisionRegister.md`. Quick
+  bar vẫn dùng đúng contract đã có ở `FarmingSystem.md` (chọn item, domain đọc theo item được chọn);
+  đây chính là "consumable về sau" đã dự trù.
+- Mồi bị tiêu đúng 1 đơn vị ngay khi session Waiting thực sự bắt đầu (nghĩa là đã qua cả điều kiện mồi
+  lẫn điều kiện Inventory còn chỗ) -- không tiêu nếu Inventory đầy hoặc không có mồi, vì session chưa
+  từng bắt đầu trong hai trường hợp đó.
+- **Bait tier:** `FishingBaitItemSO.Tier` (`Small`/`Medium`/`Large`) giới hạn `FishDefinitionSO` nào có
+  thể roll ra qua `RequiredBaitTier`. Luật permissive: mồi tier cao câu được cá tier đó và mọi tier thấp
+  hơn (mồi Large câu được Small+Medium+Large; mồi Small chỉ câu Small). `FishingSpotDefinition.TryRollFish`
+  nhận `maxTier` và lọc `FishEntries` trước khi roll trọng số.
 - Trước khi bắt đầu phải có ít nhất một ô Inventory trống. Mỗi con cá chiếm đúng một ô vì cân nặng
   và giá trị là dữ liệu riêng của instance.
 - Giai đoạn chờ cá cắn dùng `GameState.FishingWaiting`: world vẫn chạy nhưng gameplay input bị khóa.
@@ -108,16 +121,33 @@ cũ) — chỉ ẩn thông tin khỏi UI cho tới lúc kết quả.
 ## Authoring cá mới
 
 1. Tạo `FishDefinitionSO` dưới `Assets/Resources/Items/Fish/`.
-2. Gán stable `itemId` mới theo dot namespace, display name, icon, khoảng gram và giá/kg.
+2. Gán stable `itemId` mới theo dot namespace, display name, icon, khoảng gram, giá/kg và
+   `RequiredBaitTier` (Small/Medium/Large -- quyết định mồi nào câu được cá này).
 3. Giữ `isStackable = false`, `maxStackSize = 1`.
 4. Thêm asset vào `FishingSpotDefinition.FishTable` với weight lớn hơn 0.
-5. Chạy `Tools/Project Game/Validate Content`, EditMode tests và thử happy/fail/missed-hook/full-inventory
-   trong scene integration trước khi promote content.
+5. Author `_minSellPrice`/`_maxSellPrice` nếu cá này được một NPC mua (D-042) -- khác với
+   `PricePerKilogram` vốn chỉ dùng để tính giá trị hiển thị lúc bắt được cá.
+6. Chạy `Tools/Project Game/Validate Content`, EditMode tests và thử happy/fail/missed-hook/full-inventory/
+   no-bait/wrong-bait-tier trong scene integration trước khi promote content.
+
+## Authoring mồi câu mới
+
+1. Tạo `FishingBaitItemSO` (menu `Project Game 2D/Fishing/Fishing Bait Item`) dưới
+   `Assets/Resources/Items/Fishing/`.
+2. Gán stable `itemId` (`item.consumable.bait_<tier>`), display name, icon, giá Buy/Sell và `Tier`.
+3. Bán qua Buy tab của một `ShopDefinition` (ví dụ `Shop_Dunstan.asset`) như item thường -- không cần
+   wiring runtime riêng, người chơi gán vào Quick Bar như mọi item khác.
 
 ## Acceptance matrix
 
-- Inventory đầy: click spot chỉ hiện thông báo, khóa attack của cùng click và không bắt đầu chờ.
-- Miss hook: quay lại Waiting và có bite mới.
+- Không có mồi hợp lệ ở Quick Bar (trống hoặc item khác) hoặc quantity 0: hiện thông báo, không tiêu
+  mồi, không bắt đầu chờ.
+- Có mồi nhưng Inventory đầy: hiện thông báo "Inventory full", không tiêu mồi (session chưa thực sự
+  bắt đầu).
+- Mồi tier thấp không roll ra được cá tier cao hơn trong cùng spot.
+- Inventory đầy (đã có mồi hợp lệ): click spot chỉ hiện thông báo, khóa attack của cùng click và không
+  bắt đầu chờ.
+- Miss hook: quay lại Waiting và có bite mới (không tiêu thêm mồi -- chỉ tiêu một lần lúc bắt đầu).
 - Minigame: world pause; progress tăng/giảm đúng tiếp xúc; timeout fail.
 - Success: một fish instance vào đúng một slot, icon đúng, weight/value đúng công thức.
 - Save/load: `itemId`, `instanceId`, weight round-trip; save V6 migrate lên V7 không mất slot cũ.

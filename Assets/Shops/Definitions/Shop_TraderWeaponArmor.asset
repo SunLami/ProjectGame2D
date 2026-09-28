@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: ProjectGame2D.Runtime::ShopDefinition
   _shopId: shop.town.trader_weapon_armor
   _displayName: Weapon & Armor Trader
-  _npcId: npc.town.trader_weapon_armor
+  _npcId: npc.town.artificer
   _stock:
   - _itemId: head_lvl4
     _price: 150
@@ -30,4 +30,6 @@ MonoBehaviour:
     _price: 180
   - _itemId: shield_lvl1
     _price: 130
+  _buyItems: []
+  _sellItems: []
   _sellPriceMultiplier: 0.5

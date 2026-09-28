@@ -182,6 +182,16 @@ public sealed class PlayerSpawnReadinessSource : MonoBehaviour, IGameplayReadine
             if (missingCrops.Count > 0)
                 Debug.LogWarning($"Skipped unresolved crop(s): {string.Join(", ", missingCrops)}", this);
         }
+
+        // 11. Farm storage -- stable itemId state like the quick bar, restores after Farming plots.
+        // Unknown items (removed content) are reported and left out of storage.
+        if (FarmStorageManager.Instance != null && session.SaveData.farmStorage != null)
+        {
+            List<string> missingStorageItems = new();
+            FarmStorageManager.Instance.RestoreState(session.SaveData.farmStorage, resolver, missingStorageItems);
+            if (missingStorageItems.Count > 0)
+                Debug.LogWarning($"Skipped unresolved farm storage item(s): {string.Join(", ", missingStorageItems)}", this);
+        }
     }
 
     private void RestorePosition(PlayerLocationSaveData location)
@@ -231,6 +241,8 @@ public sealed class PlayerSpawnReadinessSource : MonoBehaviour, IGameplayReadine
         _farmingManager ??= FarmingManager.Instance;
         if (_farmingManager != null)
             snapshot.farming = _farmingManager.ToSaveData();
+        if (FarmStorageManager.Instance != null)
+            snapshot.farmStorage = FarmStorageManager.Instance.ToSaveData();
 
         SaveOperationResult result = repository.WriteSave(session.SlotId, snapshot);
         if (result.Success)

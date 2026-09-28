@@ -266,7 +266,8 @@ public sealed class GameplaySessionController : MonoBehaviour
             quickBar = QuickBarManager.Instance != null ? QuickBarManager.Instance.ToSaveData() : session.SaveData.quickBar,
             farming = (_farmingManager != null ? _farmingManager : FarmingManager.Instance) != null
                 ? (_farmingManager != null ? _farmingManager : FarmingManager.Instance).ToSaveData()
-                : session.SaveData.farming
+                : session.SaveData.farming,
+            farmStorage = FarmStorageManager.Instance != null ? FarmStorageManager.Instance.ToSaveData() : session.SaveData.farmStorage
         };
     }
 

@@ -30,8 +30,36 @@ Tài liệu này là source of truth cho quick bar item assignment và cơ chế
 - `FarmPlot`: placed instance có stable `plotId`; không dùng GameObject name/toạ độ/child index làm identity.
 - `FarmingSaveData`: record `{ plotId, cropId, plantedAtUtcTicks }` cho plot đang có crop.
 
-Save schema V8 thêm quick bar; V9 thêm farming. Migration V7→V8/V8→V9 additive-default, save cũ bắt đầu
-với quick bar rỗng và tất cả plot Empty.
+Save schema V8 thêm quick bar; V9 thêm farming; V11 thêm farm storage (V10 là fish payload, xem
+`FishingSystem.md`). Migration additive-default, save cũ bắt đầu với quick bar rỗng, tất cả plot Empty
+và farm storage rỗng.
+
+## Farm storage (D-060)
+
+- `FarmStorageManager`: container riêng của Player, tách khỏi `InventoryManager` và khác `Chest`
+  (D-033, cấp thưởng một lần) -- đây là kho gửi/rút tự do, không giới hạn thời gian.
+- Chỉ nhận `SeedItemSO` hoặc item khớp `CropDefinition.HarvestItem.itemId` nào đó trong
+  `FarmingCatalog` (`FarmStorageManager.IsFarmingItem`); item khác bị từ chối, không có ngoại lệ.
+- Capacity của Farm Storage đồng bộ với `InventoryManager.Slots.Count` (mặc định cùng 40 và tự mở
+  rộng khi Inventory tăng slot); không tự thu nhỏ để không làm mất dữ liệu đã lưu. Stack theo đúng
+  `ItemSO.maxStackSize` như Inventory.
+- Mở qua NPC Leofrun (`npc.leofrun`): dialogue outcome `commerce.storage` (thêm vào
+  `TraderNpcInteractionUI` cạnh `commerce.shop`/`commerce.crafting`) gọi `FarmStorageUI.Instance.Open`.
+- Visual contract cập nhật theo owner review: `FarmStorageUI` có hai inventory grid cạnh nhau
+  (`Inventory` và `Storage`), không dùng row list. Cột Inventory hiển thị toàn bộ item hiện có;
+  cell không thuộc Farming vẫn hiện nhưng không interactable, chỉ seed/nông sản mới deposit được.
+  Hai `ScrollRect` cuộn dọc; cả Inventory và Storage tạo cùng số grid slot theo capacity thật của
+  Inventory và tăng chiều cao theo số hàng tương ứng. Mỗi cell dùng cùng
+  `inventory_slot_reference_v4.png` với Inventory chính, cùng `inventory_grid_border_hd.png` và
+  `inventory_close_thin_hd.png`; item cell hiển thị icon + quantity. Board riêng chỉ thay bố cục
+  thành hai cột và giữ đúng palette/pixel-cluster warm brown, antique gold, sapphire của Inventory;
+  tuyệt đối không có Equipment panel/slot.
+- `FarmStorageSaveData`: record `{ itemId, quantity }` theo slot, resolve qua `IItemResolver` như
+  Inventory/Quick Bar -- không dùng dictionary cứng.
+- `FarmStorageUI` đã có art production và hai grid như visual contract trên; click Farming item cell
+  bên trái deposit cả stack, click item cell bên phải withdraw cả stack. Có thể kéo-thả icon qua lại
+  giữa hai grid để chuyển toàn stack; kéo item không thuộc Farming sang Storage bị từ chối và hiện
+  feedback đỏ. Chưa có partial-quantity picker.
 
 ## Integration và acceptance
 

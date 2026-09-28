@@ -32,6 +32,7 @@ public static class SaveMigration
         new V7ToV8_IntroducesTrackedQuest(),
         new V8ToV9_IntroducesQuickBar(),
         new V9ToV10_IntroducesFarming(),
+        new V10ToV11_IntroducesFarmStorage(),
     };
 
     /// <summary>True if this version can be upgraded to CurrentSaveVersion by Migrate(). Does not
@@ -171,5 +172,13 @@ public static class SaveMigration
         public int ToVersion => 10;
 
         public void Apply(GameSaveData data) => data.farming ??= new FarmingSaveData();
+    }
+
+    private sealed class V10ToV11_IntroducesFarmStorage : ISaveMigrationStep
+    {
+        public int FromVersion => 10;
+        public int ToVersion => 11;
+
+        public void Apply(GameSaveData data) => data.farmStorage ??= new FarmStorageSaveData();
     }
 }

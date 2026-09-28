@@ -1,0 +1,53 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 14c148da086a4444f9dc223cd131312a, type: 3}
+  m_Name: DunstanGreeting
+  m_EditorClassIdentifier: ProjectGame2D.Runtime::DialogueDefinition
+  _dialogueId: dialogue.town.dunstan.greeting
+  _initialNodeId: greeting
+  _nodes:
+  - _nodeId: greeting
+    _speakerName: Dunstan
+    _portrait: {fileID: 0}
+    _text: Water's been good to me today. Need bait, or looking to sell your catch?
+    _nextNodeId:
+    _outcomeId:
+    _choices:
+    - _text: Let's see your stall.
+      _nextNodeId: shop_leaf
+    - _text: How's the fishing been?
+      _nextNodeId: chat_leaf
+    - _text: Just passing by.
+      _nextNodeId: leave_leaf
+  - _nodeId: shop_leaf
+    _speakerName: Dunstan
+    _portrait: {fileID: 0}
+    _text: Take your pick -- bait for sale, and I'll pay fair for whatever you've
+      hauled in.
+    _nextNodeId:
+    _outcomeId: commerce.shop
+    _choices: []
+  - _nodeId: chat_leaf
+    _speakerName: Dunstan
+    _portrait: {fileID: 0}
+    _text: Slow mornings, but the river's been generous by afternoon. Bigger bait
+      for bigger fish, mind you.
+    _nextNodeId:
+    _outcomeId:
+    _choices: []
+  - _nodeId: leave_leaf
+    _speakerName: Dunstan
+    _portrait: {fileID: 0}
+    _text: Tight lines to you, then.
+    _nextNodeId:
+    _outcomeId:
+    _choices: []

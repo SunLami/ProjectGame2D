@@ -1,5 +1,175 @@
 # Codex → Claude Handoff
 
+# Status: `FARM_STORAGE_CAPACITY_MATCHES_INVENTORY_VERIFIED`
+
+Ngày: 2026-09-28
+
+Owner override contract capacity cũ (Storage cố định 30):
+
+- `FarmStorageManager` mặc định 40 như `InventoryManager`, có `EnsureSlotCount` để tự mở rộng tới
+  `InventoryManager.Slots.Count`; không tự shrink để tránh mất item/save data.
+- Restore save tự mở rộng tới số slot trong payload trước khi hydrate, nên save V11 cũ vẫn đọc được.
+- Khi mở/rebuild UI, cả hai cột tạo đúng cùng số empty grid slots theo Inventory capacity và dùng
+  cùng content height/scroll range.
+- Play Mode với save thật: Inventory 132 slot, Storage 132 slot, hai lớp background đều 132 ô,
+  content height đều 1306 px và scroll range đều 1026 px.
+
+---
+
+# Status: `FARM_STORAGE_DRAG_DROP_AND_REJECTION_WARNING_VERIFIED`
+
+Ngày: 2026-09-28
+
+Đã bổ sung drag-and-drop hai chiều cho Farm Storage:
+
+- `FarmStorageDragItem` dùng cùng pattern với `InventorySlotUI`: tạo ghost icon trên root Canvas,
+  icon gốc giảm alpha trong lúc kéo và khôi phục khi thả.
+- `FarmStorageDropZone` phủ hai `ScrollView`; Inventory → Storage gọi deposit toàn stack,
+  Storage → Inventory gọi withdraw toàn stack. Click-to-transfer cũ vẫn giữ nguyên.
+- Non-Farming item vẫn kéo được, nhưng drop sang Storage không mutate dữ liệu và hiện feedback đỏ
+  `Only farming items can be stored here.`
+- Play Mode verify: ghost icon được tạo; drop event thật gửi 24 Carrot Seeds và drop ngược trả lại
+  Inventory; thử `Head Lv4` giữ Storage từ 0 → 0, đúng message và màu RGBA(1, 0.25, 0.2, 1).
+- Screenshot: `Assets/Screenshots/farm_storage_drag_rejection_warning-1.png`.
+
+---
+
+# Status: `FARM_STORAGE_SCROLL_AND_FULL_INVENTORY_VERIFIED`
+
+Ngày: 2026-09-28
+
+Theo owner review, đã sửa behavior hai grid:
+
+- Header trái đổi từ `Your Items` thành `Inventory`.
+- Inventory render toàn bộ stack hiện có, không còn lọc bỏ non-Farming item.
+- Chỉ Farming item (`FarmStorageManager.IsFarmingItem`) có button interactable/deposit được;
+  item khác chỉ xem, không có listener gửi sang Storage. Domain validation vẫn giữ nguyên.
+- Mỗi cột dùng `ScrollContent` riêng cao hơn viewport (280 px). Inventory content tự tăng chiều
+  cao theo số hàng thực tế; Storage giữ 30 slot/5 hàng và cuộn được tới hàng cuối.
+- Play Mode với save thật: 122 stack Inventory được render, 2 Farming button enabled và 120
+  non-Farming button disabled; Inventory content cao 1248 px và cuộn từ y=0 tới y=968.
+  Storage content cao 320 px và cuộn 40 px. Screenshot:
+  `Assets/Screenshots/farm_storage_inventory_all_items_scroll.png`.
+
+---
+
+# Status: `FARM_STORAGE_GRID_ALIGNMENT_AND_DETACHED_CLOSE_VERIFIED`
+
+Ngày: 2026-09-28
+
+Owner review phát hiện các text/grid bị lệch khỏi artwork và `inventory_grid_border_hd` tạo thêm
+một khung gỗ vuông dư quanh mỗi grid. Đã sửa visual-only:
+
+- Board mới `farm_storage_inventory_board_v4.png` giữ alpha và layout gốc, xóa socket vuông bake
+  trên top rail; top rail giờ liền mạch.
+- `CloseButton` dùng sprite riêng, đặt ngoài mép phải panel (`x=468`) và không còn nhập vào khung.
+- Title được căn vào title plaque; hai header được căn giữa header wells; feedback được đưa vào
+  thanh feedback phía dưới.
+- Bỏ sprite/background của hai `ScrollView` để không chồng khung gỗ lên well đã bake trong board.
+- Hai grid co về 380×340, slot 48×48, spacing 10 và padding cân đối; tâm cột đổi sang ±205 để
+  mọi slot nằm gọn trong hai well.
+- Đã rebuild/cài lại prefab bằng menu authoring. Play Mode visual verify thành công, Console 0 error.
+  Screenshot: `Assets/Screenshots/farm_storage_grid_alignment_v4.png`.
+
+---
+
+# Status: `FARM_STORAGE_INVENTORY_GRID_VISUAL_OVERRIDE_VERIFIED`
+
+Ngày: 2026-09-28
+
+Theo visual review mới của user, Farm Storage (D-060) đã được đổi từ danh sách row trên nền
+Dark Inventory sang hai lưới item đồng bộ trực tiếp với Inventory hiện tại.
+
+## Visual contract mới
+
+- Hai cột `Your Items` / `Storage`, mỗi cột là grid cố định 6×5 (30 slot), cell 52×52,
+  spacing 10×10; item runtime phủ đúng lên các empty slot nền.
+- Dùng lại asset thật của Inventory:
+  `inventory_slot_reference_v4.png`, `inventory_grid_border_hd.png`,
+  `inventory_close_thin_hd.png`.
+- Board raster pixel-art mới:
+  `Assets/Resources/UI/Farming/DarkInventoryStyle/farm_storage_inventory_board_v2.png`
+  (900×600), cùng palette nâu ấm / vàng / sapphire và không có equipment panel.
+- Importer được ép `Sprite/Single`, alpha transparency, mipmap off, `Point`, uncompressed.
+- Cell item chỉ hiện icon + quantity (ẩn quantity khi bằng 1), giống ngôn ngữ thị giác Inventory.
+  Đây là thay đổi presentation duy nhất trong `FarmStorageUI.cs`; logic giao dịch và
+  `FarmStorageManager.cs` không đổi, serialized field contract giữ nguyên.
+
+## Authoring/integration
+
+- `FarmStorageUIAuthoring.cs` tạo hai lớp grid cho mỗi cột: 30 empty slot tĩnh và `Content`
+  runtime dùng cùng `GridLayoutGroup`.
+- Đã chạy `Tools/Project Game/Farming/Build And Install Farm Storage UI`; prefab được rebuild
+  và Bootstrap `_UI` có đúng một instance.
+- `DecisionRegister.md` và `FarmingSystem.md` đã cập nhật theo visual override được user duyệt.
+
+## Play Mode verify thật
+
+Đã chạy Bootstrap → Continue Slot 1 → MapNhat → Leofrun → chọn
+"I'd like to store some things." → Farm Storage mở:
+
+- Hai grid 6×5 render đúng, hai item seed phủ lên hai slot đầu, quantity `24` hiển thị.
+- Deposit Carrot Seeds: Storage nhận item, feedback `Stored 24x Carrot Seeds.`
+- Withdraw lại: Inventory nhận item, feedback `Withdrew 24x Carrot Seeds.`
+- CloseButton ẩn `Backdrop/Panel` đúng; Unity Console có 0 error.
+- Screenshot: `Assets/Screenshots/farm_storage_inventory_grid_playmode.png`.
+
+---
+
+# Status: `FARM_STORAGE_DARK_INVENTORY_ART_VERIFIED`
+
+Ngày: 2026-09-28
+
+Đã hoàn tất visual-only pass cho Farm Storage UI (D-060), không đổi
+`FarmStorageUI.cs`, `FarmStorageManager.cs`, serialized field contract hay layout hiện có.
+
+## Asset pixel-art mới
+
+Tạo tại `Assets/Resources/UI/Farming/DarkInventoryStyle/`:
+
+- `farm_storage_panel_v1.png` — 900×600, charcoal/walnut, viền antique gold và sapphire góc.
+- `farm_storage_scroll_v1.png` — 400×400, dùng chung cho hai cột.
+- `farm_storage_row_v1.png` — 400×40, nền row/slot.
+- `farm_storage_close_v1.png` — 36×36, nút X.
+
+Tất cả là raster PNG pixel-art (không phải vector), gen/điều chỉnh theo art đang dùng thật của
+Fishing v3, Dialogue v4, Commerce v2 và Dark Inventory Style: cạnh bậc pixel, clustered shading,
+palette charcoal/walnut/antique-gold, sapphire chỉ làm điểm neo. Importer là Sprite/Single,
+alpha transparency bật, mipmap tắt, filter Point.
+
+## Authoring/integration
+
+- `Assets/Editor/FarmStorageUIAuthoring.cs` load bốn sprite thật và gán vào Panel, hai ScrollView,
+  RowTemplate và CloseButton; bỏ bốn `Border*` màu phẳng vì border/corner đã nằm trong panel sprite.
+- Không đổi bất kỳ `sizeDelta`/`anchoredPosition` nào: Panel 900×600, ScrollView 400×400,
+  Row cao 40, CloseButton 36×36 giữ nguyên.
+- Đã chạy menu `Tools/Project Game/Farming/Build And Install Farm Storage UI` trong Unity.
+- Prefab `Assets/Prefabs/UI/FarmStorageUI.prefab` đã rebuild và `Bootstrap._UI` có đúng 1
+  `FarmStorageUI`; root active, `Backdrop` inactive lúc khởi tạo đúng contract.
+
+## Play Mode verify thật
+
+Luồng đã chạy: Bootstrap → Continue → Slot 1 → MapNhat → tới Leofrun → tương tác
+`TraderNpcInteractionUI.TryInteract()` trong range → chọn dialogue thật
+"I'd like to store some things." → continue node outcome → Farm Storage mở.
+
+- Hai cột render đúng; Inventory hiện `Carrot Seeds x24`, `Eggplant Seeds x24`, icon/tên/số lượng
+  không mất binding.
+- Click row Carrot Seeds thật: deposit thành công, Inventory còn Eggplant, Storage hiện Carrot,
+  feedback `Stored 24x Carrot Seeds.`
+- Click row Storage thật: withdraw thành công, Inventory trở lại đủ hai stack, Storage rỗng,
+  feedback `Withdrew 24x Carrot Seeds.`
+- Click CloseButton thật đóng panel và restore state đúng.
+- Nhánh Escape không bị sửa; `FarmStorageUI.Update()` vẫn dùng
+  `Keyboard.current.escapeKey.wasPressedThisFrame`/gamepad East như trước. Bộ harness MCP không tạo
+  được cạnh `wasPressedThisFrame` đáng tin cậy, nên không ghi nhận một manual-keypress mới cho nhánh
+  này; contract runtime đã có sẵn và visual pass không chạm vào nó.
+- Console sau toàn bộ flow: 0 error.
+
+Screenshot: `Assets/Screenshots/farm_storage_dark_inventory_playmode.png`.
+
+---
+
 ## Phase A — 7 SFX UI common
 
 Status: `SFX_PHASE_A_UI_ART_READY`
