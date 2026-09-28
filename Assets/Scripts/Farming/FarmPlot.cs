@@ -10,12 +10,12 @@ public sealed class FarmPlot : MonoBehaviour
     [SerializeField] private string _areaId = "area.farm";
     [SerializeField] private SpriteRenderer _cropRenderer;
     [SerializeField] private GameObject _emptyPlotHighlight;
+    [SerializeField] private HoverOutline _cropOutline;
 
     private FarmingManager _manager;
     private CropDefinition _crop;
     private long _plantedAtUtcTicks;
     private bool _isResolving;
-    private bool _highlighted;
     private int _lastStage = -1;
     private Color _baseCropColor = Color.white;
 
@@ -58,14 +58,13 @@ public sealed class FarmPlot : MonoBehaviour
         return TryBeginHarvest();
     }
 
+    // Empty plot: highlighted by _emptyPlotHighlight (a tile-shaped indicator -- there's no crop
+    // sprite to trace an outline around). Planted crop: highlighted by the shared HoverOutline
+    // (D-055), same white-silhouette style as NPCs/fishing spot, instead of tinting the sprite.
     public void SetHighlighted(bool highlighted)
     {
-        _highlighted = highlighted;
         if (_emptyPlotHighlight != null) _emptyPlotHighlight.SetActive(highlighted && _crop == null);
-        if (_cropRenderer != null)
-            _cropRenderer.color = highlighted && _crop != null
-                ? new Color(Mathf.Min(1f, _baseCropColor.r * 1.25f), Mathf.Min(1f, _baseCropColor.g * 1.25f), Mathf.Min(1f, _baseCropColor.b * 1.25f), _baseCropColor.a)
-                : _baseCropColor;
+        _cropOutline?.SetHighlighted(highlighted && _crop != null);
     }
 
     private bool TryPlant(SeedItemSO seed)
@@ -175,7 +174,7 @@ public sealed class FarmPlot : MonoBehaviour
         _lastStage = CurrentStageIndex;
         _cropRenderer.sprite = _crop.GetStageSprite(_lastStage);
         _cropRenderer.enabled = !_isResolving && _cropRenderer.sprite != null;
-        _cropRenderer.color = _highlighted ? Color.white : _baseCropColor;
+        _cropRenderer.color = _baseCropColor;
     }
 
     private static Transform FindPlayer()

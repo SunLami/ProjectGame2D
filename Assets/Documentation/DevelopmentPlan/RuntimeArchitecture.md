@@ -2,6 +2,16 @@
 
 ## Scene boundary
 
+### StudioIntro scene
+
+`StudioIntro` là studio splash chạy đúng một lần khi khởi động Player build. Scene chỉ sở hữu
+presentation video/audio của logo `SaiGonMelon`; không tạo session, không đọc save và không chứa
+gameplay service. Video không cho skip và phải phát tối thiểu đủ 8 giây trước khi tự load `MainMenu`.
+Lỗi prepare/play fail-soft về `MainMenu` để không khóa startup. Return từ gameplay vẫn đi thẳng về
+`MainMenu` và không phát lại studio splash. Bootstrap reload nội bộ do `SceneFlowService` thực hiện
+khi New Game/Continue/Return phải suppress automatic entry load: New Game chỉ đi `IntroCutscene`,
+Continue chỉ đi world scene của session và không được nạp `StudioIntro` song song.
+
 ### MainMenu scene
 
 Chỉ chứa presentation và controller cho:
@@ -100,6 +110,7 @@ Process start
 → GameBootstrap creates persistent application services
 → GameState.Booting
 → load/validate settings and save metadata
+→ load StudioIntro and play the SaiGonMelon video/audio
 → load MainMenu scene if necessary
 → GameState.MainMenu
 ```

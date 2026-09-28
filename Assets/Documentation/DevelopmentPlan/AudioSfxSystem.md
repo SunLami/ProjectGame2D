@@ -93,6 +93,11 @@ hiện đại/8-bit trừ khi ghi chú riêng.
 | `sfx.ui.click_secondary` (tái dùng) | — | — | Next/Skip Scene/Skip Intro — [IntroCutsceneController.cs](../../Scripts/Cinematics/Intro/IntroCutsceneController.cs) `_nextButton`/`_skipSceneButton`/`_skipIntroButton` |
 | `sfx.cutscene.transition` *(P2 — tuỳ chọn)* | Whoosh điện ảnh ngắn, tối màu, dùng khi chuyển segment | 0.4–0.6s | `MoveToNextSegment` |
 
+`StudioIntro` là ngoại lệ có chủ đích: sound logo đã được mix sẵn trong
+`Assets/Cinematics/StudioIntro/LogoSaigonMelon.mp4`, nhưng `StudioIntroController` route audio track
+qua `AudioSource` và áp dụng `SettingsService.Current.SfxVolume`. Vì vậy startup sound vẫn tôn trọng
+Settings dù không tách thành một entry `SoundFXLibrary`; không phát đồng thời background music.
+
 Ghi chú: Cutscene **không** cần bộ dialogue-blip riêng ở đợt đầu — rủi ro phá nhịp đọc thoại nếu gen
 sai tempo; để lại Phase sau nếu owner muốn.
 
@@ -255,4 +260,4 @@ generate bằng AI prompt.
 - Voice-over/thoại thật (khác dialogue blip).
 - Audio Mixer/ducking nâng cao (hiện vẫn là volume nhân thủ công trên AudioSource, đủ dùng cho scope
   này).
-- SFX cho scene ngoài MainMenu/IntroCutscene/MapNhat (chưa tồn tại trong Build Settings).
+- SFX rời cho scene ngoài MainMenu/StudioIntro/IntroCutscene/MapNhat.

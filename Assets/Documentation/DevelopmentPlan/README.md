@@ -82,7 +82,11 @@ cập nhật tài liệu liên quan trước hoặc cùng lúc với code.
 - Save đã là hệ thống save slot hoàn chỉnh: 3 slot, atomic write/backup, migration V1→Current, Save
   Game slot picker (Empty/Overwrite/Save As/Delete) trong Pause Menu. Chi tiết:
   [SaveAndWorldPersistence.md](SaveAndWorldPersistence.md).
-- Build Settings hiện dùng `MainMenu` index 0 và `MapNhat` index 1. Từ 2026-09-07,
+- Build Settings hiện dùng `Bootstrap` index 0, `StudioIntro` index 1, sau đó `MainMenu`,
+  `IntroCutscene` và `MapNhat`. `StudioIntro` bắt buộc phát đủ tối thiểu 8 giây của
+  `LogoSaigonMelon.mp4` kèm audio, không cho skip, rồi tự chuyển vào `MainMenu`; Return Main Menu
+  không phát lại splash (D-061).
+  Từ 2026-09-07,
   `MainMenuController._gameplaySceneName = "MapNhat"` — New Game/Continue vào thẳng `MapNhat` sau
   Loading (D-019 Accepted). `DemoScene` đã bị **gỡ khỏi Build Settings** (theo yêu cầu người dùng
   2026-09-07) nhưng file scene vẫn còn nguyên và vẫn là integration playground (D-001 không đổi) —
