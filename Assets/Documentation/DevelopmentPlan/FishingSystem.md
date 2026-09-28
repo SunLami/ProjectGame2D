@@ -114,6 +114,33 @@ cũ) — chỉ ẩn thông tin khỏi UI cho tới lúc kết quả.
 5. Chạy `Tools/Project Game/Validate Content`, EditMode tests và thử happy/fail/missed-hook/full-inventory
    trong scene integration trước khi promote content.
 
+## River catch table hiện tại
+
+`FishingSpot.River` dùng tổng weight đúng `100`, nên mỗi weight cũng chính là phần trăm xuất hiện.
+Giá trị cá vẫn được tính bằng `round(pricePerKilogram * weightGrams / 1000)`.
+
+| Rank | Rarity | Asset | Display name | Stable ID | Catch | Cân nặng | Gold/kg | Giá TB |
+|---:|---|---|---|---|---:|---:|---:|---:|
+| 1 | Common | SilverstreamDarter | Silverstream Darter | `fish.river.silverstream_darter` | 22% | 100–300 g | 10 | 2.00 |
+| 2 | Common | RosefinBream | Rosefin Bream | `fish.river.rosefin_bream` | 18% | 300–900 g | 9 | 5.40 |
+| 3 | Common | MossfinPerch | Mossfin Perch | `fish.river.mossfin_perch` | 16% | 500–1,600 g | 8 | 8.40 |
+| 4 | Uncommon | SunscaleCarp | Sunscale Carp | `fish.river.sunscale_carp` | 13% | 700–2,000 g | 10 | 13.50 |
+| 5 | Uncommon | GreenPike | Green Pike | `fish.river.green_pike` | 10% | 1,800–5,000 g | 7 | 23.80 |
+| 6 | Rare | AmethystBass | Amethyst Bass | `fish.river.amethyst_bass` | 7% | 900–2,500 g | 18 | 30.60 |
+| 7 | Rare | PearlstripeKoi | Pearlstripe Koi | `fish.river.pearlstripe_koi` | 6% | 1,200–3,500 g | 17 | 39.95 |
+| 8 | Epic | ShadowfinBass | Shadowfin Bass | `fish.river.shadowfin_bass` | 4% | 1,500–4,000 g | 19 | 52.25 |
+| 9 | Epic | AzureMinnow | Azure Minnow | `fish.river.azure_minnow` | 3% | 600–1,800 g | 55 | 66.00 |
+| 10 | Legendary | EmberKoi | Ember Koi | `fish.river.ember_koi` | 1% | 1,500–4,500 g | 30 | 90.00 |
+
+Rank theo cột owner cung cấp quyết định catch rate và rarity tier. Economy cân theo giá bán
+trung bình mỗi con thay vì ép Gold/kg tăng đơn điệu, vì trọng lượng giữa các loài chênh lệch lớn;
+giá trung bình tăng liên tục từ rank 1 đến rank 10. Khoảng cân nặng cũng được cân lại theo
+silhouette để tránh Gold/kg bất thường ở cá nhỏ-hiếm. Expected value midpoint hiện khoảng
+`16.40 gold` trên mỗi lần bắt thành công.
+
+Các ID placeholder cũ `fish.river.Fish1`…`fish.river.Fish10` được giữ làm alias trong
+`ItemIdAliases`; save cũ resolve sang definition mới và lần save tiếp theo tự ghi canonical ID.
+
 ## Acceptance matrix
 
 - Inventory đầy: click spot chỉ hiện thông báo, khóa attack của cùng click và không bắt đầu chờ.
