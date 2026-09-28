@@ -6,6 +6,8 @@ Tài liệu này là source of truth cho quick bar item assignment và cơ chế
 
 - Có đúng 8 slot. Assignment lưu stable `itemId`, không lưu index/reference của `InventorySlot`.
 - Kéo một item thường từ Inventory lên quick slot để gán; click hoặc phím số 1–8 để chọn.
+- Kéo item đã gán ra ngoài toàn bộ quick slot để xóa assignment. Kéo sang quick slot khác sẽ chuyển
+  assignment sang slot đích; thao tác chỉ đổi stable `itemId`, không xóa item khỏi Inventory.
 - HUD resolve icon qua `IItemResolver` và hiển thị tổng quantity đang có trong Inventory.
 - Item hết quantity không xóa assignment; slot hiển thị mờ/0 và hoạt động lại khi người chơi có item.
 - Save lưu tám assignment và `selectedIndex`; restore bỏ qua item ID không resolve được nhưng không crash.

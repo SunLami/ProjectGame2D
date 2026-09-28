@@ -30,7 +30,7 @@ public class ItemSO : ScriptableObject
     public int MinSellPrice => Mathf.Max(0, _minSellPrice);
     public int MaxSellPrice => Mathf.Max(MinSellPrice, _maxSellPrice);
 
-    private void OnValidate()
+    protected virtual void OnValidate()
     {
         _minBuyPrice = Mathf.Max(0, _minBuyPrice);
         _maxBuyPrice = Mathf.Max(_minBuyPrice, _maxBuyPrice);

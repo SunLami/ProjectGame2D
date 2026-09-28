@@ -57,6 +57,8 @@ cập nhật tài liệu liên quan trước hoặc cùng lúc với code.
     Inventory v5 làm reference khi migration từng gameplay UI.
 23. [Audio SFX System](AudioSfxSystem.md): catalog SFX one-shot cho MainMenu/IntroCutscene/MapNhat,
     kiến trúc `SoundFXManager.PlaySfx`/`SoundFXLibrary`, convention ID/file và handoff gen audio cho Codex.
+24. [Resource Content](ResourceContent.md): ID, node drop, recipe, NPC market và khoảng giá chuẩn cho resource sheet.
+25. [Equipment Content](EquipmentContent.md): tên, level gate, stat, giá, recipe và NPC chuẩn cho Equipment sheet.
 
 ## Quy tắc quản trị tài liệu
 

@@ -13,12 +13,28 @@ MonoBehaviour:
   m_Name: HeadLv5
   m_EditorClassIdentifier: Assembly-CSharp::EquipmentItemSO
   itemId: head_lvl5
-  itemName: Head Lv5
-  description: "Trang b\u1ECB \u0111\u1EA7u Swordsman c\u1EA5p 5 (icon t\u1EA1m th\u1EDDi)."
+  itemName: Iron Armet
+  description:
   icon: {fileID: -4832589557458777731, guid: 8716d16f084234142a8aa89415f008cb, type: 3}
   type: 1
   isStackable: 0
   maxStackSize: 1
+  _minBuyPrice: 862
+  _maxBuyPrice: 1176
+  _minSellPrice: 431
+  _maxSellPrice: 588
   slot: 0
+  requiredLevel: 20
   spriteLibraryAsset: {fileID: 7108339969198208228, guid: 54d9d6d65f4a1ee40a081b3179f94899, type: 3}
   headSpriteLibraryAsset: {fileID: 0}
+  statModifiers:
+    maxHealth: 0
+    attackDamage: 0
+    defense: 5
+    moveSpeed: 0
+    sprintMultiplier: 0
+    criticalChance: 0.005
+    criticalMultiplier: 0
+    damageReduction: 0
+    healthRegeneration: 0
+    dodgeChance: 0

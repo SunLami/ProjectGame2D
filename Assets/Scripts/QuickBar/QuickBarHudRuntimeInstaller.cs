@@ -60,41 +60,69 @@ public sealed class QuickBarHudRuntimeInstaller : MonoBehaviour
                 if (text.name == $"QuickSlot{i + 1}Key") keys[i] = text;
         }
 
+        var backgrounds = new RectTransform[QuickBarSaveData.SlotCount];
         for (int i = 0; i < keys.Length; i++)
+        {
             if (keys[i] == null) return false;
+            string backgroundName = i == 0 ? "QuickSlotBackground" : $"QuickSlotBackground {i + 1}";
+            backgrounds[i] = keys[i].transform.parent.Find(backgroundName) as RectTransform;
+            if (backgrounds[i] == null) return false;
+        }
 
         Transform bottomHud = keys[0].transform.parent;
         for (int i = 0; i < keys.Length; i++)
         {
             if (keys[i].transform.parent != bottomHud) return false;
-            InstallSlot(bottomHud, keys[i], i);
+            InstallSlot(bottomHud, backgrounds[i], keys[i], i);
         }
         return true;
     }
 
-    private static void InstallSlot(Transform bottomHud, TextMeshProUGUI key, int index)
+    private static void InstallSlot(Transform bottomHud, RectTransform background, TextMeshProUGUI key, int index)
     {
         string overlayName = $"QuickBarSlot{index + 1}Runtime";
         if (bottomHud.Find(overlayName) != null) return;
 
-        RectTransform keyRect = key.rectTransform;
         GameObject overlay = new(overlayName, typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
         RectTransform overlayRect = overlay.GetComponent<RectTransform>();
         overlayRect.SetParent(bottomHud, false);
-        overlayRect.anchorMin = keyRect.anchorMin;
-        overlayRect.anchorMax = keyRect.anchorMax;
-        overlayRect.pivot = new Vector2(0.5f, 0.5f);
-        overlayRect.anchoredPosition = keyRect.anchoredPosition + new Vector2(0f, -14f);
-        overlayRect.sizeDelta = new Vector2(48f, 48f);
-        overlay.transform.SetSiblingIndex(key.transform.GetSiblingIndex());
+        overlayRect.anchorMin = background.anchorMin;
+        overlayRect.anchorMax = background.anchorMax;
+        overlayRect.pivot = background.pivot;
+        overlayRect.anchoredPosition = background.anchoredPosition;
+        overlayRect.sizeDelta = background.sizeDelta;
+
+        // The authored Frame is above all QuickSlotBackground instances. Insert the runtime
+        // layer immediately before it so the yellow fill covers the background exactly while
+        // the ornamental frame remains crisp and unobstructed.
+        Transform frame = bottomHud.Find("Frame");
+        int overlaySiblingIndex = frame != null
+            ? frame.GetSiblingIndex()
+            : background.GetSiblingIndex() + 1;
+        overlay.transform.SetSiblingIndex(overlaySiblingIndex);
 
         Image hitArea = overlay.GetComponent<Image>();
         hitArea.color = new Color(1f, 1f, 1f, 0.001f);
         hitArea.raycastTarget = true;
 
-        Image selection = CreateImage("Selection", overlay.transform);
+        Image selectionMask = CreateImage("SelectionMask", overlay.transform);
+        Stretch(selectionMask.rectTransform);
+        Image backgroundImage = background.GetComponent<Image>();
+        if (backgroundImage != null)
+        {
+            selectionMask.sprite = backgroundImage.sprite;
+            selectionMask.type = backgroundImage.type;
+            selectionMask.preserveAspect = backgroundImage.preserveAspect;
+            selectionMask.fillCenter = backgroundImage.fillCenter;
+            selectionMask.pixelsPerUnitMultiplier = backgroundImage.pixelsPerUnitMultiplier;
+        }
+        selectionMask.color = Color.white;
+        Mask mask = selectionMask.gameObject.AddComponent<Mask>();
+        mask.showMaskGraphic = false;
+
+        Image selection = CreateImage("Selection", selectionMask.transform);
         Stretch(selection.rectTransform);
-        selection.color = new Color(1f, 0.78f, 0.2f, 0.24f);
+        selection.color = new Color(1f, 0.72f, 0.05f, 0.48f);
 
         Image icon = CreateImage("ItemIcon", overlay.transform);
         Place(icon.rectTransform, 0f, -1f, 31f, 31f);
@@ -103,7 +131,7 @@ public sealed class QuickBarHudRuntimeInstaller : MonoBehaviour
         GameObject quantityObject = new("Quantity", typeof(RectTransform), typeof(CanvasRenderer), typeof(TextMeshProUGUI));
         RectTransform quantityRect = quantityObject.GetComponent<RectTransform>();
         quantityRect.SetParent(overlay.transform, false);
-        Place(quantityRect, 13f, -15f, 22f, 14f);
+        Place(quantityRect, 22f, -23f, 22f, 14f);
         TextMeshProUGUI quantity = quantityObject.GetComponent<TextMeshProUGUI>();
         quantity.font = key.font;
         quantity.fontSharedMaterial = key.fontSharedMaterial;

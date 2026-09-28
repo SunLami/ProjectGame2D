@@ -46,11 +46,11 @@ Kết quả kiểm tra:
 
 | Asset | References | Unique | Missing GUID | Nhận xét |
 |---|---:|---:|---:|---|
-| `ItemDatabase.asset` | 60 | 60 | 0 | Hiện chứa toàn bộ equipment với amount 1 |
-| `EquipmentCatalog.asset` | 60 | 60 | 0 | Bao phủ đúng toàn bộ 60 equipment assets theo slot |
+| `ItemDatabase.asset` | 57 | 57 | 0 | Chứa 55 active equipment và 2 resource seed entries |
+| `EquipmentCatalog.asset` | 55 | 55 | 0 | Bao phủ đúng toàn bộ 55 active equipment assets theo slot |
 | `RockTileData.asset` | 1089 tiles + 9 walk clips + 10 run clips | 1108 | 0 | Một surface definition rất lớn, load qua Resources |
 
-`ItemDatabase` hiện không phải catalog trung lập: nó được `InventorySeeder` dùng để cấp toàn bộ 60 item
+`ItemDatabase` hiện không phải catalog trung lập: nó được `InventorySeeder` dùng để cấp toàn bộ entry
 khi scene start. Đây là demo fixture/technical debt, không được dùng làm New Game default production.
 
 `ItemLookup.BuildFromResources` ghi `lookup[itemId] = item`; nếu sau này có duplicate ID, asset sau sẽ
@@ -58,7 +58,7 @@ ghi đè âm thầm. Project chưa có catalog validator/build gate.
 
 ## Stable ID audit
 
-Toàn bộ 60 item IDs đang theo dạng legacy như `sword_lvl1`, `body_lvl9`, `ring_lvl10`:
+Toàn bộ 55 active equipment item IDs đang theo dạng legacy như `sword_lvl1`, `body_lvl9`, `ring_lvl8`:
 
 - Lowercase ASCII và unique: đạt.
 - Có semantic content: đạt một phần.
@@ -72,7 +72,7 @@ sang convention chuẩn hoặc khai báo legacy IDs là alias. Ví dụ mapping 
 sword_lvl1   → item.weapon.sword.level.001
 body_lvl2    → item.armor.body.level.002
 head_lvl4    → item.armor.head.level.004
-ring_lvl10   → item.accessory.ring.level.010
+ring_lvl8    → item.accessory.ring.level.008
 ```
 
 Tên display, filename và Unity GUID không được thay thế stable ID trong save.
