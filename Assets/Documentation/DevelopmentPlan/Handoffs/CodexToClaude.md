@@ -1,5 +1,115 @@
 # Codex → Claude Handoff
 
+## Phase A — 7 SFX UI common
+
+Status: `SFX_PHASE_A_UI_ART_READY`
+
+Ngày: 2026-09-28
+
+Đã tạo đủ 7 file one-shot trong `Assets/Resources/Audio/SFX/UI/`. Tất cả là mono, 44.1 kHz,
+PCM 16-bit WAV, đã cắt phần transient chính/bỏ phần im lặng thừa, fade mép 4 ms để tránh
+click và peak-normalize -1 dBFS. Không sửa script/prefab.
+
+| SFX ID / file | Freesound source | License | Tác giả | Thời lượng thực tế / đích |
+| --- | --- | --- | --- | --- |
+| `sfx.ui.hover` — `sfx_ui_hover.wav` | [Wooden Click](https://freesound.org/people/BenjaminNelan/sounds/321083/) | CC0 1.0 | BenjaminNelan | 0.120s / 0.15s |
+| `sfx.ui.click_primary` — `sfx_ui_click_primary.wav` | [Metallic_Click](https://freesound.org/people/BlondPanda/sounds/778444/) | CC0 1.0 | BlondPanda | 0.250s / 0.25s |
+| `sfx.ui.click_secondary` — `sfx_ui_click_secondary.wav` | [wooden click.wav](https://freesound.org/people/allaskas/sounds/677298/) | CC0 1.0 | allaskas | 0.200s / 0.25s |
+| `sfx.ui.toggle` — `sfx_ui_toggle.wav` | [click_switch.wav](https://freesound.org/people/StarTowerStudio/sounds/424987/) | CC0 1.0 | StarTowerStudio | 0.200s / 0.20s |
+| `sfx.ui.error` — `sfx_ui_error.wav` | [pong sound effect ui button](https://freesound.org/people/Troube/sounds/686543/) | CC0 1.0 | Troube | 0.298s / 0.40s |
+| `sfx.ui.popup_open` — `sfx_ui_popup_open.wav` | [paper - folding 01.wav](https://freesound.org/people/Anthousai/sounds/398896/) | CC0 1.0 | Anthousai | 0.350s / 0.35s |
+| `sfx.ui.popup_close` — `sfx_ui_popup_close.wav` | [Close Book 2](https://freesound.org/people/qubodup/sounds/862316/) | CC0 1.0 | qubodup | 0.243s / 0.25s |
+
+Nguồn và license cũng đã ghi tại `Assets/Resources/Audio/SFX/CREDITS.md`. Toàn bộ đều là
+CC0; không dùng CC-BY, NC hay license không rõ. File là derivative từ public MP3 preview do
+Freesound cung cấp trên chính trang sound (download bản gốc yêu cầu tài khoản).
+
+### Query không có kết quả CC0 khớp hoàn toàn
+
+- `short low error tone / UI negative buzz soft`: không chọn các buzz/synth điện tử vì xung
+  đột art direction. Dùng guitar note trầm, ngắn của Troube (0.298s), vẫn đúng dải
+  0.2–0.4s của `AudioSfxSystem.md`, cần Claude duyệt sắc thái negative.
+- `soft cloth parchment unfold with faint bell chime / UI panel open`: không tìm được một file
+  CC0 sạch có cả parchment/cloth và faint bell trong cùng recording. Dùng transient gấp giấy/
+  parchment của Anthousai, không trộn chuông từ file thứ tám để giữ đúng phạm vi 7 source.
+
+---
+
+## BottomHUD — icon contrast + EXP connector ornament fix
+
+Status: `BOTTOMHUD_CONTRAST_AND_ORNAMENT_FIX_ART_READY`
+
+Ngày: 2026-09-28
+
+Đã sửa đúng 3 PNG được giao, giữ nguyên tên file, canvas, GUID/import metadata và không sửa code:
+
+- `Assets/Resources/UI/Gameplay/UnifiedHUD/DarkInventoryStyle/map_icon_v1.png` — giữ biểu tượng
+  bản đồ gấp/compass, chuyển mặt giấy sang ivory sáng, viền antique gold và giữ sapphire accent.
+  Kích thước **1017×915 px**, RGB trung bình vùng opaque mới **(130.69, 128.78, 96.04)**
+  (trước: `(86, 70, 47)`).
+- `Assets/Resources/UI/Gameplay/UnifiedHUD/DarkInventoryStyle/stat_icon_v1.png` — giữ silhouette
+  nhân vật trùm hood, chuyển hood/áo sang ivory–light silver, viền antique gold và sapphire gem.
+  Kích thước **1117×1168 px**, RGB trung bình vùng opaque mới **(160.28, 149.94, 131.13)**
+  (trước: `(43, 39, 41)`).
+- `Assets/Resources/UI/Gameplay/UnifiedHUD/DarkInventoryStyle/unified_hud_frame_v1.png` — giữ
+  **2172×424 px**, toàn bộ 8 quick-slot, 2 socket, rãnh EXP alpha-rỗng và phần khung còn lại;
+  hai vai nối ở đầu rãnh EXP được bổ sung strut walnut đặc với highlight antique-gold để thay cảm
+  giác gai đen rời rạc và giảm khoảng alpha giữa rãnh trên với thân HUD.
+
+Điểm neo alpha của rãnh EXP tại cột trung tâm vẫn khớp file cũ chính xác:
+`y=6 → 162`, `y=39 → 0`, `y=43 → 15`; tâm rãnh EXP tiếp tục alpha `0`, nên fill phía sau
+không bị che. Không thay đổi 7 asset PlayerHUD/BottomHUD đã PASS.
+
+---
+
+## PlayerHUD + BottomHUD — Dark Inventory Style, locked size
+
+Status: `PLAYERHUD_BOTTOMHUD_ART_READY`
+
+Ngày: 2026-09-28
+
+Đã tạo đủ 10 PNG RGBA đúng kích thước khóa trong entry nguồn, không sửa code/prefab và không
+đụng các asset đã migrate trước đó.
+
+### PlayerStatusHUD
+
+- `Assets/Resources/UI/Gameplay/PlayerStatusHUD/DarkInventoryStyle/player_status_frame_v1.png`
+  — **1949×626 px**, alpha bbox **99.59% rộng / 98.72% cao**.
+- `Assets/Resources/UI/Gameplay/PlayerStatusHUD/DarkInventoryStyle/health_fill_v1.png`
+  — **2065×125 px**, **98.06% / 90.40%**; giữ fill đỏ.
+- `Assets/Resources/UI/Gameplay/PlayerStatusHUD/DarkInventoryStyle/stamina_fill_green_v1.png`
+  — **2091×192 px**, **98.09% / 89.58%**; giữ fill xanh lá.
+- `Assets/Resources/UI/Gameplay/PlayerStatusHUD/DarkInventoryStyle/default_avatar_v1.png`
+  — **1254×1254 px**, **94.90% / 94.90%**.
+
+Theo owner clarification, `player_status_frame_v1` chỉ giữ khung/rim; lòng Avatar, LevelBadge,
+Health và Stamina đều **alpha 0** để các child image/fill nằm phía sau hiện qua đúng kiến trúc.
+
+### UnifiedHUD / BottomHUD
+
+- `Assets/Resources/UI/Gameplay/UnifiedHUD/DarkInventoryStyle/unified_hud_frame_v1.png`
+  — **2172×424 px**, alpha bbox **95.99% rộng / 100.00% cao**.
+- `Assets/Resources/UI/Gameplay/UnifiedHUD/DarkInventoryStyle/quick_slot_background_brown_v1.png`
+  — **1254×1254 px**, **94.90% / 94.90%**.
+- `Assets/Resources/UI/Gameplay/UnifiedHUD/DarkInventoryStyle/socket_background_round_brown_v1.png`
+  — **1254×1254 px**, **94.90% / 94.90%**.
+- `Assets/Resources/UI/Gameplay/UnifiedHUD/DarkInventoryStyle/experience_bar_fill_v1.png`
+  — **2120×125 px**, **98.11% / 90.40%**; giữ fill xanh dương.
+- `Assets/Resources/UI/Gameplay/UnifiedHUD/DarkInventoryStyle/map_icon_v1.png`
+  — **1017×915 px**, **89.77% / 90.38%**; giữ nghĩa bản đồ.
+- `Assets/Resources/UI/Gameplay/UnifiedHUD/DarkInventoryStyle/stat_icon_v1.png`
+  — **1117×1168 px**, **89.97% / 90.07%**; giữ nghĩa nhân vật/chỉ số.
+
+Theo owner clarification, lòng rãnh EXP, 8 quick slots và 2 socket Map/Character trong
+`unified_hud_frame_v1` đều **alpha 0** để các child asset/fill nằm phía sau hiện lên. Rãnh EXP đã
+được kiểm tra alpha tại trái/tâm/phải đều bằng 0; ornament không còn che ngang lòng fill.
+
+Tất cả `.meta` dùng Sprite Mode `Single`, Filter `Point`, Mipmap `Off`, Compression `None`,
+PPU 100, Border `0,0,0,0`; 10 asset có 10 GUID riêng. Art direction dùng charcoal/walnut,
+antique-gold mảnh và sapphire tiết chế theo D-041.
+
+---
+
 ## Fishing mystery fish icon — readability revision
 
 Status: `FISHING_MYSTERY_FISH_ICON_ART_READY`

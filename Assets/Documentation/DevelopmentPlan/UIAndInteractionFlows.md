@@ -129,8 +129,10 @@ navigation/state.
   có thể được thay qua `PlayerHUDController.SetAvatar`; luồng upload/chọn ảnh, kiểm tra file và persistence
   chỉ triển khai sau khi contract avatar được chốt.
 - HUD chỉ có hai tài nguyên: Health đỏ và Stamina xanh lá. Khung pixel-art gỗ sồi/viền vàng/đá xanh
-  dùng texture alpha rỗng; fill là `UnityEngine.UI.Image` riêng, giảm bằng `fillAmount` với origin trái để
-  mép phải rút dần về trái.
+  (Light Fantasy) dùng texture alpha rỗng; fill là `UnityEngine.UI.Image` riêng, giảm bằng `fillAmount`
+  với origin trái để mép phải rút dần về trái. D-057 từng thử migrate khung này sang Dark Inventory
+  Style nhưng owner review Play Mode thật thấy kém hơn bản gốc và đã revert — xem D-057 để biết chi
+  tiết 2 lỗi phát hiện (icon Map/Character chìm nền, nhánh nối rãnh EXP rời rạc) trước khi thử lại.
 - Health đọc `PlayerStat.OnHealthChanged`. Stamina là runtime resource: hao liên tục khi sprint thực sự
   đang di chuyển và hao một lần khi bắt đầu attack; walk không tiêu hao và attack bị chặn nếu không đủ
   chi phí. Stamina hồi khi không sprint và không được thêm vào save slot.
@@ -139,6 +141,20 @@ navigation/state.
   controller cập nhật từ `PlayerStat.OnLevelUp`, không bake số level vào texture.
 - Frame HUD là overlay có alpha thật ở lõi hai track. `HealthFill` và `StaminaFill` dùng sprite riêng có
   pixel highlight/shadow, render dưới Frame và tiếp tục giảm bằng `Image.fillAmount` origin trái.
+
+### BottomHUD (unified quick bar) visual direction
+
+- `UnifiedGameplayHUD.prefab/BottomHUD` là thanh HUD đáy màn hình thường trực: 8 quick slot, nút
+  Map (`M`)/Character (`C`), exp bar và Level badge dùng chung `socket_background_round_brown` với
+  `PlayerHUD`, hiện vẫn ở Light Fantasy gốc (D-057 thử migrate sang Dark Inventory Style nhưng đã
+  revert — icon Map/Character trong bản thử bị chìm vào nền tối, nhánh nối rãnh EXP rời rạc so với bản
+  gốc). `unified_hud_frame` bake khung ngoài + rãnh quick slot + track exp bar, các mảnh chức năng
+  (`QuickSlotBackground`, `ExperienceFill`, `map_icon`, `stat_icon`) là `Image` runtime riêng đặt trên
+  Frame, không bake vào cùng bitmap.
+- `ExperienceFill` giữ tông xanh dương, giảm/tăng bằng `Image.fillAmount` giống HealthFill/StaminaFill;
+  8 `QuickSlotBackground` dùng chung một sprite nền, icon item render đè lên bởi `QuickBarSlotUI`
+  (không đổi). Không đổi `UnifiedGameplayHudController`/`QuickBarManager`/`QuickBarSlotUI` public API
+  hay input binding của phím số/`M`/`C`.
 
 ### Character Popup visual direction
 
