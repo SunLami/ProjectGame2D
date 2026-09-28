@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using NUnit.Framework;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 public sealed class QuickBarManagerPlayModeTests
 {
@@ -56,10 +57,38 @@ public sealed class QuickBarManagerPlayModeTests
         CollectionAssert.AreEqual(new[] { "item.missing" }, missing);
     }
 
+    [Test]
+    public void DragAssignedSlotOutsideQuickBar_ClearsOnlyTheAssignment()
+    {
+        GameObject eventSystemObject = null;
+        if (EventSystem.current == null)
+            eventSystemObject = new GameObject("QuickBarTestEventSystem", typeof(EventSystem));
+
+        var slotObject = new GameObject("QuickBarSlotTest", typeof(RectTransform), typeof(QuickBarSlotUI));
+        QuickBarSlotUI slot = slotObject.GetComponent<QuickBarSlotUI>();
+        slot.Configure(0, null, null, null);
+        Assert.IsTrue(QuickBarManager.Instance.Assign(0, _item));
+
+        var eventData = new PointerEventData(EventSystem.current)
+        {
+            pointerDrag = slotObject,
+            position = new Vector2(-1000f, -1000f)
+        };
+        slot.OnBeginDrag(eventData);
+        slot.OnEndDrag(eventData);
+
+        Assert.IsNull(QuickBarManager.Instance.GetAssignedItemId(0));
+        Assert.AreSame(_item, _resolver.Resolve(_item.itemId));
+
+        Object.DestroyImmediate(slotObject);
+        if (eventSystemObject != null) Object.DestroyImmediate(eventSystemObject);
+    }
+
     private sealed class FakeResolver : IItemResolver
     {
         private readonly Dictionary<string, ItemSO> _items;
         public FakeResolver(Dictionary<string, ItemSO> items) => _items = items;
         public bool TryResolve(string itemId, out ItemSO item) => _items.TryGetValue(itemId ?? "", out item);
+        public ItemSO Resolve(string itemId) => _items.TryGetValue(itemId ?? "", out ItemSO item) ? item : null;
     }
 }

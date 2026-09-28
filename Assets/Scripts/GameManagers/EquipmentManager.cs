@@ -122,6 +122,7 @@ public class EquipmentManager : MonoBehaviour
     {
         if (item == null || sourceSlot == null || sourceSlot.item != item) return false;
         if (InventoryManager.Instance == null) return false;
+        if (PlayerStat.Instance != null && PlayerStat.Instance.Level < item.requiredLevel) return false;
 
         EquipmentItemSO previous = GetEquipped(item.slot);
 

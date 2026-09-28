@@ -53,6 +53,21 @@ public sealed class EquipmentManagerPlayModeTests
     }
 
     [Test]
+    public void Equip_BelowRequiredLevel_FailsWithoutChangingInventoryOrEquipment()
+    {
+        _ring.requiredLevel = 5;
+        InventoryManager.Instance.AddItem(_ring, 1);
+        InventorySlot slot = InventoryManager.Instance.Slots[0];
+
+        bool result = EquipmentManager.Instance.Equip(_ring, slot);
+
+        Assert.IsFalse(result);
+        Assert.AreEqual(_ring, slot.item);
+        Assert.AreEqual(1, slot.quantity);
+        Assert.IsNull(EquipmentManager.Instance.GetEquipped(EquipSlot.Ring));
+    }
+
+    [Test]
     public void Equip_ReplacingPrevious_ReturnsPreviousToSourceSlotWhenItEmpties()
     {
         var secondRing = ScriptableObject.CreateInstance<EquipmentItemSO>();
