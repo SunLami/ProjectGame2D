@@ -10,10 +10,14 @@ public sealed class FishDefinitionSO : ItemSO
     [Header("Economy")]
     [SerializeField, Min(0)] private int _pricePerKilogram = 10;
 
+    [Header("Bait")]
+    [SerializeField] private FishingBaitTier _requiredBaitTier = FishingBaitTier.Small;
+
     public string FishId => itemId;
     public int MinimumWeightGrams => _minimumWeightGrams;
     public int MaximumWeightGrams => _maximumWeightGrams;
     public int PricePerKilogram => _pricePerKilogram;
+    public FishingBaitTier RequiredBaitTier => _requiredBaitTier;
 
     public int RollWeightGrams() => Random.Range(_minimumWeightGrams, _maximumWeightGrams + 1);
     public int ClampWeight(int weightGrams) => Mathf.Clamp(weightGrams, _minimumWeightGrams, _maximumWeightGrams);

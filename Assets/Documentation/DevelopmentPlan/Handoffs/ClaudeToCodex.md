@@ -1,6 +1,379 @@
 # Claude → Codex Handoff
 
-Status: `VERIFIED_FISHING_MYSTERY_ICON_AND_SLIDER_CAP_FIX`
+Status: `READY_FOR_CODEX`
+
+Ngày: 2026-09-28
+Feature: Farm Storage UI (D-060) Dark Inventory Style asset production — thay flat-color placeholder
+bằng bitmap thật, giống hướng đã làm cho Fishing UI (D-055/D-056).
+
+## Bối cảnh
+
+Backend `FarmStorageManager`/`FarmStorageUI` (kho riêng cho Farming, mở qua NPC Leofrun → dialogue
+choice "Gửi/lấy đồ") đã hoàn tất và hoạt động đúng trong Play Mode. UI hiện dựng bằng script
+`Assets/Editor/FarmStorageUIAuthoring.cs` (menu `Tools/Project Game/Farming/Build And Install Farm
+Storage UI`), toàn bộ là `Image` màu phẳng placeholder chưa từng có bitmap — giống điểm xuất phát của
+Fishing UI trước D-055. Prefab kết quả: `Assets/Prefabs/UI/FarmStorageUI.prefab`, đã cài vào
+`Bootstrap.unity` (`_UI/FarmStorageUI`, cạnh `DialogueUI`/`GameplayUIRoot`/`QuestAcceptPopupUI` — UI
+toàn app load từ Bootstrap, không phải scene gameplay).
+
+Yêu cầu hình ảnh: theo `DarkLightFantasyUIStyleGuide.md` (charcoal/walnut nền, viền antique gold mảnh,
+sapphire tiết chế), đồng bộ với Inventory/QuestTracker/Minimap/Dialogue/Fishing đã có — **nhưng bỏ hẳn
+phần Equipment** (đây không phải Inventory, không có equip slot nào), chỉ là khung kho 2 cột.
+
+## Bố cục và kích thước hiện tại (khớp 1:1 những gì `FarmStorageUIAuthoring.cs` đang hardcode)
+
+Canvas 1920×1080 (`CanvasScaler` ScaleWithScreenSize, match 0.5), sortingOrder 225.
+
+| Element | Path (dưới `FarmStorageUI/Backdrop/Panel`) | Kích thước logic | Ghi chú |
+|---|---|---|---|
+| Panel nền | `Panel` | 900×600, center | Hiện `Image` phẳng `PanelColor`; cần frame/border Dark Inventory Style |
+| 4 viền | `BorderTop/Bottom/Left/Right` | dày 2px mỗi cạnh | Có thể thay bằng 1 sprite frame 9-slice bao toàn panel thay vì 4 thanh mảnh, miễn giữ được cảm giác viền vàng mảnh |
+| Tiêu đề | `Title` | TMP text, không phải sprite | Giữ nguyên, chỉ cần đổi màu/font nếu style guide yêu cầu |
+| Nút đóng | `CloseButton` | 36×36 | Cần icon "X" Dark Inventory Style, hiện là ô màu đỏ phẳng |
+| Feedback text | `Feedback` | TMP text | Giữ nguyên |
+| Cột trái | `InventoryColumn` ("Your Items") | 420×460 | |
+| Cột phải | `StorageColumn` ("Storage") | 420×460 | |
+| Header mỗi cột | `<Column>/Header` | TMP text 400×26 | |
+| Khung scroll mỗi cột | `<Column>/ScrollView` | 400×400 | Hiện `Image` phẳng `HeaderColor` làm nền; có thể thay bằng sprite khung kho/túi |
+| Row item (dùng chung 2 cột) | `RowTemplate` (dưới `Panel`, instantiate runtime) | cao 40, full width cột | `Icon` 30×30 lề trái, `Label` chiếm phần còn lại; nền `RowColor` phẳng — cần sprite slot/row Dark Inventory Style, có `Button` transition ColorTint khi hover |
+
+## Việc Codex cần làm
+
+1. Gen bộ sprite theo bảng trên (panel frame, border/corner ornament, close button icon, scroll
+   background mỗi cột, row/slot background) — bám đúng kích thước logic ở trên để **không cần sửa bất
+   kỳ `sizeDelta`/`anchoredPosition` nào** trong `FarmStorageUIAuthoring.cs`, đúng bài học đã rút ra ở
+   D-055 (Fishing UI) khi gen mới không khớp kích thước gây lệch bố cục.
+2. Sửa `FarmStorageUIAuthoring.cs` để reference sprite mới thay vì `Color` phẳng (đổi tham số gọi
+   `Image(...)`/thêm `sprite`, có thể đổi `Image.Type` sang `Sliced` cho panel/row nếu cần 9-slice) rồi
+   chạy lại menu `Tools/Project Game/Farming/Build And Install Farm Storage UI` để rebuild prefab +
+   cài lại vào `Bootstrap._UI` (script tự xoá instance cũ trước khi cài instance mới, không tạo trùng).
+3. Test Play Mode thật: New Game (hoặc Continue) → tới NPC Leofrun → chọn "Gửi/lấy đồ" → panel hiện
+   đúng 2 cột, item render đúng icon/tên/số lượng, click deposit/withdraw hoạt động, nút Close/`Escape`
+   đóng đúng. Console sạch.
+
+## Việc Codex KHÔNG cần/không nên làm
+
+- Không đổi `Assets/Scripts/UI/FarmStorageUI.cs` (runtime logic: rebuild list, deposit/withdraw, mở/
+  đóng) hay `Assets/Scripts/Farming/FarmStorageManager.cs` (domain validation, save) — đây là contract
+  Claude sở hữu. Nếu thấy cần field mới (ví dụ quantity picker thay vì deposit/withdraw cả stack), báo
+  lại qua `CodexToClaude.md` thay vì tự thêm.
+- Không đổi tên hoặc bỏ bớt field serialize mà `FarmStorageUIAuthoring.cs` đang gán qua
+  `SerializedObject` (`_backdrop`, `_title`, `_feedbackText`, `_closeButton`,
+  `_inventoryListContent`, `_rowTemplate`, `_storageListContent`) — script build dựa vào đúng path này.
+- Không đổi vị trí cài đặt (`Bootstrap.unity` → `_UI/FarmStorageUI`) hay cấu trúc Canvas gốc (Backdrop
+  luôn bắt đầu `activeSelf = false`, root `FarmStorageUI` luôn `activeSelf = true` để `Awake()` chạy và
+  set `Instance` — tương tự lỗi vừa phát hiện ở `DialogueUI` bị tắt nhầm làm cả hệ dialogue project
+  ngừng hoạt động, đã fix trong session này).
+- Chưa cần làm quantity picker (deposit/withdraw từng phần) — hiện tại chỉ hỗ trợ cả stack, đủ để test
+  hình ảnh.
+
+## Tham khảo
+
+`FishingSystem.md` §Visual direction (D-055/D-056) cho quy trình gen asset tương tự đã áp dụng thành
+công; `FarmingSystem.md` §Farm storage (D-060) cho contract backend đầy đủ;
+`DarkLightFantasyUIStyleGuide.md` cho bảng màu/style chuẩn.
+
+---
+
+Status: `PLAYERHUD_BOTTOMHUD_REVERTED_TO_ORIGINAL_UI`
+
+Ngày: 2026-09-28
+Feature: Hoàn tác toàn bộ tích hợp Dark Inventory Style cho `PlayerHUD.prefab` và
+`UnifiedGameplayHUD.prefab/BottomHUD` (D-057) — owner quyết định giữ UI gốc, bản Dark Inventory Style
+mới nhìn kém hơn (icon Map/Character chìm vào nền, nhánh nối rãnh EXP rời rạc — xem entry
+`VERIFIED_PLAYERHUD_BOTTOMHUD_INTEGRATION` bên dưới cho chi tiết 2 lỗi đã phát hiện).
+
+## Cách hoàn tác
+
+Dùng `git diff HEAD` để xác định chính xác GUID gốc (không đoán) rồi `git checkout -- <2 file
+prefab>` để khôi phục byte-chính-xác — an toàn hơn sửa tay vì cả 2 prefab chưa từng được commit ở
+trạng thái Dark Inventory Style (chỉ sửa uncommitted trong session này), nên HEAD chính là đúng bản
+gốc trước migration.
+
+## Sprite reference đã khôi phục (xác nhận qua `git diff HEAD` trước khi checkout)
+
+**`Assets/Resources/UI/Gameplay/HUD/PlayerHUD.prefab`**:
+- `Frame` → `player_status_frame` (guid `84569c579518b434f9060c41fcb6874d`)
+- `HealthFill` → `health_fill` (guid `a2b89a42b7301ee4c885ee8ef7468e4e`)
+- `StaminaFill` → `stamina_fill_green` (guid `4945734f4f21f2a45a6594f5837c9562`)
+- `Avatar` → `default_avatar` (guid `ce34ecfa3a37e9e4c98f6caf3b1984b7`)
+- `LevelBackground` → `socket_background_round_brown` (guid `cc9db82f2ac863b488ce1ba2a84430ad`)
+
+**`Assets/Resources/UI/Gameplay/UnifiedHUD/UnifiedGameplayHUD.prefab` (`BottomHUD`)**:
+- `Frame` → `unified_hud_frame_0` (guid `d0271d6358f6ed6439d34fe2cf2cadd8`)
+- `ExperienceFill` → `experience_bar_fill_blue_v2_0` (guid `64b9aff0268088143a944f62e522a05f`)
+- `MapBackground`/`StatBackground` → `socket_background_round_brown` (guid
+  `cc9db82f2ac863b488ce1ba2a84430ad`, dùng chung guid với `LevelBackground` ở trên)
+- `MapButton` → `map_icon_0` (guid `8443f7cd1d53d814e94875e1c596c2a0`)
+- `StatButton` → `stat_icon` (guid `eda21969107c35f40814e8661d34b6be`)
+- 8× `QuickSlotBackground` → trước migration hoàn toàn KHÔNG có `m_Sprite` override trên
+  `PrefabInstance` (nghĩa là kế thừa thẳng sprite mặc định `quick_slot_background_brown` từ prefab
+  gốc) — `git checkout` xoá luôn 8 block override tôi từng thêm, đúng trạng thái ban đầu.
+
+## Asset Dark Inventory Style: không xoá, chỉ gỡ khỏi prefab
+
+10 file `_v1` vẫn còn nguyên trong project, không tham chiếu bởi prefab nào:
+- `Assets/Resources/UI/Gameplay/PlayerStatusHUD/DarkInventoryStyle/` (4 file: `player_status_frame_v1`,
+  `health_fill_v1`, `stamina_fill_green_v1`, `default_avatar_v1`)
+- `Assets/Resources/UI/Gameplay/UnifiedHUD/DarkInventoryStyle/` (6 file: `unified_hud_frame_v1`,
+  `quick_slot_background_brown_v1`, `socket_background_round_brown_v1`, `experience_bar_fill_v1`,
+  `map_icon_v1`, `stat_icon_v1`)
+
+**Không tích hợp** 2 bản sửa đã yêu cầu trước đó: `BOTTOMHUD_CONTRAST_AND_ORNAMENT_FIX_ART_READY`,
+`PLAYERHUD_BOTTOMHUD_ART_READY` — coi như huỷ, giữ nguyên asset đã gen để tham khảo/dùng lại sau nếu
+owner đổi ý.
+
+## Kết quả Play Mode (qua đúng luồng MainMenu → Continue → Load Slot 1)
+
+- Verify qua `PrefabUtility.LoadPrefabContents`: toàn bộ 18 field Image (5 PlayerHUD + 13 BottomHUD)
+  đều có sprite hợp lệ, **không có Missing Sprite/Missing Reference nào**.
+- Avatar, Level badge, Health (đỏ), Stamina (xanh lá) hiện đúng như trước migration — khung gỗ sồi/
+  viền vàng nguyên bản.
+- 8 quick slot, icon Map ("M") và Character ("C") hiển thị rõ ràng, tương phản tốt — đúng bản gốc,
+  không còn bug chìm icon.
+- Test damage trực tiếp qua `PlayerStat.TakeDamage(20)`: `HealthFill.fillAmount` giảm đúng từ `1.0`
+  xuống `0.82`, xác nhận binding fillAmount không bị ảnh hưởng bởi việc revert.
+- Console: không lỗi Missing Sprite/Reference. Cảnh báo "2 audio listeners"/video codec là pre-existing
+  từ luồng MainMenu→gameplay, không liên quan tới HUD, ngoài phạm vi.
+- Không đổi `RectTransform`/`anchoredPosition`/`sizeDelta`/anchor/pivot/sibling order/`Image.Type`/
+  fill method/fill origin, không sửa gameplay code, không ảnh hưởng UI subsystem khác (Fishing/Quest/
+  Minimap/MainMenu/CharacterPopup vẫn giữ nguyên Dark Inventory Style đã duyệt trước đó).
+
+**Screenshot**: `Assets/Screenshots/screenshot-20260928-013415.png` (toàn cảnh gameplay),
+`Assets/Screenshots/reverted_bottomhud.png` (BottomHUD zoom, icon Map/Character rõ ràng).
+
+---
+
+Ngày: 2026-09-28
+Feature: Gen 7 SFX one-shot UI chung (D-058, Phase A của `AudioSfxSystem.md`) — dùng chung cho
+MainMenu, IntroCutscene và toàn bộ Pause/Inventory/Settings/popup trong MapNhat. Đây là đợt gen audio
+đầu tiên của project (trước đó chỉ có nhạc nền + footstep, không có SFX UI nào).
+
+Việc này **độc lập** với entry `READY_FOR_CODEX_BOTTOMHUD_CONTRAST_AND_ORNAMENT_FIX` bên dưới (ảnh
+BottomHUD) — entry đó vẫn đang chờ xử lý riêng, chưa đóng.
+
+## Đọc trước
+
+`Assets/Documentation/DevelopmentPlan/AudioSfxSystem.md` — nguồn chuẩn đầy đủ (kiến trúc, convention,
+toàn bộ catalog 3 phase, §6 giải thích lý do dùng Freesound thay vì `generate_audio`/fal). Handoff này
+chỉ trích đúng bảng Phase A để Codex lấy asset ngay, không lặp lại toàn bộ context.
+
+## Nguồn asset: Freesound.org (free), KHÔNG dùng `generate_audio`
+
+`generate_audio` trong MCP chỉ có đúng 1 provider (`fal`), tính phí BYOK, không free. Đổi sang
+**Freesound.org** — thư viện SFX free do người dùng thật thu âm/upload:
+
+1. Search trên Freesound theo cột "Mô tả gen (search query)" dưới đây (có thể dịch/diễn đạt lại tiếng
+   Anh cho ra kết quả tốt hơn).
+2. Ưu tiên license **CC0** (không cần credit). Chỉ chọn **CC-BY** nếu không có CC0 phù hợp — bắt buộc
+   ghi tác giả + link gốc vào `Assets/Resources/Audio/SFX/CREDITS.md` (tạo file mới nếu chưa có).
+   **Tuyệt đối không dùng file NC (non-commercial)** hoặc license không rõ ràng.
+3. Tránh file có watermark/giọng announcer đè lên, tránh file ồn nền lớn.
+4. Tải file, convert/trim về đúng spec: **mono, PCM 44.1kHz WAV, đúng khoảng Thời lượng ở cột cuối,
+   không loop, cắt bỏ khoảng lặng thừa đầu/cuối** — nếu file gốc dài hơn nhiều, chỉ giữ đúng đoạn âm
+   thanh chính.
+5. Lưu đúng path = cột Output folder + tên file = cột "Tên file" (không đổi tên khác).
+
+## Asset cần lấy — 7 SFX UI (Phase A)
+
+| SFX ID | Tên file | Output folder | Mô tả gen (search query) | Thời lượng đích |
+| --- | --- | --- | --- | --- |
+| `sfx.ui.hover` | `sfx_ui_hover.wav` | `Assets/Resources/Audio/SFX/UI/` | soft wood tick short / light UI hover click | 0.15s |
+| `sfx.ui.click_primary` | `sfx_ui_click_primary.wav` | `Assets/Resources/Audio/SFX/UI/` | warm wooden metal click confirm / UI button click positive | 0.25s |
+| `sfx.ui.click_secondary` | `sfx_ui_click_secondary.wav` | `Assets/Resources/Audio/SFX/UI/` | soft neutral UI click / button click back cancel | 0.25s |
+| `sfx.ui.toggle` | `sfx_ui_toggle.wav` | `Assets/Resources/Audio/SFX/UI/` | small mechanical switch toggle / latch click short | 0.2s |
+| `sfx.ui.error` | `sfx_ui_error.wav` | `Assets/Resources/Audio/SFX/UI/` | short low error tone / UI negative buzz soft | 0.4s |
+| `sfx.ui.popup_open` | `sfx_ui_popup_open.wav` | `Assets/Resources/Audio/SFX/UI/` | soft cloth parchment unfold with faint bell chime / UI panel open | 0.35s |
+| `sfx.ui.popup_close` | `sfx_ui_popup_close.wav` | `Assets/Resources/Audio/SFX/UI/` | soft UI panel close short / paper close whoosh small | 0.25s |
+
+Tất cả: mono, ngắn gọn, không khoảng lặng thừa đầu/cuối, không loop (one-shot), âm sắc ấm/cổ điển
+(gỗ, kim loại, da, chuông đồng) — **không** dùng âm điện tử/8-bit/synth hiện đại, đồng bộ
+`DarkLightFantasyUIStyleGuide.md` (D-041).
+
+## Việc Codex KHÔNG cần làm
+
+- Không sửa `SoundFXManager.cs`, `SoundFXLibrary.cs`, hay bất kỳ script/prefab nào — chỉ chuẩn bị 7
+  file audio trên. Claude tự wire `PlaySfx`/`ButtonSfx` sau khi nhận asset.
+- Không tự đổi tên file khác cột "Tên file" — Claude cần tên khớp để gán vào `SoundFXLibrary` không
+  phải đoán lại.
+- Không lấy thêm SFX ngoài 7 cái trên (Phase B/C trong `AudioSfxSystem.md` sẽ có handoff riêng sau).
+- Không dùng file license NC hoặc không ghi rõ license trên Freesound.
+- Không đụng gì tới `unified_hud_frame_v1.png`/`map_icon_v1.png`/`stat_icon_v1.png` (đó là task riêng,
+  entry bên dưới).
+
+## Báo lại khi xong
+
+Ghi entry mới ở đầu `Assets/Documentation/DevelopmentPlan/Handoffs/CodexToClaude.md` với Status
+`SFX_PHASE_A_UI_ART_READY`, liệt kê đúng 7 tên file, URL Freesound + license + tác giả của từng file
+(khớp với những gì đã ghi vào `CREDITS.md`), thời lượng thực tế so với cột yêu cầu, và bất kỳ mô tả
+nào không tìm được file khớp cần Claude duyệt lại query.
+
+---
+
+Ngày: 2026-09-28
+Feature: Sửa 2 vấn đề cụ thể trên `unified_hud_frame_v1.png`/`map_icon_v1.png`/`stat_icon_v1.png`
+sau khi owner review Play Mode thật (xem entry `VERIFIED_PLAYERHUD_BOTTOMHUD_INTEGRATION` bên dưới cho
+kết quả PlayerHUD — PASS, không cần sửa gì).
+
+## Xác nhận trước: đây KHÔNG phải lỗi vị trí/RectTransform
+
+Owner nghi ngờ UI bị lệch khi tích hợp. Đã verify bằng code (không có dòng nào đổi
+`RectTransform`/`anchoredPosition`, chỉ có `img.sprite = ...`) và đo bằng Python/PIL: điểm neo alpha
+của rãnh EXP tại cột trung tâm khung — y=6/39/43 — **khớp 100%** giữa `unified_hud_frame.png` (cũ) và
+`unified_hud_frame_v1.png` (mới). Vấn đề nằm ở NỘI DUNG art, không phải vị trí tích hợp.
+
+## Vấn đề 1: `map_icon_v1.png`/`stat_icon_v1.png` quá tối, chìm vào socket
+
+Đo màu trung bình vùng opaque (Python/PIL):
+- `map_icon_v1.png`: RGB trung bình `(86, 70, 47)` — nâu tối.
+- `stat_icon_v1.png`: RGB trung bình `(43, 39, 41)` — gần đen.
+- `socket_background_round_brown_v1.png` (nền socket chứa icon): RGB trung bình `(50, 40, 31)`.
+
+3 giá trị này gần như cùng tông tối — icon chìm hoàn toàn vào nền, nhìn như socket rỗng trong Play
+Mode thật (owner chụp màn hình xác nhận). **Yêu cầu sửa**: vẽ lại `map_icon_v1.png`/`stat_icon_v1.png`
+với màu sáng/tương phản mạnh hơn hẳn so với nền socket — gợi ý dùng tông antique gold hoặc ivory/cream
+(cùng ngôn ngữ sapphire/gold accent của bộ Dark Inventory Style đã duyệt ở Minimap/CharacterPopup),
+giữ nguyên kích thước `1017×915`/`1117×1168` và ý nghĩa icon (bản đồ/nhân vật).
+
+## Vấn đề 2: nhánh nối rãnh EXP với thân khung quá rời rạc
+
+So sánh trực quan `unified_hud_frame.png` (cũ) và `unified_hud_frame_v1.png` (mới): bản cũ dùng dây
+lá xanh nối liền mạch giữa rãnh EXP (phía trên) và thân khung chính (phía dưới); bản mới dùng gai đen
+nhọn tạo nhiều khoảng hở lớn — dù điểm neo pixel không đổi (đã verify ở trên), phong cách này khiến
+rãnh EXP nhìn "lơ lửng/rời rạc" khỏi thân khung thay vì một khối liền mạch. **Yêu cầu sửa**: vẽ lại
+nhánh nối cho liền mạch/đặc hơn (không cần quay lại dây lá xanh, có thể dùng thanh kim loại/dây xích
+gold đặc theo phong cách Dark Inventory Style), giảm khoảng hở trong suốt giữa rãnh EXP và thân khung
+chính. Giữ nguyên toàn bộ phần còn lại của khung (8 rãnh quick slot, 2 socket tròn, kích thước
+`2172×424`) — chỉ sửa vùng nhánh nối này.
+
+## Việc Codex KHÔNG cần làm
+
+- Không đổi 8 asset còn lại đã verify PASS (`player_status_frame_v1`, `health_fill_v1`,
+  `stamina_fill_green_v1`, `default_avatar_v1`, `quick_slot_background_brown_v1`,
+  `socket_background_round_brown_v1`, `experience_bar_fill_v1`).
+- Không đổi kích thước 3 file đang sửa (`unified_hud_frame_v1` giữ `2172×424`, `map_icon_v1` giữ
+  `1017×915`, `stat_icon_v1` giữ `1117×1168`).
+- Không đổi vị trí rãnh EXP (điểm neo y=6/39/43 phải giữ nguyên).
+- Không sửa code.
+
+## Báo lại khi xong
+
+Ghi entry mới ở đầu `Assets/Documentation/DevelopmentPlan/Handoffs/CodexToClaude.md` với Status
+`BOTTOMHUD_CONTRAST_AND_ORNAMENT_FIX_ART_READY`, nêu rõ màu mới của 2 icon (RGB trung bình) và mô tả
+ngắn cách đã làm nhánh nối liền mạch hơn.
+
+---
+
+Status: `VERIFIED_PLAYERHUD_BOTTOMHUD_INTEGRATION`
+
+Ngày: 2026-09-28
+Feature: Tích hợp 10 asset Dark Inventory Style cho `PlayerHUD.prefab` + `UnifiedGameplayHUD.prefab/
+BottomHUD` (`PLAYERHUD_BOTTOMHUD_ART_READY`, D-057) — PlayerHUD PASS hoàn toàn; BottomHUD phát hiện 2
+vấn đề nội dung art (xem entry mới nhất phía trên), không phải lỗi tích hợp.
+
+## Prefab đã sửa (chỉ đổi `Image.sprite`, không đổi `RectTransform`/sibling order/`Image.Type`)
+
+- **`Assets/Resources/UI/Gameplay/HUD/PlayerHUD.prefab`**: `Frame`→`player_status_frame_v1`,
+  `HealthFill`→`health_fill_v1`, `StaminaFill`→`stamina_fill_green_v1`,
+  `Avatar`→`default_avatar_v1`, `LevelBackground`→`socket_background_round_brown_v1`.
+- **`Assets/Resources/UI/Gameplay/UnifiedHUD/UnifiedGameplayHUD.prefab` (`BottomHUD`)**:
+  `Frame`→`unified_hud_frame_v1`, `ExperienceFill`→`experience_bar_fill_v1`,
+  `MapBackground`/`StatBackground`→`socket_background_round_brown_v1`,
+  `MapButton`→`map_icon_v1`, `StatButton`→`stat_icon_v1`, 8×`QuickSlotBackground`→
+  `quick_slot_background_brown_v1`.
+- Xác nhận trước khi lưu: sibling order 2 prefab không đổi — `Frame` vốn đã đứng sau
+  Avatar/Fill/LevelBackground/QuickSlotBackground (render đè lên, đúng kiến trúc "frame overlay có
+  rãnh alpha rỗng" đã có từ trước), không cần đảo thứ tự.
+
+## Kết quả Play Mode (qua đúng luồng MainMenu → Continue → Load Slot 1, không tắt qua MapNhat trực
+tiếp)
+
+- **PlayerHUD**: Avatar, Health (đỏ), Stamina (xanh lá), Level badge đều hiện đúng qua các lỗ rỗng của
+  `player_status_frame_v1`, không méo/mờ, không tràn ra ngoài khung. **PASS**.
+- **BottomHUD**: 8 quick slot, EXP text hiện đúng vị trí; nhưng **Map/Character icon gần như không
+  thấy** (chìm vào socket tối màu) và **nhánh nối rãnh EXP nhìn rời rạc** — 2 vấn đề đã phân tích chi
+  tiết ở entry phía trên, đã xác nhận không phải do sai RectTransform.
+- Console: có `PlayerLoop called recursively` (lỗi engine đã biết từ trước, do gọi screenshot dồn dập
+  trong Play Mode, không liên quan asset), và cảnh báo "2 audio listeners"/"No cameras rendering" khi
+  đi qua luồng MainMenu→gameplay đầy đủ — cả hai đều không liên quan tới thay đổi asset HUD lần này,
+  chưa điều tra thêm vì ngoài phạm vi yêu cầu hiện tại.
+
+**Screenshot**: `Assets/Screenshots/screenshot-20260928-011810.png` (PlayerHUD + BottomHUD trong
+gameplay), `Assets/Screenshots/screenshot-20260928-012005.png` (toàn cảnh).
+
+---
+
+Ngày: 2026-09-28
+Feature: Gen asset Dark Inventory Style cho `PlayerHUD.prefab` (Health/Stamina/Avatar/Level) và
+`UnifiedGameplayHUD.prefab/BottomHUD` (quick bar đáy màn hình) — D-057.
+
+## Bối cảnh — bài học từ Fishing UI (D-055), áp dụng ngay từ đầu lần này
+
+- **Khoá cứng kích thước 1:1 theo file gốc ngay từ đầu** — không lặp lại việc phải revert/regen 3 vòng
+  như Fishing. Toàn bộ 10 asset dưới đây phải xuất đúng kích thước px ghi trong bảng, không hơn không
+  kém, để Claude chỉ đổi `Sprite` reference, **không đổi bất kỳ `RectTransform`/`sizeDelta`/
+  `anchoredPosition`/`Image.Type` nào** trong code hay prefab.
+- BitePrompt/CatchZone của Fishing từng gặp lỗi "nội dung vẽ nhỏ hơn hẳn canvas" (padding thừa) và
+  "cùng tông màu với nền nên chìm mất" — áp dụng luôn 2 bài học này: nội dung phải lấp ≥85% canvas mỗi
+  chiều (trừ khi cần bo góc/circle tự nhiên), fill Health/Stamina/Experience phải tương phản rõ với
+  khung/track xung quanh.
+- `player_status_frame`/`unified_hud_frame` bake chung cả khung ngoài lẫn rãnh (track) của các thanh
+  fill trong CÙNG một bitmap (không có sprite track riêng) — đúng kiến trúc hiện tại, giữ nguyên cách
+  này, không tách track ra sprite riêng (sẽ cần sửa code không cần thiết).
+
+## Art direction
+
+Theo `DarkLightFantasyUIStyleGuide.md` (D-041): charcoal/walnut nền, viền antique gold mảnh, sapphire
+tiết chế. **Giữ nguyên tông màu fill** để không đổi ngôn ngữ đọc nhanh trạng thái đã quen thuộc:
+Health = đỏ, Stamina = xanh lá, Experience = xanh dương. Chỉ đổi khung/nền/viền/socket sang charcoal/
+walnut/gold, không đổi màu 3 loại fill.
+
+## Asset cần gen
+
+### Nhóm 1 — PlayerHUD (`Assets/Resources/UI/Gameplay/PlayerStatusHUD/DarkInventoryStyle/`)
+
+| Tên file mới | Kích thước px (khớp file gốc) | Vai trò |
+| --- | --- | --- |
+| `player_status_frame_v1.png` | 1949×626 | Khung ngoài, bake rãnh Health + Stamina, hiện tại hiển thị ở `260×98` logic (Simple stretch — tỉ lệ khung không cần khớp chính xác khung logic, giữ đúng như file gốc để không đổi mức méo hiện có) |
+| `health_fill_v1.png` | 2065×125 | Fill Health đỏ, `Image.fillAmount` origin trái |
+| `stamina_fill_green_v1.png` | 2091×192 | Fill Stamina xanh lá, `Image.fillAmount` origin trái |
+| `default_avatar_v1.png` | 1254×1254 | Avatar tròn mặc định (placeholder, có thể thay qua `SetAvatar`) |
+
+### Nhóm 2 — BottomHUD + shared (`Assets/Resources/UI/Gameplay/UnifiedHUD/DarkInventoryStyle/`)
+
+| Tên file mới | Kích thước px (khớp file gốc) | Vai trò |
+| --- | --- | --- |
+| `unified_hud_frame_v1.png` | 2172×424 | Khung thanh HUD đáy màn hình, bake rãnh 8 quick slot + track exp bar + socket Map/Character, hiển thị ở `700×137` logic |
+| `quick_slot_background_brown_v1.png` | 1254×1254 | Nền 1 quick slot, dùng chung cho cả 8 ô |
+| `socket_background_round_brown_v1.png` | 1254×1254 | Socket tròn dùng chung: LevelBadge của PlayerHUD **và** nút Map/Character của BottomHUD (3 chỗ dùng chung 1 file) |
+| `experience_bar_fill_v1.png` | 2120×125 | Fill Experience xanh dương (thay `experience_bar_fill_blue_v2.png`) |
+| `map_icon_v1.png` | 1017×915 | Icon bản đồ trong nút Map (đáy quick bar) |
+| `stat_icon_v1.png` | 1117×1168 | Icon nhân vật trong nút Character (đáy quick bar) |
+
+Tất cả: RGBA, Sprite Mode Single, Filter Point, Mipmap Off, Compression None, PPU 100, Border 0
+(không cái nào cần 9-slice — tất cả đang dùng `Image.Type.Simple`/`Filled`, không `Sliced`).
+
+## Việc Codex KHÔNG cần làm
+
+- Không sửa `PlayerHUDController.cs`, `UnifiedGameplayHudController.cs`, `QuickBarManager.cs`,
+  `QuickBarSlotUI.cs` hay bất kỳ code nào — chỉ gen bitmap, Claude tự gán sprite vào 2 prefab
+  (`PlayerHUD.prefab`, `UnifiedGameplayHUD.prefab`) qua `PrefabUtility.LoadPrefabContents`.
+  Update chỉ tôi tự làm.
+- Không đổi tông màu fill Health (đỏ)/Stamina (xanh lá)/Experience (xanh dương).
+- Không đổi map_icon/stat_icon thành icon khác về mặt ý nghĩa (vẫn phải nhận ra là bản đồ/nhân vật) —
+  chỉ đổi phong cách vẽ.
+- Không đụng asset Fishing/Quest/Minimap/MainMenu/CharacterPopup đã migrate trước đó.
+- Không tạo sprite track riêng cho Health/Stamina/Experience — track vẫn bake chung trong
+  `player_status_frame_v1`/`unified_hud_frame_v1` như kiến trúc hiện tại.
+
+## Báo lại khi xong
+
+Ghi entry mới ở đầu `Assets/Documentation/DevelopmentPlan/Handoffs/CodexToClaude.md` với Status
+`PLAYERHUD_BOTTOMHUD_ART_READY`, liệt kê đúng 10 tên file, xác nhận kích thước khớp bảng, và % lấp
+đầy canvas đo được cho từng file (đặc biệt `stamina_fill_green_v1` vì file gốc có padding dọc lớn –
+192px cao trong khi hiển thị chỉ 14px, cần xác nhận phần nội dung thật không bị co lại quá nhỏ).
+
+---
 
 Ngày: 2026-09-28
 Feature: Tích hợp `fishing_mystery_fish_icon.png` (`FISHING_MYSTERY_FISH_ICON_ART_READY`, D-056) +

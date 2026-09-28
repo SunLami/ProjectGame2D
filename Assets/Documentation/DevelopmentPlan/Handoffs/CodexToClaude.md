@@ -1,5 +1,285 @@
 # Codex → Claude Handoff
 
+# Status: `FARM_STORAGE_CAPACITY_MATCHES_INVENTORY_VERIFIED`
+
+Ngày: 2026-09-28
+
+Owner override contract capacity cũ (Storage cố định 30):
+
+- `FarmStorageManager` mặc định 40 như `InventoryManager`, có `EnsureSlotCount` để tự mở rộng tới
+  `InventoryManager.Slots.Count`; không tự shrink để tránh mất item/save data.
+- Restore save tự mở rộng tới số slot trong payload trước khi hydrate, nên save V11 cũ vẫn đọc được.
+- Khi mở/rebuild UI, cả hai cột tạo đúng cùng số empty grid slots theo Inventory capacity và dùng
+  cùng content height/scroll range.
+- Play Mode với save thật: Inventory 132 slot, Storage 132 slot, hai lớp background đều 132 ô,
+  content height đều 1306 px và scroll range đều 1026 px.
+
+---
+
+# Status: `FARM_STORAGE_DRAG_DROP_AND_REJECTION_WARNING_VERIFIED`
+
+Ngày: 2026-09-28
+
+Đã bổ sung drag-and-drop hai chiều cho Farm Storage:
+
+- `FarmStorageDragItem` dùng cùng pattern với `InventorySlotUI`: tạo ghost icon trên root Canvas,
+  icon gốc giảm alpha trong lúc kéo và khôi phục khi thả.
+- `FarmStorageDropZone` phủ hai `ScrollView`; Inventory → Storage gọi deposit toàn stack,
+  Storage → Inventory gọi withdraw toàn stack. Click-to-transfer cũ vẫn giữ nguyên.
+- Non-Farming item vẫn kéo được, nhưng drop sang Storage không mutate dữ liệu và hiện feedback đỏ
+  `Only farming items can be stored here.`
+- Play Mode verify: ghost icon được tạo; drop event thật gửi 24 Carrot Seeds và drop ngược trả lại
+  Inventory; thử `Head Lv4` giữ Storage từ 0 → 0, đúng message và màu RGBA(1, 0.25, 0.2, 1).
+- Screenshot: `Assets/Screenshots/farm_storage_drag_rejection_warning-1.png`.
+
+---
+
+# Status: `FARM_STORAGE_SCROLL_AND_FULL_INVENTORY_VERIFIED`
+
+Ngày: 2026-09-28
+
+Theo owner review, đã sửa behavior hai grid:
+
+- Header trái đổi từ `Your Items` thành `Inventory`.
+- Inventory render toàn bộ stack hiện có, không còn lọc bỏ non-Farming item.
+- Chỉ Farming item (`FarmStorageManager.IsFarmingItem`) có button interactable/deposit được;
+  item khác chỉ xem, không có listener gửi sang Storage. Domain validation vẫn giữ nguyên.
+- Mỗi cột dùng `ScrollContent` riêng cao hơn viewport (280 px). Inventory content tự tăng chiều
+  cao theo số hàng thực tế; Storage giữ 30 slot/5 hàng và cuộn được tới hàng cuối.
+- Play Mode với save thật: 122 stack Inventory được render, 2 Farming button enabled và 120
+  non-Farming button disabled; Inventory content cao 1248 px và cuộn từ y=0 tới y=968.
+  Storage content cao 320 px và cuộn 40 px. Screenshot:
+  `Assets/Screenshots/farm_storage_inventory_all_items_scroll.png`.
+
+---
+
+# Status: `FARM_STORAGE_GRID_ALIGNMENT_AND_DETACHED_CLOSE_VERIFIED`
+
+Ngày: 2026-09-28
+
+Owner review phát hiện các text/grid bị lệch khỏi artwork và `inventory_grid_border_hd` tạo thêm
+một khung gỗ vuông dư quanh mỗi grid. Đã sửa visual-only:
+
+- Board mới `farm_storage_inventory_board_v4.png` giữ alpha và layout gốc, xóa socket vuông bake
+  trên top rail; top rail giờ liền mạch.
+- `CloseButton` dùng sprite riêng, đặt ngoài mép phải panel (`x=468`) và không còn nhập vào khung.
+- Title được căn vào title plaque; hai header được căn giữa header wells; feedback được đưa vào
+  thanh feedback phía dưới.
+- Bỏ sprite/background của hai `ScrollView` để không chồng khung gỗ lên well đã bake trong board.
+- Hai grid co về 380×340, slot 48×48, spacing 10 và padding cân đối; tâm cột đổi sang ±205 để
+  mọi slot nằm gọn trong hai well.
+- Đã rebuild/cài lại prefab bằng menu authoring. Play Mode visual verify thành công, Console 0 error.
+  Screenshot: `Assets/Screenshots/farm_storage_grid_alignment_v4.png`.
+
+---
+
+# Status: `FARM_STORAGE_INVENTORY_GRID_VISUAL_OVERRIDE_VERIFIED`
+
+Ngày: 2026-09-28
+
+Theo visual review mới của user, Farm Storage (D-060) đã được đổi từ danh sách row trên nền
+Dark Inventory sang hai lưới item đồng bộ trực tiếp với Inventory hiện tại.
+
+## Visual contract mới
+
+- Hai cột `Your Items` / `Storage`, mỗi cột là grid cố định 6×5 (30 slot), cell 52×52,
+  spacing 10×10; item runtime phủ đúng lên các empty slot nền.
+- Dùng lại asset thật của Inventory:
+  `inventory_slot_reference_v4.png`, `inventory_grid_border_hd.png`,
+  `inventory_close_thin_hd.png`.
+- Board raster pixel-art mới:
+  `Assets/Resources/UI/Farming/DarkInventoryStyle/farm_storage_inventory_board_v2.png`
+  (900×600), cùng palette nâu ấm / vàng / sapphire và không có equipment panel.
+- Importer được ép `Sprite/Single`, alpha transparency, mipmap off, `Point`, uncompressed.
+- Cell item chỉ hiện icon + quantity (ẩn quantity khi bằng 1), giống ngôn ngữ thị giác Inventory.
+  Đây là thay đổi presentation duy nhất trong `FarmStorageUI.cs`; logic giao dịch và
+  `FarmStorageManager.cs` không đổi, serialized field contract giữ nguyên.
+
+## Authoring/integration
+
+- `FarmStorageUIAuthoring.cs` tạo hai lớp grid cho mỗi cột: 30 empty slot tĩnh và `Content`
+  runtime dùng cùng `GridLayoutGroup`.
+- Đã chạy `Tools/Project Game/Farming/Build And Install Farm Storage UI`; prefab được rebuild
+  và Bootstrap `_UI` có đúng một instance.
+- `DecisionRegister.md` và `FarmingSystem.md` đã cập nhật theo visual override được user duyệt.
+
+## Play Mode verify thật
+
+Đã chạy Bootstrap → Continue Slot 1 → MapNhat → Leofrun → chọn
+"I'd like to store some things." → Farm Storage mở:
+
+- Hai grid 6×5 render đúng, hai item seed phủ lên hai slot đầu, quantity `24` hiển thị.
+- Deposit Carrot Seeds: Storage nhận item, feedback `Stored 24x Carrot Seeds.`
+- Withdraw lại: Inventory nhận item, feedback `Withdrew 24x Carrot Seeds.`
+- CloseButton ẩn `Backdrop/Panel` đúng; Unity Console có 0 error.
+- Screenshot: `Assets/Screenshots/farm_storage_inventory_grid_playmode.png`.
+
+---
+
+# Status: `FARM_STORAGE_DARK_INVENTORY_ART_VERIFIED`
+
+Ngày: 2026-09-28
+
+Đã hoàn tất visual-only pass cho Farm Storage UI (D-060), không đổi
+`FarmStorageUI.cs`, `FarmStorageManager.cs`, serialized field contract hay layout hiện có.
+
+## Asset pixel-art mới
+
+Tạo tại `Assets/Resources/UI/Farming/DarkInventoryStyle/`:
+
+- `farm_storage_panel_v1.png` — 900×600, charcoal/walnut, viền antique gold và sapphire góc.
+- `farm_storage_scroll_v1.png` — 400×400, dùng chung cho hai cột.
+- `farm_storage_row_v1.png` — 400×40, nền row/slot.
+- `farm_storage_close_v1.png` — 36×36, nút X.
+
+Tất cả là raster PNG pixel-art (không phải vector), gen/điều chỉnh theo art đang dùng thật của
+Fishing v3, Dialogue v4, Commerce v2 và Dark Inventory Style: cạnh bậc pixel, clustered shading,
+palette charcoal/walnut/antique-gold, sapphire chỉ làm điểm neo. Importer là Sprite/Single,
+alpha transparency bật, mipmap tắt, filter Point.
+
+## Authoring/integration
+
+- `Assets/Editor/FarmStorageUIAuthoring.cs` load bốn sprite thật và gán vào Panel, hai ScrollView,
+  RowTemplate và CloseButton; bỏ bốn `Border*` màu phẳng vì border/corner đã nằm trong panel sprite.
+- Không đổi bất kỳ `sizeDelta`/`anchoredPosition` nào: Panel 900×600, ScrollView 400×400,
+  Row cao 40, CloseButton 36×36 giữ nguyên.
+- Đã chạy menu `Tools/Project Game/Farming/Build And Install Farm Storage UI` trong Unity.
+- Prefab `Assets/Prefabs/UI/FarmStorageUI.prefab` đã rebuild và `Bootstrap._UI` có đúng 1
+  `FarmStorageUI`; root active, `Backdrop` inactive lúc khởi tạo đúng contract.
+
+## Play Mode verify thật
+
+Luồng đã chạy: Bootstrap → Continue → Slot 1 → MapNhat → tới Leofrun → tương tác
+`TraderNpcInteractionUI.TryInteract()` trong range → chọn dialogue thật
+"I'd like to store some things." → continue node outcome → Farm Storage mở.
+
+- Hai cột render đúng; Inventory hiện `Carrot Seeds x24`, `Eggplant Seeds x24`, icon/tên/số lượng
+  không mất binding.
+- Click row Carrot Seeds thật: deposit thành công, Inventory còn Eggplant, Storage hiện Carrot,
+  feedback `Stored 24x Carrot Seeds.`
+- Click row Storage thật: withdraw thành công, Inventory trở lại đủ hai stack, Storage rỗng,
+  feedback `Withdrew 24x Carrot Seeds.`
+- Click CloseButton thật đóng panel và restore state đúng.
+- Nhánh Escape không bị sửa; `FarmStorageUI.Update()` vẫn dùng
+  `Keyboard.current.escapeKey.wasPressedThisFrame`/gamepad East như trước. Bộ harness MCP không tạo
+  được cạnh `wasPressedThisFrame` đáng tin cậy, nên không ghi nhận một manual-keypress mới cho nhánh
+  này; contract runtime đã có sẵn và visual pass không chạm vào nó.
+- Console sau toàn bộ flow: 0 error.
+
+Screenshot: `Assets/Screenshots/farm_storage_dark_inventory_playmode.png`.
+
+---
+
+## Phase A — 7 SFX UI common
+
+Status: `SFX_PHASE_A_UI_ART_READY`
+
+Ngày: 2026-09-28
+
+Đã tạo đủ 7 file one-shot trong `Assets/Resources/Audio/SFX/UI/`. Tất cả là mono, 44.1 kHz,
+PCM 16-bit WAV, đã cắt phần transient chính/bỏ phần im lặng thừa, fade mép 4 ms để tránh
+click và peak-normalize -1 dBFS. Không sửa script/prefab.
+
+| SFX ID / file | Freesound source | License | Tác giả | Thời lượng thực tế / đích |
+| --- | --- | --- | --- | --- |
+| `sfx.ui.hover` — `sfx_ui_hover.wav` | [Wooden Click](https://freesound.org/people/BenjaminNelan/sounds/321083/) | CC0 1.0 | BenjaminNelan | 0.120s / 0.15s |
+| `sfx.ui.click_primary` — `sfx_ui_click_primary.wav` | [Metallic_Click](https://freesound.org/people/BlondPanda/sounds/778444/) | CC0 1.0 | BlondPanda | 0.250s / 0.25s |
+| `sfx.ui.click_secondary` — `sfx_ui_click_secondary.wav` | [wooden click.wav](https://freesound.org/people/allaskas/sounds/677298/) | CC0 1.0 | allaskas | 0.200s / 0.25s |
+| `sfx.ui.toggle` — `sfx_ui_toggle.wav` | [click_switch.wav](https://freesound.org/people/StarTowerStudio/sounds/424987/) | CC0 1.0 | StarTowerStudio | 0.200s / 0.20s |
+| `sfx.ui.error` — `sfx_ui_error.wav` | [pong sound effect ui button](https://freesound.org/people/Troube/sounds/686543/) | CC0 1.0 | Troube | 0.298s / 0.40s |
+| `sfx.ui.popup_open` — `sfx_ui_popup_open.wav` | [paper - folding 01.wav](https://freesound.org/people/Anthousai/sounds/398896/) | CC0 1.0 | Anthousai | 0.350s / 0.35s |
+| `sfx.ui.popup_close` — `sfx_ui_popup_close.wav` | [Close Book 2](https://freesound.org/people/qubodup/sounds/862316/) | CC0 1.0 | qubodup | 0.243s / 0.25s |
+
+Nguồn và license cũng đã ghi tại `Assets/Resources/Audio/SFX/CREDITS.md`. Toàn bộ đều là
+CC0; không dùng CC-BY, NC hay license không rõ. File là derivative từ public MP3 preview do
+Freesound cung cấp trên chính trang sound (download bản gốc yêu cầu tài khoản).
+
+### Query không có kết quả CC0 khớp hoàn toàn
+
+- `short low error tone / UI negative buzz soft`: không chọn các buzz/synth điện tử vì xung
+  đột art direction. Dùng guitar note trầm, ngắn của Troube (0.298s), vẫn đúng dải
+  0.2–0.4s của `AudioSfxSystem.md`, cần Claude duyệt sắc thái negative.
+- `soft cloth parchment unfold with faint bell chime / UI panel open`: không tìm được một file
+  CC0 sạch có cả parchment/cloth và faint bell trong cùng recording. Dùng transient gấp giấy/
+  parchment của Anthousai, không trộn chuông từ file thứ tám để giữ đúng phạm vi 7 source.
+
+---
+
+## BottomHUD — icon contrast + EXP connector ornament fix
+
+Status: `BOTTOMHUD_CONTRAST_AND_ORNAMENT_FIX_ART_READY`
+
+Ngày: 2026-09-28
+
+Đã sửa đúng 3 PNG được giao, giữ nguyên tên file, canvas, GUID/import metadata và không sửa code:
+
+- `Assets/Resources/UI/Gameplay/UnifiedHUD/DarkInventoryStyle/map_icon_v1.png` — giữ biểu tượng
+  bản đồ gấp/compass, chuyển mặt giấy sang ivory sáng, viền antique gold và giữ sapphire accent.
+  Kích thước **1017×915 px**, RGB trung bình vùng opaque mới **(130.69, 128.78, 96.04)**
+  (trước: `(86, 70, 47)`).
+- `Assets/Resources/UI/Gameplay/UnifiedHUD/DarkInventoryStyle/stat_icon_v1.png` — giữ silhouette
+  nhân vật trùm hood, chuyển hood/áo sang ivory–light silver, viền antique gold và sapphire gem.
+  Kích thước **1117×1168 px**, RGB trung bình vùng opaque mới **(160.28, 149.94, 131.13)**
+  (trước: `(43, 39, 41)`).
+- `Assets/Resources/UI/Gameplay/UnifiedHUD/DarkInventoryStyle/unified_hud_frame_v1.png` — giữ
+  **2172×424 px**, toàn bộ 8 quick-slot, 2 socket, rãnh EXP alpha-rỗng và phần khung còn lại;
+  hai vai nối ở đầu rãnh EXP được bổ sung strut walnut đặc với highlight antique-gold để thay cảm
+  giác gai đen rời rạc và giảm khoảng alpha giữa rãnh trên với thân HUD.
+
+Điểm neo alpha của rãnh EXP tại cột trung tâm vẫn khớp file cũ chính xác:
+`y=6 → 162`, `y=39 → 0`, `y=43 → 15`; tâm rãnh EXP tiếp tục alpha `0`, nên fill phía sau
+không bị che. Không thay đổi 7 asset PlayerHUD/BottomHUD đã PASS.
+
+---
+
+## PlayerHUD + BottomHUD — Dark Inventory Style, locked size
+
+Status: `PLAYERHUD_BOTTOMHUD_ART_READY`
+
+Ngày: 2026-09-28
+
+Đã tạo đủ 10 PNG RGBA đúng kích thước khóa trong entry nguồn, không sửa code/prefab và không
+đụng các asset đã migrate trước đó.
+
+### PlayerStatusHUD
+
+- `Assets/Resources/UI/Gameplay/PlayerStatusHUD/DarkInventoryStyle/player_status_frame_v1.png`
+  — **1949×626 px**, alpha bbox **99.59% rộng / 98.72% cao**.
+- `Assets/Resources/UI/Gameplay/PlayerStatusHUD/DarkInventoryStyle/health_fill_v1.png`
+  — **2065×125 px**, **98.06% / 90.40%**; giữ fill đỏ.
+- `Assets/Resources/UI/Gameplay/PlayerStatusHUD/DarkInventoryStyle/stamina_fill_green_v1.png`
+  — **2091×192 px**, **98.09% / 89.58%**; giữ fill xanh lá.
+- `Assets/Resources/UI/Gameplay/PlayerStatusHUD/DarkInventoryStyle/default_avatar_v1.png`
+  — **1254×1254 px**, **94.90% / 94.90%**.
+
+Theo owner clarification, `player_status_frame_v1` chỉ giữ khung/rim; lòng Avatar, LevelBadge,
+Health và Stamina đều **alpha 0** để các child image/fill nằm phía sau hiện qua đúng kiến trúc.
+
+### UnifiedHUD / BottomHUD
+
+- `Assets/Resources/UI/Gameplay/UnifiedHUD/DarkInventoryStyle/unified_hud_frame_v1.png`
+  — **2172×424 px**, alpha bbox **95.99% rộng / 100.00% cao**.
+- `Assets/Resources/UI/Gameplay/UnifiedHUD/DarkInventoryStyle/quick_slot_background_brown_v1.png`
+  — **1254×1254 px**, **94.90% / 94.90%**.
+- `Assets/Resources/UI/Gameplay/UnifiedHUD/DarkInventoryStyle/socket_background_round_brown_v1.png`
+  — **1254×1254 px**, **94.90% / 94.90%**.
+- `Assets/Resources/UI/Gameplay/UnifiedHUD/DarkInventoryStyle/experience_bar_fill_v1.png`
+  — **2120×125 px**, **98.11% / 90.40%**; giữ fill xanh dương.
+- `Assets/Resources/UI/Gameplay/UnifiedHUD/DarkInventoryStyle/map_icon_v1.png`
+  — **1017×915 px**, **89.77% / 90.38%**; giữ nghĩa bản đồ.
+- `Assets/Resources/UI/Gameplay/UnifiedHUD/DarkInventoryStyle/stat_icon_v1.png`
+  — **1117×1168 px**, **89.97% / 90.07%**; giữ nghĩa nhân vật/chỉ số.
+
+Theo owner clarification, lòng rãnh EXP, 8 quick slots và 2 socket Map/Character trong
+`unified_hud_frame_v1` đều **alpha 0** để các child asset/fill nằm phía sau hiện lên. Rãnh EXP đã
+được kiểm tra alpha tại trái/tâm/phải đều bằng 0; ornament không còn che ngang lòng fill.
+
+Tất cả `.meta` dùng Sprite Mode `Single`, Filter `Point`, Mipmap `Off`, Compression `None`,
+PPU 100, Border `0,0,0,0`; 10 asset có 10 GUID riêng. Art direction dùng charcoal/walnut,
+antique-gold mảnh và sapphire tiết chế theo D-041.
+
+---
+
 ## Fishing mystery fish icon — readability revision
 
 Status: `FISHING_MYSTERY_FISH_ICON_ART_READY`

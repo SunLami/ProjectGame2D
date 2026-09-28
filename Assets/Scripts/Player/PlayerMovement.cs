@@ -24,9 +24,15 @@ public partial class Player
     private Vector2 _lastFacingDirection = Vector2.down;
     private Vector2 _facingDirection = Vector2.down;
 
+    // Separate from _lastFacingDirection: that field also tracks combat aim (e.g. OnAttack snaps it
+    // toward the mouse cursor when idle-attacking), which would otherwise spin the Minimap/FullMap
+    // marker away from the direction the player is actually walking. This one only ever moves when
+    // real movement input does.
+    private Vector2 _lastMovementFacingDirection = Vector2.down;
+
     // Axis-snapped (0,±1)/(±1,0) facing, exposed read-only for presentation that needs it (e.g. the
     // Minimap/FullMap player marker orientation) without letting anything outside Player mutate it.
-    public Vector2 FacingDirection => _lastFacingDirection;
+    public Vector2 FacingDirection => _lastMovementFacingDirection;
 
     private float CurrentMoveSpeed => _stats.MoveSpeed
         * (_isRunning && _stats.HasStamina ? _stats.SprintMultiplier : 1f);
@@ -68,6 +74,7 @@ public partial class Player
 
         if (_isMoving)
         {
+            _lastMovementFacingDirection = SnapToAxis(_moveInput);
             if (!_isAttacking && !_isHit)
                 SetFacingDirection(_moveInput);
 
@@ -108,13 +115,16 @@ public partial class Player
 
     private void SetFacingDirection(Vector2 direction)
     {
-        _lastFacingDirection = Mathf.Abs(direction.x) > Mathf.Abs(direction.y)
-            ? new Vector2(Mathf.Sign(direction.x), 0f)
-            : new Vector2(0f, Mathf.Sign(direction.y));
+        _lastFacingDirection = SnapToAxis(direction);
         _facingDirection = direction;
         _animator.SetFloat(LastInputXHash, direction.x);
         _animator.SetFloat(LastInputYHash, direction.y);
     }
+
+    private static Vector2 SnapToAxis(Vector2 direction) =>
+        Mathf.Abs(direction.x) > Mathf.Abs(direction.y)
+            ? new Vector2(Mathf.Sign(direction.x), 0f)
+            : new Vector2(0f, Mathf.Sign(direction.y));
 
     private void StopMovement()
     {

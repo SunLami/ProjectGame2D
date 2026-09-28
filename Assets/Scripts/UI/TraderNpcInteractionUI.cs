@@ -11,6 +11,7 @@ public sealed class TraderNpcInteractionUI : MonoBehaviour
 {
     public const string ShopOutcomeId = "commerce.shop";
     public const string CraftingOutcomeId = "commerce.crafting";
+    public const string StorageOutcomeId = "commerce.storage";
 
     [SerializeField] private string _npcId;
     [SerializeField] private string _stationTag;
@@ -18,6 +19,8 @@ public sealed class TraderNpcInteractionUI : MonoBehaviour
     [SerializeField] private TMP_Text _promptText;
     [SerializeField] private Button _interactionButton;
     [SerializeField] private DialogueDefinition _dialogue;
+
+    public string NpcId => _npcId;
 
     private readonly HashSet<Collider2D> _playerColliders = new();
     private PlayerInput _playerInput;
@@ -72,17 +75,15 @@ public sealed class TraderNpcInteractionUI : MonoBehaviour
                 ShopCraftingUI.Instance?.OpenShop(_npcId, _playerInput);
             else if (outcomeId == CraftingOutcomeId)
                 ShopCraftingUI.Instance?.OpenCrafting(_npcId, _stationTag, _playerInput);
+            else if (outcomeId == StorageOutcomeId)
+                FarmStorageUI.Instance?.Open(_playerInput);
         }
         Refresh();
     }
 
-    private void Refresh()
-    {
-        bool visible = _playerColliders.Count > 0
-            && GameStateManager.Instance != null
-            && GameStateManager.Instance.CurrentState == GameState.Playing;
-        _promptRoot.SetActive(visible);
-        if (visible)
-            _promptText.text = "LEFT CLICK — TALK";
-    }
+    // Proximity no longer shows a "LEFT CLICK -- TALK" prompt bubble -- the Talk cursor (D-030)
+    // already communicates that this NPC is interactable, and TryInteract above still works the
+    // same on left click regardless. _promptRoot/_promptText stay wired (prefab-authored fields)
+    // in case a future NPC needs an explicit prompt again, but this capability never shows one.
+    private void Refresh() => _promptRoot.SetActive(false);
 }

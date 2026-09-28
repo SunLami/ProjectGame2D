@@ -83,6 +83,15 @@ public partial class Player : MonoBehaviour, IDamageable
         _animator.SetTrigger(IsHitHash);
     }
 
+    /// <summary>Instantly moves the player, clearing physics velocity so momentum from before the
+    /// warp doesn't carry over. Used by DevPanelController's Teleport action.</summary>
+    public void WarpTo(Vector3 position)
+    {
+        _rigidbody.linearVelocity = Vector2.zero;
+        _rigidbody.position = position;
+        transform.position = position;
+    }
+
     public void FinishHit()
     {
         _isHit = false;
