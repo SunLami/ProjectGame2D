@@ -261,6 +261,7 @@ GameObject:
   - component: {fileID: 7513759103345598885}
   - component: {fileID: 6570067939671483543}
   - component: {fileID: 7436139776670770288}
+  - component: {fileID: 1284264390195977808}
   m_Layer: 0
   m_Name: InteractionPrompt
   m_TagString: Untagged
@@ -385,6 +386,20 @@ MonoBehaviour:
   m_EffectColor: {r: 0.29, g: 0.78, b: 0.88, a: 0.9}
   m_EffectDistance: {x: 2, y: -2}
   m_UseGraphicAlpha: 1
+--- !u!114 &1284264390195977808
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2009720518503377680}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d30e6d7f15fbd8e47b83af0148053e64, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ProjectGame2D.Runtime::ButtonSfx
+  _playHoverSfx: 1
+  _clickSound: 0
 --- !u!1 &2246012884077976581
 GameObject:
   m_ObjectHideFlags: 0
@@ -398,6 +413,7 @@ GameObject:
   - component: {fileID: 4655324433419543077}
   - component: {fileID: 5648292491403165509}
   - component: {fileID: 5283815102719514834}
+  - component: {fileID: 307965051448144234}
   m_Layer: 0
   m_Name: ShopButton
   m_TagString: Untagged
@@ -522,6 +538,20 @@ MonoBehaviour:
   m_EffectColor: {r: 0.25, g: 0.85, b: 0.95, a: 1}
   m_EffectDistance: {x: 2, y: -2}
   m_UseGraphicAlpha: 1
+--- !u!114 &307965051448144234
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2246012884077976581}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d30e6d7f15fbd8e47b83af0148053e64, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ProjectGame2D.Runtime::ButtonSfx
+  _playHoverSfx: 1
+  _clickSound: 0
 --- !u!1 &2569555275217165432
 GameObject:
   m_ObjectHideFlags: 0
@@ -1464,6 +1494,7 @@ GameObject:
   - component: {fileID: 1461905775631271219}
   - component: {fileID: 4588948046409166667}
   - component: {fileID: 1097958913296209561}
+  - component: {fileID: 2551225162499780070}
   m_Layer: 0
   m_Name: CraftingButton
   m_TagString: Untagged
@@ -1588,6 +1619,20 @@ MonoBehaviour:
   m_EffectColor: {r: 0.25, g: 0.85, b: 0.95, a: 1}
   m_EffectDistance: {x: 2, y: -2}
   m_UseGraphicAlpha: 1
+--- !u!114 &2551225162499780070
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7656007059796963504}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d30e6d7f15fbd8e47b83af0148053e64, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ProjectGame2D.Runtime::ButtonSfx
+  _playHoverSfx: 1
+  _clickSound: 0
 --- !u!1 &7696427449380929570
 GameObject:
   m_ObjectHideFlags: 0

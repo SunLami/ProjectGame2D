@@ -151,11 +151,15 @@ public sealed class MainMenuSaveSlotsUI : MonoBehaviour
         if (_isLoading)
             return;
 
+        bool popupWasOpen = _settingsPage.activeSelf;
+
         CloseConfirm();
         CloseError();
         _slotPage.SetActive(false);
         _settingsPage.SetActive(false);
         _landingPage.SetActive(true);
+        if (popupWasOpen)
+            SoundFXManager.PlaySfx("sfx.ui.popup_close");
         Select(_newGameButton);
     }
 
@@ -261,6 +265,7 @@ public sealed class MainMenuSaveSlotsUI : MonoBehaviour
         _pendingConfirmation = action;
         _confirmMessage.text = message;
         _confirmPopup.SetActive(true);
+        SoundFXManager.PlaySfx("sfx.ui.popup_open");
         Select(_confirmCancelButton);
     }
 
@@ -273,8 +278,11 @@ public sealed class MainMenuSaveSlotsUI : MonoBehaviour
 
     private void CloseConfirm()
     {
+        bool wasOpen = _confirmPopup.activeSelf;
         _pendingConfirmation = null;
         _confirmPopup.SetActive(false);
+        if (wasOpen)
+            SoundFXManager.PlaySfx("sfx.ui.popup_close");
         if (_slotPage.activeSelf)
             SelectFirstAvailableSlot();
     }
@@ -284,12 +292,16 @@ public sealed class MainMenuSaveSlotsUI : MonoBehaviour
         SetLoading(false);
         _errorMessage.text = string.IsNullOrWhiteSpace(message) ? "The operation could not be completed." : message;
         _errorPopup.SetActive(true);
+        SoundFXManager.PlaySfx("sfx.ui.error");
         Select(_errorCloseButton);
     }
 
     private void CloseError()
     {
+        bool wasOpen = _errorPopup.activeSelf;
         _errorPopup.SetActive(false);
+        if (wasOpen)
+            SoundFXManager.PlaySfx("sfx.ui.popup_close");
         if (_slotPage.activeSelf)
             SelectFirstAvailableSlot();
         else
@@ -307,6 +319,7 @@ public sealed class MainMenuSaveSlotsUI : MonoBehaviour
         ApplySettings(_settingsSnapshot);
         _landingPage.SetActive(false);
         _settingsPage.SetActive(true);
+        SoundFXManager.PlaySfx("sfx.ui.popup_open");
         Select(_sfxSlider);
     }
 
