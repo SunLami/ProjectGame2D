@@ -66,6 +66,10 @@ public class PlayerStat : MonoBehaviour
     public float DodgeChance => Mathf.Clamp(_dodgeChance + _equipmentModifiers.dodgeChance, 0f, 0.5f);
     public bool IsDead => _health <= 0f;
 
+    /// <summary>Dev-only invulnerability toggle (God Mode). Not persisted; defaults to false on
+    /// every scene load. Set exclusively by DevPanelController.</summary>
+    public bool IsInvulnerable { get; set; }
+
     // Compatibility with existing code that used the old property names.
     public float BaseAtkDmg => _attackDamage;
     public float AtkDmg { get => AttackDamage; set => _attackDamage = Mathf.Max(0f, value); }
@@ -93,7 +97,7 @@ public class PlayerStat : MonoBehaviour
 
     public PlayerDamageResult ReceiveDamage(float rawDamage)
     {
-        if (IsDead || rawDamage <= 0f)
+        if (IsDead || rawDamage <= 0f || IsInvulnerable)
             return new PlayerDamageResult(PlayerDamageOutcome.Ignored, 0f);
 
         if (UnityEngine.Random.value < DodgeChance)
@@ -124,6 +128,16 @@ public class PlayerStat : MonoBehaviour
 
         _health = Mathf.Min(_health + amount, MaxHealth);
         OnHealthChanged?.Invoke(_health, MaxHealth);
+    }
+
+    /// <summary>Restores stamina directly, mirroring Heal's clamp/event pattern.</summary>
+    public void RestoreStamina(float amount)
+    {
+        if (amount <= 0f || _stamina >= MaxStamina)
+            return;
+
+        _stamina = Mathf.Min(_stamina + amount, MaxStamina);
+        OnStaminaChanged?.Invoke(_stamina, MaxStamina);
     }
 
     public void TickRegeneration(float deltaTime)

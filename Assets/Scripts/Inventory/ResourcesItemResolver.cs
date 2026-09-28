@@ -37,6 +37,6 @@ public sealed class ResourcesItemResolver : IItemResolver
             return false;
         }
 
-        return _byId.TryGetValue(itemId, out item);
+        return _byId.TryGetValue(ItemIdAliases.GetCanonicalId(itemId), out item);
     }
 }

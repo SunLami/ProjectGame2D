@@ -40,7 +40,8 @@ public static class NewGameFactory
             // Empty -- every persistent world object starts at its scene-authored default state.
             world = new WorldSaveData(),
             quickBar = new QuickBarSaveData(),
-            farming = new FarmingSaveData()
+            farming = new FarmingSaveData(),
+            farmStorage = new FarmStorageSaveData()
         };
     }
 }

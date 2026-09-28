@@ -20,7 +20,11 @@ public sealed class FishingMinigameUI : MonoBehaviour
     [SerializeField] private RectTransform _fishIcon;
     [SerializeField] private RectTransform _catchZone;
     [SerializeField] private Image _fishImage;
+    [SerializeField] private Sprite _mysteryFishSprite;
     [SerializeField] private Slider _progressSlider;
+
+    [Header("Result")]
+    [SerializeField] private Image _resultFishImage;
 
     public void ShowWaiting()
     {
@@ -41,18 +45,24 @@ public sealed class FishingMinigameUI : MonoBehaviour
         SetOnly(_minigamePanel);
         if (_fishImage != null)
         {
-            _fishImage.sprite = fish != null ? fish.icon : null;
+            // The caught species stays hidden during play; ShowResult reveals it on success.
+            _fishImage.sprite = _mysteryFishSprite;
             _fishImage.enabled = _fishImage.sprite != null;
         }
         SetProgress(0f);
         SetTime(timeLimit);
     }
 
-    public void ShowResult(string message)
+    public void ShowResult(string message, Sprite revealedFishIcon = null)
     {
         gameObject.SetActive(true);
         SetOnly(_resultPanel);
         if (_resultText != null) _resultText.text = message;
+        if (_resultFishImage != null)
+        {
+            _resultFishImage.sprite = revealedFishIcon;
+            _resultFishImage.enabled = revealedFishIcon != null;
+        }
     }
 
     public void HideAll()

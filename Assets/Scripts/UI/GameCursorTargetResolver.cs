@@ -93,7 +93,11 @@ public static class GameCursorTargetResolver
 
         QuestNpcInteractionUI questNpc = hoveredComponent.GetComponentInParent<QuestNpcInteractionUI>(true);
         TownElderCommerceInteractionUI commerceNpc = hoveredComponent.GetComponentInParent<TownElderCommerceInteractionUI>(true);
-        Transform npcTransform = questNpc != null ? questNpc.transform : commerceNpc != null ? commerceNpc.transform : null;
+        TraderNpcInteractionUI traderNpc = hoveredComponent.GetComponentInParent<TraderNpcInteractionUI>(true);
+        Transform npcTransform = questNpc != null ? questNpc.transform
+            : commerceNpc != null ? commerceNpc.transform
+            : traderNpc != null ? traderNpc.transform
+            : null;
         if (npcTransform != null)
         {
             target = new GameCursorTarget(GameCursorType.Talk, npcTransform, true, true);

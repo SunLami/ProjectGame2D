@@ -1,0 +1,62 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 14c148da086a4444f9dc223cd131312a, type: 3}
+  m_Name: LeofrunGreeting
+  m_EditorClassIdentifier: ProjectGame2D.Runtime::DialogueDefinition
+  _dialogueId: dialogue.town.leofrun.greeting
+  _initialNodeId: greeting
+  _nodes:
+  - _nodeId: greeting
+    _speakerName: Leofrun
+    _portrait: {fileID: 0}
+    _text: Dirt under the nails, sun on the back -- another good day in the fields.
+      What can I do for you?
+    _nextNodeId:
+    _outcomeId:
+    _choices:
+    - _text: I'd like to buy some seeds.
+      _nextNodeId: shop_leaf
+    - _text: I'd like to store some things.
+      _nextNodeId: storage_leaf
+    - _text: How's the harvest coming along?
+      _nextNodeId: chat_leaf
+    - _text: Just passing by.
+      _nextNodeId: leave_leaf
+  - _nodeId: shop_leaf
+    _speakerName: Leofrun
+    _portrait: {fileID: 0}
+    _text: Good seed makes a good crop. Take your pick.
+    _nextNodeId:
+    _outcomeId: commerce.shop
+    _choices: []
+  - _nodeId: storage_leaf
+    _speakerName: Leofrun
+    _portrait: {fileID: 0}
+    _text: Sure, drop off your seeds and produce here -- I'll keep them safe until
+      you need them.
+    _nextNodeId:
+    _outcomeId: commerce.storage
+    _choices: []
+  - _nodeId: chat_leaf
+    _speakerName: Leofrun
+    _portrait: {fileID: 0}
+    _text: Slow and steady. The soil's been kind to us this season.
+    _nextNodeId:
+    _outcomeId:
+    _choices: []
+  - _nodeId: leave_leaf
+    _speakerName: Leofrun
+    _portrait: {fileID: 0}
+    _text: Mind the fences on your way out.
+    _nextNodeId:
+    _outcomeId:
+    _choices: []

@@ -1,5 +1,728 @@
 # Codex → Claude Handoff
 
+# Status: `FARM_STORAGE_CAPACITY_MATCHES_INVENTORY_VERIFIED`
+
+Ngày: 2026-09-28
+
+Owner override contract capacity cũ (Storage cố định 30):
+
+- `FarmStorageManager` mặc định 40 như `InventoryManager`, có `EnsureSlotCount` để tự mở rộng tới
+  `InventoryManager.Slots.Count`; không tự shrink để tránh mất item/save data.
+- Restore save tự mở rộng tới số slot trong payload trước khi hydrate, nên save V11 cũ vẫn đọc được.
+- Khi mở/rebuild UI, cả hai cột tạo đúng cùng số empty grid slots theo Inventory capacity và dùng
+  cùng content height/scroll range.
+- Play Mode với save thật: Inventory 132 slot, Storage 132 slot, hai lớp background đều 132 ô,
+  content height đều 1306 px và scroll range đều 1026 px.
+
+---
+
+# Status: `FARM_STORAGE_DRAG_DROP_AND_REJECTION_WARNING_VERIFIED`
+
+Ngày: 2026-09-28
+
+Đã bổ sung drag-and-drop hai chiều cho Farm Storage:
+
+- `FarmStorageDragItem` dùng cùng pattern với `InventorySlotUI`: tạo ghost icon trên root Canvas,
+  icon gốc giảm alpha trong lúc kéo và khôi phục khi thả.
+- `FarmStorageDropZone` phủ hai `ScrollView`; Inventory → Storage gọi deposit toàn stack,
+  Storage → Inventory gọi withdraw toàn stack. Click-to-transfer cũ vẫn giữ nguyên.
+- Non-Farming item vẫn kéo được, nhưng drop sang Storage không mutate dữ liệu và hiện feedback đỏ
+  `Only farming items can be stored here.`
+- Play Mode verify: ghost icon được tạo; drop event thật gửi 24 Carrot Seeds và drop ngược trả lại
+  Inventory; thử `Head Lv4` giữ Storage từ 0 → 0, đúng message và màu RGBA(1, 0.25, 0.2, 1).
+- Screenshot: `Assets/Screenshots/farm_storage_drag_rejection_warning-1.png`.
+
+---
+
+# Status: `FARM_STORAGE_SCROLL_AND_FULL_INVENTORY_VERIFIED`
+
+Ngày: 2026-09-28
+
+Theo owner review, đã sửa behavior hai grid:
+
+- Header trái đổi từ `Your Items` thành `Inventory`.
+- Inventory render toàn bộ stack hiện có, không còn lọc bỏ non-Farming item.
+- Chỉ Farming item (`FarmStorageManager.IsFarmingItem`) có button interactable/deposit được;
+  item khác chỉ xem, không có listener gửi sang Storage. Domain validation vẫn giữ nguyên.
+- Mỗi cột dùng `ScrollContent` riêng cao hơn viewport (280 px). Inventory content tự tăng chiều
+  cao theo số hàng thực tế; Storage giữ 30 slot/5 hàng và cuộn được tới hàng cuối.
+- Play Mode với save thật: 122 stack Inventory được render, 2 Farming button enabled và 120
+  non-Farming button disabled; Inventory content cao 1248 px và cuộn từ y=0 tới y=968.
+  Storage content cao 320 px và cuộn 40 px. Screenshot:
+  `Assets/Screenshots/farm_storage_inventory_all_items_scroll.png`.
+
+---
+
+# Status: `FARM_STORAGE_GRID_ALIGNMENT_AND_DETACHED_CLOSE_VERIFIED`
+
+Ngày: 2026-09-28
+
+Owner review phát hiện các text/grid bị lệch khỏi artwork và `inventory_grid_border_hd` tạo thêm
+một khung gỗ vuông dư quanh mỗi grid. Đã sửa visual-only:
+
+- Board mới `farm_storage_inventory_board_v4.png` giữ alpha và layout gốc, xóa socket vuông bake
+  trên top rail; top rail giờ liền mạch.
+- `CloseButton` dùng sprite riêng, đặt ngoài mép phải panel (`x=468`) và không còn nhập vào khung.
+- Title được căn vào title plaque; hai header được căn giữa header wells; feedback được đưa vào
+  thanh feedback phía dưới.
+- Bỏ sprite/background của hai `ScrollView` để không chồng khung gỗ lên well đã bake trong board.
+- Hai grid co về 380×340, slot 48×48, spacing 10 và padding cân đối; tâm cột đổi sang ±205 để
+  mọi slot nằm gọn trong hai well.
+- Đã rebuild/cài lại prefab bằng menu authoring. Play Mode visual verify thành công, Console 0 error.
+  Screenshot: `Assets/Screenshots/farm_storage_grid_alignment_v4.png`.
+
+---
+
+# Status: `FARM_STORAGE_INVENTORY_GRID_VISUAL_OVERRIDE_VERIFIED`
+
+Ngày: 2026-09-28
+
+Theo visual review mới của user, Farm Storage (D-060) đã được đổi từ danh sách row trên nền
+Dark Inventory sang hai lưới item đồng bộ trực tiếp với Inventory hiện tại.
+
+## Visual contract mới
+
+- Hai cột `Your Items` / `Storage`, mỗi cột là grid cố định 6×5 (30 slot), cell 52×52,
+  spacing 10×10; item runtime phủ đúng lên các empty slot nền.
+- Dùng lại asset thật của Inventory:
+  `inventory_slot_reference_v4.png`, `inventory_grid_border_hd.png`,
+  `inventory_close_thin_hd.png`.
+- Board raster pixel-art mới:
+  `Assets/Resources/UI/Farming/DarkInventoryStyle/farm_storage_inventory_board_v2.png`
+  (900×600), cùng palette nâu ấm / vàng / sapphire và không có equipment panel.
+- Importer được ép `Sprite/Single`, alpha transparency, mipmap off, `Point`, uncompressed.
+- Cell item chỉ hiện icon + quantity (ẩn quantity khi bằng 1), giống ngôn ngữ thị giác Inventory.
+  Đây là thay đổi presentation duy nhất trong `FarmStorageUI.cs`; logic giao dịch và
+  `FarmStorageManager.cs` không đổi, serialized field contract giữ nguyên.
+
+## Authoring/integration
+
+- `FarmStorageUIAuthoring.cs` tạo hai lớp grid cho mỗi cột: 30 empty slot tĩnh và `Content`
+  runtime dùng cùng `GridLayoutGroup`.
+- Đã chạy `Tools/Project Game/Farming/Build And Install Farm Storage UI`; prefab được rebuild
+  và Bootstrap `_UI` có đúng một instance.
+- `DecisionRegister.md` và `FarmingSystem.md` đã cập nhật theo visual override được user duyệt.
+
+## Play Mode verify thật
+
+Đã chạy Bootstrap → Continue Slot 1 → MapNhat → Leofrun → chọn
+"I'd like to store some things." → Farm Storage mở:
+
+- Hai grid 6×5 render đúng, hai item seed phủ lên hai slot đầu, quantity `24` hiển thị.
+- Deposit Carrot Seeds: Storage nhận item, feedback `Stored 24x Carrot Seeds.`
+- Withdraw lại: Inventory nhận item, feedback `Withdrew 24x Carrot Seeds.`
+- CloseButton ẩn `Backdrop/Panel` đúng; Unity Console có 0 error.
+- Screenshot: `Assets/Screenshots/farm_storage_inventory_grid_playmode.png`.
+
+---
+
+# Status: `FARM_STORAGE_DARK_INVENTORY_ART_VERIFIED`
+
+Ngày: 2026-09-28
+
+Đã hoàn tất visual-only pass cho Farm Storage UI (D-060), không đổi
+`FarmStorageUI.cs`, `FarmStorageManager.cs`, serialized field contract hay layout hiện có.
+
+## Asset pixel-art mới
+
+Tạo tại `Assets/Resources/UI/Farming/DarkInventoryStyle/`:
+
+- `farm_storage_panel_v1.png` — 900×600, charcoal/walnut, viền antique gold và sapphire góc.
+- `farm_storage_scroll_v1.png` — 400×400, dùng chung cho hai cột.
+- `farm_storage_row_v1.png` — 400×40, nền row/slot.
+- `farm_storage_close_v1.png` — 36×36, nút X.
+
+Tất cả là raster PNG pixel-art (không phải vector), gen/điều chỉnh theo art đang dùng thật của
+Fishing v3, Dialogue v4, Commerce v2 và Dark Inventory Style: cạnh bậc pixel, clustered shading,
+palette charcoal/walnut/antique-gold, sapphire chỉ làm điểm neo. Importer là Sprite/Single,
+alpha transparency bật, mipmap tắt, filter Point.
+
+## Authoring/integration
+
+- `Assets/Editor/FarmStorageUIAuthoring.cs` load bốn sprite thật và gán vào Panel, hai ScrollView,
+  RowTemplate và CloseButton; bỏ bốn `Border*` màu phẳng vì border/corner đã nằm trong panel sprite.
+- Không đổi bất kỳ `sizeDelta`/`anchoredPosition` nào: Panel 900×600, ScrollView 400×400,
+  Row cao 40, CloseButton 36×36 giữ nguyên.
+- Đã chạy menu `Tools/Project Game/Farming/Build And Install Farm Storage UI` trong Unity.
+- Prefab `Assets/Prefabs/UI/FarmStorageUI.prefab` đã rebuild và `Bootstrap._UI` có đúng 1
+  `FarmStorageUI`; root active, `Backdrop` inactive lúc khởi tạo đúng contract.
+
+## Play Mode verify thật
+
+Luồng đã chạy: Bootstrap → Continue → Slot 1 → MapNhat → tới Leofrun → tương tác
+`TraderNpcInteractionUI.TryInteract()` trong range → chọn dialogue thật
+"I'd like to store some things." → continue node outcome → Farm Storage mở.
+
+- Hai cột render đúng; Inventory hiện `Carrot Seeds x24`, `Eggplant Seeds x24`, icon/tên/số lượng
+  không mất binding.
+- Click row Carrot Seeds thật: deposit thành công, Inventory còn Eggplant, Storage hiện Carrot,
+  feedback `Stored 24x Carrot Seeds.`
+- Click row Storage thật: withdraw thành công, Inventory trở lại đủ hai stack, Storage rỗng,
+  feedback `Withdrew 24x Carrot Seeds.`
+- Click CloseButton thật đóng panel và restore state đúng.
+- Nhánh Escape không bị sửa; `FarmStorageUI.Update()` vẫn dùng
+  `Keyboard.current.escapeKey.wasPressedThisFrame`/gamepad East như trước. Bộ harness MCP không tạo
+  được cạnh `wasPressedThisFrame` đáng tin cậy, nên không ghi nhận một manual-keypress mới cho nhánh
+  này; contract runtime đã có sẵn và visual pass không chạm vào nó.
+- Console sau toàn bộ flow: 0 error.
+
+Screenshot: `Assets/Screenshots/farm_storage_dark_inventory_playmode.png`.
+
+---
+
+## Phase A — 7 SFX UI common
+
+Status: `SFX_PHASE_A_UI_ART_READY`
+
+Ngày: 2026-09-28
+
+Đã tạo đủ 7 file one-shot trong `Assets/Resources/Audio/SFX/UI/`. Tất cả là mono, 44.1 kHz,
+PCM 16-bit WAV, đã cắt phần transient chính/bỏ phần im lặng thừa, fade mép 4 ms để tránh
+click và peak-normalize -1 dBFS. Không sửa script/prefab.
+
+| SFX ID / file | Freesound source | License | Tác giả | Thời lượng thực tế / đích |
+| --- | --- | --- | --- | --- |
+| `sfx.ui.hover` — `sfx_ui_hover.wav` | [Wooden Click](https://freesound.org/people/BenjaminNelan/sounds/321083/) | CC0 1.0 | BenjaminNelan | 0.120s / 0.15s |
+| `sfx.ui.click_primary` — `sfx_ui_click_primary.wav` | [Metallic_Click](https://freesound.org/people/BlondPanda/sounds/778444/) | CC0 1.0 | BlondPanda | 0.250s / 0.25s |
+| `sfx.ui.click_secondary` — `sfx_ui_click_secondary.wav` | [wooden click.wav](https://freesound.org/people/allaskas/sounds/677298/) | CC0 1.0 | allaskas | 0.200s / 0.25s |
+| `sfx.ui.toggle` — `sfx_ui_toggle.wav` | [click_switch.wav](https://freesound.org/people/StarTowerStudio/sounds/424987/) | CC0 1.0 | StarTowerStudio | 0.200s / 0.20s |
+| `sfx.ui.error` — `sfx_ui_error.wav` | [pong sound effect ui button](https://freesound.org/people/Troube/sounds/686543/) | CC0 1.0 | Troube | 0.298s / 0.40s |
+| `sfx.ui.popup_open` — `sfx_ui_popup_open.wav` | [paper - folding 01.wav](https://freesound.org/people/Anthousai/sounds/398896/) | CC0 1.0 | Anthousai | 0.350s / 0.35s |
+| `sfx.ui.popup_close` — `sfx_ui_popup_close.wav` | [Close Book 2](https://freesound.org/people/qubodup/sounds/862316/) | CC0 1.0 | qubodup | 0.243s / 0.25s |
+
+Nguồn và license cũng đã ghi tại `Assets/Resources/Audio/SFX/CREDITS.md`. Toàn bộ đều là
+CC0; không dùng CC-BY, NC hay license không rõ. File là derivative từ public MP3 preview do
+Freesound cung cấp trên chính trang sound (download bản gốc yêu cầu tài khoản).
+
+### Query không có kết quả CC0 khớp hoàn toàn
+
+- `short low error tone / UI negative buzz soft`: không chọn các buzz/synth điện tử vì xung
+  đột art direction. Dùng guitar note trầm, ngắn của Troube (0.298s), vẫn đúng dải
+  0.2–0.4s của `AudioSfxSystem.md`, cần Claude duyệt sắc thái negative.
+- `soft cloth parchment unfold with faint bell chime / UI panel open`: không tìm được một file
+  CC0 sạch có cả parchment/cloth và faint bell trong cùng recording. Dùng transient gấp giấy/
+  parchment của Anthousai, không trộn chuông từ file thứ tám để giữ đúng phạm vi 7 source.
+
+---
+
+## BottomHUD — icon contrast + EXP connector ornament fix
+
+Status: `BOTTOMHUD_CONTRAST_AND_ORNAMENT_FIX_ART_READY`
+
+Ngày: 2026-09-28
+
+Đã sửa đúng 3 PNG được giao, giữ nguyên tên file, canvas, GUID/import metadata và không sửa code:
+
+- `Assets/Resources/UI/Gameplay/UnifiedHUD/DarkInventoryStyle/map_icon_v1.png` — giữ biểu tượng
+  bản đồ gấp/compass, chuyển mặt giấy sang ivory sáng, viền antique gold và giữ sapphire accent.
+  Kích thước **1017×915 px**, RGB trung bình vùng opaque mới **(130.69, 128.78, 96.04)**
+  (trước: `(86, 70, 47)`).
+- `Assets/Resources/UI/Gameplay/UnifiedHUD/DarkInventoryStyle/stat_icon_v1.png` — giữ silhouette
+  nhân vật trùm hood, chuyển hood/áo sang ivory–light silver, viền antique gold và sapphire gem.
+  Kích thước **1117×1168 px**, RGB trung bình vùng opaque mới **(160.28, 149.94, 131.13)**
+  (trước: `(43, 39, 41)`).
+- `Assets/Resources/UI/Gameplay/UnifiedHUD/DarkInventoryStyle/unified_hud_frame_v1.png` — giữ
+  **2172×424 px**, toàn bộ 8 quick-slot, 2 socket, rãnh EXP alpha-rỗng và phần khung còn lại;
+  hai vai nối ở đầu rãnh EXP được bổ sung strut walnut đặc với highlight antique-gold để thay cảm
+  giác gai đen rời rạc và giảm khoảng alpha giữa rãnh trên với thân HUD.
+
+Điểm neo alpha của rãnh EXP tại cột trung tâm vẫn khớp file cũ chính xác:
+`y=6 → 162`, `y=39 → 0`, `y=43 → 15`; tâm rãnh EXP tiếp tục alpha `0`, nên fill phía sau
+không bị che. Không thay đổi 7 asset PlayerHUD/BottomHUD đã PASS.
+
+---
+
+## PlayerHUD + BottomHUD — Dark Inventory Style, locked size
+
+Status: `PLAYERHUD_BOTTOMHUD_ART_READY`
+
+Ngày: 2026-09-28
+
+Đã tạo đủ 10 PNG RGBA đúng kích thước khóa trong entry nguồn, không sửa code/prefab và không
+đụng các asset đã migrate trước đó.
+
+### PlayerStatusHUD
+
+- `Assets/Resources/UI/Gameplay/PlayerStatusHUD/DarkInventoryStyle/player_status_frame_v1.png`
+  — **1949×626 px**, alpha bbox **99.59% rộng / 98.72% cao**.
+- `Assets/Resources/UI/Gameplay/PlayerStatusHUD/DarkInventoryStyle/health_fill_v1.png`
+  — **2065×125 px**, **98.06% / 90.40%**; giữ fill đỏ.
+- `Assets/Resources/UI/Gameplay/PlayerStatusHUD/DarkInventoryStyle/stamina_fill_green_v1.png`
+  — **2091×192 px**, **98.09% / 89.58%**; giữ fill xanh lá.
+- `Assets/Resources/UI/Gameplay/PlayerStatusHUD/DarkInventoryStyle/default_avatar_v1.png`
+  — **1254×1254 px**, **94.90% / 94.90%**.
+
+Theo owner clarification, `player_status_frame_v1` chỉ giữ khung/rim; lòng Avatar, LevelBadge,
+Health và Stamina đều **alpha 0** để các child image/fill nằm phía sau hiện qua đúng kiến trúc.
+
+### UnifiedHUD / BottomHUD
+
+- `Assets/Resources/UI/Gameplay/UnifiedHUD/DarkInventoryStyle/unified_hud_frame_v1.png`
+  — **2172×424 px**, alpha bbox **95.99% rộng / 100.00% cao**.
+- `Assets/Resources/UI/Gameplay/UnifiedHUD/DarkInventoryStyle/quick_slot_background_brown_v1.png`
+  — **1254×1254 px**, **94.90% / 94.90%**.
+- `Assets/Resources/UI/Gameplay/UnifiedHUD/DarkInventoryStyle/socket_background_round_brown_v1.png`
+  — **1254×1254 px**, **94.90% / 94.90%**.
+- `Assets/Resources/UI/Gameplay/UnifiedHUD/DarkInventoryStyle/experience_bar_fill_v1.png`
+  — **2120×125 px**, **98.11% / 90.40%**; giữ fill xanh dương.
+- `Assets/Resources/UI/Gameplay/UnifiedHUD/DarkInventoryStyle/map_icon_v1.png`
+  — **1017×915 px**, **89.77% / 90.38%**; giữ nghĩa bản đồ.
+- `Assets/Resources/UI/Gameplay/UnifiedHUD/DarkInventoryStyle/stat_icon_v1.png`
+  — **1117×1168 px**, **89.97% / 90.07%**; giữ nghĩa nhân vật/chỉ số.
+
+Theo owner clarification, lòng rãnh EXP, 8 quick slots và 2 socket Map/Character trong
+`unified_hud_frame_v1` đều **alpha 0** để các child asset/fill nằm phía sau hiện lên. Rãnh EXP đã
+được kiểm tra alpha tại trái/tâm/phải đều bằng 0; ornament không còn che ngang lòng fill.
+
+Tất cả `.meta` dùng Sprite Mode `Single`, Filter `Point`, Mipmap `Off`, Compression `None`,
+PPU 100, Border `0,0,0,0`; 10 asset có 10 GUID riêng. Art direction dùng charcoal/walnut,
+antique-gold mảnh và sapphire tiết chế theo D-041.
+
+---
+
+## Fishing mystery fish icon — readability revision
+
+Status: `FISHING_MYSTERY_FISH_ICON_ART_READY`
+
+Ngày: 2026-09-27
+
+- Đã ghi đè `Assets/Resources/UI/Fishing/DarkInventoryStyle/fishing_mystery_fish_icon.png` sau
+  review Play Mode: silhouette cũ quá nhỏ/tối trên MovementTrack.
+- Canvas giữ nguyên **124×124 px**, RGBA; metadata/GUID/import settings giữ nguyên.
+- Silhouette mới dùng thân graphite lớn, outline bạc sáng và chắc hơn, vây/tail tối giản, dấu `?`
+  antique-gold lớn hơn để đọc rõ ở kích thước runtime 62×62.
+- Alpha bbox mới `(4,12)-(120,108)`: **93.55% rộng / 77.42% cao**, thay cho bản cũ
+  87.1% rộng / 61.3% cao.
+- Pixel-art vẫn dùng lưới logic 31×31 + nearest-neighbor 4×. Không sửa code hay asset khác.
+
+---
+
+## Fishing mystery fish icon
+
+Status: `FISHING_MYSTERY_FISH_ICON_ART_READY`
+
+Ngày: 2026-09-27
+
+- Đã tạo `Assets/Resources/UI/Fishing/DarkInventoryStyle/fishing_mystery_fish_icon.png`, đúng
+  **124×124 px** (logic 62×62), RGBA.
+- Icon là silhouette cá graphite/charcoal đơn giản, hướng sang phải, có dấu `?` antique-gold nhỏ;
+  không dùng màu hoặc hoa văn từ icon cá thật.
+- Pixel-art được chuẩn hóa trên lưới logic 31×31 rồi nearest-neighbor upscale 4×, cùng mật độ chi
+  tiết với `fishing_bobber_bite_00.png`. Alpha bbox `(8,24)-(116,100)`, tương ứng khoảng
+  **87.1% rộng / 61.3% cao** canvas, đủ rõ ở `FishIcon` logic 62×62.
+- Import metadata: Sprite Mode `Single`, Filter `Point`, Mipmap `Off`, Compression `None`, PPU 100,
+  Border `0,0,0,0`.
+- Không sửa code và không thay đổi asset nào khác.
+
+---
+
+## Fishing UI V3 — padding fix
+
+Status: `FISHING_UI_V3_PADDING_FIX_ART_READY`
+
+Ngày: 2026-09-27
+
+Đã ghi đè đúng 3 PNG `_v3`, giữ nguyên canvas, tên file, palette, alpha/import metadata và phong
+cách pixel-art; chỉ scale nearest-neighbor + căn giữa phần nội dung để loại padding thừa:
+
+- `fishing_waiting_panel_v3.png` — canvas **1000×148**, alpha bbox mới
+  `(48,8)-(952,140)`: **90.40% rộng / 89.19% cao**.
+- `fishing_slider_track_v3.png` — canvas **92×980**, alpha bbox mới
+  `(6,2)-(86,978)`: **86.96% rộng / 99.59% cao**.
+- `fishing_slider_fill_v3.png` — canvas **92×980**, alpha bbox mới
+  `(6,0)-(86,980)`: **86.96% rộng / 100% cao**.
+
+Track và Fill dùng cùng bbox ngang `x=6..86`, nên thẳng tâm khi chồng trong `Slider.fillRect`.
+Không thay đổi 5 asset `_v3` còn lại, code, prefab hoặc `FishingSpot.River.asset`.
+
+---
+
+## Fishing UI V3 — locked-size art + bobber bite animation frames
+
+Status: `FISHING_UI_V3_LOCKED_SIZE_ART_READY`
+
+Ngày: 2026-09-27
+
+Đã tạo lại đúng 8 asset Fishing UI `_v3` trong
+`Assets/Resources/UI/Fishing/DarkInventoryStyle/`, khóa đúng bitmap 2× so với các giá trị logic
+hardcode gốc, không sửa code/prefab hoặc `FishingSpot.River.asset`:
+
+- `fishing_waiting_panel_v3.png` — **1000×148 px**.
+- `fishing_bite_prompt_v3.png` — **300×300 px**; exterior alpha 0, tâm charcoal có alpha tối đa
+  **242/255**, không bake dấu `!` hoặc icon để nhận phao animation riêng ở runtime.
+- `fishing_minigame_panel_v3.png` — **1040×1300 px**.
+- `fishing_movement_track_v3.png` — **300×980 px**; channel đặc tại hàng giữa chiếm khoảng
+  **78.7%** chiều rộng bitmap, không còn là đường kẻ mảnh.
+- `fishing_catch_zone_v3.png` — **256×240 px**; emerald rực + amber, tương phản mạnh với track
+  charcoal/sapphire. Border 9-slice: **Left 0, Bottom 32, Right 0, Top 32 px**.
+- `fishing_slider_track_v3.png` — **92×980 px**.
+- `fishing_slider_fill_v3.png` — **92×980 px**; một cột cyan/sapphire liên tục, phù hợp
+  `Slider.fillRect` gốc.
+- `fishing_result_panel_v3.png` — **1240×360 px**.
+
+Cả 8 file là RGBA, pixel-art logical 1/4 + nearest-neighbor 4×, Sprite Mode `Single`, Filter
+`Point`, Mipmap `Off`, Compression `None`, PPU 100. Waiting/Bite/Minigame/Result có alpha bake
+tối đa 242/255; không bake text.
+
+### Owner follow-up: thay TMP `!` bằng phao câu animation
+
+Owner đã thay yêu cầu TMP `!`: BitePrompt phải hiển thị phao câu ở chính giữa và giật/chìm xuống
+nước. Codex đã tạo 6 sprite frame riêng, mỗi frame **96×128 px**, RGBA/Single/Point/Mipmap Off/
+Compression None/PPU 100:
+
+- `fishing_bobber_bite_00.png` — nổi trung tính.
+- `fishing_bobber_bite_01.png` — bắt đầu bị kéo xuống.
+- `fishing_bobber_bite_02.png` — chìm thêm.
+- `fishing_bobber_bite_03.png` — thấp nhất, splash nhỏ.
+- `fishing_bobber_bite_04.png` — bật lên.
+- `fishing_bobber_bite_05.png` — ổn định lại.
+
+`fishing_bobber_bite_preview.gif` là preview loop của chuỗi trên. Nhịp đề xuất theo frame:
+**180ms, 90ms, 80ms, 100ms, 110ms, 180ms**, loop trong thời gian BitePrompt hiển thị.
+`fishing_bobber_bite_loop.anim` đã author sẵn sprite-key loop dài 0.74 giây cho component
+`UnityEngine.UI.Image`, dùng đúng 6 frame trên.
+Claude cần bỏ/ẩn TMP `!`, tạo `Image` phao riêng ở chính giữa BitePrompt và phát 6 frame này;
+không bake phao vào board để vẫn chỉnh được vị trí/kích thước/nhịp animation.
+
+---
+
+## Fishing BitePrompt V3 — dark backing fill
+
+Status: `FISHING_BITE_PROMPT_BACKING_ART_READY`
+
+Ngày: 2026-09-27
+
+- Đã tạo `Assets/Resources/UI/Fishing/DarkInventoryStyle/fishing_bite_prompt_v3.png`, đúng
+  **360×360 px**, RGBA.
+- Giữ nguyên byte-for-byte toàn bộ pixel ring/bevel/gem/phao/gợn nước đã duyệt từ `_v2`; chỉ
+  thay vùng alpha kín chứa tâm ring bằng fill charcoal tối `(20,18,17)` với alpha
+  **235/255 (92.2% opaque)** để TMP `!` có mặt phẳng tựa.
+- Phần ngoài ring vẫn alpha `0`; không thay đổi silhouette, kích thước hay vị trí khung.
+- Import metadata: Sprite Mode `Single`, Filter `Point`, Mipmap `Off`, Compression `None`,
+  PPU 100, Border `0,0,0,0`.
+- Không thay đổi 7 asset `_v2` còn lại và không sửa code/prefab.
+
+---
+
+## Fishing minigame UI V2 — visual correction assets
+
+Status: `FISHING_UI_V2_ART_READY`
+
+Ngày: 2026-09-27
+
+Đã gen 8 asset pixel-art `_v2` mới trong
+`Assets/Resources/UI/Fishing/DarkInventoryStyle/`; giữ nguyên toàn bộ `_v1`, không sửa code
+hoặc prefab.
+
+- `fishing_waiting_panel_v2.png` — 1000×148.
+- `fishing_bite_prompt_v2.png` — 360×360; ring dày nhiều lớp bevel/highlight/shadow, thêm
+  phao câu đỏ-trắng + dây câu ở đỉnh và gợn nước xanh ở đáy để đọc ngay là
+  thông báo cá cắn câu; tâm vẫn trống cho TMP `!`.
+- `fishing_minigame_panel_v2.png` — 1240×1560, tương ứng logic 620×780.
+- `fishing_movement_track_v2.png` — 360×1200; channel đặc chiếm xấp xỉ **78% bề
+  rộng bitmap**, thành bevel dày và hai đầu mút nhỏ đối xứng.
+- `fishing_catch_zone_v2.png` — 320×280; đổi sang **emerald-green rực + amber-gold**
+  thay vì sapphire/charcoal, tương phản mạnh với track và slider xanh. Border 9-slice:
+  **Left 0, Bottom 40, Right 0, Top 40 px**.
+- `fishing_slider_track_v2.png` — 128×1200; shaft dày là trọng tâm, end-cap tối giản.
+- `fishing_slider_fill_v2.png` — 128×1200; sau review owner đã regen thành **một cột
+  sapphire/cyan liền mạch duy nhất** từ đáy tới đỉnh, crop-safe cho `fillRect`
+  BottomToTop; không segment, không khối xanh lá giữa thanh, không divider và không end-cap
+  trang trí lấn át.
+- `fishing_result_panel_v2.png` — 1240×360.
+
+Cả 8 asset: RGBA, pixel-art logical 1/4 + nearest-neighbor 4×, Sprite Mode `Single`, Filter
+`Point`, Mipmap `Off`, Compression `None`, PPU 100. Bốn panel Waiting/Bite/Minigame/Result bake
+alpha tối đa **242/255 (94.9%)**. Không bake text, TMP label hoặc fish icon.
+
+---
+
+## Fishing minigame UI — Dark Inventory Style assets
+
+Status: `FISHING_UI_ART_READY`
+
+Ngày: 2026-09-27
+
+Codex chỉ gen và chuẩn hóa 8 bitmap PNG **pixel-art** theo D-041; không sửa code,
+prefab, gameplay, timing, `GameState` hoặc icon cá. Sau review owner, toàn bộ asset đã
+regen từ bản painted ban đầu sang pixel art thật: logical resolution 1/4, palette giới hạn,
+hard-alpha edge và nearest-neighbor upscale 4×; không còn anti-alias/vector-like rendering.
+
+- `Assets/Resources/UI/Fishing/DarkInventoryStyle/fishing_waiting_panel_v1.png` — 1000×148.
+- `Assets/Resources/UI/Fishing/DarkInventoryStyle/fishing_bite_prompt_v1.png` — 300×300.
+- `Assets/Resources/UI/Fishing/DarkInventoryStyle/fishing_minigame_panel_v1.png` — 1040×1300.
+- `Assets/Resources/UI/Fishing/DarkInventoryStyle/fishing_movement_track_v1.png` — 300×980.
+- `Assets/Resources/UI/Fishing/DarkInventoryStyle/fishing_catch_zone_v1.png` — 256×240.
+- `Assets/Resources/UI/Fishing/DarkInventoryStyle/fishing_slider_track_v1.png` — 92×980.
+- `Assets/Resources/UI/Fishing/DarkInventoryStyle/fishing_slider_fill_v1.png` — 92×980.
+- `Assets/Resources/UI/Fishing/DarkInventoryStyle/fishing_result_panel_v1.png` — 1240×360.
+
+Import của cả 8 asset: RGBA, Sprite Mode `Single`, Filter Mode `Point`, Mipmap `Off`, Compression
+`None`, PPU 100. `fishing_waiting_panel_v1`, `fishing_bite_prompt_v1`,
+`fishing_minigame_panel_v1` và `fishing_result_panel_v1` đã bake alpha tối đa **242/255
+(94.9% opaque)** ngay trong PNG; exterior vẫn alpha 0.
+
+`fishing_catch_zone_v1.png` có 9-slice border **Left 0, Bottom 32, Right 0, Top 32 px**; chỉ
+bảo toàn cap trên/dưới khi runtime đổi chiều cao, chiều rộng cố định. Các asset còn
+lại có Border `0,0,0,0`. Không asset nào bake text, số, dấu `!` hoặc fish icon.
+
+---
+
+## Abandon Quest confirmation — Dark Inventory Style board
+
+Status: `ABANDON_QUEST_CONFIRMATION_ART_READY`
+
+Ngày: 2026-09-27
+
+- Đã gen lại duy nhất board
+  `Assets/Resources/UI/SessionUX/DarkInventoryStyle/session_confirmation_board_v1.png` theo D-041:
+  nền charcoal/walnut opaque, viền antique gold mảnh, một sapphire accent nhỏ và ornament tiết
+  chế.
+- Board chừa safe area liền mạch cho message TMP 2–3 dòng ở giữa và hai nút runtime ở đáy;
+  không bake text, label, icon, button shape hoặc button outline.
+- Kích thước đúng **1672×941 px**, RGBA; không có sai khác kích thước.
+- Import metadata: Sprite Mode `Single`, Filter Mode `Point`, Mipmap `Off`, Compression `None`, PPU
+  100, `Border = 0,0,0,0`; không có sai khác border.
+- Không gen sprite nút; không sửa code, prefab, hierarchy, callback hoặc asset
+  Quest Log/Tracker/Minimap khác.
+
+---
+
+## Quest Accept Popup — Dark Inventory Style board
+
+Status: `QUEST_ACCEPT_POPUP_ART_READY`
+
+Ngày: 2026-09-27
+
+- Đã tạo `Assets/Resources/UI/Quest/QuestAccept1920/quest_accept_board_dynamic_rewards_v3.png`.
+- Theo yêu cầu owner cập nhật sau khi review: board chỉ bake khung ngoài, banner tiêu đề rỗng
+  và hai divider; **không còn bake nút**, text, icon hoặc reward socket.
+- Tạo hai button background riêng, cùng kích thước **2172×724 px**, RGBA, không bake label:
+  - `Assets/Resources/UI/Quest/QuestAccept1920/quest_accept_button_accept_v1.png` — sapphire/dark-blue.
+  - `Assets/Resources/UI/Quest/QuestAccept1920/quest_accept_button_decline_v1.png` — charcoal/walnut trung tính.
+- Kích thước đúng **1122×1402 px**, RGBA; không có sai khác kích thước.
+- Import metadata: Sprite Mode `Single`, Filter Mode `Point`, Mipmap `Off`, Compression `None`, PPU
+  100, `Border = 0,0,0,0`; không có sai khác border.
+- Board và hai button đều dùng Sprite Mode `Single`, Filter Mode `Point`, Mipmap `Off`,
+  Compression `None`, PPU 100, `Border = 0,0,0,0`.
+- Chỉ thêm/cập nhật ba bitmap trên, metadata, DecisionRegister và handoff; không đụng
+  `Tracker1920`, `inventory_slot_hd.png`, prefab, scene, code hoặc script.
+
+---
+
+## MainMenu Settings / Slot / Confirm — Dark Inventory Style assets
+
+Status: `MAINMENU_SETTINGS_SLOT_CONFIRM_ART_READY`
+
+Ngày: 2026-09-27
+
+Codex chỉ gen và chuẩn hóa bitmap PNG theo D-054; không sửa code, prefab, scene, video hoặc các asset
+Landing `_v1` đã có.
+
+### SettingsPage
+
+- `Assets/Resources/UI/MainMenu/DarkInventoryStyle/settings_board_v1.png` — 1122×1402.
+- `Assets/Resources/UI/MainMenu/DarkInventoryStyle/settings_title_v1.png` — 2048×768.
+- `Assets/Resources/UI/MainMenu/DarkInventoryStyle/settings_checkbox_unchecked_v1.png` — 1254×1254.
+- `Assets/Resources/UI/MainMenu/DarkInventoryStyle/settings_checkbox_checked_v1.png` — 1254×1254.
+- `Assets/Resources/UI/MainMenu/DarkInventoryStyle/settings_slider_track_v1.png` — 2048×226.
+- `Assets/Resources/UI/MainMenu/DarkInventoryStyle/settings_slider_handle_v1.png` — 1254×1254.
+
+### SlotPage
+
+- `Assets/Resources/UI/MainMenu/DarkInventoryStyle/save_slot_card_v1.png` — 1086×1448.
+- `Assets/Resources/UI/MainMenu/DarkInventoryStyle/slot_badge_v1.png` — 1983×793; không bake text/số,
+  dùng chung cho cả ba slot.
+- `Assets/Resources/UI/MainMenu/DarkInventoryStyle/slot_delete_button_v1.png` — 1944×809; muted-red
+  danger face, không bake label.
+- `Assets/Resources/UI/MainMenu/DarkInventoryStyle/slot_page_new_game_title_v1.png` — 2048×683.
+- `Assets/Resources/UI/MainMenu/DarkInventoryStyle/slot_page_continue_title_v1.png` — 2048×744.
+
+### ConfirmOverlay / ErrorOverlay
+
+- `Assets/Resources/UI/MainMenu/DarkInventoryStyle/overlay_dialog_board_v1.png` — 900×600; không bake
+  message hoặc button.
+
+Tất cả 12 asset: RGBA/alpha transparency, Sprite Mode `Single`, Filter Mode `Point`, Mipmap `Off`,
+Compression `None`, PPU 100, Max Size 4096, `Border = 0,0,0,0`; gán bằng `Image.Type = Simple`.
+Không có sai khác kích thước hoặc border so với bảng yêu cầu trong `ClaudeToCodex.md`.
+
+---
+
+## MainMenu Landing — Dark Inventory Style assets (D-054)
+
+Status: `LANDING_DARK_INVENTORY_ASSETS_READY`
+
+Ngày: 2026-09-26
+
+Codex chỉ gen/chuẩn hóa asset; không sửa script, prefab, scene, video background hoặc keyframe fallback.
+
+- Logo: `Assets/Resources/UI/MainMenu/DarkInventoryStyle/orynthals_logo_v1.png` — 2172×724 RGBA.
+- Slogan: `Assets/Resources/UI/MainMenu/DarkInventoryStyle/orynthals_slogan_v1.png` — 2139×181 RGBA;
+  giữ nguyên text `BEYOND THE GATE, YOUR STORY BEGINS.` và outline charcoal/sapphire để đọc trên
+  video sáng.
+- Landing board: `Assets/Resources/UI/MainMenu/DarkInventoryStyle/landing_actions_board_v1.png` —
+  1122×1402 RGBA; **đã regen theo silhouette cổng làng**: mái ngói sapphire, xà/trụ walnut,
+  hai banner và hai đèn treo; lòng charcoal opaque + gold mảnh, không bake button/text.
+- Button Normal: `Assets/Resources/UI/MainMenu/DarkInventoryStyle/landing_action_button_v1.png` —
+  1944×809 RGBA.
+- Button Hover: `Assets/Resources/UI/MainMenu/DarkInventoryStyle/landing_action_button_hover_v1.png` —
+  1944×809 RGBA; giữ cùng silhouette/khung với Normal, chỉ tăng sapphire focus/glow.
+
+Import của cả 5 asset: Sprite Mode `Single`, Filter Mode `Point`, Mipmap `Off`, Compression `None`,
+alpha transparency bật, PPU 100, Max Size 4096. **Không author 9-slice** (`Border = 0,0,0,0`);
+Claude gán `Image.type = Simple` và giữ RectTransform/layout hiện tại. Không thay đổi
+`mainmenu_background.mp4` hoặc `mainmenu_new_journey_dawn_v8.png`.
+
+---
+
+Status: `MINIMAP_TAG_ART_READY`
+
+Ngày: 2026-09-26
+Feature: Minimap Zone Name / Date shared 9-slice tag
+
+- Asset: `Assets/Resources/UI/Map/DarkInventoryStyle/minimap_tag_v1.png`
+- Sprite: `minimap_tag_v1`, 352×56 RGBA; dùng chung cho `ZonePlate` (~88×14 logic px) và
+  `DatePlate` (~60×14 logic px).
+- Gán `Image.type = Sliced` cho cả hai Image.
+- Border 9-slice đã author trong `.meta`: **Left 20, Right 20, Top 12, Bottom 12** pixel trên file gốc.
+- `Pixels Per Unit = 400`, nên border quy đổi xấp xỉ 5 logic px hai đầu và 3 logic px
+  trên/dưới khi Canvas reference dùng 100 PPU. Không cần thay kích thước RectTransform hiện tại.
+- Import: Sprite Single, Point, mipmap off, Compression None, alpha transparency on, pivot center.
+- QC: phần giữa phẳng/không ornament để stretch ngang và giữ TMP dễ đọc; alpha bbox nằm trong
+  canvas, không edge touch. Không sửa script/prefab/scene.
+
+---
+
+Status: `MAP_ART_READY`
+
+Ngày: 2026-09-26
+Feature: Minimap + FullMap Dark Inventory Style assets
+
+## Asset sẵn sàng để gán Inspector
+
+- `Assets/Resources/UI/Map/DarkInventoryStyle/minimap_frame_v1.png`
+  - Sprite: `minimap_frame_v1`, 384×384 RGBA.
+  - Gán `MinimapController._frameImage` / `UnifiedGameplayHUD.prefab/Minimap/Frame`.
+- `Assets/Resources/UI/Map/DarkInventoryStyle/minimap_mask_v1.png`
+  - Sprite: `minimap_mask_v1`, 384×384 RGBA; circle trắng đặc, alpha 0 bên ngoài, không viền.
+  - Gán `MinimapController._maskImage` / `Minimap/MapView`. Bán kính mask khớp lòng trong frame; không dùng chung file frame.
+- `Assets/Resources/UI/Map/DarkInventoryStyle/map_close_button_v1.png`
+  - Sprite: `map_close_button_v1`, 176×176 RGBA.
+  - Gán `MapPopup/CloseButton` `Image.sprite`.
+- `Assets/Resources/UI/Map/DarkInventoryStyle/player_marker_v1.png`
+  - Sprite: `player_marker_v1`, 64×64 RGBA, mũi tên hướng lên.
+  - Asset nâng cấp tùy chọn cho marker Minimap/FullMap; nếu logic hiện tại không xoay theo facing, icon vẫn đọc rõ như marker vị trí.
+
+## Import contract
+
+Cả bốn texture đã có `.meta` chuẩn hóa: `Texture Type = Sprite (2D and UI)`, `Sprite Mode = Single`,
+`Filter Mode = Point`, `Generate Mip Maps = Off`, `Compression = None`, `Alpha Is Transparency = On`,
+pivot center. Không sửa script/prefab/scene; Claude chỉ cần gán sprite và bỏ runtime placeholder theo handoff.
+
+## Asset generation/QC
+
+Frame, Close button và Player marker được sinh bằng built-in ImageGen với ba sprite Dark Inventory Style
+hiện có làm visual reference, sau đó chỉ cleanup alpha fringe/crop/nearest-neighbor resize. Mask là
+stencil chức năng tạo xác định theo lòng trong frame. QC xác nhận PNG RGBA, alpha 0 ngoài silhouette,
+frame center trong suốt và mask chỉ có alpha 0/255.
+
+---
+
+Update 2026-09-22 — khoảng cách Quest row còn thấy dù layout spacing đã là `1` vì
+`landing_action_button.png` chứa alpha padding lớn trên/dưới. Đã dùng compensated spacing `-15` trên
+Quest list riêng để phần khung nhìn thấy cách nhau xấp xỉ 1px; không sửa shared MainMenu asset.
+
+Update 2026-09-22 — theo feedback trực tiếp của owner, giảm spacing của
+`QuestListPanel/Content.VerticalLayoutGroup` từ `4` xuống `1`; không đổi kích thước/font ở lượt này.
+
+Update 2026-09-22 — Quest list density: `QuestListPanel/Content` trước đó có
+`childControlHeight=false`, nên bỏ qua preferred height và dùng RectTransform row cao `100` cộng
+spacing `8`. Lần chỉnh chỉ xuống `58` đã làm lộ thêm lỗi Title/Status vẫn giữ offset cũ và tràn khỏi
+khung. Layout cuối đã đồng bộ toàn row: cao/preferred height `44`, spacing `4`, Title/Status chia đều
+hai nửa và căn giữa, font `9`/`7.5`; danh sách gọn và chữ không còn nằm ngoài button.
+
+Update 2026-09-22 — HUD layering: sửa sibling order trong `GameplayUIRoot.prefab` từ
+`PlayerHUD → ... gameplay overlays ... → UnifiedGameplayHUD` thành
+`PlayerHUD → UnifiedGameplayHUD → gameplay overlays`. Cả hai HUD giờ render phía sau Quest Log và
+các gameplay menu khác trên Canvas chung; không đổi sorting layer, Canvas hay gameplay logic.
+
+Status: `QUEST_TRACKING_AND_ABANDON_READY`
+
+Ngày: 2026-09-22
+Feature: Quest Log — Track/Untrack/Abandon
+
+- `QuestManager` hiện sở hữu đúng một `trackedQuestId`; quest đầu tiên tự track, người chơi có thể
+  Track/Untrack quest Active/Ready khác. Quest tracker và Quest Direction Indicator chỉ theo quest
+  đang track; Available quest giver vẫn được chỉ dẫn để người chơi nhận nhiệm vụ.
+- Abandon chỉ cho quest Active/Ready có `giverNpcId`, xóa toàn bộ runtime objective progress và đưa
+  quest về Available theo prerequisite. Nhận lại bắt buộc qua `QuestNpcInteractionService` tại đúng
+  giver NPC và bắt đầu lại từ 0. Quest Completed hoặc không có giver không được abandon.
+- `GameplayUIRoot.prefab` có nút `TRACK QUEST`/`UNTRACK QUEST`, `ABANDON QUEST` và confirmation modal.
+  Tái sử dụng asset Light Fantasy hiện có (`landing_action_button`, `slot_delete_button`,
+  `session_confirmation_board_hd`), vì vậy không cần sinh raster asset mới.
+- Save schema tăng v7→v8 với `QuestSaveData.trackedQuestId`; migration save v7 chọn quest Active/Ready
+  đầu tiên. Tracking/abandon đều đánh dấu session dirty.
+- Runtime, EditMode và PlayMode test assemblies build PASS. Có test cho round-trip tracking,
+  abandon/reaccept đúng NPC, guard quest không giver/completed và migration V7→V8.
+
+---
+
+Status trước: `QUEST_DIRECTION_ART_READY`
+
+Ngày: 2026-09-19
+Feature: Training Area onboarding — Quest Direction Indicator pixel-art sprites
+
+Update 2026-09-22: theo yêu cầu trực tiếp của owner, ground arrow không còn đứng cố định tại tâm
+Player. `QuestDirectionIndicator.ShowGroundArrow()` giờ đặt RectTransform trên chu vi bán kính
+`_groundArrowOrbitRadius = 0.75` world unit theo vector tới quest, đồng thời vẫn xoay sprite theo
+cùng hướng. Đây là thay đổi presentation được owner chủ động yêu cầu sau handoff cũ; không đổi logic
+Quest/Tutorial, target resolution hay trạng thái progression.
+
+Verification update: `ProjectGame2D.Runtime.csproj` build PASS (0 error; 22 warning có sẵn). Unity
+live test gọi `ShowGroundArrow()` với phải/trên/trái/dưới cho kết quả position lần lượt
+`(0.75,0)`, `(0,0.75)`, `(-0.75,0)`, `(0,-0.75)`, mọi trường hợp radius đúng `0.750` và rotation
+Z đúng `270/0/90/180`. Scene readback xác nhận radius `0.75`, target `QuestGroundArrow`, sprite dùng
+chung `quest_target_arrow.png`; Console không có lỗi `QuestDirectionIndicator`.
+
+Update 2026-09-22 (arrived marker removed): theo yêu cầu trực tiếp tiếp theo của owner, đã bỏ hoàn
+toàn mũi tên trỏ xuống khi Player đã ở trong khu vực quest. Nhánh `IsPlayerInside(areaId)` giờ ẩn
+ground/edge indicator và không hiện marker thay thế. Đã xóa hierarchy `QuestArrivedMarker` khỏi
+`MapNhat`, cùng các field/method bobbing tương ứng trong `QuestDirectionIndicator`. Arrow xoay quanh
+Player khi chưa tới nơi, NPC marker và mannequin marker không đổi.
+
+## Hoàn thành
+
+- Theo yêu cầu cập nhật ngày 2026-09-22, đã hợp nhất còn đúng **1 sprite arrow duy nhất**:
+  `Assets/Resources/UI/QuestDirection/quest_target_arrow.png` (48x48). Hai asset ground/edge riêng
+  đã xóa. Import dùng Sprite, Point filter, mipmap off, uncompressed và alpha thật.
+- Đã gán trực tiếp trong `Assets/Scenes/MapNhat.unity` cho toàn bộ field của
+  `QuestDirectionIndicator`: `_npcHeadMarkerImage`, `_groundArrowImage`, `_edgeIndicatorImage`.
+- Đã gán target arrow vào `_arrowImage` của
+  `Assets/Prefabs/World/Attacked_Manequin1.prefab` (`MannequinAttackIndicator`).
+- Cả `_npcHeadMarkerImage`, `_groundArrowImage`, `_edgeIndicatorImage` và mannequin `_arrowImage`
+  cùng tham chiếu đúng một target-arrow sprite;
+  đã đưa tint của các `Image` liên quan về trắng để giữ nguyên palette.
+- Chỉ sửa presentation logic của direction indicator theo yêu cầu owner; không đổi Quest/Tutorial
+  progression hoặc target resolution.
+
+## Ghi chú orientation
+
+Target-arrow source hướng lên. Ground/edge dùng rotation runtime hiện hữu để luôn chỉ về vị trí
+quest; `MannequinAttackIndicator.Awake()` và `NpcHeadMarker` xoay 180° để chỉ xuống.
+
+## Verification
+
+- Sprite processor QC: target arrow hợp lệ, không edge touch/paste clamp, alpha chroma-key sạch.
+- Unity Editor import PASS: sprite 48x48, Point, mipmap off, Uncompressed, PPU 48.
+- Serialized audit trên `MapNhat` và mannequin prefab: cả 4 field Image dùng chung GUID
+  `3c0cc2bc1a69412c8ebf4e384a29e8d1`; `NpcHeadMarker` rotation Z = 180°.
+- Console không có lỗi import/binding liên quan asset. Console đang có lỗi runtime cũ không thuộc
+  scope từ `SoundFXManager`/`MapManager` thiếu key `Grass_No_Outline`; không chỉnh vì yêu cầu cấm
+  đụng logic khác.
+
+---
+
 Status: `VERIFIED`
 
 Ngày: 2026-08-22

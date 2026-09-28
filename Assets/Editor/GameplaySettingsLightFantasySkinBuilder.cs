@@ -7,37 +7,38 @@ using UnityEngine.UI;
 
 public static class GameplaySettingsLightFantasySkinBuilder
 {
-    private const string WarmRoot = "Assets/Resources/UI/GameplaySettings/LightFantasy/";
+    private const string WarmRoot = "Assets/Resources/UI/GameplaySettings/DarkInventoryStyle/";
+    private const string IconRoot = "Assets/Resources/UI/GameplaySettings/DarkInventoryStyle/Icons/Processed/";
     private const string MainMenuRoot = "Assets/Resources/UI/MainMenu/LightFantasy/";
+    private const string DialogueRoot = "Assets/Resources/UI/Dialogue/DarkInventoryStyle/";
     private const string InventoryRoot = "Assets/Resources/UI/Inventory/LightFantasy/";
 
     [MenuItem("Tools/ProjectGame2D/UI/Apply Gameplay Settings Light Fantasy Skin")]
     public static void Apply()
     {
-        SettingsUI settings = UnityEngine.Object.FindAnyObjectByType<SettingsUI>(FindObjectsInactive.Include);
+        SettingsUI settings = FindLoadedSceneObject<SettingsUI>();
         if (settings == null)
         {
             throw new InvalidOperationException("SettingsUI was not found in the active scene.");
         }
 
         Transform root = settings.transform;
-        Sprite board = ImportSprite(WarmRoot + "settings_board_warm_hd.png");
-        Sprite primaryButton = ImportSprite(MainMenuRoot + "landing_action_button.png");
-        Sprite dangerButton = ImportSprite(MainMenuRoot + "slot_delete_button.png");
+        Sprite board = ImportSprite(WarmRoot + "settings_board_v1.png");
+        Sprite primaryButton = ImportSprite(DialogueRoot + "dialogue_action_button_v1.png");
         Sprite sliderTrack = ImportSprite(MainMenuRoot + "settings_slider_track.png");
         Sprite sliderHandle = ImportSprite(MainMenuRoot + "settings_slider_handle.png");
         Sprite toggleOff = ImportSprite(MainMenuRoot + "settings_checkbox_unchecked.png");
         Sprite toggleOn = ImportSprite(MainMenuRoot + "settings_checkbox_checked.png");
         Sprite close = ImportSprite(InventoryRoot + "inventory_close_thin_hd.png");
-        Sprite sfxIcon = ImportSprite(WarmRoot + "settings_sfx_icon_hd.png");
-        Sprite musicIcon = ImportSprite(WarmRoot + "settings_music_icon_hd.png");
-        Sprite settingsTitle = ImportSprite(MainMenuRoot + "settings_title.png");
+        Sprite sfxIcon = ImportSprite(IconRoot + "settings-1.png");
+        Sprite musicIcon = ImportSprite(IconRoot + "settings-2.png");
 
         SetImage(Find(root, "Panel"), board, false);
-        StyleButton(Find(root, "SaveBtn"), primaryButton, "SAVE");
-        StyleButton(Find(root, "DeclineBtn"), dangerButton, "CANCEL");
+        StyleButton(Find(root, "SaveBtn"), primaryButton, "SAVE", false);
+        StyleButton(Find(root, "DeclineBtn"), primaryButton, "CANCEL", true);
         GameObject closeButton = Find(root, "CloseBtn");
         SetImage(closeButton, close, true);
+        StyleCloseButton(closeButton);
         closeButton.GetComponent<RectTransform>().anchoredPosition = new Vector2(-24f, -34f);
         GameObject titleObject = Find(root, "Title");
         RectTransform titleRect = titleObject.GetComponent<RectTransform>();
@@ -45,7 +46,14 @@ public static class GameplaySettingsLightFantasySkinBuilder
         titleRect.sizeDelta = new Vector2(150f, 45f);
         titleRect.SetAsLastSibling();
         TMP_Text titleText = titleRect.GetComponent<TMP_Text>();
-        if (titleText != null) titleText.enabled = false;
+        if (titleText != null)
+        {
+            titleText.enabled = true;
+            titleText.text = "SETTINGS";
+            titleText.font = AssetDatabase.LoadAssetAtPath<TMP_FontAsset>("Assets/Fonts/DigitalDisco SDF v3.asset");
+            titleText.color = new Color(1f, 0.88f, 0.56f, 1f);
+            titleText.alignment = TextAlignmentOptions.Center;
+        }
         Transform existingTitleArtwork = titleRect.Find("SkinTitleArtwork");
         GameObject titleArtwork = existingTitleArtwork != null
             ? existingTitleArtwork.gameObject
@@ -56,8 +64,7 @@ public static class GameplaySettingsLightFantasySkinBuilder
         titleArtworkRect.anchorMax = Vector2.one;
         titleArtworkRect.offsetMin = Vector2.zero;
         titleArtworkRect.offsetMax = Vector2.zero;
-        SetImage(titleArtwork, settingsTitle, true);
-        titleArtwork.GetComponent<Image>().raycastTarget = false;
+        titleArtwork.SetActive(false);
         GameObject sfxRow = Find(root, "SfxRow");
         GameObject musicRow = Find(root, "MusicRow");
         sfxRow.GetComponent<RectTransform>().anchoredPosition = new Vector2(0f, -72f);
@@ -109,9 +116,10 @@ public static class GameplaySettingsLightFantasySkinBuilder
 
         foreach (TMP_Text text in root.GetComponentsInChildren<TMP_Text>(true))
         {
-            text.color = text.name == "SkinLabel"
-                ? new Color(1f, 0.93f, 0.72f, 1f)
-                : new Color(0.28f, 0.15f, 0.07f, 1f);
+            text.color = text.name == "Title"
+                ? new Color(1f, 0.84f, 0.38f, 1f)
+                : new Color(1f, 0.93f, 0.72f, 1f);
+            EditorUtility.SetDirty(text);
         }
 
         EditorUtility.SetDirty(settings.gameObject);
@@ -157,11 +165,24 @@ public static class GameplaySettingsLightFantasySkinBuilder
         EditorUtility.SetDirty(image);
     }
 
-    private static void StyleButton(GameObject target, Sprite sprite, string label)
+    private static void StyleButton(GameObject target, Sprite sprite, string label, bool danger)
     {
         SetImage(target, sprite, false);
         Button button = target.GetComponent<Button>();
-        if (button != null) button.targetGraphic = target.GetComponent<Image>();
+        if (button != null)
+        {
+            button.targetGraphic = target.GetComponent<Image>();
+            button.transition = Selectable.Transition.ColorTint;
+            ColorBlock colors = button.colors;
+            colors.normalColor = danger ? new Color(0.72f, 0.30f, 0.25f, 1f) : Color.white;
+            colors.highlightedColor = danger ? new Color(1f, 0.48f, 0.38f, 1f) : new Color(0.58f, 0.82f, 1f, 1f);
+            colors.pressedColor = danger ? new Color(0.52f, 0.18f, 0.16f, 1f) : new Color(0.68f, 0.55f, 0.30f, 1f);
+            colors.disabledColor = new Color(0.58f, 0.55f, 0.44f, 0.72f);
+            colors.colorMultiplier = 1f;
+            colors.fadeDuration = 0.08f;
+            button.colors = colors;
+            EditorUtility.SetDirty(button);
+        }
 
         Transform existing = target.transform.Find("SkinLabel");
         GameObject labelObject = existing != null
@@ -175,10 +196,28 @@ public static class GameplaySettingsLightFantasySkinBuilder
         rect.offsetMax = Vector2.zero;
         TextMeshProUGUI text = labelObject.GetComponent<TextMeshProUGUI>();
         text.text = label;
+        text.font = AssetDatabase.LoadAssetAtPath<TMP_FontAsset>("Assets/Fonts/DigitalDisco SDF v3.asset");
         text.alignment = TextAlignmentOptions.Center;
         text.fontSize = 12f;
         text.color = new Color(1f, 0.93f, 0.72f, 1f);
         text.raycastTarget = false;
+    }
+
+    private static void StyleCloseButton(GameObject target)
+    {
+        Button button = target.GetComponent<Button>();
+        if (button == null) return;
+        button.targetGraphic = target.GetComponent<Image>();
+        button.transition = Selectable.Transition.ColorTint;
+        ColorBlock colors = button.colors;
+        colors.normalColor = Color.white;
+        colors.highlightedColor = new Color(1f, 0.86f, 0.38f, 1f);
+        colors.pressedColor = new Color(0.66f, 0.48f, 0.18f, 1f);
+        colors.disabledColor = new Color(0.45f, 0.42f, 0.34f, 0.65f);
+        colors.colorMultiplier = 1f;
+        colors.fadeDuration = 0.08f;
+        button.colors = colors;
+        EditorUtility.SetDirty(button);
     }
 
     private static Image EnsureCheckmark(Transform toggle, Sprite sprite)
@@ -218,5 +257,15 @@ public static class GameplaySettingsLightFantasySkinBuilder
 
         Transform legacyLabel = row.transform.Find("SkinRowLabel");
         if (legacyLabel != null) legacyLabel.gameObject.SetActive(false);
+    }
+
+    private static T FindLoadedSceneObject<T>() where T : Component
+    {
+        foreach (T component in UnityEngine.Object.FindObjectsByType<T>(FindObjectsInactive.Include, FindObjectsSortMode.None))
+        {
+            if (component.gameObject.scene.IsValid() && component.gameObject.scene.isLoaded)
+                return component;
+        }
+        return null;
     }
 }

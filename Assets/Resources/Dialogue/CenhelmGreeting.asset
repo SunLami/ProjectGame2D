@@ -1,0 +1,52 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 14c148da086a4444f9dc223cd131312a, type: 3}
+  m_Name: CenhelmGreeting
+  m_EditorClassIdentifier: ProjectGame2D.Runtime::DialogueDefinition
+  _dialogueId: dialogue.town.elder.greeting
+  _initialNodeId: greeting
+  _nodes:
+  - _nodeId: greeting
+    _speakerName: Cenhelm
+    _portrait: {fileID: 0}
+    _text: Good day to you, traveler. How fares the village in your eyes?
+    _nextNodeId:
+    _outcomeId:
+    _choices:
+    - _text: Everything seems peaceful.
+      _nextNodeId: peaceful_leaf
+    - _text: Tell me about this place.
+      _nextNodeId: about_leaf
+    - _text: Just passing by.
+      _nextNodeId: leave_leaf
+  - _nodeId: peaceful_leaf
+    _speakerName: Cenhelm
+    _portrait: {fileID: 0}
+    _text: Peaceful, yes -- for now. May it stay that way a while longer.
+    _nextNodeId:
+    _outcomeId:
+    _choices: []
+  - _nodeId: about_leaf
+    _speakerName: Cenhelm
+    _portrait: {fileID: 0}
+    _text: This village has stood for generations. Fishers, farmers and traders,
+      all under one roof. I've watched over it a long time now.
+    _nextNodeId:
+    _outcomeId:
+    _choices: []
+  - _nodeId: leave_leaf
+    _speakerName: Cenhelm
+    _portrait: {fileID: 0}
+    _text: Safe travels, then.
+    _nextNodeId:
+    _outcomeId:
+    _choices: []

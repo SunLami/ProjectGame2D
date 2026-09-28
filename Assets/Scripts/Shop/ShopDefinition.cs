@@ -18,13 +18,23 @@ public sealed class ShopDefinition : ScriptableObject
 
     [SerializeField] private ShopStockEntry[] _stock;
 
-    [Tooltip("Sell-back price = stock entry price * this multiplier. Selling is only supported for " +
-        "items that are also in this shop's own stock list (see ShopManager.TrySell remarks).")]
+    [Header("Item Lists")]
+    [Tooltip("Items displayed in the Buy tab. Add ItemSO assets here; pricing comes from each item's Buy Min/Max range.")]
+    [SerializeField] private ItemSO[] _buyItems;
+
+    [Tooltip("Items this NPC accepts in the Sell tab. Recipe outputs offered by this NPC are also accepted.")]
+    [SerializeField] private ItemSO[] _sellItems;
+
+    [Tooltip("Legacy sell-back fallback = stock entry price * this multiplier when an ItemSO has no Sell Min/Max range.")]
     [SerializeField, Range(0f, 1f)] private float _sellPriceMultiplier = 0.5f;
 
     public string ShopId => _shopId;
     public string DisplayName => _displayName;
     public string NpcId => _npcId;
     public IReadOnlyList<ShopStockEntry> Stock => _stock ?? Array.Empty<ShopStockEntry>();
+    public IReadOnlyList<ItemSO> BuyItems => _buyItems ?? Array.Empty<ItemSO>();
+    public IReadOnlyList<ItemSO> SellItems => _sellItems ?? Array.Empty<ItemSO>();
+    public bool UsesExplicitBuyItems => _buyItems != null && _buyItems.Length > 0;
+    public bool UsesExplicitSellItems => _sellItems != null && _sellItems.Length > 0;
     public float SellPriceMultiplier => _sellPriceMultiplier;
 }

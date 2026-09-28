@@ -39,6 +39,11 @@ public static class QuestObjectiveMatchers
         && HasSameId(objective.TargetId, enemyId)
         && MatchesArea(objective.TargetAreaId, areaId);
 
+    public static bool MatchesEquip(QuestObjectiveDefinition objective, string itemId) =>
+        objective != null
+        && objective.Type == QuestObjectiveType.Equip
+        && HasSameId(objective.TargetId, itemId);
+
     private static bool HasSameId(string targetId, string actualId) =>
         !string.IsNullOrEmpty(targetId) && string.Equals(targetId, actualId, StringComparison.Ordinal);
 

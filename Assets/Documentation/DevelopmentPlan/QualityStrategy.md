@@ -97,6 +97,9 @@ Mỗi domain cần test default, valid round-trip, missing reference và invalid
 - Tutorial chain unlock Main Quest đúng một lần.
 - Player bỏ tutorial vẫn dùng sandbox systems được.
 - Quest definition cycle/duplicate ID bị validator chặn.
+- Track/untrack chỉ chọn tối đa một quest và round-trip save giữ đúng lựa chọn.
+- Abandon xóa tiến độ, không cho accept trực tiếp tại NPC sai và nhận lại từ đầu tại đúng giver NPC.
+- Quest không có giver và quest Completed không thể abandon.
 
 ## State/UI stress tests
 

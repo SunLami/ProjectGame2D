@@ -65,6 +65,7 @@ public sealed class TutorialManager : MonoBehaviour
         InventoryWindowUI.InventoryOpened += HandleInventoryOpened;
         EquipmentManager.ItemEquipped += HandleItemEquipped;
         AreaTriggerZone.PlayerEnteredArea += HandleAreaEntered;
+        QuestManager.QuestTurnedIn += HandleQuestTurnedIn;
         _subscribed = true;
     }
 
@@ -79,6 +80,7 @@ public sealed class TutorialManager : MonoBehaviour
         InventoryWindowUI.InventoryOpened -= HandleInventoryOpened;
         EquipmentManager.ItemEquipped -= HandleItemEquipped;
         AreaTriggerZone.PlayerEnteredArea -= HandleAreaEntered;
+        QuestManager.QuestTurnedIn -= HandleQuestTurnedIn;
         _subscribed = false;
     }
 
@@ -92,6 +94,13 @@ public sealed class TutorialManager : MonoBehaviour
     {
         TutorialStepDefinition step = CurrentStep;
         if (step != null && step.Type == TutorialStepType.ReachArea && step.TargetAreaId == areaId)
+            Advance();
+    }
+
+    private void HandleQuestTurnedIn(string questId)
+    {
+        TutorialStepDefinition step = CurrentStep;
+        if (step != null && step.Type == TutorialStepType.WaitForQuest && step.TargetQuestId == questId)
             Advance();
     }
 
@@ -115,7 +124,16 @@ public sealed class TutorialManager : MonoBehaviour
         }
         else
         {
-            OnStepChanged?.Invoke(CurrentStep);
+            TutorialStepDefinition step = CurrentStep;
+            // A WaitForQuest step hands off to real Quest content (Quest Tracker UI, not this
+            // banner -- see TutorialOverlayUI), so it needs that quest to actually be Active the
+            // instant this step starts, not left sitting Available with nothing tracking it until
+            // an NPC visit accepts it. Auto-accept is a no-op (false, silently) if the quest isn't
+            // actually Available yet (e.g. content authored out of order) -- never throws.
+            if (step != null && step.Type == TutorialStepType.WaitForQuest)
+                QuestManager.Instance?.TryAcceptQuest(step.TargetQuestId);
+
+            OnStepChanged?.Invoke(step);
         }
     }
 

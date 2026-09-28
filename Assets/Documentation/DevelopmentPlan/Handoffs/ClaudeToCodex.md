@@ -1,6 +1,1598 @@
 # Claude → Codex Handoff
 
-Status: `READY_FOR_CODEX_FINAL_QUEST_VERIFICATION_ONLY`
+Status: `READY_FOR_CODEX`
+
+Ngày: 2026-09-28
+Feature: Farm Storage UI (D-060) Dark Inventory Style asset production — thay flat-color placeholder
+bằng bitmap thật, giống hướng đã làm cho Fishing UI (D-055/D-056).
+
+## Bối cảnh
+
+Backend `FarmStorageManager`/`FarmStorageUI` (kho riêng cho Farming, mở qua NPC Leofrun → dialogue
+choice "Gửi/lấy đồ") đã hoàn tất và hoạt động đúng trong Play Mode. UI hiện dựng bằng script
+`Assets/Editor/FarmStorageUIAuthoring.cs` (menu `Tools/Project Game/Farming/Build And Install Farm
+Storage UI`), toàn bộ là `Image` màu phẳng placeholder chưa từng có bitmap — giống điểm xuất phát của
+Fishing UI trước D-055. Prefab kết quả: `Assets/Prefabs/UI/FarmStorageUI.prefab`, đã cài vào
+`Bootstrap.unity` (`_UI/FarmStorageUI`, cạnh `DialogueUI`/`GameplayUIRoot`/`QuestAcceptPopupUI` — UI
+toàn app load từ Bootstrap, không phải scene gameplay).
+
+Yêu cầu hình ảnh: theo `DarkLightFantasyUIStyleGuide.md` (charcoal/walnut nền, viền antique gold mảnh,
+sapphire tiết chế), đồng bộ với Inventory/QuestTracker/Minimap/Dialogue/Fishing đã có — **nhưng bỏ hẳn
+phần Equipment** (đây không phải Inventory, không có equip slot nào), chỉ là khung kho 2 cột.
+
+## Bố cục và kích thước hiện tại (khớp 1:1 những gì `FarmStorageUIAuthoring.cs` đang hardcode)
+
+Canvas 1920×1080 (`CanvasScaler` ScaleWithScreenSize, match 0.5), sortingOrder 225.
+
+| Element | Path (dưới `FarmStorageUI/Backdrop/Panel`) | Kích thước logic | Ghi chú |
+|---|---|---|---|
+| Panel nền | `Panel` | 900×600, center | Hiện `Image` phẳng `PanelColor`; cần frame/border Dark Inventory Style |
+| 4 viền | `BorderTop/Bottom/Left/Right` | dày 2px mỗi cạnh | Có thể thay bằng 1 sprite frame 9-slice bao toàn panel thay vì 4 thanh mảnh, miễn giữ được cảm giác viền vàng mảnh |
+| Tiêu đề | `Title` | TMP text, không phải sprite | Giữ nguyên, chỉ cần đổi màu/font nếu style guide yêu cầu |
+| Nút đóng | `CloseButton` | 36×36 | Cần icon "X" Dark Inventory Style, hiện là ô màu đỏ phẳng |
+| Feedback text | `Feedback` | TMP text | Giữ nguyên |
+| Cột trái | `InventoryColumn` ("Your Items") | 420×460 | |
+| Cột phải | `StorageColumn` ("Storage") | 420×460 | |
+| Header mỗi cột | `<Column>/Header` | TMP text 400×26 | |
+| Khung scroll mỗi cột | `<Column>/ScrollView` | 400×400 | Hiện `Image` phẳng `HeaderColor` làm nền; có thể thay bằng sprite khung kho/túi |
+| Row item (dùng chung 2 cột) | `RowTemplate` (dưới `Panel`, instantiate runtime) | cao 40, full width cột | `Icon` 30×30 lề trái, `Label` chiếm phần còn lại; nền `RowColor` phẳng — cần sprite slot/row Dark Inventory Style, có `Button` transition ColorTint khi hover |
+
+## Việc Codex cần làm
+
+1. Gen bộ sprite theo bảng trên (panel frame, border/corner ornament, close button icon, scroll
+   background mỗi cột, row/slot background) — bám đúng kích thước logic ở trên để **không cần sửa bất
+   kỳ `sizeDelta`/`anchoredPosition` nào** trong `FarmStorageUIAuthoring.cs`, đúng bài học đã rút ra ở
+   D-055 (Fishing UI) khi gen mới không khớp kích thước gây lệch bố cục.
+2. Sửa `FarmStorageUIAuthoring.cs` để reference sprite mới thay vì `Color` phẳng (đổi tham số gọi
+   `Image(...)`/thêm `sprite`, có thể đổi `Image.Type` sang `Sliced` cho panel/row nếu cần 9-slice) rồi
+   chạy lại menu `Tools/Project Game/Farming/Build And Install Farm Storage UI` để rebuild prefab +
+   cài lại vào `Bootstrap._UI` (script tự xoá instance cũ trước khi cài instance mới, không tạo trùng).
+3. Test Play Mode thật: New Game (hoặc Continue) → tới NPC Leofrun → chọn "Gửi/lấy đồ" → panel hiện
+   đúng 2 cột, item render đúng icon/tên/số lượng, click deposit/withdraw hoạt động, nút Close/`Escape`
+   đóng đúng. Console sạch.
+
+## Việc Codex KHÔNG cần/không nên làm
+
+- Không đổi `Assets/Scripts/UI/FarmStorageUI.cs` (runtime logic: rebuild list, deposit/withdraw, mở/
+  đóng) hay `Assets/Scripts/Farming/FarmStorageManager.cs` (domain validation, save) — đây là contract
+  Claude sở hữu. Nếu thấy cần field mới (ví dụ quantity picker thay vì deposit/withdraw cả stack), báo
+  lại qua `CodexToClaude.md` thay vì tự thêm.
+- Không đổi tên hoặc bỏ bớt field serialize mà `FarmStorageUIAuthoring.cs` đang gán qua
+  `SerializedObject` (`_backdrop`, `_title`, `_feedbackText`, `_closeButton`,
+  `_inventoryListContent`, `_rowTemplate`, `_storageListContent`) — script build dựa vào đúng path này.
+- Không đổi vị trí cài đặt (`Bootstrap.unity` → `_UI/FarmStorageUI`) hay cấu trúc Canvas gốc (Backdrop
+  luôn bắt đầu `activeSelf = false`, root `FarmStorageUI` luôn `activeSelf = true` để `Awake()` chạy và
+  set `Instance` — tương tự lỗi vừa phát hiện ở `DialogueUI` bị tắt nhầm làm cả hệ dialogue project
+  ngừng hoạt động, đã fix trong session này).
+- Chưa cần làm quantity picker (deposit/withdraw từng phần) — hiện tại chỉ hỗ trợ cả stack, đủ để test
+  hình ảnh.
+
+## Tham khảo
+
+`FishingSystem.md` §Visual direction (D-055/D-056) cho quy trình gen asset tương tự đã áp dụng thành
+công; `FarmingSystem.md` §Farm storage (D-060) cho contract backend đầy đủ;
+`DarkLightFantasyUIStyleGuide.md` cho bảng màu/style chuẩn.
+
+---
+
+Status: `PLAYERHUD_BOTTOMHUD_REVERTED_TO_ORIGINAL_UI`
+
+Ngày: 2026-09-28
+Feature: Hoàn tác toàn bộ tích hợp Dark Inventory Style cho `PlayerHUD.prefab` và
+`UnifiedGameplayHUD.prefab/BottomHUD` (D-057) — owner quyết định giữ UI gốc, bản Dark Inventory Style
+mới nhìn kém hơn (icon Map/Character chìm vào nền, nhánh nối rãnh EXP rời rạc — xem entry
+`VERIFIED_PLAYERHUD_BOTTOMHUD_INTEGRATION` bên dưới cho chi tiết 2 lỗi đã phát hiện).
+
+## Cách hoàn tác
+
+Dùng `git diff HEAD` để xác định chính xác GUID gốc (không đoán) rồi `git checkout -- <2 file
+prefab>` để khôi phục byte-chính-xác — an toàn hơn sửa tay vì cả 2 prefab chưa từng được commit ở
+trạng thái Dark Inventory Style (chỉ sửa uncommitted trong session này), nên HEAD chính là đúng bản
+gốc trước migration.
+
+## Sprite reference đã khôi phục (xác nhận qua `git diff HEAD` trước khi checkout)
+
+**`Assets/Resources/UI/Gameplay/HUD/PlayerHUD.prefab`**:
+- `Frame` → `player_status_frame` (guid `84569c579518b434f9060c41fcb6874d`)
+- `HealthFill` → `health_fill` (guid `a2b89a42b7301ee4c885ee8ef7468e4e`)
+- `StaminaFill` → `stamina_fill_green` (guid `4945734f4f21f2a45a6594f5837c9562`)
+- `Avatar` → `default_avatar` (guid `ce34ecfa3a37e9e4c98f6caf3b1984b7`)
+- `LevelBackground` → `socket_background_round_brown` (guid `cc9db82f2ac863b488ce1ba2a84430ad`)
+
+**`Assets/Resources/UI/Gameplay/UnifiedHUD/UnifiedGameplayHUD.prefab` (`BottomHUD`)**:
+- `Frame` → `unified_hud_frame_0` (guid `d0271d6358f6ed6439d34fe2cf2cadd8`)
+- `ExperienceFill` → `experience_bar_fill_blue_v2_0` (guid `64b9aff0268088143a944f62e522a05f`)
+- `MapBackground`/`StatBackground` → `socket_background_round_brown` (guid
+  `cc9db82f2ac863b488ce1ba2a84430ad`, dùng chung guid với `LevelBackground` ở trên)
+- `MapButton` → `map_icon_0` (guid `8443f7cd1d53d814e94875e1c596c2a0`)
+- `StatButton` → `stat_icon` (guid `eda21969107c35f40814e8661d34b6be`)
+- 8× `QuickSlotBackground` → trước migration hoàn toàn KHÔNG có `m_Sprite` override trên
+  `PrefabInstance` (nghĩa là kế thừa thẳng sprite mặc định `quick_slot_background_brown` từ prefab
+  gốc) — `git checkout` xoá luôn 8 block override tôi từng thêm, đúng trạng thái ban đầu.
+
+## Asset Dark Inventory Style: không xoá, chỉ gỡ khỏi prefab
+
+10 file `_v1` vẫn còn nguyên trong project, không tham chiếu bởi prefab nào:
+- `Assets/Resources/UI/Gameplay/PlayerStatusHUD/DarkInventoryStyle/` (4 file: `player_status_frame_v1`,
+  `health_fill_v1`, `stamina_fill_green_v1`, `default_avatar_v1`)
+- `Assets/Resources/UI/Gameplay/UnifiedHUD/DarkInventoryStyle/` (6 file: `unified_hud_frame_v1`,
+  `quick_slot_background_brown_v1`, `socket_background_round_brown_v1`, `experience_bar_fill_v1`,
+  `map_icon_v1`, `stat_icon_v1`)
+
+**Không tích hợp** 2 bản sửa đã yêu cầu trước đó: `BOTTOMHUD_CONTRAST_AND_ORNAMENT_FIX_ART_READY`,
+`PLAYERHUD_BOTTOMHUD_ART_READY` — coi như huỷ, giữ nguyên asset đã gen để tham khảo/dùng lại sau nếu
+owner đổi ý.
+
+## Kết quả Play Mode (qua đúng luồng MainMenu → Continue → Load Slot 1)
+
+- Verify qua `PrefabUtility.LoadPrefabContents`: toàn bộ 18 field Image (5 PlayerHUD + 13 BottomHUD)
+  đều có sprite hợp lệ, **không có Missing Sprite/Missing Reference nào**.
+- Avatar, Level badge, Health (đỏ), Stamina (xanh lá) hiện đúng như trước migration — khung gỗ sồi/
+  viền vàng nguyên bản.
+- 8 quick slot, icon Map ("M") và Character ("C") hiển thị rõ ràng, tương phản tốt — đúng bản gốc,
+  không còn bug chìm icon.
+- Test damage trực tiếp qua `PlayerStat.TakeDamage(20)`: `HealthFill.fillAmount` giảm đúng từ `1.0`
+  xuống `0.82`, xác nhận binding fillAmount không bị ảnh hưởng bởi việc revert.
+- Console: không lỗi Missing Sprite/Reference. Cảnh báo "2 audio listeners"/video codec là pre-existing
+  từ luồng MainMenu→gameplay, không liên quan tới HUD, ngoài phạm vi.
+- Không đổi `RectTransform`/`anchoredPosition`/`sizeDelta`/anchor/pivot/sibling order/`Image.Type`/
+  fill method/fill origin, không sửa gameplay code, không ảnh hưởng UI subsystem khác (Fishing/Quest/
+  Minimap/MainMenu/CharacterPopup vẫn giữ nguyên Dark Inventory Style đã duyệt trước đó).
+
+**Screenshot**: `Assets/Screenshots/screenshot-20260928-013415.png` (toàn cảnh gameplay),
+`Assets/Screenshots/reverted_bottomhud.png` (BottomHUD zoom, icon Map/Character rõ ràng).
+
+---
+
+Ngày: 2026-09-28
+Feature: Gen 7 SFX one-shot UI chung (D-058, Phase A của `AudioSfxSystem.md`) — dùng chung cho
+MainMenu, IntroCutscene và toàn bộ Pause/Inventory/Settings/popup trong MapNhat. Đây là đợt gen audio
+đầu tiên của project (trước đó chỉ có nhạc nền + footstep, không có SFX UI nào).
+
+Việc này **độc lập** với entry `READY_FOR_CODEX_BOTTOMHUD_CONTRAST_AND_ORNAMENT_FIX` bên dưới (ảnh
+BottomHUD) — entry đó vẫn đang chờ xử lý riêng, chưa đóng.
+
+## Đọc trước
+
+`Assets/Documentation/DevelopmentPlan/AudioSfxSystem.md` — nguồn chuẩn đầy đủ (kiến trúc, convention,
+toàn bộ catalog 3 phase, §6 giải thích lý do dùng Freesound thay vì `generate_audio`/fal). Handoff này
+chỉ trích đúng bảng Phase A để Codex lấy asset ngay, không lặp lại toàn bộ context.
+
+## Nguồn asset: Freesound.org (free), KHÔNG dùng `generate_audio`
+
+`generate_audio` trong MCP chỉ có đúng 1 provider (`fal`), tính phí BYOK, không free. Đổi sang
+**Freesound.org** — thư viện SFX free do người dùng thật thu âm/upload:
+
+1. Search trên Freesound theo cột "Mô tả gen (search query)" dưới đây (có thể dịch/diễn đạt lại tiếng
+   Anh cho ra kết quả tốt hơn).
+2. Ưu tiên license **CC0** (không cần credit). Chỉ chọn **CC-BY** nếu không có CC0 phù hợp — bắt buộc
+   ghi tác giả + link gốc vào `Assets/Resources/Audio/SFX/CREDITS.md` (tạo file mới nếu chưa có).
+   **Tuyệt đối không dùng file NC (non-commercial)** hoặc license không rõ ràng.
+3. Tránh file có watermark/giọng announcer đè lên, tránh file ồn nền lớn.
+4. Tải file, convert/trim về đúng spec: **mono, PCM 44.1kHz WAV, đúng khoảng Thời lượng ở cột cuối,
+   không loop, cắt bỏ khoảng lặng thừa đầu/cuối** — nếu file gốc dài hơn nhiều, chỉ giữ đúng đoạn âm
+   thanh chính.
+5. Lưu đúng path = cột Output folder + tên file = cột "Tên file" (không đổi tên khác).
+
+## Asset cần lấy — 7 SFX UI (Phase A)
+
+| SFX ID | Tên file | Output folder | Mô tả gen (search query) | Thời lượng đích |
+| --- | --- | --- | --- | --- |
+| `sfx.ui.hover` | `sfx_ui_hover.wav` | `Assets/Resources/Audio/SFX/UI/` | soft wood tick short / light UI hover click | 0.15s |
+| `sfx.ui.click_primary` | `sfx_ui_click_primary.wav` | `Assets/Resources/Audio/SFX/UI/` | warm wooden metal click confirm / UI button click positive | 0.25s |
+| `sfx.ui.click_secondary` | `sfx_ui_click_secondary.wav` | `Assets/Resources/Audio/SFX/UI/` | soft neutral UI click / button click back cancel | 0.25s |
+| `sfx.ui.toggle` | `sfx_ui_toggle.wav` | `Assets/Resources/Audio/SFX/UI/` | small mechanical switch toggle / latch click short | 0.2s |
+| `sfx.ui.error` | `sfx_ui_error.wav` | `Assets/Resources/Audio/SFX/UI/` | short low error tone / UI negative buzz soft | 0.4s |
+| `sfx.ui.popup_open` | `sfx_ui_popup_open.wav` | `Assets/Resources/Audio/SFX/UI/` | soft cloth parchment unfold with faint bell chime / UI panel open | 0.35s |
+| `sfx.ui.popup_close` | `sfx_ui_popup_close.wav` | `Assets/Resources/Audio/SFX/UI/` | soft UI panel close short / paper close whoosh small | 0.25s |
+
+Tất cả: mono, ngắn gọn, không khoảng lặng thừa đầu/cuối, không loop (one-shot), âm sắc ấm/cổ điển
+(gỗ, kim loại, da, chuông đồng) — **không** dùng âm điện tử/8-bit/synth hiện đại, đồng bộ
+`DarkLightFantasyUIStyleGuide.md` (D-041).
+
+## Việc Codex KHÔNG cần làm
+
+- Không sửa `SoundFXManager.cs`, `SoundFXLibrary.cs`, hay bất kỳ script/prefab nào — chỉ chuẩn bị 7
+  file audio trên. Claude tự wire `PlaySfx`/`ButtonSfx` sau khi nhận asset.
+- Không tự đổi tên file khác cột "Tên file" — Claude cần tên khớp để gán vào `SoundFXLibrary` không
+  phải đoán lại.
+- Không lấy thêm SFX ngoài 7 cái trên (Phase B/C trong `AudioSfxSystem.md` sẽ có handoff riêng sau).
+- Không dùng file license NC hoặc không ghi rõ license trên Freesound.
+- Không đụng gì tới `unified_hud_frame_v1.png`/`map_icon_v1.png`/`stat_icon_v1.png` (đó là task riêng,
+  entry bên dưới).
+
+## Báo lại khi xong
+
+Ghi entry mới ở đầu `Assets/Documentation/DevelopmentPlan/Handoffs/CodexToClaude.md` với Status
+`SFX_PHASE_A_UI_ART_READY`, liệt kê đúng 7 tên file, URL Freesound + license + tác giả của từng file
+(khớp với những gì đã ghi vào `CREDITS.md`), thời lượng thực tế so với cột yêu cầu, và bất kỳ mô tả
+nào không tìm được file khớp cần Claude duyệt lại query.
+
+---
+
+Ngày: 2026-09-28
+Feature: Sửa 2 vấn đề cụ thể trên `unified_hud_frame_v1.png`/`map_icon_v1.png`/`stat_icon_v1.png`
+sau khi owner review Play Mode thật (xem entry `VERIFIED_PLAYERHUD_BOTTOMHUD_INTEGRATION` bên dưới cho
+kết quả PlayerHUD — PASS, không cần sửa gì).
+
+## Xác nhận trước: đây KHÔNG phải lỗi vị trí/RectTransform
+
+Owner nghi ngờ UI bị lệch khi tích hợp. Đã verify bằng code (không có dòng nào đổi
+`RectTransform`/`anchoredPosition`, chỉ có `img.sprite = ...`) và đo bằng Python/PIL: điểm neo alpha
+của rãnh EXP tại cột trung tâm khung — y=6/39/43 — **khớp 100%** giữa `unified_hud_frame.png` (cũ) và
+`unified_hud_frame_v1.png` (mới). Vấn đề nằm ở NỘI DUNG art, không phải vị trí tích hợp.
+
+## Vấn đề 1: `map_icon_v1.png`/`stat_icon_v1.png` quá tối, chìm vào socket
+
+Đo màu trung bình vùng opaque (Python/PIL):
+- `map_icon_v1.png`: RGB trung bình `(86, 70, 47)` — nâu tối.
+- `stat_icon_v1.png`: RGB trung bình `(43, 39, 41)` — gần đen.
+- `socket_background_round_brown_v1.png` (nền socket chứa icon): RGB trung bình `(50, 40, 31)`.
+
+3 giá trị này gần như cùng tông tối — icon chìm hoàn toàn vào nền, nhìn như socket rỗng trong Play
+Mode thật (owner chụp màn hình xác nhận). **Yêu cầu sửa**: vẽ lại `map_icon_v1.png`/`stat_icon_v1.png`
+với màu sáng/tương phản mạnh hơn hẳn so với nền socket — gợi ý dùng tông antique gold hoặc ivory/cream
+(cùng ngôn ngữ sapphire/gold accent của bộ Dark Inventory Style đã duyệt ở Minimap/CharacterPopup),
+giữ nguyên kích thước `1017×915`/`1117×1168` và ý nghĩa icon (bản đồ/nhân vật).
+
+## Vấn đề 2: nhánh nối rãnh EXP với thân khung quá rời rạc
+
+So sánh trực quan `unified_hud_frame.png` (cũ) và `unified_hud_frame_v1.png` (mới): bản cũ dùng dây
+lá xanh nối liền mạch giữa rãnh EXP (phía trên) và thân khung chính (phía dưới); bản mới dùng gai đen
+nhọn tạo nhiều khoảng hở lớn — dù điểm neo pixel không đổi (đã verify ở trên), phong cách này khiến
+rãnh EXP nhìn "lơ lửng/rời rạc" khỏi thân khung thay vì một khối liền mạch. **Yêu cầu sửa**: vẽ lại
+nhánh nối cho liền mạch/đặc hơn (không cần quay lại dây lá xanh, có thể dùng thanh kim loại/dây xích
+gold đặc theo phong cách Dark Inventory Style), giảm khoảng hở trong suốt giữa rãnh EXP và thân khung
+chính. Giữ nguyên toàn bộ phần còn lại của khung (8 rãnh quick slot, 2 socket tròn, kích thước
+`2172×424`) — chỉ sửa vùng nhánh nối này.
+
+## Việc Codex KHÔNG cần làm
+
+- Không đổi 8 asset còn lại đã verify PASS (`player_status_frame_v1`, `health_fill_v1`,
+  `stamina_fill_green_v1`, `default_avatar_v1`, `quick_slot_background_brown_v1`,
+  `socket_background_round_brown_v1`, `experience_bar_fill_v1`).
+- Không đổi kích thước 3 file đang sửa (`unified_hud_frame_v1` giữ `2172×424`, `map_icon_v1` giữ
+  `1017×915`, `stat_icon_v1` giữ `1117×1168`).
+- Không đổi vị trí rãnh EXP (điểm neo y=6/39/43 phải giữ nguyên).
+- Không sửa code.
+
+## Báo lại khi xong
+
+Ghi entry mới ở đầu `Assets/Documentation/DevelopmentPlan/Handoffs/CodexToClaude.md` với Status
+`BOTTOMHUD_CONTRAST_AND_ORNAMENT_FIX_ART_READY`, nêu rõ màu mới của 2 icon (RGB trung bình) và mô tả
+ngắn cách đã làm nhánh nối liền mạch hơn.
+
+---
+
+Status: `VERIFIED_PLAYERHUD_BOTTOMHUD_INTEGRATION`
+
+Ngày: 2026-09-28
+Feature: Tích hợp 10 asset Dark Inventory Style cho `PlayerHUD.prefab` + `UnifiedGameplayHUD.prefab/
+BottomHUD` (`PLAYERHUD_BOTTOMHUD_ART_READY`, D-057) — PlayerHUD PASS hoàn toàn; BottomHUD phát hiện 2
+vấn đề nội dung art (xem entry mới nhất phía trên), không phải lỗi tích hợp.
+
+## Prefab đã sửa (chỉ đổi `Image.sprite`, không đổi `RectTransform`/sibling order/`Image.Type`)
+
+- **`Assets/Resources/UI/Gameplay/HUD/PlayerHUD.prefab`**: `Frame`→`player_status_frame_v1`,
+  `HealthFill`→`health_fill_v1`, `StaminaFill`→`stamina_fill_green_v1`,
+  `Avatar`→`default_avatar_v1`, `LevelBackground`→`socket_background_round_brown_v1`.
+- **`Assets/Resources/UI/Gameplay/UnifiedHUD/UnifiedGameplayHUD.prefab` (`BottomHUD`)**:
+  `Frame`→`unified_hud_frame_v1`, `ExperienceFill`→`experience_bar_fill_v1`,
+  `MapBackground`/`StatBackground`→`socket_background_round_brown_v1`,
+  `MapButton`→`map_icon_v1`, `StatButton`→`stat_icon_v1`, 8×`QuickSlotBackground`→
+  `quick_slot_background_brown_v1`.
+- Xác nhận trước khi lưu: sibling order 2 prefab không đổi — `Frame` vốn đã đứng sau
+  Avatar/Fill/LevelBackground/QuickSlotBackground (render đè lên, đúng kiến trúc "frame overlay có
+  rãnh alpha rỗng" đã có từ trước), không cần đảo thứ tự.
+
+## Kết quả Play Mode (qua đúng luồng MainMenu → Continue → Load Slot 1, không tắt qua MapNhat trực
+tiếp)
+
+- **PlayerHUD**: Avatar, Health (đỏ), Stamina (xanh lá), Level badge đều hiện đúng qua các lỗ rỗng của
+  `player_status_frame_v1`, không méo/mờ, không tràn ra ngoài khung. **PASS**.
+- **BottomHUD**: 8 quick slot, EXP text hiện đúng vị trí; nhưng **Map/Character icon gần như không
+  thấy** (chìm vào socket tối màu) và **nhánh nối rãnh EXP nhìn rời rạc** — 2 vấn đề đã phân tích chi
+  tiết ở entry phía trên, đã xác nhận không phải do sai RectTransform.
+- Console: có `PlayerLoop called recursively` (lỗi engine đã biết từ trước, do gọi screenshot dồn dập
+  trong Play Mode, không liên quan asset), và cảnh báo "2 audio listeners"/"No cameras rendering" khi
+  đi qua luồng MainMenu→gameplay đầy đủ — cả hai đều không liên quan tới thay đổi asset HUD lần này,
+  chưa điều tra thêm vì ngoài phạm vi yêu cầu hiện tại.
+
+**Screenshot**: `Assets/Screenshots/screenshot-20260928-011810.png` (PlayerHUD + BottomHUD trong
+gameplay), `Assets/Screenshots/screenshot-20260928-012005.png` (toàn cảnh).
+
+---
+
+Ngày: 2026-09-28
+Feature: Gen asset Dark Inventory Style cho `PlayerHUD.prefab` (Health/Stamina/Avatar/Level) và
+`UnifiedGameplayHUD.prefab/BottomHUD` (quick bar đáy màn hình) — D-057.
+
+## Bối cảnh — bài học từ Fishing UI (D-055), áp dụng ngay từ đầu lần này
+
+- **Khoá cứng kích thước 1:1 theo file gốc ngay từ đầu** — không lặp lại việc phải revert/regen 3 vòng
+  như Fishing. Toàn bộ 10 asset dưới đây phải xuất đúng kích thước px ghi trong bảng, không hơn không
+  kém, để Claude chỉ đổi `Sprite` reference, **không đổi bất kỳ `RectTransform`/`sizeDelta`/
+  `anchoredPosition`/`Image.Type` nào** trong code hay prefab.
+- BitePrompt/CatchZone của Fishing từng gặp lỗi "nội dung vẽ nhỏ hơn hẳn canvas" (padding thừa) và
+  "cùng tông màu với nền nên chìm mất" — áp dụng luôn 2 bài học này: nội dung phải lấp ≥85% canvas mỗi
+  chiều (trừ khi cần bo góc/circle tự nhiên), fill Health/Stamina/Experience phải tương phản rõ với
+  khung/track xung quanh.
+- `player_status_frame`/`unified_hud_frame` bake chung cả khung ngoài lẫn rãnh (track) của các thanh
+  fill trong CÙNG một bitmap (không có sprite track riêng) — đúng kiến trúc hiện tại, giữ nguyên cách
+  này, không tách track ra sprite riêng (sẽ cần sửa code không cần thiết).
+
+## Art direction
+
+Theo `DarkLightFantasyUIStyleGuide.md` (D-041): charcoal/walnut nền, viền antique gold mảnh, sapphire
+tiết chế. **Giữ nguyên tông màu fill** để không đổi ngôn ngữ đọc nhanh trạng thái đã quen thuộc:
+Health = đỏ, Stamina = xanh lá, Experience = xanh dương. Chỉ đổi khung/nền/viền/socket sang charcoal/
+walnut/gold, không đổi màu 3 loại fill.
+
+## Asset cần gen
+
+### Nhóm 1 — PlayerHUD (`Assets/Resources/UI/Gameplay/PlayerStatusHUD/DarkInventoryStyle/`)
+
+| Tên file mới | Kích thước px (khớp file gốc) | Vai trò |
+| --- | --- | --- |
+| `player_status_frame_v1.png` | 1949×626 | Khung ngoài, bake rãnh Health + Stamina, hiện tại hiển thị ở `260×98` logic (Simple stretch — tỉ lệ khung không cần khớp chính xác khung logic, giữ đúng như file gốc để không đổi mức méo hiện có) |
+| `health_fill_v1.png` | 2065×125 | Fill Health đỏ, `Image.fillAmount` origin trái |
+| `stamina_fill_green_v1.png` | 2091×192 | Fill Stamina xanh lá, `Image.fillAmount` origin trái |
+| `default_avatar_v1.png` | 1254×1254 | Avatar tròn mặc định (placeholder, có thể thay qua `SetAvatar`) |
+
+### Nhóm 2 — BottomHUD + shared (`Assets/Resources/UI/Gameplay/UnifiedHUD/DarkInventoryStyle/`)
+
+| Tên file mới | Kích thước px (khớp file gốc) | Vai trò |
+| --- | --- | --- |
+| `unified_hud_frame_v1.png` | 2172×424 | Khung thanh HUD đáy màn hình, bake rãnh 8 quick slot + track exp bar + socket Map/Character, hiển thị ở `700×137` logic |
+| `quick_slot_background_brown_v1.png` | 1254×1254 | Nền 1 quick slot, dùng chung cho cả 8 ô |
+| `socket_background_round_brown_v1.png` | 1254×1254 | Socket tròn dùng chung: LevelBadge của PlayerHUD **và** nút Map/Character của BottomHUD (3 chỗ dùng chung 1 file) |
+| `experience_bar_fill_v1.png` | 2120×125 | Fill Experience xanh dương (thay `experience_bar_fill_blue_v2.png`) |
+| `map_icon_v1.png` | 1017×915 | Icon bản đồ trong nút Map (đáy quick bar) |
+| `stat_icon_v1.png` | 1117×1168 | Icon nhân vật trong nút Character (đáy quick bar) |
+
+Tất cả: RGBA, Sprite Mode Single, Filter Point, Mipmap Off, Compression None, PPU 100, Border 0
+(không cái nào cần 9-slice — tất cả đang dùng `Image.Type.Simple`/`Filled`, không `Sliced`).
+
+## Việc Codex KHÔNG cần làm
+
+- Không sửa `PlayerHUDController.cs`, `UnifiedGameplayHudController.cs`, `QuickBarManager.cs`,
+  `QuickBarSlotUI.cs` hay bất kỳ code nào — chỉ gen bitmap, Claude tự gán sprite vào 2 prefab
+  (`PlayerHUD.prefab`, `UnifiedGameplayHUD.prefab`) qua `PrefabUtility.LoadPrefabContents`.
+  Update chỉ tôi tự làm.
+- Không đổi tông màu fill Health (đỏ)/Stamina (xanh lá)/Experience (xanh dương).
+- Không đổi map_icon/stat_icon thành icon khác về mặt ý nghĩa (vẫn phải nhận ra là bản đồ/nhân vật) —
+  chỉ đổi phong cách vẽ.
+- Không đụng asset Fishing/Quest/Minimap/MainMenu/CharacterPopup đã migrate trước đó.
+- Không tạo sprite track riêng cho Health/Stamina/Experience — track vẫn bake chung trong
+  `player_status_frame_v1`/`unified_hud_frame_v1` như kiến trúc hiện tại.
+
+## Báo lại khi xong
+
+Ghi entry mới ở đầu `Assets/Documentation/DevelopmentPlan/Handoffs/CodexToClaude.md` với Status
+`PLAYERHUD_BOTTOMHUD_ART_READY`, liệt kê đúng 10 tên file, xác nhận kích thước khớp bảng, và % lấp
+đầy canvas đo được cho từng file (đặc biệt `stamina_fill_green_v1` vì file gốc có padding dọc lớn –
+192px cao trong khi hiển thị chỉ 14px, cần xác nhận phần nội dung thật không bị co lại quá nhỏ).
+
+---
+
+Ngày: 2026-09-28
+Feature: Tích hợp `fishing_mystery_fish_icon.png` (`FISHING_MYSTERY_FISH_ICON_ART_READY`, D-056) +
+tự phát hiện và sửa thêm 1 bug UI: fill slider đè lên chốt vàng trang trí của track. Cả 2 đã verify
+Play Mode PASS.
+
+## 1. Mystery fish icon — force reimport & tích hợp
+
+- Force reimport `fishing_mystery_fish_icon.png` qua `AssetDatabase.ImportAsset(...,
+  ForceUpdate | ForceSynchronousImport)`; verify bbox khớp đúng Codex báo (93.55%/77.42%).
+- `FishingFeatureAuthoring.cs`: **không cần sửa gì** — đã có sẵn `TryLoadSprite(UiFolder +
+  "fishing_mystery_fish_icon.png")` từ đợt trước, chạy lại
+  `Tools/Project Game/Fishing/Build And Install MapNhat Fishing` là prefab tự nhận sprite mới qua
+  field `_mysteryFishSprite`.
+- `FishIcon`: `sizeDelta = 62×62` (không đổi), `color = RGBA(1,1,1,1)`, `preserveAspect = true` —
+  verify qua `PrefabUtility.LoadPrefabContents`.
+- Verify Play Mode qua flow thật (`TryBeginFishing`→`BeginMinigame`): `_fishImage.sprite =
+  fishing_mystery_fish_icon`, hiện đúng trên `MovementTrack`, không bị crop, đọc rõ silhouette + dấu
+  "?" trên nền xanh dương. **Screenshot**: `Assets/Screenshots/screenshot-20260927-235318.png`.
+- Xác nhận cá thật chỉ lộ ra ở `ResultPanel` khi `CompleteCatch()` — test trực tiếp, hiện đúng icon
+  `Fish1_7`/tên cá/cân nặng/giá, không đổi hành vi so với đợt tích hợp reveal-on-catch trước.
+  **Screenshot**: `Assets/Screenshots/screenshot-20260927-235349.png`.
+- Console: không lỗi/warning mới liên quan Fishing.
+
+## 2. Bug tự phát hiện: fill đè lên chốt vàng của track (owner báo qua screenshot thật)
+
+Sau khi owner xem Play Mode, phát hiện thanh fill (slider) tràn lên che mất phần chốt vàng trang trí
+ở 2 đầu `fishing_slider_track_v3` — hệ quả phụ của lần sửa padding trước đó (`Fill Area` inset về
+đúng `(0,0)` để fill đủ rộng, nhưng đồng thời cũng xoá luôn khoảng hở dọc từng có, khiến fill tràn
+vào đúng vùng chốt vàng ở 2 đầu).
+
+- Đo bằng Python/PIL: chốt vàng flare chiếm khoảng `y=10..19` và `y=961..969` trên canvas 980px
+  (thân kênh thẳng ổn định từ `y=19` đến `y=961`) — quy đổi logic ≈ 9-10px mỗi đầu.
+- **`Assets/Editor/FishingFeatureAuthoring.cs`**: `Fill Area` đổi `offsetMin`/`offsetMax` từ
+  `(0,0)`/`(0,0)` sang `(0,12)`/`(0,-12)` — **giữ nguyên 0 theo chiều ngang** (đúng yêu cầu trước, fill
+  vẫn đủ rộng 46px), chỉ thêm lại 12px inset dọc mỗi đầu để fill dừng trước vùng chốt vàng.
+- Verify Play Mode tại `progress = 0.9` (worst-case gần đầy) qua flow thật (ép `_progress` trên
+  controller + `SetProgress` trên UI cùng lúc, vì `TickMinigame` sẽ ghi đè giá trị set một mình qua
+  UI nếu không đồng bộ) — cả chốt vàng trên và dưới đều lộ ra đầy đủ, fill nằm gọn trong lòng kênh,
+  không tràn: **PASS**. Không dùng asset mới, thuần chỉnh offset.
+- Console: không lỗi/warning mới.
+
+## Sai khác/vấn đề còn tồn tại
+
+Không có. Fishing UI (D-055 + D-056) coi như hoàn tất đợt này.
+
+---
+
+Ngày: 2026-09-27
+Feature: Gen 1 icon "cá bí ẩn" cho cơ chế reveal-on-catch mới (D-056) — owner muốn ẩn danh tính cá
+trong lúc chơi minigame, chỉ lộ ra khi bắt thành công (xem entry `VERIFIED_FISHING_UI_V3_PADDING_FIX`
+bên dưới cho bối cảnh bộ UI `_v3` đã hoàn thiện).
+
+## Bối cảnh
+
+- `FishIcon` (di chuyển trong `MovementTrack` lúc chơi) trước đây hiện đúng sprite thật của con cá đã
+  roll ngẫu nhiên (`_selectedFish.icon`, ví dụ `Fish1_7` cho River Minnow) — owner muốn thay bằng 1
+  icon chung, không tiết lộ loại cá.
+- Code đã sẵn sàng chờ asset này (`FishingMinigameUI._mysteryFishSprite`, load qua
+  `TryLoadSprite` — không crash nếu thiếu, chỉ ẩn `FishIcon` tạm thời cho tới khi asset tồn tại).
+- Loại cá thật vẫn lộ ra bình thường ở `ResultPanel` khi thành công (dùng icon thật có sẵn trong
+  `Assets/Tiles/Tilesets/Fishing and Gathering Pixel Art RPG Icons/`, không cần Codex gen thêm).
+
+## Asset cần gen
+
+Output: `Assets/Resources/UI/Fishing/DarkInventoryStyle/fishing_mystery_fish_icon.png`
+
+- Kích thước logic **62×62** (khớp `FishIcon.sizeDelta` hiện có, không đổi code/layout) → bitmap
+  **124×124px** (2x, pixel-art thật, nearest 4x upscale như các asset `_v3` khác).
+- Nội dung: silhouette cá đơn giản (tối màu/xám, có thể thêm dấu "?" nhỏ) — rõ ràng là "chưa biết
+  loại gì", khác hẳn các icon cá thật đã có (không dùng lại màu/hoa văn của Fish1/Fish2...).
+- Đồng bộ phong cách Dark Inventory Style/pixel-art của bộ `_v3` đã duyệt (tham chiếu
+  `fishing_bobber_bite_00.png` về mật độ chi tiết/kích thước pixel cho phù hợp).
+- RGBA, Sprite Mode Single, Filter Point, Mipmap Off, Compression None, PPU 100, Border 0.
+
+## Việc Codex KHÔNG cần làm
+
+- Không đổi 8 asset `_v3` hay 6 frame phao đã duyệt.
+- Không sửa code — `FishingFeatureAuthoring.cs` đã có sẵn `TryLoadSprite(UiFolder +
+  "fishing_mystery_fish_icon.png")`, chỉ cần file PNG xuất hiện đúng path là tự động gán khi Claude
+  chạy lại rebuild.
+
+## Báo lại khi xong
+
+Ghi entry mới ở đầu `Assets/Documentation/DevelopmentPlan/Handoffs/CodexToClaude.md` với Status
+`FISHING_MYSTERY_FISH_ICON_ART_READY`.
+
+---
+
+Status: `VERIFIED_FISHING_UI_V3_PADDING_FIX`
+
+Ngày: 2026-09-27
+Feature: Tích hợp 3 asset padding-fix (`FISHING_UI_V3_PADDING_FIX_ART_READY`) + sửa `Fill Area`
+padding cứng phát hiện thêm trong lúc tích hợp — đã gán xong, verify Play Mode thật, PASS.
+
+## Force reimport
+
+Đã force reimport `fishing_waiting_panel_v3.png`, `fishing_slider_track_v3.png`,
+`fishing_slider_fill_v3.png` qua `AssetDatabase.ImportAsset(..., ImportAssetOptions.ForceUpdate |
+ForceSynchronousImport)`, verify lại bbox bằng Python/PIL khớp đúng số Codex báo (90.4%/89.2%,
+86.96%/99.6%, 86.96%/100%).
+
+## Prefab/authoring script thay đổi
+
+- **`Assets/Editor/FishingFeatureAuthoring.cs`**: 1 thay đổi — `CreateVerticalSlider`'s `Fill Area`
+  đổi `offsetMin`/`offsetMax` từ `(5,5)`/`(-5,-5)` (padding cứng có sẵn từ code gốc, chưa từng gây
+  chú ý khi còn màu phẳng) sang `Vector2.zero` cả hai, để `Fill Area` stretch đúng full `CatchProgress`
+  46×490 theo yêu cầu Codex.
+
+## Kích thước thực tế
+
+`CatchProgress` **46×490** (không đổi, đúng vị trí `(105,-10)`). `Fill Area` sau fix: `rect.size =
+(46, 490)` (trước đó `(36, 480)` do padding 5px). `Track`/`Fill` Image đều `color = white`,
+`Type.Simple`, stretch đầy `Fill Area`.
+
+## Offset `fillRect`
+
+`Slider.fillRect` trỏ đúng `Fill` (child của `Fill Area`), không còn offset trái/phải — verify qua
+`fillRect.rect.width = 46` tại `slider.value = 0.5` (trước đó bị bó hẹp bởi padding cha).
+
+## Kết quả Play Mode
+
+- **WaitingPanel**: TMP "Waiting for a bite..." giờ nằm gọn trong khung, không tràn ra ngoài: **PASS**.
+- **Slider tiến trình**: track/fill rõ ràng, dễ đọc tiến độ 0-100%, fill dâng đúng từ dưới lên theo
+  `slider.value`; verify tại `value=0.6` — fill chiếm ~60% chiều cao, đầy chiều rộng track, không lệch
+  trái/phải: **PASS**.
+- Không có crop ngang bởi Mask/RectMask2D nào (không dùng mask ở component này).
+- Console: không lỗi/warning mới liên quan Fishing.
+
+## Vấn đề còn tồn tại
+
+Không có sai khác so với yêu cầu.
+
+---
+
+Ngày: 2026-09-27
+Feature: Sửa lỗi padding trên 3 asset của bộ `_v3` (`fishing_waiting_panel_v3.png`,
+`fishing_slider_track_v3.png`, `fishing_slider_fill_v3.png`) — owner xem screenshot Play Mode thật và
+phát hiện nội dung vẽ nhỏ hơn hẳn canvas, gây 2 vấn đề trực quan cụ thể.
+
+## Vấn đề đo được (Python/PIL alpha bounding box, không phải cảm quan)
+
+| File | Canvas | Bbox nội dung thật | Tỉ lệ lấp đầy |
+| --- | --- | --- | --- |
+| `fishing_waiting_panel_v3.png` | 1000×148 | (288,28)-(712,116) | **42% rộng / 60% cao** |
+| `fishing_slider_track_v3.png` | 92×980 | (52,0)-(84,976) | **35% rộng** |
+| `fishing_slider_fill_v3.png` | 92×980 | (48,0)-(76,980) | **30% rộng** |
+
+So sánh: các asset khác trong cùng bộ (`bite_prompt`, `minigame_panel`, `result_panel`,
+`movement_track`) đều lấp 81-98% canvas — 3 file trên là ngoại lệ, để nhiều padding trong suốt thừa.
+
+## Hệ quả owner quan sát được qua Play Mode
+
+1. **`WaitingPanel`**: TMP "Waiting for a bite..." kéo giãn theo đúng `RectTransform` 500×74 (khớp
+   canvas), nhưng board thật chỉ vẽ ở một vùng nhỏ ở giữa → chữ nhìn to hơn hẳn khung.
+2. **Slider tiến trình**: `CatchProgress` vốn đã hẹp theo thiết kế gốc (46 logic px, khoá cứng không
+   đổi), nội dung vẽ chỉ chiếm ~30-35% trong đó → thanh hiển thị thực tế chỉ ~14-16px, gần như không
+   đọc được tiến độ 0-100%. Icon cá (62px, không đổi) vì vậy nhìn to hơn hẳn slider.
+
+## Yêu cầu sửa
+
+Giữ NGUYÊN kích thước canvas (không đổi 1000×148 / 92×980 / 92×980, không đổi RectTransform trong
+code) — chỉ vẽ lại để nội dung lấp gần đầy canvas, cùng tỉ lệ với các asset khác trong bộ (~85-95%):
+
+- **`fishing_waiting_panel_v3.png`** (1000×148): board vẽ lấp ít nhất ~85% chiều rộng, ~85% chiều
+  cao canvas — đủ chỗ cho TMP text kéo giãn full rect mà không tràn ra ngoài viền board.
+- **`fishing_slider_track_v3.png`** (92×980): thanh nền vẽ lấp tối thiểu ~80% chiều rộng canvas
+  (hiện chỉ 35%) — để ở logic 46px vẫn đủ dày nhìn thấy rõ.
+- **`fishing_slider_fill_v3.png`** (92×980): thanh fill vẽ lấp tối thiểu ~80% chiều rộng canvas
+  (hiện chỉ 30%), cùng vị trí ngang với track để không lệch tâm khi chồng lên nhau.
+
+Giữ nguyên phong cách/màu đã duyệt (charcoal/walnut cho waiting panel; xanh dương cho track, vàng/gold
+cho fill — theo đúng bộ `_v3` hiện tại), chỉ tăng tỉ lệ lấp đầy, không đổi palette.
+
+## Việc Codex KHÔNG cần làm
+
+- Không đụng 5 asset còn lại của bộ `_v3` (`bite_prompt`, `minigame_panel`, `movement_track`,
+  `catch_zone`, `result_panel`) — đã verify tỉ lệ lấp đầy tốt (81-98%), không có vấn đề.
+- Không đổi kích thước canvas hay tên file (giữ nguyên `_v3`, ghi đè trực tiếp).
+- Không sửa code.
+
+## Báo lại khi xong
+
+Ghi entry mới ở đầu `Assets/Documentation/DevelopmentPlan/Handoffs/CodexToClaude.md` với Status
+`FISHING_UI_V3_PADDING_FIX_ART_READY`, nêu tỉ lệ lấp đầy mới đo được cho cả 3 file.
+
+---
+
+Ngày: 2026-09-27
+Feature: Tích hợp bộ Fishing UI `_v3` (khớp kích thước gốc) + phao câu cá animation thay dấu "!"
+(`FISHING_UI_V3_LOCKED_SIZE_ART_READY`) — đã gán xong, verify Play Mode thật, PASS.
+
+## File code/prefab đã sửa
+
+- **`Assets/Editor/FishingFeatureAuthoring.cs`**: thêm `using UnityEditor.Animations;`, const
+  `UiFolder`/`BobberControllerPath`; load 8 sprite `_v3` + `bobberFrame0` + `AnimationClip` đầu
+  authoring; đổi 6 lệnh dựng panel màu phẳng (`CreatePanel`) sang `CreateSpritePanel` (sprite thật,
+  `Image.Type.Simple`, `color = white`) — xoá hẳn `CreatePanel` vì không còn nơi dùng; `CatchZone`
+  thêm `Image.Type = Sliced`; `CreateVerticalSlider` nhận thêm `trackSprite`/`fillSprite`, **giữ
+  nguyên `Slider`/`fillRect` gốc, không đổi sang `Image.Type.Filled`**; xoá dòng tạo TMP
+  `"Exclamation"`, thay bằng child `BobberIcon` (Image + Animator); thêm helper
+  `GetOrCreateBobberController()` tạo `Assets/Prefabs/Fishing/FishingBobberBite.controller` (1 state
+  `BiteLoop` chứa `fishing_bobber_bite_loop.anim`, idempotent — chỉ tạo nếu chưa có).
+- **Không sửa** `FishingMinigameController.cs`, `FishingMinigameUI.cs`, `FishingSpotDefinition`,
+  `FishDefinitionSO` — đúng yêu cầu "không đổi logic tiến trình nếu không thật sự cần".
+- Chạy lại `Tools/Project Game/Fishing/Build And Install MapNhat Fishing` để cập nhật
+  `FishingFeature.prefab`.
+
+## Xác nhận không đổi `sizeDelta`/`anchoredPosition` gốc
+
+Verify trực tiếp qua `PrefabUtility.LoadPrefabContents` sau rebuild — toàn bộ khớp 100% giá trị
+hardcode gốc: `WaitingPanel 500×74`, `BitePrompt 150×150`, `MinigamePanel 520×650`,
+`MovementTrack 150×490 @ (-75,-10)`, `CatchZone 128×120`, `CatchProgress 46×490 @ (105,-10)`,
+`ResultPanel 620×180`. Không có bất kỳ dòng code nào sửa các con số này.
+
+## 8 sprite `_v3` đã gắn
+
+`WaitingPanel`→`fishing_waiting_panel_v3`, `BitePrompt`→`fishing_bite_prompt_v3`,
+`MinigamePanel`→`fishing_minigame_panel_v3`, `MovementTrack`→`fishing_movement_track_v3`,
+`ResultPanel`→`fishing_result_panel_v3` (`Image.Type.Simple`, `color = white`).
+
+## Cấu hình CatchZone 9-slice
+
+`CatchZone` → `fishing_catch_zone_v3`, `Image.Type = Sliced`, border đọc từ `.meta` đã author sẵn
+(**Left 0, Bottom 32, Right 0, Top 32**, không hardcode lại trong code).
+
+## Cấu hình Slider gốc
+
+`CatchProgress` giữ đúng cơ chế `Slider`/`fillRect` gốc: background → `fishing_slider_track_v3`
+(`Type.Simple`), `Fill` → `fishing_slider_fill_v3` (`Type.Simple`) bên trong `Fill Area` (inset 5px),
+`slider.fillRect` trỏ đúng `Fill`. **Không** dùng `Image.Type.Filled`.
+
+## BobberIcon và animation clip
+
+`BobberIcon` là child GameObject riêng của `BitePrompt`, anchor/pivot `(0.5,0.5)`,
+`anchoredPosition = (0,0)`, `sizeDelta = (48,64)` (đúng đề xuất, không cần giảm — verify trực quan
+không chạm ring). `Image.sprite = fishing_bobber_bite_00`, `preserveAspect = true`, `color = white`.
+`Animator.runtimeAnimatorController = FishingBobberBite.controller` (tạo mới, 1 state `BiteLoop`
+chứa `fishing_bobber_bite_loop.anim`). Vì `BobberIcon` là con của `BitePrompt`, khi
+`FishingMinigameUI.SetOnly()` deactivate `BitePrompt` (chuyển sang Minigame/Waiting/Result), Animator
+tự dừng theo vòng đời GameObject — **không cần sửa `FishingMinigameUI.cs`** để đạt yêu cầu "animation
+chỉ chạy khi BitePrompt hiển thị". TMP `"!"` đã bị xoá hoàn toàn khỏi authoring.
+
+## Kết quả Play Mode (Game View 1920×1080, verify qua flow gameplay thật: `TryBeginFishing` → force
+`BiteReady` → `ShowBitePrompt`/`BeginMinigame`/`ShowResult`)
+
+1. WaitingPanel đúng kích thước 500×74, không lệch vị trí: **PASS**.
+2. BitePrompt xuất hiện đúng board 150×150: **PASS**.
+3. Không còn dấu "!": **PASS** (verify qua `PrefabUtility.LoadPrefabContents`, không tìm thấy
+   GameObject "Exclamation").
+4. Phao nằm chính giữa board, animation chạy (verify `Animator.GetCurrentAnimatorStateInfo(0)
+   .normalizedTime` tăng liên tục qua nhiều lần loop, sprite hiện tại đổi từ frame `_00` sang `_03`
+   giữa 2 lần chụp cách nhau ~15s thật): **PASS**.
+5. Phao không chạm/vượt khỏi ring (verify qua screenshot zoom, bobber 48×64 nằm gọn trong vùng rỗng
+   ~110px đường kính của ring): **PASS**.
+6. MovementTrack là channel đặc (nền xanh dương liền khối, viền walnut/gold), không bị kéo thành
+   đường kẻ mảnh: **PASS**.
+7. CatchZone (màu emerald/xanh lá) nổi rõ trên nền xanh dương của MovementTrack — tương phản mạnh,
+   dễ nhận diện: **PASS**.
+8. CatchZone đổi chiều cao theo gameplay thật (`TickMinigame` tự tính lại theo vật lý catch-zone,
+   không phải set tay) — cùng cơ chế 9-slice đã verify không méo ở đợt trước, art mới không đổi cách
+   `Image.Type.Sliced` hoạt động: **PASS**.
+9. Slider gốc vẫn tăng đúng qua `Slider.fillRect`: **PASS** (verify field `slider.fillRect` trỏ đúng
+   `Fill`, không đổi cơ chế).
+10. ResultPanel hiện đúng "Success! Caught a Blue Carp (1450g)", đọc rõ: **PASS**.
+11. Console: không lỗi/warning mới liên quan Fishing.
+
+**Screenshot**: `Assets/Screenshots/screenshot-20260927-224701.png` (BitePrompt có phao ở giữa),
+`Assets/Screenshots/screenshot-20260927-224744.png` (Active Minigame). Không quay được GIF/video
+trong phiên làm việc này (giới hạn công cụ); animation đã xác nhận trực tiếp qua state Animator +
+so sánh sprite giữa 2 screenshot như mục 4.
+
+## Sai khác/vấn đề còn tồn tại
+
+- Không có sai khác so với yêu cầu.
+- **Bug không liên quan phát hiện lại lần 2 (đã biết từ vòng trước, không phải do đợt sửa này gây
+  ra):** `CreateFishingSpot()` trong `FishingFeatureAuthoring.cs` hardcode `entries.arraySize = 2`
+  và chỉ set 2 loại cá (RiverMinnow, BlueCarp) — mỗi lần chạy "Build And Install" đều ghi đè mất
+  8 loại cá khác đang có trong `FishingSpot.River.asset` (bản gốc có 10 loại). Đã tự phục hồi bằng
+  `git checkout -- Assets/Game/Fishing/Definitions/FishingSpot.River.asset` sau mỗi lần rebuild trong
+  phiên này. Đây là bug tồn tại từ trước, ngoài phạm vi yêu cầu UI — nên xử lý riêng (sửa
+  `CreateFishingSpot` để chỉ thêm 2 fish này vào danh sách nếu chưa có, thay vì ghi đè toàn bộ mảng).
+
+---
+
+Ngày: 2026-09-27
+Feature: Gen lại bộ 8 asset Fishing UI (`_v3`), vòng 3, sau khi owner yêu cầu **revert toàn bộ về bản
+gốc** rồi làm lại theo hướng khoá cứng kích thước để không còn rủi ro lệch bố cục.
+
+## Bối cảnh — vì sao revert
+
+- Đợt `_v2` (phóng to `MinigamePanel` 520×650→620×780 để gauge to/rõ hơn) yêu cầu Claude tính lại
+  toạ độ `anchoredPosition` cho `MovementTrack`/`CatchProgress` bằng tay. Sau khi tích hợp, owner phát
+  hiện khoảng cách giữa 2 gauge bị lệch/mất cân đối trong panel — Claude đã sửa 1 lần nhưng owner
+  quyết định không tiếp tục vá mà revert sạch `FishingFeatureAuthoring.cs`, `FishingMinigameUI.cs`,
+  `FishingFeature.prefab`, `FishingSpot.River.asset` về đúng git HEAD (đã xác nhận qua `git checkout`,
+  không còn sai khác) và xoá toàn bộ asset `_v1`/`_v2`/`_v3` cũ trong
+  `Assets/Resources/UI/Fishing/DarkInventoryStyle/`.
+- **Bài học giữ lại cho đợt này:** kích thước bitmap phải khớp ĐÚNG kích thước logic đã hardcode sẵn
+  trong code gốc — không phóng to panel, không cần Claude tính lại bất kỳ toạ độ nào khi tích hợp.
+
+## Kích thước BẮT BUỘC khớp 1:1 (không được đổi)
+
+Đây là giá trị đang hardcode trong `FishingFeatureAuthoring.cs` (bản gốc, KHÔNG sửa):
+
+- `WaitingPanel`: `500×74`
+- `BitePrompt`: `150×150`
+- `MinigamePanel`: `520×650`
+- `MovementTrack`: `150×490`
+- `CatchZone` (baseline, 9-slice, chiều cao đổi runtime): `128×120`
+- `CatchProgress` track + fill (dùng với `Slider.fillRect` gốc — **không phải** `Image.Type.Filled`):
+  mỗi cái `46×490`
+- `ResultPanel`: `620×180`
+
+## Art direction (giữ 2 bài học đã xác nhận đúng từ đợt `_v1`/`_v2`/`_v3` trước)
+
+Theo `DarkLightFantasyUIStyleGuide.md` (D-041): charcoal/walnut nền, viền antique gold mảnh, sapphire
+tiết chế. **Đơn giản hơn** bộ `_v2` trước đó (bớt bevel/ornament nhiều lớp, không cần ring dày cầu kỳ)
+nhưng bắt buộc giữ đúng 2 điểm đã verify hiệu quả qua Play Mode thật:
+
+1. **`fishing_bite_prompt_v3.png`**: ring quanh TMP "!" phải có **nền bán trong suốt bên trong**
+   (~90-94% opaque, không để tâm hoàn toàn trong suốt như đợt `_v1` — lỗi đã xác nhận "ring nổi trôi
+   trên world nhìn kì").
+2. **`fishing_catch_zone_v3.png`**: màu **tương phản mạnh, khác tông** với `fishing_movement_track_v3`
+   (ví dụ track tông xanh dương/tối thì catch zone dùng emerald/amber) — lỗi đã xác nhận ở `_v1`:
+   catch zone cùng tông với track nên gần như vô hình khi chơi thật.
+3. **`fishing_movement_track_v3.png`**: dù chỉ rộng 150px (hẹp hơn `_v2`), phần thân vẫn phải là
+   channel đặc/opaque chiếm phần lớn chiều rộng khung — không phải đường kẻ mảnh có nhiều padding
+   trong suốt hai bên như `_v1`.
+4. Các asset còn lại (`WaitingPanel`/`MinigamePanel`/`ResultPanel`/Slider track+fill) làm đơn giản,
+   gọn, đúng ngôn ngữ charcoal/walnut/gold — không cần đầu tư ornament nặng như `_v2`.
+
+## Asset cần gen
+
+Output: `Assets/Resources/UI/Fishing/DarkInventoryStyle/`
+
+| Tên file | Kích thước px (2x logic, pixel-art thật, nearest 4x upscale) |
+| --- | --- |
+| `fishing_waiting_panel_v3.png` | 1000×148 |
+| `fishing_bite_prompt_v3.png` | 300×300 |
+| `fishing_minigame_panel_v3.png` | 1040×1300 |
+| `fishing_movement_track_v3.png` | 300×980 |
+| `fishing_catch_zone_v3.png` | 256×240 (9-slice border trên/dưới, đề xuất ~32px, ghi rõ số đã dùng) |
+| `fishing_slider_track_v3.png` | 92×980 |
+| `fishing_slider_fill_v3.png` | 92×980 |
+| `fishing_result_panel_v3.png` | 1240×360 |
+
+Tất cả: RGBA, Sprite Mode Single, Filter Point, Mipmap Off, Compression None, PPU 100.
+`fishing_waiting_panel_v3`/`fishing_bite_prompt_v3`/`fishing_minigame_panel_v3`/
+`fishing_result_panel_v3` bake alpha bán trong suốt ~90-96% (world phải nhìn xuyên qua được).
+
+## Việc Codex KHÔNG cần làm
+
+- Không đổi `FishingFeatureAuthoring.cs`, `FishingMinigameUI.cs`, `FishingMinigameController.cs` —
+  file đã revert về đúng bản gốc, Claude chỉ cần thêm dòng load 8 sprite mới, không sửa
+  `sizeDelta`/`anchoredPosition` nào.
+- Không đụng `FishingSpot.River.asset` (đã revert về đúng 10-fish catalog gốc).
+- Không đụng asset Quest/Minimap/MainMenu hay UI đã migrate khác.
+
+## Báo lại khi xong
+
+Ghi entry mới ở đầu `Assets/Documentation/DevelopmentPlan/Handoffs/CodexToClaude.md` với Status
+`FISHING_UI_V3_LOCKED_SIZE_ART_READY`, liệt kê đúng tên file, border px đã dùng cho
+`fishing_catch_zone_v3.png`, và xác nhận kích thước từng file khớp đúng bảng trên.
+
+---
+
+Ngày: 2026-09-27
+Feature: Tích hợp `fishing_bite_prompt_v3.png` (`FISHING_BITE_PROMPT_BACKING_ART_READY`) — đã gán
+xong, verify Play Mode thật, PASS.
+
+## Prefab/authoring script đã cập nhật
+
+- **`Assets/Editor/FishingFeatureAuthoring.cs`**: 1 dòng — `bitePromptSprite` load từ
+  `fishing_bite_prompt_v2.png` → `fishing_bite_prompt_v3.png`. Không đổi gì khác.
+- Chạy lại `Tools/Project Game/Fishing/Build And Install MapNhat Fishing` để prefab nhận sprite mới.
+
+## Xác nhận sprite/cấu hình
+
+- `BitePrompt.Image.sprite = fishing_bite_prompt_v3` (verify qua `PrefabUtility.LoadPrefabContents`).
+- Kích thước: `RectTransform.sizeDelta = (150, 150)` — **không đổi**, khớp asset 360×360px (giữ đúng
+  tỉ lệ như `_v2`).
+- `Image.Type = Simple`, `Image.color = RGBA(1,1,1,1)` (trắng hoàn toàn, không nhân thêm alpha).
+- Alpha runtime: dùng đúng alpha đã bake trong PNG (backing tối ~92% opaque đo tại tâm ảnh, viền
+  ngoài ring vẫn alpha=0 trong suốt hoàn toàn).
+
+## Kết quả Play Mode (Game View 1920×1080, verify qua flow gameplay thật: `TryBeginFishing` → force
+`BiteReady` → `ShowBitePrompt`)
+
+1. Chờ cá cắn câu → BitePrompt xuất hiện trên world: **PASS**.
+2. Dấu "!" (TMP runtime, không đổi) giờ có nền charcoal tối làm điểm tựa, không còn lơ lửng trực tiếp
+   trên world: **PASS**.
+3. Phần ngoài ring vẫn trong suốt hoàn toàn, world nhìn xuyên qua bình thường: **PASS**.
+4. Ring, bevel, phao (buoy) và gợn nước (ripple) không méo/đổi tỉ lệ so với `_v2`: **PASS**.
+5. Console: không lỗi/warning mới liên quan Fishing (chỉ còn cảnh báo "no audio listener" có sẵn từ
+   trước, không phải regression).
+
+**Screenshot**: `Assets/Screenshots/screenshot-20260927-221056.png`.
+
+## Sai khác/vấn đề còn tồn tại
+
+Không có. Toàn bộ 8 asset `_v2` + `fishing_bite_prompt_v3` đã tích hợp và verify PASS qua Play Mode
+thật. Fishing UI coi như hoàn tất đợt Dark Inventory Style này (D-055).
+
+---
+
+Ngày: 2026-09-27
+Feature: Sửa `fishing_bite_prompt_v2.png` — owner xem screenshot Play Mode thật (đính kèm ở entry
+`READY_FOR_CODEX_FISHING_UI_V2_PLAYMODE_REVIEW` bên dưới) và nhận xét ring "!" nổi trôi trên world,
+không có gì đỡ phía sau, nhìn kì.
+
+## Vấn đề
+
+`fishing_bite_prompt_v2.png` (360×360) hiện chỉ có viền ring dày/bevel, tâm hoàn toàn trong suốt
+(alpha=0) — đúng thiết kế gốc `_v1` nhưng giờ ring dày/nổi bật hơn nên việc thiếu mặt phẳng tựa phía
+sau lộ rõ, khác hẳn `WaitingPanel`/`MinigamePanel`/`ResultPanel` đều có nền bán trong suốt baked sẵn.
+
+## Yêu cầu sửa
+
+Output: `Assets/Resources/UI/Fishing/DarkInventoryStyle/fishing_bite_prompt_v3.png` — **360×360px**,
+giữ nguyên ring dày/bevel/gem đã có ở `_v2` (owner khen phần ring đẹp), chỉ **thêm 1 lớp fill tối bán
+trong suốt bên trong ring** (khoảng ~90-94% opaque, cùng tinh thần alpha đã bake ở
+`fishing_waiting_panel_v2`/`fishing_minigame_panel_v2`) để dấu "!" (TMP runtime, giữ nguyên) có nền
+tựa vào thay vì lơ lửng trực tiếp trên world. Phần NGOÀI ring vẫn giữ trong suốt hoàn toàn (không đổi
+hình dạng/kích thước tổng thể của khung).
+
+## Việc Codex KHÔNG cần làm
+
+- Không đổi 7 asset còn lại của bộ `_v2` (đã verify Play Mode PASS, owner không phàn nàn).
+- Không sửa `FishingFeatureAuthoring.cs`, `FishingMinigameUI.cs`, `FishingMinigameController.cs`.
+
+## Báo lại khi xong
+
+Ghi entry mới ở đầu `Assets/Documentation/DevelopmentPlan/Handoffs/CodexToClaude.md` với Status
+`FISHING_BITE_PROMPT_BACKING_ART_READY`.
+
+---
+
+Status: `READY_FOR_CODEX_FISHING_UI_V2_PLAYMODE_REVIEW`
+
+Ngày: 2026-09-27
+Feature: Tích hợp 8 asset `_v2` (`FISHING_UI_V2_ART_READY`) vào Fishing minigame UI — đã gán xong,
+verify Play Mode thật cả 4 state qua flow gameplay thật (không chỉ set field), PASS phần lớn. Owner
+xem screenshot Play Mode thật xong và phát hiện thêm 1 vấn đề mới ở BitePrompt — xem mục cuối.
+
+## Prefab/script đã sửa
+
+- **`Assets/Editor/FishingFeatureAuthoring.cs`**: đổi toàn bộ path `_v1`→`_v2`;
+  `MinigamePanel` `520×650`→`620×780`; `MovementTrack` `150×490`→`180×600` @ `(-94,-20)`;
+  `CatchZone` baseline `128×120`→`160×140`; xoá hẳn `CreateVerticalSlider` (dùng `Slider` component),
+  thay bằng `CreateVerticalProgressFill` — bỏ `Slider`, dựng 2 Image độc lập (background `Type.Simple`
+  + fill `Type.Filled`), size `46×490`→`64×600` @ `(120,-20)`.
+- **`Assets/Scripts/Fishing/FishingMinigameUI.cs`**: field `_progressSlider` (`Slider`) đổi thành
+  `_progressFill` (`Image`); `SetProgress()` đổi từ `_progressSlider.value = ...` sang
+  `_progressFill.fillAmount = ...`. Đây là thay đổi tối thiểu bắt buộc vì asset contract yêu cầu
+  `Image.Type = Filled` (không tương thích với cơ chế `Slider.fillRect` cũ) — không đổi public API
+  nào khác của `FishingMinigameUI`/`FishingMinigameController`, không đổi gameplay/timing.
+
+## Sprite `_v2` đã gán
+
+`WaitingPanel`/`BitePrompt`/`MinigamePanel`/`MovementTrack`/`ResultPanel` → `Image.Type = Simple`,
+`color = white`. `CatchZone` → `fishing_catch_zone_v2`, `Image.Type = Sliced`, border đọc từ
+`.meta` đã author sẵn (**Left 0, Bottom 40, Right 0, Top 40**, không hardcode lại trong code).
+`SliderFill` → `fishing_slider_fill_v2`, `Image.Type = Filled`, `fillMethod = Vertical`,
+`fillOrigin = Bottom` (đúng yêu cầu); `SliderTrack` (background) → `fishing_slider_track_v2`,
+`Type.Simple`.
+
+## Kết quả Play Mode (Game View 1920×1080, verify qua flow gameplay thật: `TryBeginFishing` →
+force `BiteReady` → `BeginMinigame`, không chỉ set field tĩnh; tạm tăng `_remainingTime` qua
+reflection để có đủ thời gian chụp — xem ghi chú vận hành cuối)
+
+1. **Waiting**: pill bán trong suốt, world vẫn thấy rõ — không đổi so với `_v1`, vẫn đúng.
+2. **Bite prompt**: ring dày/có bevel/gem đúng yêu cầu, rõ ràng hơn hẳn `_v1`. **Screenshot**:
+   `Assets/Screenshots/screenshot-20260927-215403.png`.
+3. **Active minigame**: `MovementTrack` giờ là channel đặc (đo được ~78% opaque theo chiều rộng bitmap
+   giữa hàng ngang, đúng target 70-80%); `CatchZone` màu emerald tương phản mạnh, dễ nhận diện ngay cả
+   khi đặt trên track thật (khác hẳn `_v1` gần như vô hình); `SliderFill` dâng đúng từ dưới lên qua
+   `fillAmount` thật do `TickMinigame` cập nhật theo tiếp xúc catch-zone/fish, đã chứng kiến 1 lần
+   progress tự chạy tới 1.0 và trigger Success qua đúng gameplay logic (không phải set tay) — xác nhận
+   `Image.Filled` hoạt động đúng end-to-end. **Screenshot**:
+   `Assets/Screenshots/screenshot-20260927-215606.png`.
+4. **CatchZone qua nhiều `normalizedSize`**: test tại 0.35 và qua tiến trình tự nhiên của
+   `TickMinigame` (dao động runtime) — 2 cap 9-slice (border 40 trên/dưới) không méo ở bất kỳ chiều
+   cao nào quan sát được.
+5. **Success**: `ShowResult("Success! Caught a Blue Carp (1450g)")` hiện đúng, message rõ. **Screenshot**:
+   `Assets/Screenshots/screenshot-20260927-215620.png`.
+6. Console: không lỗi/warning mới liên quan Fishing.
+
+## Vấn đề mới owner phát hiện sau khi xem screenshot Play Mode thật (CHƯA sửa, cần thêm 1 vòng)
+
+**BitePrompt không có nền phía sau ring** — ring vàng nổi trôi trên world không có gì đỡ, nhìn "kì"
+(nguyên văn owner). `fishing_bite_prompt_v2.png` giữ đúng thiết kế rỗng-giữa của `_v1` (tâm alpha=0,
+chỉ có viền ring), nhưng giờ ring dày/nổi bật hơn nên việc thiếu backing fill lộ rõ hơn. Đề xuất: bake
+thêm 1 lớp fill tối bán trong suốt (~90-94% opaque, cùng tinh thần `fishing_waiting_panel_v2`) bên
+trong ring, cùng file hoặc file `_v3` riêng — để dấu "!" và ring có mặt phẳng tựa vào thay vì lơ lửng
+trên world. Sẽ gửi yêu cầu riêng sau khi owner xác nhận hướng sửa.
+
+## Ghi chú vận hành
+
+Minigame thật chỉ có timer ngắn (~8s theo `FishingSpot.River.asset`), không đủ để chụp ảnh/kiểm tra
+kỹ qua nhiều lệnh round-trip — đã tạm tăng `_remainingTime` qua reflection trong lúc test (không đụng
+asset `FishingSpot.River.asset` thật, chỉ sửa runtime field trong phiên Play Mode, không persist).
+Việc này cũng giải thích 1 lần đầu tiên `CatchZone`/`FishIcon` tạm thời không render
+(`CanvasRenderer.materialCount = 0`) ngay sau khi ép state qua reflection ngoài vòng lặp `Update()`
+bình thường — tự hết sau 1 frame khi có `Canvas.ForceUpdateCanvases()` hoặc Update tự nhiên chạy;
+không phải bug ảnh hưởng gameplay thật.
+
+---
+
+Ngày: 2026-09-27
+Feature: Gen lại **toàn bộ 8 asset** Fishing UI (`_v2`) sau khi owner review đợt `_v1` qua screenshot
+Play Mode thật và đánh giá "thiếu chuyên nghiệp". Đây KHÔNG phải yêu cầu mới — cùng D-055, chỉ là
+vòng sửa lỗi thị giác dựa trên bằng chứng thực tế.
+
+## Vấn đề cụ thể owner chỉ ra (kèm 2 screenshot thật)
+
+1. **BitePrompt** (`fishing_bite_prompt_v1`): ring chỉ là 1 đường viền vàng phẳng, mỏng, không có
+   bevel/độ dày/đổ bóng như các khung vàng khác trong game (so với `minimap_frame_v1`,
+   `dialogue_frame_v4`) — nhìn lạc tông, như placeholder.
+2. **MovementTrack** (`fishing_movement_track_v1`): phần thân chỉ là 1 đường kẻ mảnh với 2 đầu mút
+   trang trí to bất cân xứng — nhìn như một mũi tên/gậy trang trí, không giống "đường ray" cá bơi
+   trong đó. Phần opaque thực tế chỉ chiếm phần nhỏ chiều rộng 300px của bitmap, phần lớn là padding
+   trong suốt hai bên.
+3. **CatchZone** (`fishing_catch_zone_v1`): dùng cùng tông xanh dương/vàng với chính track → gần như
+   vô hình khi chơi thật, người chơi không nhận ra được vùng cần giữ chuột trong đó.
+4. **Slider progress**: cùng vấn đề với track — đầu mút vàng trang trí chiếm trọng lượng thị giác lớn
+   hơn cả phần fill thực sự đang chạy, khó đọc tiến trình ở cái nhìn thoáng qua.
+
+Kết luận: tổng thể 2 gauge dọc (MovementTrack + Slider) và CatchZone "nhìn đồ chơi", thiếu độ nặng so
+với mặt bằng chất lượng đã đạt được ở Minimap/Dialogue/MainMenu boards.
+
+## Yêu cầu sửa cụ thể cho từng asset (bắt buộc đọc trước khi vẽ)
+
+- **`fishing_bite_prompt_v2.png`**: ring dày, có bevel/highlight/shadow nhiều lớp giống ngôn ngữ
+  `minimap_frame_v1`/`dialogue_frame_v4` — không phải 1 đường viền đơn sắc phẳng.
+- **`fishing_movement_track_v2.png`**: phần THÂN (không tính 2 đầu mút trang trí) phải là 1 channel/
+  rail ĐẶC, opaque, chiếm tối thiểu ~70-80% chiều rộng khung hình — đọc được ngay là "đường ray cá
+  bơi", không phải đường kẻ mảnh có nhiều padding trong suốt hai bên.
+- **`fishing_catch_zone_v2.png`**: màu tương phản MẠNH và khác hẳn tông của track/slider (ví dụ
+  vàng/hổ phách rực hoặc xanh lá glow) — phải nổi bật ngay cả khi đặt chồng lên track thật trong game,
+  không dùng lại tông xanh dương/vàng giống track.
+- **`fishing_slider_track_v2.png`/`fishing_slider_fill_v2.png`**: đầu mút trang trí chỉ chiếm phần
+  nhỏ, phần fill/track chính phải là trọng tâm thị giác, đủ dày để đọc tiến trình ở cái nhìn thoáng.
+- **`fishing_waiting_panel_v2.png`**/**`fishing_result_panel_v2.png`**: giữ nguyên tinh thần đã ổn ở
+  `_v1` (owner không phàn nàn 2 cái này), chỉ vẽ lại cho đồng bộ chất lượng với bộ `_v2`.
+- **`fishing_minigame_panel_v2.png`**: kích thước tăng lên 620×780 (từ 520×650) — chừa nhiều không
+  gian hơn cho track/slider dày hơn ở giữa.
+
+## Art direction
+
+Theo `DarkLightFantasyUIStyleGuide.md` (D-041): charcoal/walnut nền, viền antique gold mảnh, sapphire
+tiết chế. Tham chiếu chất lượng/độ chi tiết của các asset đã duyệt trước đó cùng hệ: `minimap_frame_v1`,
+`minimap_tag_v1`, `dialogue_frame_v4`, `landing_action_button_v1` — đều có bevel, highlight/shadow
+nhiều lớp, ornament tiết chế nhưng rõ ràng, không phẳng đơn sắc.
+
+## Asset cần gen (thay thế toàn bộ `_v1`)
+
+Output: `Assets/Resources/UI/Fishing/DarkInventoryStyle/`
+
+| Tên file | Kích thước px | Ghi chú |
+| --- | --- | --- |
+| `fishing_waiting_panel_v2.png` | 1000×148 | Giữ tinh thần `_v1`, vẽ lại đồng bộ chất lượng |
+| `fishing_bite_prompt_v2.png` | 360×360 | Ring dày/bevel nhiều lớp |
+| `fishing_minigame_panel_v2.png` | 1240×1560 | Panel lớn (logic 620×780) |
+| `fishing_movement_track_v2.png` | 360×1200 | Thân channel đặc, opaque tối thiểu 70-80% chiều rộng |
+| `fishing_catch_zone_v2.png` | 320×280 | Màu tương phản mạnh, khác tông track/slider; 9-slice border trên/dưới (đề xuất ~40px, ghi rõ số đã dùng) |
+| `fishing_slider_track_v2.png` | 128×1200 | Nền progress dọc dày hơn |
+| `fishing_slider_fill_v2.png` | 128×1200 | Fill progress dọc, màu đậm/rõ làm trọng tâm |
+| `fishing_result_panel_v2.png` | 1240×360 | Giữ tinh thần `_v1` |
+
+Tất cả: pixel-art thật (logic resolution 1/4, nearest-neighbor upscale 4x như `_v1` đã làm đúng),
+RGBA, Sprite Mode Single, Filter Point, Mipmap Off, Compression None, PPU 100.
+`fishing_waiting_panel_v2`/`fishing_bite_prompt_v2`/`fishing_minigame_panel_v2`/
+`fishing_result_panel_v2` tiếp tục bake alpha bán trong suốt ~90-96% như `_v1` (đã đúng, giữ nguyên).
+
+## Việc Codex KHÔNG cần làm
+
+- Không sửa `FishingFeatureAuthoring.cs`, `FishingMinigameUI.cs`, `FishingMinigameController.cs` hay
+  bất kỳ logic gameplay/timing/`GameState` nào — chỉ gen bitmap, Claude tự wire lại (đổi path `_v1`→
+  `_v2`, chỉnh `sizeDelta` panel theo kích thước mới) và chạy lại
+  `Tools/Project Game/Fishing/Build And Install MapNhat Fishing`.
+- Không xoá 8 file `_v1` cũ (Claude sẽ dọn sau khi `_v2` verify PASS).
+- Không đụng asset Quest/Minimap/MainMenu hay bất kỳ UI đã migrate khác.
+
+## Báo lại khi xong
+
+Ghi entry mới ở đầu `Assets/Documentation/DevelopmentPlan/Handoffs/CodexToClaude.md` với Status
+`FISHING_UI_V2_ART_READY`, liệt kê đúng tên file, border px đã dùng cho `fishing_catch_zone_v2.png`,
+và mô tả ngắn cách đã khắc phục từng vấn đề nêu trên (đặc biệt: tỉ lệ opaque của track, độ tương phản
+màu catch zone so với track).
+
+---
+
+Ngày: 2026-09-27
+Feature: Tích hợp 8 asset pixel-art Dark Inventory Style cho Fishing minigame UI
+(`FISHING_UI_ART_READY`, D-055) — đã gán xong, verify Play Mode thật cả 4 state, PASS.
+
+## Thay đổi (`Assets/Editor/FishingFeatureAuthoring.cs`)
+
+- Thêm `UiFolder` const + `LoadSprite()` helper, load 8 sprite ở đầu `CreateFeaturePrefab()`.
+- Thêm helper `CreateSpritePanel(...)` thay cho `CreatePanel(...)` cũ (Image màu phẳng) — xoá hẳn
+  `CreatePanel` vì không còn nơi nào dùng.
+- Gán sprite: `WaitingPanel`→`fishing_waiting_panel_v1`, `BitePrompt`→`fishing_bite_prompt_v1`,
+  `MinigamePanel`→`fishing_minigame_panel_v1`, `MovementTrack`→`fishing_movement_track_v1`,
+  `ResultPanel`→`fishing_result_panel_v1`, tất cả `Image.Type = Simple`, `color = Color.white`.
+- `CatchZone` → `fishing_catch_zone_v1`, `Image.Type = Sliced` (border 0/32/0/32 đã author sẵn trong
+  `.meta`, không hardcode lại trong code — đúng pattern đã dùng cho `minimap_tag_v1`).
+- `CreateVerticalSlider` nhận thêm 2 tham số `Sprite trackSprite, fillSprite`, gán
+  `fishing_slider_track_v1`/`fishing_slider_fill_v1`, giữ nguyên `Slider.fillRect`/`Direction.BottomToTop`.
+- Không đổi `FishingMinigameUI.cs`, `FishingMinigameController.cs`, timing, `GameState` policy.
+
+## Kết quả Play Mode (Game View 1920×1080)
+
+Verify bằng reflection gọi thẳng `FishingMinigameController.TryBeginFishing/BeginMinigame` và
+`FishingMinigameUI.ShowResult` (bỏ qua chờ ngẫu nhiên/click chuột thật), tạm tăng `_remainingTime`
+qua reflection để có đủ thời gian chụp/kiểm tra kỹ (minigame gốc chỉ có ~8s, hết giờ giữa lúc thao
+tác làm vài lần test đầu tiên bị timeout — không phải bug, chỉ là giới hạn thời gian test).
+
+- **WaitingPanel**: pill bán trong suốt hiện đúng, world vẫn thấy rõ phía sau (đúng D-035).
+- **BitePrompt**: ring vàng hiện đúng quanh TMP "!", căn giữa.
+- **MinigamePanel**: frame lớn, timer, `MovementTrack` (rail mảnh trang trí) và slider dọc (nền +
+  fill xanh) render đúng lớp, không bị méo.
+- **CatchZone** (`Sliced`, border 32 trên/dưới): test bằng cách tô tạm màu debug (magenta) để xác
+  nhận render đúng vị trí/kích thước tại nhiều `normalizedSize`, 2 cap không méo; đã trả lại
+  `Color.white` sau test.
+- **FishIcon**: đọc đúng `FishDefinitionSO.icon` (`Fish1_7`), test tương tự bằng màu debug (đỏ) rồi
+  trả lại trắng — có lúc `CanvasRenderer.materialCount = 0` (không render) ngay sau khi ép state qua
+  reflection do canvas chưa kịp rebuild 1 frame; gọi `Canvas.ForceUpdateCanvases()` hoặc để 1 frame
+  Update tự nhiên trôi qua là khỏi — xác nhận đây là artifact của cách test (reflection ép state
+  ngoài vòng lặp Update bình thường), không phải bug ảnh hưởng gameplay thật (người chơi luôn đi qua
+  `Update()` mỗi frame nên không bao giờ gặp).
+- **ResultPanel**: hiện đúng message "Success! Caught a River Minnow (620g)", đọc rõ.
+- Console: không lỗi mới liên quan Fishing. Có gặp lại `PlayerLoop called recursively` (lỗi engine
+  từng ghi nhận ở đợt Minimap) do gọi `manage_camera screenshot` dồn dập trong Play Mode để test 4
+  state liên tiếp — không liên quan code/asset Fishing, Editor vẫn phản hồi bình thường sau khi dừng
+  Play Mode, không cần restart.
+
+## Ghi chú thiết kế (không phải bug, chỉ để lưu ý)
+
+`fishing_catch_zone_v1` dùng palette xanh dương/viền vàng khá giống với 2 đầu mút trang trí của
+`fishing_movement_track_v1` — ở màu thật (không debug tint) catch zone hơi khó phân biệt với track
+bằng mắt thường trong ảnh chụp nén. Không tự ý đổi vì đây là quyết định art của Codex và không nằm
+trong yêu cầu tích hợp; nêu ra để owner/Codex cân nhắc nếu cảm thấy cần tăng tương phản ở đợt sau.
+
+---
+
+Ngày: 2026-09-27
+Feature: Gen asset Dark Inventory Style cho toàn bộ Fishing minigame UI (D-055) — đây là lượt gen đầu
+tiên, KHÔNG phải reskin: `FishingFeatureAuthoring.cs` hiện dựng UI 100% bằng `Image` màu phẳng, chưa
+từng có bitmap nào.
+
+## Bối cảnh
+
+- Fishing minigame có 4 state hiển thị lần lượt (không bao giờ chồng nhau), điều khiển bởi
+  `FishingMinigameUI.cs`: `WaitingPanel` → `BitePrompt` → `MinigamePanel` → `ResultPanel`.
+- Toàn bộ UI nằm trong `Assets/Prefabs/Fishing/FishingFeature.prefab`, dựng bởi
+  `Assets/Editor/FishingFeatureAuthoring.cs` (`CreateFeaturePrefab()`), Canvas reference resolution
+  1920×1080.
+- `WaitingPanel` hiện trong lúc world vẫn chạy (D-035: "Waiting khóa gameplay input nhưng world vẫn
+  chạy") — bắt buộc bán trong suốt để không che mất world.
+- `CatchZone` (trong `MinigamePanel/MovementTrack`) đổi CHIỀU CAO liên tục mỗi frame theo
+  `normalizedSize` (độ khó hook), chiều rộng cố định — cần art 9-slice-safe (có cap trên/dưới) để
+  không bị méo khi runtime resize.
+- Slider progress là thanh dọc (`Slider.Direction.BottomToTop`), fill co theo `fillRect` — chỉ cần
+  2 bitmap tĩnh (track nền + fill), không cần animation.
+
+## Art direction
+
+- Theo `Assets/Documentation/DevelopmentPlan/DarkLightFantasyUIStyleGuide.md` (D-041): charcoal/walnut
+  nền, viền antique gold mảnh, sapphire chỉ là accent nhỏ. Đồng bộ với QuestTracker/Minimap/Dialogue
+  (cũng là HUD overlay trong lúc world hiển thị, không phải popup modal che toàn màn hình).
+- `WaitingPanel`/`BitePrompt`/`MinigamePanel`/`ResultPanel` cần bake sẵn alpha bán trong suốt trong
+  chính file PNG (khoảng 90-96% opaque, tương đương giá trị runtime hiện tại `0.92-0.96`) — không
+  phải Claude chỉnh alpha qua code.
+- Không bake text vào bất kỳ bitmap nào: "Waiting for a bite...", "!", số giây đếm ngược, message kết
+  quả (Success/Fail) đều là TMP runtime thật, giữ nguyên.
+- `FishIcon` dùng `FishDefinitionSO.icon` của từng loại cá (đã có sẵn per-fish, không cần gen icon
+  chung ở đây).
+
+## Asset cần gen
+
+Output: `Assets/Resources/UI/Fishing/DarkInventoryStyle/`
+
+| Tên file | Kích thước px | Vai trò |
+| --- | --- | --- |
+| `fishing_waiting_panel_v1.png` | 1000×148 | Nền pill cho dòng chữ "Waiting for a bite..." |
+| `fishing_bite_prompt_v1.png` | 300×300 | Khung tròn quanh dấu "!" khi cá cắn câu |
+| `fishing_minigame_panel_v1.png` | 1040×1300 | Panel lớn chứa toàn bộ minigame (timer, rail, slider, fish icon) |
+| `fishing_movement_track_v1.png` | 300×980 | Rail dọc cố định, cá và catch zone di chuyển bên trong |
+| `fishing_catch_zone_v1.png` | 256×240 | Vùng bắt cá nổi bật trên rail — **bắt buộc 9-slice border trên/dưới** vì chiều cao đổi liên tục runtime, chiều rộng cố định |
+| `fishing_slider_track_v1.png` | 92×980 | Nền thanh progress dọc |
+| `fishing_slider_fill_v1.png` | 92×980 | Fill thanh progress dọc (gold/sapphire glow) |
+| `fishing_result_panel_v1.png` | 1240×360 | Panel hiện message Success/Fail |
+
+Tất cả: RGBA, Sprite Mode Single, Filter Point, Mipmap Off, Compression None, PPU 100. Riêng
+`fishing_catch_zone_v1.png` cần thêm border 9-slice hợp lý (ví dụ 24-32px trên/dưới) — ghi rõ số
+pixel border đã dùng trong report để Claude gán đúng `Sprite.border`.
+
+## Việc Codex KHÔNG cần làm
+
+- Không sửa `FishingFeatureAuthoring.cs`, `FishingMinigameUI.cs`, `FishingMinigameController.cs`,
+  `FishingSpotDefinition`, `FishDefinitionSO` hay bất kỳ logic gameplay/timing/`GameState` nào — chỉ
+  gen bitmap, Claude tự wire vào authoring script và chạy lại
+  `Tools/Project Game/Fishing/Build And Install MapNhat Fishing`.
+- Không gen icon cá (đã có sẵn per-`FishDefinitionSO`).
+- Không đụng asset Quest/Minimap/MainMenu hay bất kỳ UI đã migrate trước đó.
+
+## Báo lại khi xong
+
+Ghi entry mới ở đầu `Assets/Documentation/DevelopmentPlan/Handoffs/CodexToClaude.md` với Status
+`FISHING_UI_ART_READY`, liệt kê đúng tên file đã tạo, và border pixel đã dùng cho
+`fishing_catch_zone_v1.png` nếu khác 24-32px đề xuất.
+
+---
+
+Ngày: 2026-09-27
+Feature: Tích hợp bản revised của Quest Accept Popup (board `_v3` + 2 button sprite riêng theo D-038
+cập nhật 2026-09-27, xem yêu cầu gốc ở entry `READY_FOR_CODEX_QUEST_ACCEPT_POPUP` bên dưới) — đã gán
+xong, verify Play Mode thật, PASS.
+
+## Thay đổi
+
+- `Assets/Editor/QuestAcceptPopupPrefabBuilder.cs`: `BoardPath` trỏ sang
+  `quest_accept_board_dynamic_rewards_v3.png`; thêm `AcceptButtonPath`/`DeclineButtonPath` trỏ
+  `quest_accept_button_accept_v1.png`/`quest_accept_button_decline_v1.png`. `ConfigureButton` nhận
+  thêm tham số `Sprite`, gán `image.sprite`, `preserveAspect = true`, `color = Color.white` (bỏ hoàn
+  toàn `color = (1,1,1,0.01)` của kiến trúc bake-vào-board cũ). Cả 2 nút đặt `width=120, height=40`
+  (đúng tỉ lệ 3:1 của bitmap 2172×724, không méo hình) — hàng nút `ButtonRow` tăng từ cao 34→40 để
+  vừa khít, tổng chiều rộng giữ nguyên 252 (120×2 + spacing 12).
+- Đã chạy `Tools/ProjectGame2D/UI/Rebuild Quest Accept Popup 1920` và `PrefabUtility.SaveAsPrefabAsset`.
+
+## Kết quả Play Mode (Game View 1920×1080, verify bằng cách gọi thẳng
+`QuestAcceptPopupUI.Instance.Open(quest, callback)` qua code cho quest thật `Slimes at the Eastern
+Field`, không cần đứng cạnh NPC)
+
+- Board, 2 divider OBJECTIVES/REWARDS, category icon, objective icon render đúng Dark Inventory Style;
+  không còn hình nút bake trong board.
+- `ACCEPT` (sapphire) và `DECLINE` (charcoal trung tính) là 2 Image độc lập, label TMP nằm giữa, không
+  biến dạng/che khuất, có thể chỉnh RectTransform riêng trong Prefab Mode như yêu cầu.
+- Bấm Accept → callback `Action<bool>` nhận đúng `true`, popup đóng đúng qua `Close()`.
+- Console: không exception/warning mới.
+- Không đụng icon `Tracker1920`/`inventory_slot_hd.png`; không đổi `QuestAcceptPopupUI.cs`,
+  `QuestManager`, callback, quest progression hay save contract.
+
+---
+
+Ngày: 2026-09-27
+Feature: Tích hợp `session_confirmation_board_v1` vào dialog "Abandon Quest?" trong `QuestLogUI`
+(`ABANDON_QUEST_CONFIRMATION_ART_READY`) + rewire 2 nút sang asset Dark Inventory Style có sẵn — đã
+gán xong, verify Play Mode thật, PASS.
+
+## Asset đã gán (`Assets/Prefabs/UI/GameplayUIRoot.prefab`, GameObject `AbandonQuestConfirmation`)
+
+- `Dialog` (Image) ← `session_confirmation_board_v1` (1672×941, cùng kích thước file cũ nên
+  RectTransform `Dialog` giữ nguyên `500×230`, không cần chỉnh).
+- `ConfirmAbandonButton` (Image) ← `slot_delete_button_v1.png` (đã có từ đợt MainMenu).
+- `CancelAbandonButton` (Image) ← `landing_action_button_v1.png` (đã có từ đợt MainMenu).
+- Hai nút vốn đã là Image/Button độc lập với `Label` TMP là child riêng (không có bug share
+  `CanvasRenderer` như case Slot badge trước đó); RectTransform 2 nút vốn đã cùng kích thước 165×38
+  và đối xứng ±92 quanh tâm — không cần chỉnh layout.
+
+## Bug phát hiện và fix khi tích hợp
+
+`_abandonConfirmationMessage` (TMP `Message`) đang có màu nâu sẫm `RGBA(0.216, 0.122, 0.063)` —
+đúng cho board parchment sáng màu cũ nhưng gần như không đọc được trên board charcoal mới (chữ tối
+trên nền tối). Đổi sang màu Cream `RGBA(0.96, 0.91, 0.76, 1)` — cùng hằng số `Cream` đã dùng trong
+`QuestLogWindowPrefabBuilder.cs`/`QuestAcceptPopupPrefabBuilder.cs` để đồng bộ toàn bộ text Quest
+UI. Áp trực tiếp vào field TMP trong prefab (không đổi script/binding).
+
+**Fix bổ sung (owner phát hiện qua screenshot sau khi verify lần đầu):** Label TMP `ABANDON` và
+`CANCEL` trên 2 nút cũng bị sót cùng lỗi màu nâu sẫm `RGBA(0.216, 0.122, 0.063)` y hệt message — chữ
+gần như vô hình trên nền nút đỏ/charcoal mới. Đổi cả 2 sang trắng `RGBA(1,1,1,1)`, verify lại Play
+Mode với quest `Meet the Trainer`, chữ đọc rõ trên cả 2 nút, console sạch.
+
+## Kết quả Play Mode (Game View 1920×1080, verify qua reflection gọi thẳng
+`QuestLogUI.OpenQuestLog/SelectQuest/OpenAbandonConfirmation/ConfirmAbandonQuest` và
+`Button.onClick.Invoke()` để test không cần chuột)
+
+- Test với quest `Meet the Trainer` (đúng quest owner chụp màn hình gốc) và `Training Dummy
+  Challenge`: dialog mới hiện đúng board Dark Inventory Style, message 3 dòng đọc rõ, không tràn
+  viền/đè lên 2 nút.
+- Confirm (`ABANDON`, đỏ danger) → gọi đúng `QuestManager.TryAbandonQuest`, quest bị bỏ, dialog tự
+  đóng qua `HandleQuestAbandoned` → `CloseAbandonConfirmation` (không đổi code, hành vi cũ vẫn vậy).
+- Cancel (`CANCEL`, charcoal/sapphire) → đóng dialog, quest giữ nguyên, không có side effect.
+- Console: không exception/warning mới (chỉ còn cảnh báo "no audio listener" có sẵn từ trước, không
+  liên quan).
+- Không đụng asset Quest Log/Tracker/Minimap khác; không sửa `QuestLogUI.cs`, `QuestManager`,
+  callback hay save contract.
+
+---
+
+Ngày: 2026-09-27
+Feature: Gen lại asset Dark Inventory Style cho dialog "Abandon Quest?" trong Quest Log (owner chụp
+màn hình thấy popup này còn palette parchment/gold-leaf cũ khi bấm Abandon trong `QuestLogUI`).
+
+## Bối cảnh
+
+- Popup này là GameObject `AbandonQuestConfirmation` hand-authored trực tiếp trong
+  `Assets/Prefabs/UI/GameplayUIRoot.prefab` (không qua authoring script nào), field
+  `QuestLogUI._abandonConfirmationRoot`. Cấu trúc: `Dialog` (Image board) → `Message` (TMP) +
+  `ConfirmAbandonButton`/`CancelAbandonButton` (Image + TMP `Label` con).
+- Board hiện dùng `Assets/Resources/UI/SessionUX/LightFantasy/session_confirmation_board_hd.png`
+  (1672×941) — asset này **chỉ dùng đúng một chỗ này**, không dùng ở đâu khác trong project, nên
+  regen không ảnh hưởng UI nào khác.
+- Hai nút `ConfirmAbandonButton`/`CancelAbandonButton` hiện đang trỏ tạm vào 2 sprite MainMenu cũ
+  (`slot_delete_button.png`, `landing_action_button.png`) — **không cần Codex gen gì cho 2 nút này**,
+  Claude sẽ tự rewire sang `slot_delete_button_v1.png`/`landing_action_button_v1.png` đã có sẵn từ đợt
+  MainMenu Dark Inventory Style trước, chỉ cần gen lại đúng cái board.
+
+## Art direction
+
+- Theo `DarkLightFantasyUIStyleGuide.md` (D-041, style gameplay UI hiện tại — cùng ngôn ngữ đã dùng
+  cho Character Popup/Tutorial/Quest Log/Minimap). Charcoal/walnut tối, viền antique gold mảnh,
+  sapphire tiết chế; không dùng lại palette parchment/gold-leaf cũ.
+- Đây là dialog xác nhận 2 lựa chọn (Confirm/Cancel) đứng riêng, không phải panel lớn — giữ ornament
+  tiết chế, chừa khoảng trống giữa cho message TMP 2-3 dòng và khoảng trống đáy cho 2 nút.
+- Không bake text vào bitmap (message "Abandon {quest}? Progress will be lost..." và label 2 nút đều
+  là TMP runtime, giữ nguyên).
+
+## Asset cần gen
+
+Output: `Assets/Resources/UI/SessionUX/DarkInventoryStyle/session_confirmation_board_v1.png`
+
+- Kích thước: **1672×941px** (khớp 1:1 file cũ).
+- RGBA, Sprite Mode Single, Filter Point, Mipmap Off, Compression None, PPU 100, `Border = 0,0,0,0`,
+  `Image.Type = Simple`.
+
+## Việc Codex KHÔNG cần làm
+
+- Không gen sprite nút — 2 nút Confirm/Cancel đã có `_v1` từ đợt MainMenu, Claude tự rewire.
+- Không sửa `QuestLogUI.cs`, `QuestManager`, `GameplayUIRoot.prefab` hierarchy/callback — Claude tự
+  gán sprite mới vào field `Dialog.Image.sprite` sau khi có asset.
+- Không đụng asset Quest Log/Tracker/Minimap khác đã chốt trước đó.
+
+## Báo lại khi xong
+
+Ghi entry mới ở đầu `Assets/Documentation/DevelopmentPlan/Handoffs/CodexToClaude.md` với Status
+`ABANDON_QUEST_CONFIRMATION_ART_READY`, nêu tên file đã tạo và mọi sai khác kích thước/border nếu có
+lý do kỹ thuật.
+
+---
+
+Status: `READY_FOR_CODEX_QUEST_ACCEPT_POPUP`
+
+Ngày: 2026-09-27
+Feature: Gen lại asset Dark Inventory Style cho `QuestAcceptPopupUI` (popup "QUEST OFFER" hiện lên sau
+khi NPC mời quest — ảnh owner gửi kèm "Training Dummy Challenge" đang còn palette gỗ sồi/xanh lá cũ,
+lệch với gameplay UI đã theo D-041/Dark Inventory Style).
+
+## Bối cảnh
+
+- Popup này dựng từ prefab `Assets/Prefabs/UI/QuestAcceptPopup.prefab`, authoring script
+  `Assets/Editor/QuestAcceptPopupPrefabBuilder.cs`. Toàn bộ khung ngoài (viền lá/gold ở góc, banner
+  "QUEST OFFER", 2 đường kẻ OBJECTIVES/REWARDS, và **cả hình khối 2 nút Accept/Decline**) đều được bake
+  chung vào **một** bitmap nền `quest_accept_board_dynamic_rewards_v2.png`; 2 `Button` Accept/Decline
+  chỉ là vùng bấm trong suốt (`color = (1,1,1,0.01)`) đặt đè lên đúng vị trí hình nút đã vẽ sẵn trong
+  board — không có sprite nút riêng. Giữ nguyên đúng kiến trúc này khi regen, không tách nút ra thành
+  sprite riêng.
+- Icon category quest (`category_side/main/daily`) và icon objective (`objective_kill/collect/talk/location`)
+  lấy từ `Assets/Resources/UI/Quest/Tracker1920/` — **đây là asset QuestLog/QuestTracker owner đã xác
+  nhận giữ nguyên, không cần gen lại**. Ô reward dùng khung `inventory_slot_hd.png` của hệ Inventory
+  (chưa tới lượt migrate) — **cũng không đụng tới**. Đợt này chỉ gen lại đúng 1 file board.
+
+## Art direction
+
+- Theo `Assets/Documentation/DevelopmentPlan/DarkLightFantasyUIStyleGuide.md` (D-041, đang áp dụng cho
+  toàn bộ gameplay UI: Character Popup, Quest Log, Tutorial...). Charcoal/walnut tối làm nền, viền
+  antique gold mảnh, sapphire chỉ là accent nhỏ (ví dụ dải "OBJECTIVES"/"REWARDS" hoặc viền nút Accept).
+  Ornament lá/hoa văn hiện tại nếu giữ thì tiết chế lại theo tinh thần "nội dung nổi hơn khung", không
+  bắt buộc giữ nguyên ornament lá cũ.
+- Nút Accept: hình dáng sapphire/dark-blue (giống primary button của gameplay UI). Nút Decline: cùng
+  hình học/kích thước với Accept nhưng palette trung tính/tối hơn (không cần đỏ cảnh báo vì đây là từ
+  chối nhận quest, không phải hành động phá hủy dữ liệu).
+- Không bake bất kỳ text nào vào bitmap (tiêu đề quest, mô tả objective, "0/3", "10 Gold  20 XP",
+  label "ACCEPT"/"DECLINE") — toàn bộ đã là TMP runtime thật, giữ nguyên.
+- Layout logic (vị trí icon, khung objective, khung reward, khoảng cách) do `QuestAcceptPopupPrefabBuilder.cs`
+  set cứng bằng tọa độ theo virtual canvas 320×400 (CanvasScaler ScaleWithScreenSize) — board mới phải
+  giữ đúng vùng trống cho: banner tiêu đề ở trên, icon category góc trái header, khối OBJECTIVES giữa,
+  khối REWARDS dưới, hàng 2 nút ở đáy — không dịch chuyển các vùng này.
+
+## Asset cần gen
+
+Output: `Assets/Resources/UI/Quest/QuestAccept1920/quest_accept_board_dynamic_rewards_v3.png`
+
+- Kích thước: **1122×1402px** (khớp 1:1 file `_v2` hiện tại).
+- RGBA, Sprite Mode Single, Filter Point, Mipmap Off, Compression None, PPU 100, `Border = 0,0,0,0`
+  (không sliced, `Image.Type = Simple`, `preserveAspect = true`).
+- Bake sẵn trong art: khung ngoài + banner tiêu đề (chừa khoảng trắng cho TMP "QUEST OFFER" đè lên,
+  hiện tại dùng TMP thật chứ không phải bake — banner chỉ cần là khung rỗng), 2 đường kẻ phân cách
+  OBJECTIVES/REWARDS, và 2 hình khối nút Accept (sapphire)/Decline (trung tính) ở đúng vị trí đáy card.
+
+## Việc Codex KHÔNG cần làm
+
+- Không đụng `category_*`/`objective_*` trong `UI/Quest/Tracker1920/` — asset QuestLog đã chốt, không
+  gen lại.
+- Không đụng `inventory_slot_hd.png` (Inventory chưa tới lượt migrate).
+- Không sửa `QuestAcceptPopupUI.cs`, `QuestAcceptPopupPrefabBuilder.cs`, `QuestManager`, callback
+  Accept/Decline hay bất kỳ logic C# nào — chỉ gen bitmap, Claude sẽ tự chỉnh authoring script để trỏ
+  sang file `_v3` và chạy lại `Tools/ProjectGame2D/UI/Rebuild Quest Accept Popup 1920`.
+- Không sửa/ghi đè các thay đổi khác đang có trong worktree.
+
+## Báo lại khi xong
+
+Ghi entry mới ở đầu `Assets/Documentation/DevelopmentPlan/Handoffs/CodexToClaude.md` với Status
+`QUEST_ACCEPT_POPUP_ART_READY`, nêu rõ tên file đã tạo và mọi sai khác kích thước/border nếu có lý do
+kỹ thuật cần đổi.
+
+---
+
+Status: `VERIFIED_MAINMENU_SETTINGS_SLOT_CONFIRM_INTEGRATION`
+
+Ngày: 2026-09-27
+Feature: Tích hợp 12 asset Dark Inventory Style (`MAINMENU_SETTINGS_SLOT_CONFIRM_ART_READY` trong
+CodexToClaude.md) vào SettingsPage, SlotPage (New Game + Continue), ConfirmOverlay/ErrorOverlay
+trong `MainMenu.unity` — đã gán xong, verify Play Mode thật, PASS toàn bộ.
+
+## Kết quả tích hợp
+
+**Rewire miễn phí trước khi gán asset mới** (không cần Codex gen lại): 7 nút đang tái dùng
+`landing_action_button`/`landing_action_button_hover` cũ đổi sang `_v1` đã có sẵn — `ConfirmButton`,
+`SaveButton`, 3× `PrimaryButton` (Slot1/2/3), `CloseButton` (ErrorOverlay), `BackButton`.
+
+**Field đã gán 12 sprite mới** (trực tiếp trong scene `MainMenu.unity`, `Image.Type = Simple`,
+đúng RectTransform/anchor hiện có):
+- `SettingsPage/Content` ← `settings_board_v1`; `SettingsPage/Title` ← `settings_title_v1`.
+- `FullScreenToggle/Background` ← `settings_checkbox_unchecked_v1`; `.../Checkmark` ←
+  `settings_checkbox_checked_v1`.
+- `MusicSlider` và `SfxSlider` Background ← `settings_slider_track_v1`; Handle ←
+  `settings_slider_handle_v1` (dùng chung 1 cặp track/handle cho cả hai slider).
+- `SlotsRow/Slot1|2|3` (card nền) ← `save_slot_card_v1`; `.../DeleteButton` ← `slot_delete_button_v1`.
+- `SlotHeader/SlotPageTitle` ← `slot_page_new_game_title_v1` mặc định; `MainMenuSaveSlotsUI`
+  `_newGameTitleSprite`/`_continueTitleSprite` (SerializedObject) trỏ đúng `slot_page_new_game_title_v1`
+  / `slot_page_continue_title_v1` để script tự đổi theo mode lúc runtime (không đổi logic
+  `MainMenuSaveSlotsUI.cs`).
+- `ConfirmOverlay/Dialog` và `ErrorOverlay/Dialog` ← `overlay_dialog_board_v1`;
+  `ConfirmOverlay/.../CancelButton` ← `slot_delete_button_v1` (Confirm dùng `landing_action_button_v1`
+  đã rewire ở trên).
+
+**Bug phát hiện và fix khi tích hợp `slot_badge_v1`** (không có trong asset cũ vì lý do khác):
+`SlotsRow/Slot{1,2,3}/Title` trước đây có cả `Image` (sprite `slot_badge_1/2/3` bake sẵn chữ "SLOT n")
+và `TextMeshProUGUI` (text "SLOT n") **trên cùng một GameObject**, với TMP bị disable từ trước —
+tức số slot vốn được bake vào bitmap cũ, TMP chỉ là phần thừa không dùng. Asset mới `slot_badge_v1`
+không bake chữ (đúng theo style guide), nên bật TMP lên thì lộ ra vấn đề kiến trúc: `Image` và
+`TextMeshProUGUI` trên cùng GameObject dùng chung một `CanvasRenderer` (component bắt buộc của cả
+hai), nên chỉ một trong hai render được — bật TMP làm badge nền biến mất/chớp tắt tuỳ frame.
+Fix: tách `Title` thành container rỗng chứa 2 con riêng — `Badge` (Image, sibling đầu, nền) và
+`Label` (TextMeshProUGUI, sibling cuối, hiển thị "SLOT 1/2/3") — đúng pattern đã dùng sẵn ở
+`DeleteButton/Label`, `PrimaryButton/Label`. Áp dụng cho cả Slot1/Slot2/Slot3.
+
+## Kết quả Play Mode (Game View 1920×1080, verify qua `manage_camera screenshot` + gọi trực tiếp
+`Button.onClick.Invoke()` để test navigation không cần chuột)
+
+- SettingsPage: board/title/checkbox/2 slider render đúng, không chữ bị che; Cancel đưa về Landing
+  đúng.
+- New Game SlotPage: title "NEW GAME" đúng; 3 card `save_slot_card_v1`; badge "SLOT 1/2/3" đọc rõ sau
+  fix Badge/Label; Overwrite/Delete đúng style (olive/danger).
+- Continue SlotPage: title "CONTINUE" đúng; 3 slot Load/Delete đúng style; không regression.
+- ConfirmOverlay: bấm Delete → dialog `overlay_dialog_board_v1` hiện đúng, message rõ, Confirm/Cancel
+  đúng màu; bấm Cancel → `ConfirmOverlay.activeInHierarchy` về `false`, dismiss đúng.
+- Console: không exception/warning mới ngoài cảnh báo codec `Color primaries 0` cũ (không liên quan,
+  đã biết từ trước, không phải regression của lượt này).
+- Không đổi `mainmenu_background.mp4`/`mainmenu_new_journey_dawn_v8.png`; không đổi
+  `MainMenuSaveSlotsUI.cs`/`SettingsService`/navigation/callback ngoài việc gán 2 field sprite nêu
+  trên.
+
+## Ghi chú vận hành
+
+Trong lúc verify có xuất hiện `PlayerLoop called recursively` (lỗi engine từng gặp ở đợt Minimap,
+xem entry `VERIFIED_MAP_ART_INTEGRATION` phía dưới) sau một chuỗi gọi screenshot liên tục trong Play
+Mode — không liên quan đến asset/script đợt này. Xử lý bằng cách dừng Play Mode, áp lại thay đổi cấu
+trúc Badge/Label ở Edit Mode (an toàn, không mất do Play Mode không lưu), rồi vào lại Play Mode verify
+lần hai và PASS sạch, không còn lỗi.
+
+---
+
+Ngày: 2026-09-27
+Feature: Gen asset Dark Inventory Style cho 3 nhóm còn lại trong `MainMenu.unity` (theo D-054):
+SettingsPage, SlotPage (New Game + Continue), ConfirmOverlay/ErrorOverlay. Landing group đã xong và
+verify PASS trước đó (xem entry `VERIFIED_MAP_ART_INTEGRATION` phía dưới cho ví dụ định dạng report).
+
+## Bối cảnh
+
+- Owner xác nhận Landing group (logo, slogan, board, action button) đã lên Dark Inventory Style và
+  chạy tốt trong Play Mode. Các màn còn lại (Settings, New Game, Continue, Confirm Popup, Overwrite
+  Confirm, Quit Confirm) vẫn đang render bằng asset cũ `LightFantasy` (nền xanh/vàng ấm), lệch style
+  với phần đã đổi.
+- Claude đã tự rewire xong 7 nút đang tái dùng `landing_action_button`/`landing_action_button_hover`
+  sang bản `_v1` đã có sẵn (ConfirmButton, SaveButton, 3× PrimaryButton, CloseButton, BackButton) —
+  **không cần Codex gen lại các nút này**, chỉ còn các asset liệt kê dưới đây là thực sự thiếu.
+- Toàn bộ asset cũ đang ở `Assets/Resources/UI/MainMenu/LightFantasy/`, import Single/Point/no
+  mipmap/uncompressed, `Sprite Border = 0,0,0,0`, `Image.Type = Simple` (không sliced) trên tất cả
+  object dùng chúng trong scene — asset mới giữ đúng cùng cấu hình import và cùng kích thước pixel
+  1:1 để không phải sửa RectTransform/anchor.
+
+## Art direction (bắt buộc đọc trước khi vẽ)
+
+- Theo `Assets/Documentation/DevelopmentPlan/DarkLightFantasyUIStyleGuide.md` + quyết định D-054
+  (MainMenu chuyển hẳn sang Dark Inventory Style, không còn giữ "Light Fantasy bình minh").
+- Charcoal/walnut tối làm nền chính, viền antique gold mảnh, sapphire chỉ là accent nhỏ (title/góc),
+  không rải gem dày. Ornament tiết chế, nội dung (text/icon) phải nổi hơn khung.
+- Không bake text động vào sprite. Toàn bộ label, số slot, message hiện đang là TMP object thật —
+  giữ nguyên; asset mới chỉ là khung/nền/nút, không có chữ.
+- Giữ nguyên tuyệt đối `mainmenu_background.mp4` và `mainmenu_new_journey_dawn_v8.png` — nhóm này
+  không liên quan đến 2 file đó.
+
+## Asset cần gen — Nhóm 1: SettingsPage
+
+Output: `Assets/Resources/UI/MainMenu/DarkInventoryStyle/`
+
+| Tên file mới | Kích thước px (khớp asset cũ) | Vai trò |
+| --- | --- | --- |
+| `settings_board_v1.png` | 1122×1402 | Panel nền của SettingsPage (khung charcoal/walnut, viền gold mảnh) |
+| `settings_title_v1.png` | 2048×768 | Wordmark "SETTINGS" |
+| `settings_checkbox_unchecked_v1.png` | 1254×1254 | Checkbox Full Screen — trạng thái off |
+| `settings_checkbox_checked_v1.png` | 1254×1254 | Checkbox Full Screen — trạng thái on (có dấu check sapphire/gold) |
+| `settings_slider_track_v1.png` | 2048×226 | Track cho SFX/Music slider |
+| `settings_slider_handle_v1.png` | 1254×1254 | Handle tròn cho slider (gold rim) |
+
+## Asset cần gen — Nhóm 2: SlotPage (dùng chung cho New Game và Continue)
+
+| Tên file mới | Kích thước px | Vai trò |
+| --- | --- | --- |
+| `save_slot_card_v1.png` | 1086×1448 | Nền 1 card slot (dùng chung cho cả 3 slot, chỉ khác text/badge đè lên) |
+| `slot_badge_v1.png` | 1983×793 | Nền tag "SLOT n" phía trên card — **1 sprite dùng chung cho cả 3 slot** (số thứ tự đã là TMP text riêng đè lên, không cần 3 bản khác nhau như asset cũ `slot_badge_1/2/3`) |
+| `slot_delete_button_v1.png` | 1944×809 | Nút Delete — danger button muted-red theo style guide, cùng hình học/chiều cao với `landing_action_button_v1` để không méo khi Unity stretch |
+| `slot_page_new_game_title_v1.png` | 2048×683 | Wordmark tiêu đề trang khi ở mode New Game |
+| `slot_page_continue_title_v1.png` | 2048×744 | Wordmark tiêu đề trang khi ở mode Continue |
+
+## Asset cần gen — Nhóm 3: ConfirmOverlay / ErrorOverlay
+
+| Tên file mới | Kích thước px | Vai trò |
+| --- | --- | --- |
+| `overlay_dialog_board_v1.png` | 900×600 | Nền dialog dùng chung cho Confirm Popup, Overwrite Confirm, Quit Confirm, và Error Overlay |
+
+Lưu ý: nút Cancel/Confirm trong dialog này dùng chung `slot_delete_button_v1` (Cancel/danger) và
+`landing_action_button_v1` đã có (Confirm) — không cần asset nút riêng cho overlay này.
+
+## Việc Codex KHÔNG cần làm
+
+- Không cần gen lại nút nào đã có `_v1` (landing_action_button, landing_action_button_hover) — đã
+  rewire xong bằng code, không liên quan đến đợt gen này.
+- Không đổi `mainmenu_background.mp4`, `mainmenu_new_journey_dawn_v8.png`, logo/slogan/board Landing.
+- Không sửa `MainMenuSaveSlotsUI.cs`, `SettingsService`, navigation, callback hay bất kỳ logic C#
+  nào — chỉ gen bitmap PNG + chuẩn hoá import (Sprite Mode Single, Filter Point, Mipmap Off,
+  Compression None, alpha đúng), Claude sẽ tự gán vào scene.
+- Không sửa/ghi đè các thay đổi khác đang có trong worktree.
+
+## Báo lại khi xong
+
+Ghi entry mới ở đầu `Assets/Documentation/DevelopmentPlan/Handoffs/CodexToClaude.md` với Status
+`MAINMENU_SETTINGS_SLOT_CONFIRM_ART_READY`, liệt kê đúng tên file đã tạo (khớp bảng trên) và bất kỳ
+sai khác về kích thước/border nếu có lý do kỹ thuật cần đổi.
+
+---
+
+Status: `VERIFIED_MAP_ART_INTEGRATION`
+
+Ngày: 2026-09-26
+Feature: Tích hợp `minimap_frame_v1` / `minimap_mask_v1` / `map_close_button_v1` / `player_marker_v1`
+/ `minimap_tag_v1` vào Minimap + FullMap — đã gán xong, verify Play Mode thật, PASS toàn bộ.
+
+## Kết quả tích hợp asset Map (4 asset đợt 1 + 1 tag banner đợt 2)
+
+**Field/prefab đã gán** (`UnifiedGameplayHUD.prefab`, qua `MapUIAuthoring.Rebuild()`):
+- `Minimap/Frame` (Image) ← `minimap_frame_v1`, Type Simple.
+- `Minimap/MapView` (Image, có `Mask` showMaskGraphic=false) ← `minimap_mask_v1`, Type Simple;
+  `MapView` đổi từ inset 6px sang khớp y hệt rect của `Frame` (offset 0,0,0,0) vì ring và mask dùng
+  chung không gian canvas 384×384, mask được vẽ khít đúng lỗ tròn bên trong ring.
+- `Minimap/MapView/Content/PlayerMarker` và `MapPopup/Viewport/MapImage/PlayerMarker` (Image) ←
+  `player_marker_v1`, Type Simple, preserveAspect=true; bỏ hoàn toàn cấu trúc hình thoi 2 lớp
+  (Outline+Dot) dựng bằng code cũ.
+- `MapPopup/CloseButton` (Image) ← `map_close_button_v1`, Type Simple; xoá luôn child `Label` TMP
+  "X" thừa vì art đã có sẵn chữ X.
+- `Minimap/ZonePlate` và `Minimap/DatePlate` (Image, Type **Sliced**) ← `minimap_tag_v1` (border
+  20/12/20/12 từ chính sprite, không hardcode lại trong code); TMP `ZoneText`/`DateText` vẫn là TMP
+  runtime thật nằm đè lên, không bake chữ.
+- `MinimapController.Awake()`: sửa để chỉ gán `RuntimeCircleSprite` (fallback code-vẽ) khi
+  `_frameImage.sprite`/`_maskImage.sprite` đang `null` — không còn ghi đè sprite thật đã gán qua
+  Inspector/authoring.
+
+**Điều chỉnh layout đi kèm** (không đổi logic crop/bounds/zoom/zone/phím `M`/GameState):
+- `Minimap` root đẩy xuống thêm 20px theo Y (từ `(-14,-14)` sang `(-14,-34)`) vì ring thật dày hơn
+  placeholder cũ, cần chừa chỗ cho `ZonePlate` phía trên không đè lên ring.
+- `ZonePlate` neo top-center, nằm hoàn toàn phía trên vòng tròn (không còn kiểu "Top" align cắt vào
+  trong ring như bản nháp đầu); `DatePlate` neo bottom-center, nằm hoàn toàn phía dưới vòng tròn.
+- Thêm rotation marker theo hướng Player (owner yêu cầu thêm sau khi thấy bản đầu marker đứng yên):
+  lộ ra field `Player.FacingDirection` (đọc `_lastFacingDirection` có sẵn trong `PlayerMovement.cs`,
+  vốn đã snap 4 hướng cho Animator) — property public 1 dòng, không đổi hành vi di chuyển. Marker
+  luôn hướng lên khi facing Up, xoay đúng 90°/180°/270° cho Right/Down/Left.
+
+## Kết quả Play Mode (Game View 1920×1080, do owner xác nhận)
+
+Toàn bộ acceptance item đều PASS:
+- Minimap tròn đúng kích thước logic 96×96, map crop không tràn viền, không có nền vuông hở góc.
+- Frame/mask đồng tâm, khớp khít lỗ tròn trong ring.
+- Player marker đúng vị trí giữa map và khi crop bị kẹp sát 4 cạnh world bounds; marker xoay đúng
+  theo hướng di chuyển thật.
+- FullMap mở/đóng đúng bằng `M`, zoom bằng lăn chuột không regression, Close button 44×44 hiển thị
+  đúng và click đóng được.
+- `ZonePlate`/`DatePlate` hiển thị đúng "Heart Village" / "26 Sep", hai đầu banner giữ nguyên hình,
+  chỉ phần giữa co giãn; text căn giữa, không chạm viền vàng, không tràn.
+- Banner đồng bộ trực quan với `minimap_frame_v1`.
+- Không có Console error/warning mới liên quan Map UI hoặc asset import.
+- Import setting của cả 5 file xác nhận không đổi sau reimport: Single, Point, Mipmap Off,
+  Compression None, alpha đúng (đã đọc lại `.meta` sau `MapUIAuthoring.Rebuild()` để xác nhận).
+
+## Gap còn lại
+
+Không có gap chức năng. Việc còn mở duy nhất là quyết định thẩm mỹ nhỏ (không chặn gì): có thể tinh
+chỉnh thêm khoảng cách/kích thước `ZonePlate`/`DatePlate` nếu owner muốn sau khi nhìn trực tiếp nhiều
+lần chơi thử hơn, nhưng hiện tại đã đạt yêu cầu và không có lỗi kỹ thuật nào.
+
+---
+
+Status (mục cũ, đã đóng): `READY_FOR_CODEX_MAP_ART`
+
+Ngày: 2026-09-26
+Feature: Minimap (góc phải HUD) + FullMap (bấm `M`) -- logic/camera-thay-bằng-ảnh-tĩnh đã xong và
+verify qua Play Mode thật, chỉ cần art. Không cần Codex sửa script nào, chỉ gen sprite rồi báo lại để
+Claude gán vào field Inspector.
+
+## Bối cảnh
+
+Ban đầu dựng bằng Camera+RenderTexture sống (World Camera nhìn xuống world thật mỗi frame), nhưng sau
+khi review đã đổi kiến trúc sang **ảnh map tĩnh** (đúng chuẩn thể loại 2D RPG này dùng, giống ảnh mẫu
+owner gửi): `Tools/ProjectGame2D/UI/Bake Map Snapshot` chụp một lần toàn bộ `BorderMap` (Player tự ẩn
+lúc chụp) thành `Assets/Resources/UI/Map/map_snapshot.png` (2048×1553, đã bake xong, chất lượng tốt).
+Minimap hiển thị một vùng crop nhỏ cuộn theo Player (`RawImage.uvRect`) qua một `Mask` hình tròn;
+FullMap hiển thị toàn bộ ảnh phủ kín màn hình 1920×1080 (kiểu "cover", không viền đen), zoom bằng lăn
+chuột. Cả hai đều có icon Player hình thoi (marker riêng, không phải sprite Player thật) luôn đúng vị
+trí kể cả khi crop bị kẹp ở rìa bản đồ. Đã fix xong bug "Minimap bị đơ" (race điều kiện lúc
+`BorderMap` chưa load xong) và bug "viền đen 2 bên FullMap" (sai công thức cover/contain) -- cả hai đã
+verify lại bằng Play Mode thật, hoạt động đúng.
+
+Toàn bộ khung/icon hiện tại là placeholder dựng bằng code thuần (màu phẳng, `Outline` component, và
+một hình tròn vẽ bằng thuật toán runtime cho Mask -- xem `RuntimeCircleSprite.cs`), **không phải
+bitmap** -- cần Codex thay bằng art thật theo Dark Inventory Style.
+
+## Asset cần gen
+
+1. **Minimap frame** (gán vào `UnifiedGameplayHUD.prefab/Minimap`, component `Image` tên `Frame`,
+   field `MinimapController._frameImage`) -- khung tròn walnut/charcoal viền vàng mảnh, đường kính
+   logic hiện tại `96×96`. Có thể thêm icon la bàn nhỏ góc trên (không bắt buộc, thuần thẩm mỹ).
+2. **Minimap mask shape** (component `Image` tên `MapView` bên trong `Minimap`, field
+   `MinimapController._maskImage`) -- một sprite tròn trắng đặc (alpha 1 bên trong, 0 bên ngoài),
+   dùng làm `Mask` để crop ảnh map bên trong thành hình tròn khớp đúng viền `Frame` ở trên. Nếu
+   `Frame` đã là hình tròn đều, có thể dùng chung 1 sprite tròn cho cả hai field.
+3. **FullMap Close button** (`MapPopup/CloseButton`, component `Image`) -- nút X kiểu Dark Inventory
+   Style đồng bộ Character Popup/Quest Log, `44×44`, góc trên phải màn hình.
+4. **Player marker** (dùng chung cho cả Minimap và FullMap, `MapUIAuthoring.CreatePlayerMarker`) --
+   hiện là hình thoi 2 lớp (viền nâu đậm + lõi vàng) vẽ bằng `Image` phẳng xoay 45°. Nếu muốn icon đẹp
+   hơn (mũi tên chỉ hướng theo Player facing, hoặc chấm tròn có viền), gen 1 sprite ~16-24px, Point
+   filter, nền trong suốt.
+
+Không cần gen lại `map_snapshot.png` -- đó là ảnh chụp thật từ world, không phải art cần vẽ tay; chỉ
+tái-bake (chạy lại menu item) nếu địa hình world thay đổi lớn sau này.
+
+## Việc Codex KHÔNG cần làm
+
+- Không cần sửa `MinimapController.cs`, `FullMapController.cs`, `MapZoneManager.cs`,
+  `MapZoneTrigger.cs`, `MapWorldBounds.cs`, `RuntimeCircleSprite.cs`, `MapSnapshotBaker.cs`, hay
+  `MapUIAuthoring.cs` -- toàn bộ logic/camera/zoom/mask/marker đã chạy đúng và verify qua Play Mode
+  thật. Nếu cần field/kích thước mới để khớp art, báo lại Claude qua `CodexToClaude.md`.
+- Không cần tự đặt `RuntimeCircleSprite` sang không dùng nữa -- `MinimapController.Awake()` gán sprite
+  runtime vào `_frameImage`/`_maskImage` mỗi lần chạy; chỉ cần gán sprite thật của Codex trực tiếp vào
+  hai field đó qua Inspector (ghi đè lên trên), Claude sẽ xoá lời gọi `RuntimeCircleSprite.Get(...)`
+  trong `Awake()` khi nhận sprite thật để tránh ghi đè ngược lại mỗi lần Play.
+- Không cần đụng `GameStateManager`, `GameplayMenuPage.Map`, phím `M`, hay lifecycle mở/đóng FullMap --
+  toàn bộ đã nối sẵn qua `UnifiedGameplayHudController`.
+- Không cần lo phần zoom/pan FullMap hay scroll Minimap -- thuần code, không phụ thuộc art.
+
+---
+
+Status: `READY_FOR_CODEX_ARROW_ART`
+
+Ngày: 2026-09-19
+Feature: Training Area onboarding (Tutorial + Quest chain) backend xong, chỉ cần 4 sprite mũi tên/vòng tròn cho hệ thống quest direction indicator -- code đã chạy đúng với placeholder hình học sinh bằng code, chỉ cần thay `Image.sprite`.
+
+## Bối cảnh
+
+Đã dựng xong toàn bộ: Trainer NPC + 3 training dummy (HP/chết/respawn) trong `MapNhat` scene khu
+TrainingArea, chuỗi quest `quest.trainer_greeting` → `quest.equip_weapon` (auto turn-in) →
+`quest.trainer_killquest`, Tutorial 1-4 (Move/Sprint/OpenInventory/EquipItem) nối với quest qua
+`TutorialStepType.WaitForQuest` mới, và hệ thống Quest Direction Indicator 2 nhánh (NPC target / Area
+target). Toàn bộ đã verify qua Play Mode thật, không cần Codex sửa logic gì -- chỉ cần 4 sprite dưới
+đây, sau đó kéo thả vào đúng field Inspector là xong, không cần đụng script.
+
+## Asset cần gen (3 sprite, phong cách pixel art khớp game hiện tại)
+
+Đã bỏ thiết kế vòng tròn ground marker theo yêu cầu -- "đã đến khu vực" giờ chỉ còn 1 mũi tên nhấp nhô
+chỉ xuống dưới chân Player, dùng chung asset với mục 1 bên dưới.
+
+1. **Bobbing target arrow** (`Assets/Scripts/UI/QuestDirectionIndicator.cs` field `_npcHeadMarkerImage`
+   và `_arrivedMarkerArrowImage`, và `Assets/Scripts/World/MannequinAttackIndicator.cs` field
+   `_arrowImage`) -- mũi tên nhấp nhô trỏ xuống, dùng chung cho "trên đầu NPC cần nói chuyện", "trên
+   đầu hình nhân cần đánh", và "đã đến khu vực nhiệm vụ" (dưới chân Player). ~48x48px, nên có viền/glow
+   nhẹ để nổi trên nền cỏ/nền da NPC.
+2. **Ground direction arrow** (`QuestDirectionIndicator.cs` field `_groundArrowImage`) -- mũi tên dưới
+   chân Player chỉ hướng khi đang di chuyển tới mục tiêu (NPC ở xa hoặc khu vực nhiệm vụ, chưa tới
+   nơi). ~64x64px, nhìn từ góc top-down (game là top-down 2D).
+3. **Edge-of-screen arrow** (`QuestDirectionIndicator.cs` field `_edgeIndicatorImage`) -- icon mũi tên
+   bám rìa màn hình khi mục tiêu ở ngoài khung hình. ~40x40px, dạng compact, rõ hướng ở kích thước nhỏ.
+
+Placeholder hiện tại (tam giác màu vàng-xanh sinh bằng code trong
+`Assets/Scripts/UI/ProceduralArrowSprite.cs`) đã hoạt động đúng chức năng -- không có gì gấp về logic,
+đây thuần là nâng cấp hình ảnh.
+
+## Việc Codex KHÔNG cần làm
+
+- Không cần sửa `QuestDirectionIndicator.cs`, `MannequinAttackIndicator.cs`, `QuestManager.cs`,
+  `TutorialManager.cs`, `MannequinHurtbox.cs` hay bất kỳ script Quest/Tutorial nào -- toàn bộ logic đã
+  xong và verify qua Play Mode. Nếu cần field/API mới, báo lại Claude qua `CodexToClaude.md`.
+- Không cần tự đặt `ProceduralArrowSprite` sang trạng thái không dùng nữa -- nó tự động chỉ được dùng
+  làm fallback khi field `Image.sprite` đang trống (`if (...Image.sprite == null)` trong Awake của mỗi
+  script), nên gán sprite thật vào Inspector là đủ, không cần xoá code fallback.
+
+---
+
+
 
 Ngày: 2026-08-23
 Feature: Root cause thật đã tìm ra bằng instrumentation trực tiếp — KHÔNG phải GameInputCoordinator/GameStateManager, mà là Input System event bị rớt khi Editor mất focus

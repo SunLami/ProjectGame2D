@@ -17,6 +17,9 @@ public sealed class UnifiedGameplayHudController : MonoBehaviour
     [SerializeField] private TMP_Text _characterStatsText;
     [SerializeField] private GameObject _mapPopup;
 
+    [Header("Minimap")]
+    [SerializeField] private GameObject _minimap;
+
     private PlayerStat _playerStat;
 
     private void OnEnable()
@@ -40,6 +43,8 @@ public sealed class UnifiedGameplayHudController : MonoBehaviour
 
         if (Keyboard.current != null && Keyboard.current.cKey.wasPressedThisFrame)
             OpenCharacterPopup();
+        if (Keyboard.current != null && Keyboard.current.mKey.wasPressedThisFrame)
+            OpenMapPopup();
 
         if (Keyboard.current != null && GameStateManager.AllowsGameplayInput)
         {
@@ -171,6 +176,8 @@ public sealed class UnifiedGameplayHudController : MonoBehaviour
             _characterPopup.SetActive(menuOpen && state.CurrentMenuPage == GameplayMenuPage.Character);
         if (_mapPopup != null)
             _mapPopup.SetActive(menuOpen && state.CurrentMenuPage == GameplayMenuPage.Map);
+        if (_minimap != null)
+            _minimap.SetActive(!menuOpen);
         UpdateCharacterStats();
     }
 

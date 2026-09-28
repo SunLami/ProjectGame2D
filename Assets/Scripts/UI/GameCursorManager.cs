@@ -43,9 +43,11 @@ public sealed class GameCursorManager : MonoBehaviour
     private Transform _player;
     private ResourceNodeInteractable _hoveredGatheringNode;
     private QuestNpcInteractionUI _hoveredQuestNpc;
+    private TraderNpcInteractionUI _hoveredTraderNpc;
     private ChestInteractable _hoveredChest;
     private FishingSpotInteractable _hoveredFishingSpot;
     private FarmPlot _hoveredFarmPlot;
+    private HoverOutline _hoveredOutline;
 
     public static GameCursorManager Instance { get; private set; }
     public GameCursorType CurrentCursor => _current;
@@ -99,6 +101,13 @@ public sealed class GameCursorManager : MonoBehaviour
         {
             _hoveredQuestNpc.TryInteract();
         }
+        else if (_current == GameCursorType.Talk
+            && _hoveredTraderNpc != null
+            && Mouse.current != null
+            && Mouse.current.leftButton.wasPressedThisFrame)
+        {
+            _hoveredTraderNpc.TryInteract();
+        }
         else if (_current == GameCursorType.Interact
             && _hoveredFarmPlot != null
             && Mouse.current != null
@@ -125,11 +134,14 @@ public sealed class GameCursorManager : MonoBehaviour
     private GameCursorType ResolveCursor()
     {
         if (_hoveredFarmPlot != null) _hoveredFarmPlot.SetHighlighted(false);
+        _hoveredOutline?.SetHighlighted(false);
         _hoveredGatheringNode = null;
         _hoveredQuestNpc = null;
+        _hoveredTraderNpc = null;
         _hoveredChest = null;
         _hoveredFishingSpot = null;
         _hoveredFarmPlot = null;
+        _hoveredOutline = null;
         if (Mouse.current == null
             || GameStateManager.Instance == null
             || GameStateManager.Instance.CurrentState != GameState.Playing
@@ -154,6 +166,16 @@ public sealed class GameCursorManager : MonoBehaviour
             if (!target.IsAvailable || target.RequiresRange && !IsPlayerInRange(target.RangeOrigin))
                 return GameCursorType.Blocked;
 
+            // Generic hover highlight: works for any interactable that carries a HoverOutline
+            // component (NPC, fishing spot, and any future resource/farm/chest type) with no
+            // per-type wiring needed here -- see HoverOutline.cs.
+            HoverOutline outline = collider.GetComponentInParent<HoverOutline>(true);
+            if (outline != null)
+            {
+                _hoveredOutline = outline;
+                outline.SetHighlighted(true);
+            }
+
             if (target.Cursor == GameCursorType.Gathering)
                 _hoveredGatheringNode = collider.GetComponentInParent<ResourceNodeInteractable>(true);
             else if (target.Cursor == GameCursorType.Interact
@@ -162,8 +184,11 @@ public sealed class GameCursorManager : MonoBehaviour
                 _hoveredFarmPlot = farmPlot;
                 _hoveredFarmPlot.SetHighlighted(true);
             }
+            else if (target.Cursor == GameCursorType.Talk
+                && collider.GetComponentInParent<QuestNpcInteractionUI>(true) is QuestNpcInteractionUI questNpc)
+                _hoveredQuestNpc = questNpc;
             else if (target.Cursor == GameCursorType.Talk)
-                _hoveredQuestNpc = collider.GetComponentInParent<QuestNpcInteractionUI>(true);
+                _hoveredTraderNpc = collider.GetComponentInParent<TraderNpcInteractionUI>(true);
             else if (target.Cursor == GameCursorType.Interact
                 && collider.GetComponentInParent<FishingSpotInteractable>(true) != null)
                 _hoveredFishingSpot = collider.GetComponentInParent<FishingSpotInteractable>(true);
