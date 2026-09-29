@@ -47,7 +47,8 @@ public class InventorySlotUI : MonoBehaviour, IPointerClickHandler, IPointerEnte
 
         if (_slot.item is EquipmentItemSO equipmentItem && EquipmentManager.Instance != null)
         {
-            EquipmentManager.Instance.Equip(equipmentItem, _slot);
+            if (!EquipmentManager.Instance.Equip(equipmentItem, _slot))
+                InventoryActionFeedbackUI.Show(EquipFeedback.BuildEquipFailureMessage(equipmentItem));
         }
     }
 
@@ -81,7 +82,9 @@ public class InventorySlotUI : MonoBehaviour, IPointerClickHandler, IPointerEnte
         EquipmentSlotUI sourceEquipSlot = eventData.pointerDrag.GetComponent<EquipmentSlotUI>();
         if (sourceEquipSlot != null)
         {
-            EquipmentManager.Instance.Unequip(sourceEquipSlot.Slot, _slot);
+            EquipmentItemSO equipped = EquipmentManager.Instance.GetEquipped(sourceEquipSlot.Slot);
+            if (equipped != null && !EquipmentManager.Instance.Unequip(sourceEquipSlot.Slot, _slot))
+                InventoryActionFeedbackUI.Show(EquipFeedback.BuildUnequipFailureMessage(equipped));
         }
     }
 

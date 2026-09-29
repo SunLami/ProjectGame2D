@@ -6,9 +6,20 @@ using UnityEngine;
 public class InventorySeeder : MonoBehaviour
 {
     [SerializeField] private ItemDatabase _database;
+    [Tooltip("Turn off for real play so New Game starts with an empty inventory. Turn back on to seed the full ItemDatabase for testing.")]
+    [SerializeField] private bool _seedingEnabled = true;
+
+    // Also toggleable at runtime from the Dev Panel (DevPanelController) so QA doesn't need the
+    // Unity Editor to switch between real-play and full-seed New Game sessions.
+    public bool SeedingEnabled
+    {
+        get => _seedingEnabled;
+        set => _seedingEnabled = value;
+    }
 
     public void SeedStartingInventory()
     {
+        if (!_seedingEnabled) return;
         if (InventoryManager.Instance == null || _database == null || _database.items == null) return;
 
         foreach (ItemDatabase.Entry entry in _database.items)
