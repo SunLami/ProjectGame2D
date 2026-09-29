@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -10,6 +11,7 @@ public class InventorySlotUI : MonoBehaviour, IPointerClickHandler, IPointerEnte
 
     private InventorySlot _slot;
     private GameObject _dragIcon;
+    private bool _dropWasHandled;
 
     public ItemSO Item => _slot?.item;
     public InventorySlot Slot => _slot;
@@ -87,6 +89,8 @@ public class InventorySlotUI : MonoBehaviour, IPointerClickHandler, IPointerEnte
     {
         if (_slot == null || _slot.IsEmpty) return;
 
+        _dropWasHandled = false;
+
         InventoryItemTooltipUI.Instance?.Hide();
 
         Canvas canvas = GetComponentInParent<Canvas>();
@@ -130,8 +134,31 @@ public class InventorySlotUI : MonoBehaviour, IPointerClickHandler, IPointerEnte
 
         // Drag-to-discard: released past the Inventory window's own bounds (out into the world),
         // not just onto empty space between slots inside the window -- that still just snaps back.
-        if (_slot != null && !_slot.IsEmpty && IsDroppedOutsideInventoryWindow(eventData))
+        if (!_dropWasHandled && !IsDroppedOnQuickBar(eventData)
+            && _slot != null && !_slot.IsEmpty && IsDroppedOutsideInventoryWindow(eventData))
             InventoryDiscardConfirmUI.Instance?.Open(_slot);
+
+        _dropWasHandled = false;
+    }
+
+    /// <summary>Called by valid drop targets outside the Inventory window so EndDrag does not
+    /// reinterpret the same release as a discard gesture.</summary>
+    public void MarkDropHandled() => _dropWasHandled = true;
+
+    private static bool IsDroppedOnQuickBar(PointerEventData eventData)
+    {
+        if (eventData == null || EventSystem.current == null)
+            return false;
+
+        var results = new List<RaycastResult>();
+        EventSystem.current.RaycastAll(eventData, results);
+        foreach (RaycastResult result in results)
+        {
+            if (result.gameObject.GetComponentInParent<QuickBarSlotUI>() != null)
+                return true;
+        }
+
+        return false;
     }
 
     private bool IsDroppedOutsideInventoryWindow(PointerEventData eventData)

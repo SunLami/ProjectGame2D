@@ -38,7 +38,10 @@ public sealed class EquipmentContentTests
         Assert.AreEqual(55, recipes.Select(recipe => recipe.OutputItemId).Distinct().Count());
         foreach (RecipeDefinition recipe in recipes)
         {
-            Assert.IsTrue(resolver.TryResolve(recipe.OutputItemId, out _), $"Missing output {recipe.OutputItemId}");
+            Assert.IsTrue(resolver.TryResolve(recipe.OutputItemId, out ItemSO output), $"Missing output {recipe.OutputItemId}");
+            Assert.IsInstanceOf<EquipmentItemSO>(output);
+            Assert.GreaterOrEqual(((EquipmentItemSO)output).requiredLevel, 1,
+                $"Recipe {recipe.RecipeId} output must provide the shared equip/craft level requirement.");
             foreach (RecipeIngredientEntry ingredient in recipe.Ingredients)
                 Assert.IsTrue(resolver.TryResolve(ingredient.ItemId, out _), $"Missing ingredient {ingredient.ItemId} in {recipe.RecipeId}");
         }

@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
 
 public partial class Player
@@ -20,6 +21,8 @@ public partial class Player
     {
         if (!context.started || _isAttacking || _isHit || _isDead
             || !GameStateManager.AllowsGameplayInput
+            || EventSystem.current != null && EventSystem.current.IsPointerOverGameObject()
+            || IsPointerOverGameplayHud()
             || GameCursorManager.Instance != null
                 && GameCursorManager.Instance.IsPointerOverNonCombatInteraction)
             return;
@@ -76,6 +79,30 @@ public partial class Player
         Vector2 direction = (worldPosition - transform.position).normalized;
         if (direction != Vector2.zero)
             SetFacingDirection(direction);
+    }
+
+    private static bool IsPointerOverGameplayHud()
+    {
+        if (Pointer.current == null)
+            return false;
+
+        Vector2 screenPosition = Pointer.current.position.ReadValue();
+        return ContainsScreenPoint("PlayerHUD", screenPosition)
+            || ContainsScreenPoint("BottomHUD", screenPosition)
+            || ContainsScreenPoint("Minimap", screenPosition);
+    }
+
+    private static bool ContainsScreenPoint(string objectName, Vector2 screenPosition)
+    {
+        GameObject hudObject = GameObject.Find(objectName);
+        if (hudObject == null || !hudObject.TryGetComponent(out RectTransform rect))
+            return false;
+
+        Canvas canvas = rect.GetComponentInParent<Canvas>();
+        Camera eventCamera = canvas != null && canvas.renderMode != RenderMode.ScreenSpaceOverlay
+            ? canvas.worldCamera
+            : null;
+        return RectTransformUtility.RectangleContainsScreenPoint(rect, screenPosition, eventCamera);
     }
 
     private void DisableAttackHitbox() => _attackHitbox?.EndAttack();

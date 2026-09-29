@@ -63,16 +63,7 @@ public static class InventoryDiscardConfirmPrefabBuilder
             TMP_Text quantityItemName = CreateText("ItemNameText", quantityPanel, font, "Item Name", 16f,
                 new Vector2(0f, 28f), new Vector2(400f, 26f));
 
-            RectTransform stepper = CreateRect("QuantityStepper", quantityPanel);
-            stepper.anchorMin = stepper.anchorMax = new Vector2(0.5f, 0.5f);
-            stepper.pivot = new Vector2(0.5f, 0.5f);
-            stepper.anchoredPosition = new Vector2(0f, -8f);
-            stepper.sizeDelta = new Vector2(200f, 40f);
-
-            Button minusButton = BuildStepperButton("MinusButton", stepper, font, "-", new Vector2(-84f, 0f));
-            TMP_Text quantityValue = CreateText("QuantityValueText", stepper, font, "1", 18f,
-                Vector2.zero, new Vector2(60f, 40f));
-            Button plusButton = BuildStepperButton("PlusButton", stepper, font, "+", new Vector2(84f, 0f));
+            TMP_InputField quantityInput = BuildQuantityInput(quantityPanel, font);
 
             Button quantityConfirm = BuildActionButton("ConfirmButton", quantityPanel, actionButton, font, "DISCARD",
                 danger: true, anchoredX: -100f);
@@ -89,9 +80,7 @@ public static class InventoryDiscardConfirmPrefabBuilder
             serialized.FindProperty("_confirmNoButton").objectReferenceValue = noButton;
             serialized.FindProperty("_quantityIcon").objectReferenceValue = quantityIcon;
             serialized.FindProperty("_quantityItemNameText").objectReferenceValue = quantityItemName;
-            serialized.FindProperty("_quantityValueText").objectReferenceValue = quantityValue;
-            serialized.FindProperty("_quantityMinusButton").objectReferenceValue = minusButton;
-            serialized.FindProperty("_quantityPlusButton").objectReferenceValue = plusButton;
+            serialized.FindProperty("_quantityInput").objectReferenceValue = quantityInput;
             serialized.FindProperty("_quantityConfirmButton").objectReferenceValue = quantityConfirm;
             serialized.FindProperty("_quantityCancelButton").objectReferenceValue = quantityCancel;
             serialized.ApplyModifiedPropertiesWithoutUndo();
@@ -166,38 +155,32 @@ public static class InventoryDiscardConfirmPrefabBuilder
         return button;
     }
 
-    private static Button BuildStepperButton(string name, Transform parent, TMP_FontAsset font, string label, Vector2 position)
+    private static TMP_InputField BuildQuantityInput(Transform parent, TMP_FontAsset font)
     {
-        GameObject go = CreateImage(name, parent, null, new Color(1f, 1f, 1f, 0.12f));
+        GameObject go = CreateImage("QuantityInput", parent, null, new Color(0.07f, 0.055f, 0.04f, 0.92f));
         RectTransform rect = (RectTransform)go.transform;
         rect.anchorMin = rect.anchorMax = new Vector2(0.5f, 0.5f);
         rect.pivot = new Vector2(0.5f, 0.5f);
-        rect.anchoredPosition = position;
-        rect.sizeDelta = new Vector2(32f, 32f);
+        rect.anchoredPosition = new Vector2(0f, -8f);
+        rect.sizeDelta = new Vector2(150f, 38f);
 
-        Button button = go.AddComponent<Button>();
-        Image image = go.GetComponent<Image>();
-        button.targetGraphic = image;
-        button.transition = Selectable.Transition.ColorTint;
-        ColorBlock colors = button.colors;
-        colors.normalColor = new Color(1f, 1f, 1f, 0.12f);
-        colors.highlightedColor = new Color(1f, 0.82f, 0.38f, 0.35f);
-        colors.pressedColor = new Color(0.68f, 0.55f, 0.30f, 0.5f);
-        colors.disabledColor = new Color(1f, 1f, 1f, 0.05f);
-        colors.fadeDuration = 0.08f;
-        button.colors = colors;
-
-        TMP_Text text = CreateText("Label", go.transform, font, label, 18f, Vector2.zero, rect.sizeDelta);
+        TMP_Text text = CreateText("Text", go.transform, font, "1", 18f, Vector2.zero, rect.sizeDelta);
         RectTransform textRect = (RectTransform)text.transform;
         textRect.anchorMin = Vector2.zero;
         textRect.anchorMax = Vector2.one;
-        textRect.offsetMin = Vector2.zero;
-        textRect.offsetMax = Vector2.zero;
+        textRect.offsetMin = new Vector2(10f, 2f);
+        textRect.offsetMax = new Vector2(-10f, -2f);
         text.color = new Color(1f, 0.94f, 0.72f, 1f);
-        text.fontStyle = FontStyles.Bold;
-        text.raycastTarget = false;
 
-        return button;
+        TMP_InputField input = go.AddComponent<TMP_InputField>();
+        input.textViewport = textRect;
+        input.textComponent = text;
+        input.contentType = TMP_InputField.ContentType.IntegerNumber;
+        input.lineType = TMP_InputField.LineType.SingleLine;
+        input.characterLimit = 6;
+        input.targetGraphic = go.GetComponent<Image>();
+        input.text = "1";
+        return input;
     }
 
     private static TMP_Text CreateText(string name, Transform parent, TMP_FontAsset font, string value,

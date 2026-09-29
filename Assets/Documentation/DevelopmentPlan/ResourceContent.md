@@ -18,7 +18,9 @@ Các node giữ `HarvestToolType.None` vì `PlayerAttackHitbox` hiện gọi har
 
 ## Recipe
 
-Tất cả recipe dưới đây dùng `station.forge` và `npc.town.artificer`; sheet để trống cột Crafting Stations.
+Tất cả recipe dưới đây dùng `station.forge` và `npc.town.artificer`. Stable NPC ID được giữ để bảo
+toàn reference hiện hành; tên nhân vật hiển thị là **Merric**. Merric cung cấp cả bảy recipe tại shop
+`shop.town.trader_weapon_armor`; sheet để trống cột Crafting Stations.
 
 | Output | Ingredients |
 |---|---|
@@ -33,34 +35,36 @@ Tất cả recipe dưới đây dùng `station.forge` và `npc.town.artificer`; 
 ## Economy baseline
 
 Giá là gold mỗi item. `Buy` là giá người chơi mua từ NPC; `Sell` là giá NPC trả cho người chơi.
-Resource hiện chỉ được thêm vào Sell catalog để không cho phép bỏ qua vòng lặp khai thác/chế tạo.
+Merric mua lại và bán cho người chơi toàn bộ ore, bar, Leather, Wood Log và Coal trong bảng dưới.
+Năm gem do Agnes — Hermetist (`npc.town.hermetist`) mua và bán tại `shop.town.trader_magic`.
+`Buy min–max` là giá người chơi trả; `Sell min–max` là giá Merric hoặc Agnes trả cho người chơi.
 
 | Item | Stable ID | Buy min–max | Sell min–max | NPC nhận mua |
 |---|---|---:|---:|---|
-| Copper Ore | `item.material.copper_ore` | 6–8 | 3–4 | Artificer |
-| Iron Ore | `item.material.iron` | 10–14 | 5–7 | Artificer |
-| Gold Ore | `item.material.gold_ore` | 20–28 | 10–14 | Artificer |
-| Tin Ore | `item.material.tin_ore` | 14–18 | 7–9 | Artificer |
-| Diamond Ore | `item.material.diamond_ore` | 36–48 | 18–24 | Artificer |
-| Copper Bar | `item.material.copper_bar` | 44–54 | 22–27 | Artificer |
-| Iron Bar | `item.material.iron_bar` | 68–86 | 34–43 | Artificer |
-| Gold Bar | `item.material.gold_bar` | 122–156 | 61–78 | Artificer |
-| Steel Bar | `item.material.steel_bar` | 250–300 | 125–150 | Artificer |
-| Tin Bar | `item.material.tin_bar` | 88–108 | 44–54 | Artificer |
-| Diamond Bar | `item.material.diamond_bar` | 210–270 | 105–135 | Artificer |
-| Leather | `item.material.leather` | 16–24 | 8–12 | Artificer |
-| Wood Log | `item.material.wood_log` | 4–6 | 2–3 | Artificer |
-| Coal | `item.material.coal` | 9–12 | 5–7 | Không có |
-| Tanzanite | `item.material.tanzanite` | 80–110 | 40–55 | Hermetist |
-| Citrine | `item.material.citrine` | 36–48 | 18–24 | Hermetist |
-| Opal | `item.material.opal` | 48–64 | 24–32 | Hermetist |
-| Charoite | `item.material.charoite` | 60–80 | 30–40 | Hermetist |
-| Emerald | `item.material.emerald` | 110–150 | 55–75 | Hermetist |
+| Copper Ore | `item.material.copper_ore` | 6–8 | 3–4 | Merric |
+| Iron Ore | `item.material.iron` | 10–14 | 5–7 | Merric |
+| Gold Ore | `item.material.gold_ore` | 20–28 | 10–14 | Merric |
+| Tin Ore | `item.material.tin_ore` | 14–18 | 7–9 | Merric |
+| Diamond Ore | `item.material.diamond_ore` | 36–48 | 18–24 | Merric |
+| Copper Bar | `item.material.copper_bar` | 44–54 | 22–27 | Merric |
+| Iron Bar | `item.material.iron_bar` | 68–86 | 34–43 | Merric |
+| Gold Bar | `item.material.gold_bar` | 122–156 | 61–78 | Merric |
+| Steel Bar | `item.material.steel_bar` | 250–300 | 125–150 | Merric |
+| Tin Bar | `item.material.tin_bar` | 88–108 | 44–54 | Merric |
+| Diamond Bar | `item.material.diamond_bar` | 210–270 | 105–135 | Merric |
+| Leather | `item.material.leather` | 16–24 | 8–12 | Merric |
+| Wood Log | `item.material.wood_log` | 4–6 | 2–3 | Merric |
+| Coal | `item.material.coal` | 9–12 | 5–7 | Merric |
+| Tanzanite | `item.material.tanzanite` | 80–110 | 40–55 | Agnes |
+| Citrine | `item.material.citrine` | 36–48 | 18–24 | Agnes |
+| Opal | `item.material.opal` | 48–64 | 24–32 | Agnes |
+| Charoite | `item.material.charoite` | 60–80 | 30–40 | Agnes |
+| Emerald | `item.material.emerald` | 110–150 | 55–75 | Agnes |
 
 ## Khoảng trống content cần bổ sung
 
-- Sheet không chỉ định crafting station. Forge/Artificer là quy ước tạm thời cho toàn bộ refining, kể cả Coal.
-- Shop column không nói rõ NPC bán hay mua. Tích hợp hiện coi đây là danh sách NPC nhận mua từ người chơi.
+- Sheet không chỉ định crafting station. `station.forge` là station đã chốt cho toàn bộ refining, kể cả Coal.
+- Merric vừa bán vừa mua lại 14 resource theo yêu cầu ngày 2026-09-29; recipe output cũng thuộc danh sách giao dịch này.
 - Năm gem dùng icon tham chiếu từ sheet. Ore/bar/leather/coal dùng các sprite phù hợp trong atlas material hiện có; đây là art tạm và có thể thay mà không đổi stable ID.
 - Bốn node Iron/Gold/Tin/Diamond mới chỉ có `ResourceNodeDefinition`; chưa có world sprite, prefab hoặc vị trí scene.
-- Dòng Leather có nội dung mô tả nhắc Hunter's Hut nhưng cột Shop ghi Artificer. Vì description đang ngoài scope, Artificer được ưu tiên theo cột dữ liệu có cấu trúc.
+- Dòng Leather có nội dung mô tả nhắc Hunter's Hut nhưng cột Shop ghi Artificer. Merric là tên hiển thị của Artificer hiện hành nên shop Merric được ưu tiên theo cột dữ liệu có cấu trúc.

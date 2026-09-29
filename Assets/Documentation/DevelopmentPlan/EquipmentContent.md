@@ -7,12 +7,20 @@ The Equipment Items sheet (`gid=0`) is implemented as 55 active `EquipmentItemSO
 ## Authoring rules
 
 - Artificer crafts Sword, Body, Foot, Head, and Shield equipment at `station.forge`.
-- Hermetist crafts Ring and Necklace equipment at `station.forge`.
+- Agnes is the display name of the Hermetist identity (`npc.town.hermetist`) and crafts Ring and
+  Necklace equipment at `station.forge`.
 - Every metal ingredient in the sheet resolves to its Bar item. `diamond` resolves to `item.material.diamond_bar`.
 - The ambiguous `Clockmaker + 7 iron` row for `head_lvl5` is resolved as the previous-tier `Copper Helm + 7 Iron Bars`.
 - The `Wood` ingredient for `ring_lvl4` resolves to `item.material.wood_log`.
 - Equipment value includes the consumed previous-tier item's cumulative raw-material cost. Sell ranges are 110–120% of cumulative material sell value; buy ranges are twice the equipment sell range.
-- Required level is enforced by `EquipmentManager.Equip` and displayed in the inventory tooltip.
+- Required level is the shared gate for both equipping and crafting. `CraftingManager` reads the
+  output `EquipmentItemSO.requiredLevel` directly rather than duplicating level data on the recipe;
+  the Crafting UI displays this level and rejects the transaction before consuming ingredients when
+  the player level is too low. `EquipmentManager.Equip` continues to enforce the same field.
+- Merric is the display name of the existing Artificer identity (`npc.town.artificer`). His
+  `station.forge` recipe list contains Sword, Body, Foot, Head and Shield equipment.
+- Agnes buys and sells Tanzanite, Citrine, Opal, Charoite and Emerald at
+  `shop.town.trader_magic`. Her Ring/Necklace recipes use the same shared equip/craft level gate.
 
 ## Balance baseline
 

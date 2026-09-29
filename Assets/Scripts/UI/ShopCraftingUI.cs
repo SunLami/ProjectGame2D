@@ -53,6 +53,7 @@ public sealed class ShopCraftingUI : MonoBehaviour
     private readonly List<GameObject> _shopRows = new();
     private readonly List<GameObject> _recipeRows = new();
     private readonly Dictionary<string, List<RecipeDefinition>> _recipesByCategory = new();
+    private readonly HashSet<string> _expandedRecipeCategories = new();
     private ResourcesItemResolver _items;
     private ShopNpcInteractionService _shopService;
     private CraftingNpcInteractionService _craftingService;
@@ -66,7 +67,6 @@ public sealed class ShopCraftingUI : MonoBehaviour
     private int _sellUnitPrice;
     private InventorySlot _stagedSellSlot;
     private PlayerInput _playerInput;
-    private string _expandedRecipeCategory;
 
     public bool IsOpen => _backdrop != null && _backdrop.activeSelf;
 
@@ -143,6 +143,7 @@ public sealed class ShopCraftingUI : MonoBehaviour
         _craftingService = new CraftingNpcInteractionService(CraftingManager.Instance);
         _npcId = npcId;
         _stationTag = stationTag;
+        _expandedRecipeCategories.Clear();
         CapturePlayerInput(playerInput);
         BindInventory();
         SetVisible(false, true);
@@ -265,9 +266,9 @@ public sealed class ShopCraftingUI : MonoBehaviour
         foreach (string category in categoryOrder)
         {
             if (!_recipesByCategory.TryGetValue(category, out List<RecipeDefinition> group))
-                group = new List<RecipeDefinition>();
+                continue;
             CreateCategoryRow(category, group);
-            if (_expandedRecipeCategory != category) continue;
+            if (!_expandedRecipeCategories.Contains(category)) continue;
             foreach (RecipeDefinition recipe in group) CreateBlueprintRow(recipe);
         }
         RefreshRecipeDetails();
@@ -281,7 +282,7 @@ public sealed class ShopCraftingUI : MonoBehaviour
         row.name = $"RecipeCategory_{category}";
         row.SetActive(true);
         TMP_Text name = row.transform.Find("Name")?.GetComponent<TMP_Text>();
-        if (name != null) name.text = $"{(_expandedRecipeCategory == category ? "−" : "+")}  {category}";
+        if (name != null) name.text = $"{(_expandedRecipeCategories.Contains(category) ? "−" : "+")}  {category}";
         TMP_Text station = row.transform.Find("Station")?.GetComponent<TMP_Text>();
         if (station != null) station.text = recipes.Count.ToString();
         Image icon = row.transform.Find("Icon")?.GetComponent<Image>();
@@ -316,7 +317,8 @@ public sealed class ShopCraftingUI : MonoBehaviour
 
     private void ToggleRecipeCategory(string category)
     {
-        _expandedRecipeCategory = _expandedRecipeCategory == category ? null : category;
+        if (!_expandedRecipeCategories.Add(category))
+            _expandedRecipeCategories.Remove(category);
         _selectedRecipe = null;
         RebuildRecipes();
     }
@@ -516,8 +518,17 @@ public sealed class ShopCraftingUI : MonoBehaviour
         text.Append("<align=\"center\"><size=25><b>").Append(_selectedRecipe.DisplayName).Append("</b></size></align>\n");
         text.Append("<align=\"left\"><size=17><color=#C9A34A><b>OUTPUT</b></color>  ")
             .Append(ItemName(_selectedRecipe.OutputItemId)).Append("  ×")
-            .Append(_selectedRecipe.OutputQuantity).Append("</size>\n")
-            .Append("<size=17><color=#C9A34A><b>STATION</b></color>  ")
+            .Append(_selectedRecipe.OutputQuantity).Append("</size>\n");
+        if (_items.TryResolve(_selectedRecipe.OutputItemId, out ItemSO output)
+            && output is EquipmentItemSO equipment)
+        {
+            int playerLevel = PlayerStat.Instance != null ? PlayerStat.Instance.Level : 1;
+            string levelColor = playerLevel >= equipment.requiredLevel ? "#5FAF62" : "#B74A3F";
+            text.Append("<size=17><color=#C9A34A><b>REQUIRED LEVEL</b></color>  <color=")
+                .Append(levelColor).Append(">").Append(equipment.requiredLevel)
+                .Append("</color></size>\n");
+        }
+        text.Append("<size=17><color=#C9A34A><b>STATION</b></color>  ")
             .Append(FormatStationName(_selectedRecipe.RequiredStationTag)).Append("</size>\n")
             .Append("<color=#8A4B14><size=17><b>INGREDIENTS</b></size></color></align>");
         _recipeDetails.text = text.ToString();
@@ -592,6 +603,7 @@ public sealed class ShopCraftingUI : MonoBehaviour
     {
         CraftingTransactionResult.RecipeNotFound => "This NPC does not offer that recipe.",
         CraftingTransactionResult.WrongStation => "This recipe requires the correct crafting station.",
+        CraftingTransactionResult.LevelTooLow => "Your level is too low to craft this equipment.",
         CraftingTransactionResult.InsufficientIngredients => "Not enough ingredients.",
         CraftingTransactionResult.InsufficientOutputCapacity => "Not enough inventory space for the result.",
         CraftingTransactionResult.GameplayNotAllowed => "Crafting is unavailable right now.",

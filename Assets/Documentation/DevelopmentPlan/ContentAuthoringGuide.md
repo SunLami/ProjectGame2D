@@ -187,6 +187,11 @@ assets directly when changing the Buy/Sell catalogs for their matching NPCs.
 | `requiredStationTag` | Empty = craftable anywhere. Otherwise must match the `stationTag` passed to `CraftingManager.TryCraft` (e.g. `station.forge`) — station gating is data (a string tag), not a new code path per station. |
 | `npcId` | Optional — stable `npcId` that offers this recipe as a Crafting capability. |
 
+Store recipe assets under `Assets/Crafting/Recipes/<NPC display name>/` according to `npcId`. The
+current mapping is Merric (`npc.town.artificer`), Agnes (`npc.town.hermetist`), Cenhelm
+(`npc.town.elder`), Oswin (`npc.town.gastronome`) and Cuthbert (`npc.town.mixologist`). Moving an
+existing recipe must preserve its `.meta` file so catalog references and GUIDs remain stable.
+
 `CraftingManager` is one shared transaction engine for every recipe — adding a recipe is purely
 authoring a new `RecipeDefinition` asset and registering it in the catalog the scene's
 `CraftingManager` reads from; it never means adding a method.

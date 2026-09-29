@@ -4,7 +4,7 @@ using UnityEngine.UI;
 
 /// <summary>Modal opened when an inventory item is dragged out past the Inventory window's bounds
 /// (InventorySlotUI.OnEndDrag) -- asks "discard this?" and, if the stack has more than one unit,
-/// a follow-up quantity picker before actually calling InventoryManager.DiscardFromSlot. Sits as a
+/// a follow-up quantity input before actually calling InventoryManager.DiscardFromSlot. Sits as a
 /// raycast-blocking overlay on top of the already-open Inventory window instead of pushing a new
 /// GameState -- Inventory (GameplayMenuPage.Inventory) already blocks gameplay input/world time, so
 /// there is nothing additional to pause.</summary>
@@ -23,15 +23,15 @@ public sealed class InventoryDiscardConfirmUI : MonoBehaviour
 
     [SerializeField] private Image _quantityIcon;
     [SerializeField] private TMP_Text _quantityItemNameText;
-    [SerializeField] private TMP_Text _quantityValueText;
-    [SerializeField] private Button _quantityMinusButton;
-    [SerializeField] private Button _quantityPlusButton;
+    [SerializeField] private TMP_InputField _quantityInput;
+    [SerializeField, HideInInspector] private TMP_Text _quantityValueText;
+    [SerializeField, HideInInspector] private Button _quantityMinusButton;
+    [SerializeField, HideInInspector] private Button _quantityPlusButton;
     [SerializeField] private Button _quantityConfirmButton;
     [SerializeField] private Button _quantityCancelButton;
 
     private InventorySlot _slot;
     private int _maxQuantity;
-    private int _selectedQuantity;
 
     public bool IsOpen => _root != null && _root.activeSelf;
 
@@ -44,6 +44,7 @@ public sealed class InventoryDiscardConfirmUI : MonoBehaviour
         }
 
         Instance = this;
+        EnsureQuantityInput();
         _root.SetActive(false);
     }
 
@@ -51,8 +52,6 @@ public sealed class InventoryDiscardConfirmUI : MonoBehaviour
     {
         _confirmYesButton.onClick.AddListener(HandleConfirmYes);
         _confirmNoButton.onClick.AddListener(Close);
-        _quantityMinusButton.onClick.AddListener(DecreaseQuantity);
-        _quantityPlusButton.onClick.AddListener(IncreaseQuantity);
         _quantityConfirmButton.onClick.AddListener(HandleQuantityConfirm);
         _quantityCancelButton.onClick.AddListener(Close);
     }
@@ -61,8 +60,6 @@ public sealed class InventoryDiscardConfirmUI : MonoBehaviour
     {
         _confirmYesButton.onClick.RemoveListener(HandleConfirmYes);
         _confirmNoButton.onClick.RemoveListener(Close);
-        _quantityMinusButton.onClick.RemoveListener(DecreaseQuantity);
-        _quantityPlusButton.onClick.RemoveListener(IncreaseQuantity);
         _quantityConfirmButton.onClick.RemoveListener(HandleQuantityConfirm);
         _quantityCancelButton.onClick.RemoveListener(Close);
     }
@@ -105,39 +102,33 @@ public sealed class InventoryDiscardConfirmUI : MonoBehaviour
         if (_slot.item.isStackable && _slot.quantity > 1)
         {
             _maxQuantity = _slot.quantity;
-            _selectedQuantity = 1;
             _quantityIcon.sprite = _slot.item.icon;
             _quantityIcon.enabled = _slot.item.icon != null;
             _quantityItemNameText.text = _slot.item.itemName;
-            RefreshQuantityText();
+            _quantityInput.text = "1";
 
             _confirmPage.SetActive(false);
             _quantityPage.SetActive(true);
+            _quantityInput.Select();
+            _quantityInput.ActivateInputField();
             return;
         }
 
         DoDiscard(_slot.quantity);
     }
 
-    private void IncreaseQuantity()
+    private void HandleQuantityConfirm()
     {
-        _selectedQuantity = Mathf.Min(_maxQuantity, _selectedQuantity + 1);
-        RefreshQuantityText();
-    }
+        if (!int.TryParse(_quantityInput.text, out int amount) || amount < 1 || amount > _maxQuantity)
+        {
+            _quantityInput.text = Mathf.Clamp(amount, 1, _maxQuantity).ToString();
+            _quantityInput.Select();
+            _quantityInput.ActivateInputField();
+            return;
+        }
 
-    private void DecreaseQuantity()
-    {
-        _selectedQuantity = Mathf.Max(1, _selectedQuantity - 1);
-        RefreshQuantityText();
+        DoDiscard(amount);
     }
-
-    private void RefreshQuantityText()
-    {
-        if (_quantityValueText != null)
-            _quantityValueText.text = _selectedQuantity.ToString();
-    }
-
-    private void HandleQuantityConfirm() => DoDiscard(_selectedQuantity);
 
     private void DoDiscard(int amount)
     {
@@ -150,5 +141,31 @@ public sealed class InventoryDiscardConfirmUI : MonoBehaviour
     {
         _root.SetActive(false);
         _slot = null;
+    }
+
+    private void EnsureQuantityInput()
+    {
+        if (_quantityInput != null)
+            return;
+
+        // Backward-compatible migration for prefab instances authored with the old +/- stepper.
+        // Reuses its center text as the editable text so existing scene instances remain valid.
+        if (_quantityValueText == null)
+            return;
+
+        GameObject inputObject = _quantityValueText.transform.parent.gameObject;
+        _quantityInput = inputObject.GetComponent<TMP_InputField>()
+            ?? inputObject.AddComponent<TMP_InputField>();
+        _quantityInput.textViewport = _quantityValueText.rectTransform;
+        _quantityInput.textComponent = _quantityValueText;
+        _quantityValueText.raycastTarget = true;
+        _quantityInput.contentType = TMP_InputField.ContentType.IntegerNumber;
+        _quantityInput.lineType = TMP_InputField.LineType.SingleLine;
+        _quantityInput.characterLimit = 6;
+
+        if (_quantityMinusButton != null)
+            _quantityMinusButton.gameObject.SetActive(false);
+        if (_quantityPlusButton != null)
+            _quantityPlusButton.gameObject.SetActive(false);
     }
 }
