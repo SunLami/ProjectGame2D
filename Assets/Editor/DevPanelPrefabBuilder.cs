@@ -225,6 +225,11 @@ public static class DevPanelPrefabBuilder
         RectTransform combatRow = CreateRow(content);
         Toggle godModeToggle = CreateToggle(combatRow, "GodModeToggle", "God Mode (invulnerable)");
 
+        // -- Inventory --
+        CreateSectionLabel(content, "INVENTORY");
+        RectTransform inventoryRow = CreateRow(content);
+        Toggle seedStartingItemsToggle = CreateToggle(inventoryRow, "SeedStartingItemsToggle", "Seed Starting Items (next New Game)");
+
         // -- Teleport (shell only; rows are populated at runtime) --
         CreateSectionLabel(content, "TELEPORT");
         RectTransform teleportContainer = CreateRect("TeleportContainer", content);
@@ -243,6 +248,7 @@ public static class DevPanelPrefabBuilder
         serialized.FindProperty("_itemIdField").objectReferenceValue = itemIdField;
         serialized.FindProperty("_amountField").objectReferenceValue = amountField;
         serialized.FindProperty("_godModeToggle").objectReferenceValue = godModeToggle;
+        serialized.FindProperty("_seedStartingItemsToggle").objectReferenceValue = seedStartingItemsToggle;
         serialized.ApplyModifiedPropertiesWithoutUndo();
 
         return teleportContainer;

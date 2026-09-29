@@ -133,6 +133,14 @@ public class PauseMenuUI : MonoBehaviour
 
     public void OnReturnToMainMenuClicked()
     {
+        EnsureSessionController();
+        if (_sessionController == null)
+        {
+            _feedbackText.text = "Return to Menu unavailable: GameplaySessionController not found in this scene.";
+            Debug.LogWarning("PauseMenuUI.OnReturnToMainMenuClicked: no GameplaySessionController found -- Back To Menu is a no-op.");
+            return;
+        }
+
         if (!IsBusy())
             _sessionController.RequestReturnToMainMenu();
     }
