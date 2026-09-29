@@ -72,6 +72,7 @@ public sealed class QuickBarSlotUI : MonoBehaviour, IPointerClickHandler, IDropH
         {
             QuickBarManager.Instance.Assign(_slotIndex, source.Item);
             QuickBarManager.Instance.Select(_slotIndex);
+            source.MarkDropHandled();
         }
     }
 

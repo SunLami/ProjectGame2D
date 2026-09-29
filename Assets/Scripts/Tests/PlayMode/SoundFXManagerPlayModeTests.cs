@@ -40,13 +40,26 @@ public sealed class SoundFXManagerPlayModeTests
     }
 
     [Test]
-    public void ButtonSfx_OnSelect_PlaysHoverForKeyboardOrGamepadFocus()
+    public void ButtonSfx_DoesNotImplementHoverOrSelectHandlers_AfterHoverSfxRemoval()
     {
-        AudioClip clip = AudioClip.Create("sfx.ui.hover", 44100, 1, 44100, false);
-        GameObject managerObject = CreateSoundFXManager("sfx.ui.hover", clip);
+        // Owner decision 2026-09-29: hover/selection SFX removed entirely -- assert the interfaces
+        // are gone, not just unwired, so a future edit can't silently reintroduce hover noise.
         ButtonSfx buttonSfx = new GameObject("ButtonSfxUnderTest").AddComponent<ButtonSfx>();
 
-        buttonSfx.OnSelect(null);
+        Assert.IsFalse(buttonSfx is UnityEngine.EventSystems.IPointerEnterHandler);
+        Assert.IsFalse(buttonSfx is UnityEngine.EventSystems.ISelectHandler);
+
+        Object.DestroyImmediate(buttonSfx.gameObject);
+    }
+
+    [Test]
+    public void ButtonSfx_OnPointerClick_PlaysConfiguredClickForMouseOrTouch()
+    {
+        AudioClip clip = AudioClip.Create("sfx.ui.click_primary", 44100, 1, 44100, false);
+        GameObject managerObject = CreateSoundFXManager("sfx.ui.click_primary", clip);
+        ButtonSfx buttonSfx = new GameObject("ButtonSfxUnderTest").AddComponent<ButtonSfx>();
+
+        buttonSfx.OnPointerClick(null);
 
         Assert.IsTrue(managerObject.GetComponent<AudioSource>().isPlaying);
         Object.DestroyImmediate(buttonSfx.gameObject);

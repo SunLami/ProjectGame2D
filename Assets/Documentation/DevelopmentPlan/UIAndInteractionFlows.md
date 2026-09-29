@@ -155,6 +155,12 @@ navigation/state.
   8 `QuickSlotBackground` dùng chung một sprite nền, icon item render đè lên bởi `QuickBarSlotUI`
   (không đổi). Không đổi `UnifiedGameplayHudController`/`QuickBarManager`/`QuickBarSlotUI` public API
   hay input binding của phím số/`M`/`C`.
+- Chuột trái trên vùng hiển thị của `PlayerHUD`, `BottomHUD` hoặc `Minimap` là thao tác UI và không được
+  truyền xuống `Player.OnAttack`. Cổng Attack kiểm tra cả `EventSystem.IsPointerOverGameObject()` và bounds
+  `RectTransform` của ba HUD. Frame trang trí phải giữ `raycastTarget=false` để không che `OnDrop` của
+  quick slot hoặc các control nằm bên dưới.
+- Thả item từ Inventory vào quick slot là assignment hợp lệ, không phải drag-to-discard. Quick slot phải
+  đánh dấu drop đã được xử lý trước khi `InventorySlotUI.OnEndDrag` đánh giá vị trí ngoài cửa sổ.
 
 ### Character Popup visual direction
 
@@ -490,6 +496,11 @@ scene Style Guide riêng; mỗi UI được migration trực tiếp trên prefab
   output và station. Counter đủ/thiếu dùng xanh/đỏ; stable station ID như `station.forge` được format
   thành label thân thiện `Forge`. Recipe name canh giữa theo detail panel; các section còn lại canh
   trái để giữ khả năng quét thông tin. Đây chỉ là presentation, recipe ID và transaction data không đổi.
+- Crafting category list được dựng từ recipe thực sự do NPC hiện tại cung cấp; category không có
+  recipe không được tạo row `0`. Vì vậy Merric chỉ thấy Head/Body/Foot/Shield/Sword, còn Agnes chỉ
+  thấy Ring/Necklace.
+- Các category mở độc lập và có thể mở đồng thời; bấm category khác không đóng category đang mở.
+  Bấm lại chính category đó mới thu gọn. Khi mở Crafting cho một NPC mới, trạng thái mở được reset.
 - Shop detail dùng TMP rich text với item name canh giữa, description và nhóm `ITEM DETAILS` canh trái;
   Owned/Buy total/Sell total có phân cấp và màu currency rõ ràng. Cụm transaction nằm hoàn toàn trong
   detail panel trên một hàng gọn, có safe padding khỏi nội dung, viền và ornament.
