@@ -35,6 +35,7 @@ public partial class Player : MonoBehaviour, IDamageable
 
         CacheCombatReferences();
         CacheVisualReferences();
+        CacheSkillFxReferences();
         BindSharedManagers();
     }
 
@@ -63,11 +64,16 @@ public partial class Player : MonoBehaviour, IDamageable
 
         if (_isRunning && !_stats.HasStamina)
             SetRunning(false);
+
+        TickSkillAim();
+        TickGroundTargetAim();
+        TickSkillVisualRestore();
+        TickDashInputBinding();
     }
 
     public void TakeDamage(float damageAmount, Vector2 knockbackDirection, float knockbackForce)
     {
-        if (_isDead || _deathPending || damageAmount <= 0f)
+        if (_isDead || _deathPending || damageAmount <= 0f || IsDashInvulnerable)
             return;
 
         PlayerDamageResult result = _stats.ReceiveDamage(damageAmount);

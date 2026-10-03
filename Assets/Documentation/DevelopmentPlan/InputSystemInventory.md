@@ -31,6 +31,7 @@ không có PlayerInput/gameplay action map.
 | Next | Button | 2, gamepad d-pad right | Chưa có callback |
 | Sprint | Button | Left Shift, gamepad stick press, XR | `PlayerMovement.OnSprint` |
 | Inventory | Button | I, gamepad Select | `GameInputCoordinator` mở Inventory khi đang `Playing` |
+| Dash | Button | Space, gamepad South (cùng phím với `Jump` chưa dùng) | `Player.TryStartDash` — `PlayerDash.cs` tự bind `performed` vào action copy của PlayerInput (không cần Unity Event trong scene); chỉ DemoScene (D-085) |
 
 PlayerInput dùng notification behavior `Invoke Unity Events`, default map `Gameplay`, không chốt default
 control scheme và không bind `uiInputModule`. Việc không chốt scheme cho phép auto-switch, nhưng cần test

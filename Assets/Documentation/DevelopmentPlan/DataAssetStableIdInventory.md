@@ -90,6 +90,7 @@ Namespace ban đầu:
 | Domain | Pattern | Ví dụ |
 |---|---|---|
 | Item/equipment | `item.<category>.<name>[.<variant>]` | `item.weapon.sword.iron.001` |
+| Item vật liệu boss (ngọc triệu hồi) | `item.material.orb_<element>` | `item.material.orb_earth`, `item.material.orb_water` |
 | Enemy definition | `enemy.<family>.<variant>` | `enemy.slime.green` |
 | Quest | `quest.<chain>.<name>[.<sequence>]` | `quest.tutorial.crafting.001` |
 | Tutorial step | `tutorial.<flow>.<step>` | `tutorial.controls.move` |

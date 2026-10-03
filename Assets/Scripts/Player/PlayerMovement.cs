@@ -34,8 +34,24 @@ public partial class Player
     // Minimap/FullMap player marker orientation) without letting anything outside Player mutate it.
     public Vector2 FacingDirection => _lastMovementFacingDirection;
 
+    private float _slowMultiplier = 1f;
+    private float _slowUntil;
+
+    /// <summary>Temporary move-speed multiplier (e.g. shallow water in the Water boss arena, D-101). The strongest
+    /// slow active wins; it expires by itself, so callers re-apply it every frame while the cause persists.</summary>
+    public void ApplySlow(float multiplier, float seconds)
+    {
+        multiplier = Mathf.Clamp(multiplier, 0.05f, 1f);
+        if (Time.time >= _slowUntil || multiplier < _slowMultiplier)
+            _slowMultiplier = multiplier;
+        _slowUntil = Mathf.Max(_slowUntil, Time.time + seconds);
+    }
+
+    public bool IsSlowed => Time.time < _slowUntil && _slowMultiplier < 0.999f;
+
     private float CurrentMoveSpeed => _stats.MoveSpeed
-        * (_isRunning && _stats.HasStamina ? _stats.SprintMultiplier : 1f);
+        * (_isRunning && _stats.HasStamina ? _stats.SprintMultiplier : 1f)
+        * (Time.time < _slowUntil ? _slowMultiplier : 1f);
 
     public float MoveSpeed
     {
@@ -49,6 +65,9 @@ public partial class Player
 
     private void FixedUpdate()
     {
+        if (_isDashing)
+            return;
+
         if (_isHit || _isDead || !GameStateManager.AllowsGameplayInput)
         {
             if (!GameStateManager.AllowsGameplayInput)
@@ -75,7 +94,7 @@ public partial class Player
         if (_isMoving)
         {
             _lastMovementFacingDirection = SnapToAxis(_moveInput);
-            if (!_isAttacking && !_isHit)
+            if (!_isAttacking && !_isHit && !_isDashing)
                 SetFacingDirection(_moveInput);
 
             PlayerMoved?.Invoke();

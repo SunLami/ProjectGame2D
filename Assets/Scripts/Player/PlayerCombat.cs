@@ -19,7 +19,7 @@ public partial class Player
 
     public void OnAttack(InputAction.CallbackContext context)
     {
-        if (!context.started || _isAttacking || _isHit || _isDead
+        if (!context.started || _isAttacking || _isHit || _isDead || _isAimingSkill || _isDashing
             || !GameStateManager.AllowsGameplayInput
             || EventSystem.current != null && EventSystem.current.IsPointerOverGameObject()
             || IsPointerOverGameplayHud()
@@ -43,13 +43,14 @@ public partial class Player
     {
         DisableAttackHitbox();
         _isAttacking = false;
+        _isCastingSkill = false;
     }
 
     public void CloseAttackHitbox() => DisableAttackHitbox();
 
     public void ActivatePlayerAttackHitbox()
     {
-        if (!_isAttacking || _isHit || _isDead)
+        if (!_isAttacking || _isHit || _isDead || _isCastingSkill)
             return;
 
         _attackHitbox.Configure(_attackFxRenderer, _lastFacingDirection, _attackHitboxOffset);

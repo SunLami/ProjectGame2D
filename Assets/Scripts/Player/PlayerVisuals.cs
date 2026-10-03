@@ -21,6 +21,18 @@ public partial class Player
 
         if (_weaponRenderer.sortingOrder != targetOrder)
             _weaponRenderer.sortingOrder = targetOrder;
+
+        if (_attackFxRenderer == null)
+            return;
+
+        // AttackFX (the melee slash effect) only ever shows while a Sword is actually equipped --
+        // bare-handed shouldn't show a sword slash, even though the same Attack animation still plays.
+        // It also stays forced off during a skill cast plus a short grace period after (see
+        // PlayerSkillFX.cs), so a repeated click right as a cast ends can't flicker it on early.
+        bool weaponEquipped = EquipmentManager.Instance != null
+            && EquipmentManager.Instance.GetEquipped(EquipSlot.Weapon) != null;
+        if (!weaponEquipped || Time.time < _attackFxRestoreTime)
+            _attackFxRenderer.enabled = false;
     }
 
     private void CacheVisualReferences()

@@ -3,7 +3,7 @@ using UnityEngine;
 using UnityEngine.Serialization;
 
 [RequireComponent(typeof(Rigidbody2D))]
-public class Enemy : MonoBehaviour, IDamageable
+public class Enemy : MonoBehaviour, IDamageable, ISlowable, IPullable, IVulnerable, IStunnable, IAirborne
 {
     public enum EnemyState
     {
@@ -108,6 +108,14 @@ public class Enemy : MonoBehaviour, IDamageable
             return;
 
         _desiredVelocity = Vector2.zero;
+
+        // Stun freezes AI and movement entirely; checked before the pull so a stunned enemy is not dragged.
+        if (IsStunned)
+            return;
+
+        if (TryApplyPullMovement())
+            return;
+
         UpdateState();
     }
 
@@ -117,9 +125,112 @@ public class Enemy : MonoBehaviour, IDamageable
             return;
 
         if (IsDead)
+        {
             _rigidbody.linearVelocity = Vector2.zero;
-        else if (_currentState != EnemyState.Hit)
+            return;
+        }
+
+        // An active pull (e.g. a vortex's suction) takes priority over the brief Hit-stagger state
+        // that TakeDamage enters on every tick -- otherwise the per-tick damage would repeatedly
+        // block velocity sync here and the pull would stutter instead of reading as continuous.
+        bool isPulling = Time.time < _pullUntil;
+        if (isPulling || _currentState != EnemyState.Hit)
             _rigidbody.linearVelocity = _desiredVelocity;
+    }
+
+    public void ApplyAirborne(float duration, float height)
+    {
+        if (IsDead)
+            return;
+
+        // Airborne = unable to act for the duration (stun) + lifted visuals drawn by EnemyAirborneVisual.
+        ApplyStun(duration);
+        EnemyAirborneVisual visual = GetComponent<EnemyAirborneVisual>();
+        if (visual == null)
+            visual = gameObject.AddComponent<EnemyAirborneVisual>();
+        visual.Begin(duration, height);
+    }
+
+    private float _stunUntil;
+
+    public bool IsStunned => Time.time < _stunUntil;
+
+    public void ApplyStun(float duration)
+    {
+        if (IsDead)
+            return;
+
+        _stunUntil = Mathf.Max(_stunUntil, Time.time + Mathf.Max(0f, duration));
+    }
+
+    private float _vulnerableMultiplier = 1f;
+    private float _vulnerableUntil;
+
+    public void ApplyVulnerability(float damageTakenMultiplier, float duration)
+    {
+        if (IsDead)
+            return;
+
+        float until = Time.time + Mathf.Max(0f, duration);
+        if (Time.time >= _vulnerableUntil || damageTakenMultiplier >= _vulnerableMultiplier)
+            _vulnerableMultiplier = Mathf.Max(1f, damageTakenMultiplier);
+        _vulnerableUntil = Mathf.Max(_vulnerableUntil, until);
+    }
+
+    private float CurrentDamageTakenMultiplier => Time.time < _vulnerableUntil ? _vulnerableMultiplier : 1f;
+
+    private float _slowMultiplier = 1f;
+    private float _slowUntil;
+
+    public void ApplySlow(float speedMultiplier, float duration)
+    {
+        if (IsDead)
+            return;
+
+        float until = Time.time + Mathf.Max(0f, duration);
+        if (until >= _slowUntil)
+        {
+            _slowMultiplier = Mathf.Clamp01(speedMultiplier);
+            _slowUntil = until;
+        }
+    }
+
+    private float CurrentSlowMultiplier => Time.time < _slowUntil ? _slowMultiplier : 1f;
+
+    private Vector2 _pullTarget;
+    private float _pullSpeed;
+    private float _pullUntil;
+
+    public void ApplyPull(Vector2 targetPosition, float speed, float duration)
+    {
+        if (IsDead)
+            return;
+
+        _pullTarget = targetPosition;
+        _pullSpeed = speed;
+        _pullUntil = Time.time + Mathf.Max(0f, duration);
+    }
+
+    /// <summary>While an active pull hasn't expired, overrides normal AI movement for this frame so
+    /// the enemy visibly travels toward the pull source (e.g. a vortex center) instead of chasing/
+    /// patrolling as usual.</summary>
+    private bool TryApplyPullMovement()
+    {
+        if (Time.time >= _pullUntil)
+            return false;
+
+        Vector2 toTarget = _pullTarget - (Vector2)transform.position;
+        if (toTarget.sqrMagnitude <= 0.0025f)
+        {
+            _desiredVelocity = Vector2.zero;
+            return true;
+        }
+
+        Vector2 direction = toTarget.normalized;
+        _desiredVelocity = direction * _pullSpeed;
+        SetDirectionParameters(direction, true);
+        SetLocomotionParameters(true, false);
+        return true;
     }
 
     public void TakeDamage(float damage)
@@ -132,6 +243,7 @@ public class Enemy : MonoBehaviour, IDamageable
         if (IsDead || damage <= 0f)
             return;
 
+        damage *= CurrentDamageTakenMultiplier;
         _health = Mathf.Clamp(_health - damage, 0f, _maxHealth);
         if (_health <= 0f)
         {
@@ -344,7 +456,7 @@ public class Enemy : MonoBehaviour, IDamageable
     private void MoveTowards(Vector2 target, bool isRunning)
     {
         Vector2 direction = (target - (Vector2)transform.position).normalized;
-        _desiredVelocity = direction * _moveSpeed;
+        _desiredVelocity = direction * _moveSpeed * CurrentSlowMultiplier;
         SetDirectionParameters(direction, true);
         SetLocomotionParameters(true, isRunning);
     }
