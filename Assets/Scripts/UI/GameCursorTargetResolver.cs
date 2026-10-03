@@ -84,6 +84,20 @@ public static class GameCursorTargetResolver
             return true;
         }
 
+        TeleportPillarInteractable pillar = hoveredComponent.GetComponentInParent<TeleportPillarInteractable>(true);
+        if (pillar != null)
+        {
+            target = new GameCursorTarget(GameCursorType.Interact, pillar.transform, true, pillar.IsAvailable);
+            return true;
+        }
+
+        BossShrineInteractable shrine = hoveredComponent.GetComponentInParent<BossShrineInteractable>(true);
+        if (shrine != null)
+        {
+            target = new GameCursorTarget(GameCursorType.Interact, shrine.transform, true, shrine.IsAvailable);
+            return true;
+        }
+
         UniquePickupInteractable pickup = hoveredComponent.GetComponentInParent<UniquePickupInteractable>(true);
         if (pickup != null)
         {

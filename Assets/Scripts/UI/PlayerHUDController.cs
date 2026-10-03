@@ -50,6 +50,10 @@ public sealed class PlayerHUDController : MonoBehaviour
         RefreshFromPlayerStat();
     }
 
+    /// <summary>Re-reads health/stamina/level from the bound PlayerStat (e.g. after a silent progression
+    /// restore such as map travel, which deliberately does not fire OnLevelUp).</summary>
+    public void Refresh() => RefreshFromPlayerStat();
+
     public void SetAvatar(Sprite avatar)
     {
         if (_avatarImage != null && avatar != null)

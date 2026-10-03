@@ -1,0 +1,145 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8024c83b1620739449042775c372531a, type: 3}
+  m_Name: EarthGolemBoss
+  m_EditorClassIdentifier: ProjectGame2D.Runtime::BossDefinition
+  bossId: boss.earth_golem
+  displayName: Earth Golem
+  maxHealth: 2400
+  baseDamage: 14
+  moveSpeed: 2.4
+  recoveryDamageTaken: 1.25
+  ultimateRecoveryDamageTaken: 1.5
+  fistAwayDamageTaken: 1.15
+  spawnFadeSeconds: 2.5
+  phaseTransitionSeconds: 2
+  difficultyDamageScale: 1
+  phases:
+  - name: Phase 1
+    startsBelowHealth: 1
+    telegraphScale: 1
+    telegraphMinSeconds: 0.6
+    recoverySeconds: 3
+    gapBetweenSkills: 0.6
+    ultimateEveryCombos: 0
+    combos:
+    - name: A
+      steps:
+      - skill: 0
+        parallelWithNext: 0
+      - skill: 3
+        parallelWithNext: 0
+    - name: B
+      steps:
+      - skill: 2
+        parallelWithNext: 0
+      - skill: 0
+        parallelWithNext: 0
+  - name: Phase 2
+    startsBelowHealth: 0.65
+    telegraphScale: 0.9
+    telegraphMinSeconds: 0.6
+    recoverySeconds: 2.5
+    gapBetweenSkills: 0.5
+    ultimateEveryCombos: 3
+    combos:
+    - name: C
+      steps:
+      - skill: 4
+        parallelWithNext: 0
+      - skill: 3
+        parallelWithNext: 0
+      - skill: 0
+        parallelWithNext: 0
+    - name: D
+      steps:
+      - skill: 2
+        parallelWithNext: 0
+      - skill: 4
+        parallelWithNext: 0
+    - name: E
+      steps:
+      - skill: 1
+        parallelWithNext: 0
+      - skill: 3
+        parallelWithNext: 0
+  - name: Phase 3
+    startsBelowHealth: 0.3
+    telegraphScale: 0.8
+    telegraphMinSeconds: 0.6
+    recoverySeconds: 1.8
+    gapBetweenSkills: 0.4
+    ultimateEveryCombos: 2
+    combos:
+    - name: F
+      steps:
+      - skill: 2
+        parallelWithNext: 1
+      - skill: 3
+        parallelWithNext: 0
+      - skill: 4
+        parallelWithNext: 0
+    - name: G
+      steps:
+      - skill: 5
+        parallelWithNext: 0
+      - skill: 0
+        parallelWithNext: 0
+      - skill: 0
+        parallelWithNext: 0
+  slamRadius: 3.6
+  slamWindup: 1
+  slamLockSeconds: 0.15
+  slamDamage: 1
+  slamKnockback: 6
+  slamDoubleDelay: 0.5
+  slamDoubleWindup: 0.7
+  rainCountByPhase: 06000000090000000c000000
+  rainRadius: 2
+  rainLead: 0.9
+  rainSpacing: 0.22
+  rainDamage: 0.7
+  rainKnockback: 4
+  rainPredictSeconds: 0.6
+  rainSpreadRadius: 9
+  rainMinSpacing: 2.4
+  laneCountByPhase: 030000000500000007000000
+  laneStepDegrees: 22
+  laneWidth: 1.4
+  laneLength: 22
+  laneTelegraph: 0.9
+  laneDamage: 0.9
+  laneKnockback: 3
+  laneSpreadSpeed: 40
+  fistLineWidth: 2
+  fistLineLength: 26
+  fistWindup: 0.8
+  fistSpeed: 24
+  fistDamage: 1.3
+  fistReturnDamage: 0.6
+  fistKnockback: 7
+  fistHoverSeconds: 1.6
+  fistReturnSpeed: 18
+  resonanceChargeSeconds: 1.8
+  resonanceRingsByPhase: 030000000300000004000000
+  resonanceRingInterval: 0.9
+  resonanceRingSpeed: 9
+  resonanceRingThickness: 1.1
+  resonanceGapDegreesByPhase:
+  - 40
+  - 40
+  - 34
+  resonanceGapMarkerLead: 0.6
+  resonanceDamage: 1.1
+  resonanceKnockback: 5
+  resonanceMaxRadius: 40
+  ultimateRecoverySeconds: 4.5

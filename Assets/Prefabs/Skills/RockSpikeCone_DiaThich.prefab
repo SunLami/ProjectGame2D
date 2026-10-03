@@ -1,0 +1,75 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &1111111111111111111
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2222222222222222222}
+  - component: {fileID: 3333333333333333333}
+  m_Layer: 0
+  m_Name: RockSpikeCone_DiaThich
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2222222222222222222
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1111111111111111111}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &3333333333333333333
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1111111111111111111}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7a1c9e3b5d2f4a6c8e0b1d3f5a7c9e2b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ProjectGame2D.Runtime::SkillSpikeCone
+  _pillarFrames:
+  - {fileID: -6118102824561503426, guid: 05154b1e7a7c34d4e9f8c82ae892bff4, type: 3}
+  - {fileID: -8848415122580865143, guid: 05154b1e7a7c34d4e9f8c82ae892bff4, type: 3}
+  - {fileID: -3765052338644106186, guid: 05154b1e7a7c34d4e9f8c82ae892bff4, type: 3}
+  - {fileID: 7602281358792685222, guid: 05154b1e7a7c34d4e9f8c82ae892bff4, type: 3}
+  - {fileID: -1392819378403552798, guid: 05154b1e7a7c34d4e9f8c82ae892bff4, type: 3}
+  - {fileID: 5286457212638382692, guid: 05154b1e7a7c34d4e9f8c82ae892bff4, type: 3}
+  - {fileID: -9165626889465871991, guid: 05154b1e7a7c34d4e9f8c82ae892bff4, type: 3}
+  - {fileID: -6945905839286522884, guid: 05154b1e7a7c34d4e9f8c82ae892bff4, type: 3}
+  - {fileID: -7912330504207777606, guid: 05154b1e7a7c34d4e9f8c82ae892bff4, type: 3}
+  _impactVfxPrefab: {fileID: 4983374475536644568, guid: 211c5bdaa14c0484daf437ed2df362a7, type: 3}
+  _riseFrameRate: 14
+  _holdTime: 0.6
+  _spikeScale: 0.25
+  _startDistance: 0.8
+  _arcSpacing: 0.55
+  _spikeSpacing: 0.5
+  _spreadSpeed: 9
+  _hitRadius: 0.45
+  _damage: 12
+  _knockbackForce: 0
+  _stunDuration: 1.2
+  _rootDuration: 2
+  _cagePrefab: {fileID: 2816199181250721506, guid: 3421b4cd9a23c454087a3386542d4508, type: 3}
+  _stunIndicatorPrefab: {fileID: 4203134180813673505, guid: 0e4239b8c3c21d54e96d04688bad27fa, type: 3}
+  _targetLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  _ignoredWallLayerName: SkillWall

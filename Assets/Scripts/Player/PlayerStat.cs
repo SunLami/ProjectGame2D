@@ -171,6 +171,20 @@ public class PlayerStat : MonoBehaviour
         return true;
     }
 
+    /// <summary>Spends `cost` stamina if available (all-or-nothing). Used by actions other than the
+    /// basic attack, e.g. the dash. A non-positive cost is free.</summary>
+    public bool TryConsumeStamina(float cost)
+    {
+        if (cost <= 0f)
+            return true;
+        if (_stamina < cost)
+            return false;
+
+        _stamina -= cost;
+        OnStaminaChanged?.Invoke(_stamina, MaxStamina);
+        return true;
+    }
+
     public void AddExperience(int amount)
     {
         if (amount <= 0)
