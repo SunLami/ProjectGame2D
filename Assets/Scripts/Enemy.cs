@@ -247,10 +247,12 @@ public class Enemy : MonoBehaviour, IDamageable, ISlowable, IPullable, IVulnerab
         _health = Mathf.Clamp(_health - damage, 0f, _maxHealth);
         if (_health <= 0f)
         {
+            EnemySfx.Death(this);
             EnterState(EnemyState.Dead);
             return;
         }
 
+        EnemySfx.Hurt(this);
         EnterState(EnemyState.Hit);
         if (_rigidbody != null && knockbackForce > 0f && knockbackDirection != Vector2.zero)
         {
@@ -297,6 +299,7 @@ public class Enemy : MonoBehaviour, IDamageable, ISlowable, IPullable, IVulnerab
                 SetLocomotionParameters(false, false);
                 FacePlayer();
                 _animator?.SetTrigger(AttackHash);
+                EnemySfx.Attack(this);
                 _stateRoutine = StartCoroutine(AttackRoutine());
                 break;
             case EnemyState.Hit:

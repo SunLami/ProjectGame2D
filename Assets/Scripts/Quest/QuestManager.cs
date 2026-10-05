@@ -144,7 +144,10 @@ public sealed class QuestManager : MonoBehaviour
             }
 
             if (progressed)
+            {
+                SoundFXManager.PlaySfx(SfxIds.QuestObjective);
                 QuestProgressChanged?.Invoke(questId);
+            }
         }
     }
 
@@ -159,6 +162,7 @@ public sealed class QuestManager : MonoBehaviour
             if (!state.TryProgressCurrentObjective(amount))
                 continue;
 
+            SoundFXManager.PlaySfx(SfxIds.QuestObjective);
             QuestProgressChanged?.Invoke(questId);
 
             // A quest authored with AutoTurnIn (e.g. "equip a weapon") completes itself the
@@ -296,6 +300,7 @@ public sealed class QuestManager : MonoBehaviour
             return false;
 
         _runtime[questId] = new QuestRuntimeState(definition);
+        SoundFXManager.PlaySfx(SfxIds.QuestAccept);
         QuestAccepted?.Invoke(questId);
         QuestProgressChanged?.Invoke(questId);
         if (string.IsNullOrEmpty(_trackedQuestId))
@@ -396,6 +401,7 @@ public sealed class QuestManager : MonoBehaviour
         GrantRewards(rewards);
         state.MarkCompleted();
         result = QuestTurnInResult.Success;
+        SoundFXManager.PlaySfx(SfxIds.QuestComplete);
         QuestCompleted?.Invoke(questId);
         QuestTurnedIn?.Invoke(questId);
         QuestProgressChanged?.Invoke(questId);

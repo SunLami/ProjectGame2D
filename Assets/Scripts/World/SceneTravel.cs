@@ -88,6 +88,7 @@ public static class SceneTravel
             return false;
         }
 
+        SoundFXManager.PlaySfx(SfxIds.WorldGateExit);
         return true;
     }
 

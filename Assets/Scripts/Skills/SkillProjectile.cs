@@ -21,10 +21,14 @@ public class SkillProjectile : MonoBehaviour
     [Tooltip("Non-damageable colliders on these layers also stop the projectile (e.g. future trees/terrain), instead of it passing through silently. Enemies always stop it regardless of layer, via IDamageable.")]
     [SerializeField] private LayerMask _obstacleLayers;
 
+    private string _impactSfxId = SfxIds.SkillWaterS1Impact;
     private Vector2 _direction;
     private Vector3 _startPosition;
     private float _frameTimer;
     private int _frameIndex;
+
+    /// <summary>Overrides the impact SFX (default: water bolt) - the earth kit reuses this script with its own id.</summary>
+    public void SetImpactSfx(string sfxId) => _impactSfxId = sfxId;
 
     public void Launch(Vector2 direction, float speed, float maxRange)
     {
@@ -60,7 +64,10 @@ public class SkillProjectile : MonoBehaviour
         }
 
         if (Vector3.Distance(_startPosition, transform.position) >= _maxRange)
+        {
+            SoundFXManager.PlaySfxAt(_impactSfxId, transform.position, 0.6f);
             Destroy(gameObject);
+        }
     }
 
     private void OnTriggerEnter2D(Collider2D other)
@@ -84,6 +91,7 @@ public class SkillProjectile : MonoBehaviour
             if (_impactVfxPrefab != null)
                 Instantiate(_impactVfxPrefab, transform.position, Quaternion.identity);
 
+            SoundFXManager.PlaySfxAt(_impactSfxId, transform.position);
             Destroy(gameObject);
             return;
         }
@@ -97,6 +105,7 @@ public class SkillProjectile : MonoBehaviour
             if (_impactVfxPrefab != null)
                 Instantiate(_impactVfxPrefab, transform.position, Quaternion.identity);
 
+            SoundFXManager.PlaySfxAt(_impactSfxId, transform.position);
             Destroy(gameObject);
         }
     }

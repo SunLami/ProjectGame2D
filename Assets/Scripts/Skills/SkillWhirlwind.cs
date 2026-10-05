@@ -64,7 +64,13 @@ public class SkillWhirlwind : MonoBehaviour
         _ring = CreateSprite("WhirlwindRing", _ringFrames, Center, _radius * 2f / ringWidth, -95);
         _tornado = CreateSprite("Tornado", _tornadoFrames, TornadoPosition, _tornadoScale, 3);
         _driftAngle = Random.Range(0f, Mathf.PI * 2f);
+        SoundFXManager.PlaySfxAt(SfxIds.SkillWindS2Cast, Center);
+        _loop = SoundFXManager.StartLoop(SfxIds.SkillWindS2LiftLoop, 0.8f, 1f, 0.3f);
     }
+
+    private SfxLoopHandle _loop;
+
+    private void OnDestroy() => _loop?.Stop(0.3f);
 
     private void Update()
     {
@@ -87,6 +93,7 @@ public class SkillWhirlwind : MonoBehaviour
         {
             // Stop affecting new targets but stay alive until every lifted enemy has landed.
             _ending = true;
+            _loop?.Stop(0.5f);
             if (_tornado != null)
                 Destroy(_tornado.gameObject);
             if (_ring != null)
@@ -170,6 +177,7 @@ public class SkillWhirlwind : MonoBehaviour
 
         Vector2 position = candidate.transform.position;
         target.TakeDamage(_landingDamage, Vector2.zero, 0f);
+        SoundFXManager.PlaySfxAt(SfxIds.SkillWindS2Land, position);
 
         if (candidate is IStunnable stunnable)
         {

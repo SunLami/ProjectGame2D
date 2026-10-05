@@ -17,6 +17,7 @@ public static class TeleportPillarBuilder
     private const string DemoScenePath = "Assets/Scenes/DemoScene.unity";
     private const string ArenaScenePath = "Assets/Scenes/BossArena_Earth.unity";
     private const string WaterArenaScenePath = "Assets/Scenes/BossArena_Water.unity";
+    private const string WindArenaScenePath = "Assets/Scenes/BossArena_Wind.unity";
     private const string CrabIconPath = "Assets/Art/BossArena/Water/Boss/CrabCand_D_seed404_256.png";
     private const string PillarRoot = "TeleportPillar";
     private const string UiRoot = "BossTeleportSelectUI";
@@ -35,6 +36,8 @@ public static class TeleportPillarBuilder
         BuildArena(frames, ArenaScenePath);
         if (AssetDatabase.LoadAssetAtPath<SceneAsset>(WaterArenaScenePath) != null)
             BuildArena(frames, WaterArenaScenePath);
+        if (AssetDatabase.LoadAssetAtPath<SceneAsset>(WindArenaScenePath) != null)
+            BuildArena(frames, WindArenaScenePath);
 
         EditorSceneManager.OpenScene(DemoScenePath, OpenSceneMode.Single);
         Debug.Log("TeleportPillarBuilder: pillars built in DemoScene and BossArena_Earth.");
@@ -105,6 +108,7 @@ public static class TeleportPillarBuilder
         RemoveExisting(scene);
 
         BossTeleportSelectUI ui = CreateUi(scene);
+        bool windAvailable = AssetDatabase.LoadAssetAtPath<SceneAsset>(WindArenaScenePath) != null;
         var destinations = new[]
         {
             new TeleportDestination
@@ -121,9 +125,11 @@ public static class TeleportPillarBuilder
             },
             new TeleportDestination
             {
-                id = "boss.wind", displayName = "Sky Owl", sceneName = "", spawnId = "",
-                description = "A floating terrace above the clouds where the wind decides who falls.",
-                available = false, accent = new Color(0.7f, 0.85f, 0.9f, 1f),
+                id = "boss.wind", displayName = "Sky Owl", sceneName = windAvailable ? "BossArena_Wind" : "", spawnId = windAvailable ? "arena_entry" : "",
+                description = windAvailable
+                    ? "A cross-shaped terrace floating above a sea of clouds. A wild wind drifts you toward the edge while the sky owl dives, cuts and calls a storm."
+                    : "A floating terrace above the clouds where the wind decides who falls.",
+                available = windAvailable, accent = new Color(0.7f, 0.85f, 0.9f, 1f),
             },
         };
 
@@ -160,7 +166,8 @@ public static class TeleportPillarBuilder
         };
 
         var arena = Object.FindAnyObjectByType<BossArenaController>();
-        GameObject pillar = CreatePillar(scene, frames, new Vector2(5f, -13.6f), ui, destinations, arena,
+        Vector2 pillarPosition = scenePath == WindArenaScenePath ? new Vector2(7f, -13.2f) : new Vector2(5f, -13.6f);
+        GameObject pillar = CreatePillar(scene, frames, pillarPosition, ui, destinations, arena,
             "LEAVE THE ARENA", "Return to the village.");
 
         GameObject context = scene.GetRootGameObjects().First(g => g.name == "_SceneContext");

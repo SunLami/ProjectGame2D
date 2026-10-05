@@ -198,6 +198,7 @@ public class PlayerStat : MonoBehaviour
             _currentExperience -= requirement;
             _level++;
             _health = Mathf.Min(_health + (MaxHealth - previousMaxHealth), MaxHealth);
+            SoundFXManager.PlaySfx(SfxIds.PlayerLevelUp);
             OnLevelUp?.Invoke(_level);
             OnStatsChanged?.Invoke();
         }

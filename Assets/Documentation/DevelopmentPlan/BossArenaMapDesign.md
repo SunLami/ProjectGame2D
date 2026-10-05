@@ -347,3 +347,20 @@ Tổng ước tính **≈ 20–30 gen**, còn dư.
 
 ### 16.10 Trạng thái dựng (D-102)
 `BossArena_Water` có: nền + sóng animate, tấm nước triều, tượng ốc tù và (shrine), 4 totem san hô (ritual), cua + arena controller, trụ teleport về làng. Còn thiếu so với §16: mỏm đá, dừa/cỏ biển/vỏ sò/củi trôi, chim biển, cát bay.
+
+## 17. Phong — "Thiên Đài" đã dựng (D-110, 2026-10-05)
+
+**Scene:** `Assets/Scenes/BossArena_Wind.unity` (trong Build Settings). Dựng bằng `Tools > Project Game > Boss > Arena Wind - Build Scene` (`Assets/Editor/BossArenaWindBuilder.cs`, idempotent) từ bản sao `BossArena_Earth` như Water; trụ teleport quay về làng và mục "Sky Owl" trong UI chọn map đã bật (`TeleportPillarBuilder`); ambience gió + bước chân đá (`SceneAmbienceInstaller`).
+
+| Thành phần | Chi tiết |
+|---|---|
+| Hình sân | **Chữ thập không đối xứng** (cánh phải ngắn hơn cánh trái): đi được ≈ 60.6 × 29.5 đơn vị; cánh ngang cao 17.6, cánh dọc rộng 26.9 (trục x = 0 giữa cánh dọc). Outline người chơi = `EdgeCollider2D` theo `BossArenaWindBuilder.WalkPolygon`; boss giữ trong chữ thập bằng `ArenaPolygon` + `BossController.SetArenaPolygon` (+ hình chữ nhật cũ cho skill) |
+| Art nền | Pixen 512×424 chữ thập trên mây (ứng viên `Candidates/Base_1101.png`) kéo dài bằng `Tools/arena_extend_sky.py` (vòng các cửa sổ sàn + nối theo đường seam rẻ nhất, tách nền bằng viền đen) ra **Platform_Wind_1500x900.png** (RGBA, PPU 20) + biển mây riêng (`SeaTile_Wind_1024x900.png`, Pixen `Candidates/Sea_404.png`, nối lặp theo chiều ngang) **cuộn chậm** bằng `SkyScroll` |
+| Vật thể | Tượng cú triệu hồi (Pixen, đúng concept cú gạc-trăng khuyết, animation phát sáng) ở (0, −3.4); 4 trụ gió ở (±22, 2.5/−8.5) có collider + tinh thể nhấp nhô, là emitters nghi lễ và **ổ che** cho Tường Gió; 6 đảo đá lơ lửng nhấp nhô (`AmbientBob`) ngoài mép |
+| Chuyển động môi trường | `SkyWeather`: mây `Cloud_Puff`/`Cloud_Streak` trôi ngang qua màn hình **trước người chơi** (user "thêm đám mây bay bay"), lá/lông trôi theo gió. **Hiệu ứng "gió thổi qua" (vệt trắng) đã bị user loại bỏ vì xấu** — không dùng lại |
+| Camera | ortho 12 như Earth/Water, confiner = toàn ảnh 1500×900 (74×44 đơn vị) |
+| Spawn | `arena_entry` (0, −13.2), `boss_spawn` (0, −2), `shrine_anchor` (0, −4.8) |
+
+**Đã kiểm chứng Play Mode:** nạp scene, platform + biển mây + đảo + mây trôi + lá hiển thị đúng; `Rigidbody2D.Cast` từ 3 hướng đều trúng `BorderMap` đúng mép chữ thập; nghi lễ (zoom ra toàn sân) + tượng biến mất + boss xuất hiện chạy với **boss Earth làm thay thế tạm trong lúc test** (không lưu vào scene); `BossController.ClampInside` đưa 6 điểm thử trong/ngoài chữ thập về trong sân. EditMode test `ArenaPolygonTests`.
+**Chưa có:** boss Cú (xem `WindBossCombatPlan.md`), nên shrine/ngọc/nghi lễ có nhưng `TrySummon` không làm gì (không tiêu ngọc); Wind Orb (`item.material.orb_wind`) đã tạo nhưng chưa có nguồn nhận; minimap vẫn hiện Heart Village (như Earth/Water).
+**Art đã dùng (Pixellab, D-081):** nền 3 + biển 2 + tượng cú 3 (+3 gen animation) + trụ gió 2 (+1) + đảo 1 + mây 2 + gió (bỏ) 1 + ngọc 1 ≈ 21 generation.

@@ -9,8 +9,18 @@ public static class BossTelegraph
 {
     public static readonly Color Red = new Color(0.92f, 0.26f, 0.16f, 1f);
     public static readonly Color Safe = new Color(0.4f, 1f, 0.55f, 1f);
+    /// <summary>Colour of lanes/lines the player can dash THROUGH (a passing wave, a projectile line): amber instead of red (red = leave the zone).</summary>
+    public static readonly Color Dashable = new Color(1f, 0.74f, 0.18f, 1f);
 
     private const int SortingOrder = -95;
+
+    private static Sprite _elementRing;
+
+    /// <summary>Picks the art ring drawn around circular telegraphs for the current boss (Resources/VFX/Skills/Combat/TelegraphRing_*).</summary>
+    public static void SetElement(CombatFeedback.Element element)
+    {
+        _elementRing = Resources.Load<Sprite>("VFX/Skills/Combat/TelegraphRing_" + element);
+    }
 
     private static Sprite _circle;
     private static Sprite _ring;
@@ -66,6 +76,14 @@ public static class BossTelegraph
         SpriteRenderer fill = AddSprite(root.transform, "Fill", CircleSprite, new Color(Red.r, Red.g, Red.b, 0.4f), SortingOrder + 1);
         fill.transform.localScale = Vector3.zero;
 
+        if (_elementRing != null)
+        {
+            // the art ring (rune stones / waves / feathers) sits on the edge of the zone and turns slowly
+            SpriteRenderer art = AddSprite(root.transform, "ArtRing", _elementRing, new Color(1f, 1f, 1f, 0.92f), SortingOrder + 3);
+            art.transform.localScale = Vector3.one * (diameter / (_elementRing.bounds.size.x * 0.82f));
+            root.AddComponent<TelegraphSpin>();
+        }
+
         var visual = root.AddComponent<BossTelegraphVisual>();
         visual.Begin(fill.transform, Vector3.one * diameter, true, duration);
         return visual;
@@ -73,21 +91,22 @@ public static class BossTelegraph
 
     /// <summary>Straight lane of `length` x `width` from `origin` along `direction` whose fill sweeps out
     /// from the origin over `duration`.</summary>
-    public static BossTelegraphVisual Line(Vector2 origin, Vector2 direction, float length, float width, float duration)
+    public static BossTelegraphVisual Line(Vector2 origin, Vector2 direction, float length, float width, float duration, bool dashable = false)
     {
+        Color tone = dashable ? Dashable : Red;
         var root = new GameObject("BossTelegraphLine");
         root.transform.position = origin;
         root.transform.rotation = Quaternion.Euler(0f, 0f, Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg);
 
-        SpriteRenderer back = AddSprite(root.transform, "Back", SquareSprite, new Color(Red.r, Red.g, Red.b, 0.16f), SortingOrder);
+        SpriteRenderer back = AddSprite(root.transform, "Back", SquareSprite, new Color(tone.r, tone.g, tone.b, 0.16f), SortingOrder);
         back.transform.localScale = new Vector3(length / 1f, width / 1f, 1f);
-        SpriteRenderer fill = AddSprite(root.transform, "Fill", SquareSprite, new Color(Red.r, Red.g, Red.b, 0.42f), SortingOrder + 1);
+        SpriteRenderer fill = AddSprite(root.transform, "Fill", SquareSprite, new Color(tone.r, tone.g, tone.b, 0.42f), SortingOrder + 1);
         fill.transform.localScale = new Vector3(0f, width, 1f);
 
         // thin edges so the lane width reads clearly
         for (int side = -1; side <= 1; side += 2)
         {
-            SpriteRenderer edge = AddSprite(root.transform, "Edge", SquareSprite, new Color(Red.r, Red.g, Red.b, 0.85f), SortingOrder + 2);
+            SpriteRenderer edge = AddSprite(root.transform, "Edge", SquareSprite, new Color(tone.r, tone.g, tone.b, 0.85f), SortingOrder + 2);
             edge.transform.localPosition = new Vector3(0f, side * (width * 0.5f - 0.04f), 0f);
             edge.transform.localScale = new Vector3(length, 0.08f, 1f);
         }

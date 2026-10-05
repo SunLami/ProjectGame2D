@@ -222,6 +222,8 @@ public sealed class DialogueUI : MonoBehaviour
         for (int visible = 1; visible <= count; visible++)
         {
             _bodyText.maxVisibleCharacters = visible;
+            if (visible % 3 == 1)
+                SoundFXManager.PlaySfx(SfxIds.UiDialogueBlip);
             yield return new WaitForSecondsRealtime(delay);
         }
         FinishReveal();

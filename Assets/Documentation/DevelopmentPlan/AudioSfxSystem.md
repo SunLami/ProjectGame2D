@@ -1,6 +1,7 @@
 # Audio SFX System — MainMenu / IntroCutscene / MapNhat
 
 Status: `ACCEPTED (D-058) — Phase A đã giao Codex gen, xem Handoffs/ClaudeToCodex.md`
+Mở rộng toàn game bằng pipeline Tools/sfx: xem `SfxPipeline.md` (D-103, 2026-10-04).
 Ngày: 2026-09-28
 
 Tài liệu này là nguồn chuẩn cho toàn bộ đợt sản xuất SFX một-shot (không phải nhạc nền — nhạc nền

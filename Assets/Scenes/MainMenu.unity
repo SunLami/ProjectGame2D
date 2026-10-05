@@ -274,7 +274,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d30e6d7f15fbd8e47b83af0148053e64, type: 3}
   m_Name: 
   m_EditorClassIdentifier: ProjectGame2D.Runtime::ButtonSfx
-  _playHoverSfx: 1
   _clickSound: 0
 --- !u!1 &60557787
 GameObject:
@@ -1229,7 +1228,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d30e6d7f15fbd8e47b83af0148053e64, type: 3}
   m_Name: 
   m_EditorClassIdentifier: ProjectGame2D.Runtime::ButtonSfx
-  _playHoverSfx: 1
   _clickSound: 1
 --- !u!1 &204171299
 GameObject:
@@ -1629,7 +1627,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d30e6d7f15fbd8e47b83af0148053e64, type: 3}
   m_Name: 
   m_EditorClassIdentifier: ProjectGame2D.Runtime::ButtonSfx
-  _playHoverSfx: 1
   _clickSound: 1
 --- !u!1 &246666740
 GameObject:
@@ -2243,6 +2240,56 @@ MonoBehaviour:
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls: []
+--- !u!1 &417643702
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 417643704}
+  - component: {fileID: 417643703}
+  m_Layer: 0
+  m_Name: SceneAmbience
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &417643703
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 417643702}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f8309e53afa08304ca2002d670e634ad, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ProjectGame2D.Runtime::SceneAmbience
+  _bedId: sfx.amb.campfire
+  _secondBedId: sfx.amb.night
+  _bedLevel: 0.7
+  _secondBedLevel: 0.4
+  _fadeInSeconds: 2
+  _fallbackFootstepId: 
+--- !u!4 &417643704
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 417643702}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &443887821
 GameObject:
   m_ObjectHideFlags: 0
@@ -2453,7 +2500,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d30e6d7f15fbd8e47b83af0148053e64, type: 3}
   m_Name: 
   m_EditorClassIdentifier: ProjectGame2D.Runtime::ButtonSfx
-  _playHoverSfx: 1
   _clickSound: 1
 --- !u!1 &473139871
 GameObject:
@@ -2935,7 +2981,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d30e6d7f15fbd8e47b83af0148053e64, type: 3}
   m_Name: 
   m_EditorClassIdentifier: ProjectGame2D.Runtime::ButtonSfx
-  _playHoverSfx: 1
   _clickSound: 0
 --- !u!1 &602000374
 GameObject:
@@ -3092,7 +3137,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d30e6d7f15fbd8e47b83af0148053e64, type: 3}
   m_Name: 
   m_EditorClassIdentifier: ProjectGame2D.Runtime::ButtonSfx
-  _playHoverSfx: 1
   _clickSound: 0
 --- !u!1 &632605644
 GameObject:
@@ -3365,7 +3409,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d30e6d7f15fbd8e47b83af0148053e64, type: 3}
   m_Name: 
   m_EditorClassIdentifier: ProjectGame2D.Runtime::ButtonSfx
-  _playHoverSfx: 1
   _clickSound: 0
 --- !u!1 &677643755
 GameObject:
@@ -4044,7 +4087,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d30e6d7f15fbd8e47b83af0148053e64, type: 3}
   m_Name: 
   m_EditorClassIdentifier: ProjectGame2D.Runtime::ButtonSfx
-  _playHoverSfx: 1
   _clickSound: 1
 --- !u!1 &802402274
 GameObject:
@@ -7022,7 +7064,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d30e6d7f15fbd8e47b83af0148053e64, type: 3}
   m_Name: 
   m_EditorClassIdentifier: ProjectGame2D.Runtime::ButtonSfx
-  _playHoverSfx: 1
   _clickSound: 1
 --- !u!1 &1296573239
 GameObject:
@@ -8679,7 +8720,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d30e6d7f15fbd8e47b83af0148053e64, type: 3}
   m_Name: 
   m_EditorClassIdentifier: ProjectGame2D.Runtime::ButtonSfx
-  _playHoverSfx: 1
   _clickSound: 1
 --- !u!1 &1608095172
 GameObject:
@@ -8951,7 +8991,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d30e6d7f15fbd8e47b83af0148053e64, type: 3}
   m_Name: 
   m_EditorClassIdentifier: ProjectGame2D.Runtime::ButtonSfx
-  _playHoverSfx: 1
   _clickSound: 2
 --- !u!1 &1649911121
 GameObject:
@@ -9747,7 +9786,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d30e6d7f15fbd8e47b83af0148053e64, type: 3}
   m_Name: 
   m_EditorClassIdentifier: ProjectGame2D.Runtime::ButtonSfx
-  _playHoverSfx: 1
   _clickSound: 0
 --- !u!1 &1828528632
 GameObject:
@@ -10442,7 +10480,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d30e6d7f15fbd8e47b83af0148053e64, type: 3}
   m_Name: 
   m_EditorClassIdentifier: ProjectGame2D.Runtime::ButtonSfx
-  _playHoverSfx: 1
   _clickSound: 1
 --- !u!1 &1954658635
 GameObject:
@@ -10850,7 +10887,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d30e6d7f15fbd8e47b83af0148053e64, type: 3}
   m_Name: 
   m_EditorClassIdentifier: ProjectGame2D.Runtime::ButtonSfx
-  _playHoverSfx: 1
   _clickSound: 0
 --- !u!1 &2030496590
 GameObject:
@@ -11908,7 +11944,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d30e6d7f15fbd8e47b83af0148053e64, type: 3}
   m_Name: 
   m_EditorClassIdentifier: ProjectGame2D.Runtime::ButtonSfx
-  _playHoverSfx: 1
   _clickSound: 1
 --- !u!114 &2200000006
 MonoBehaviour:
@@ -11922,7 +11957,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d30e6d7f15fbd8e47b83af0148053e64, type: 3}
   m_Name: 
   m_EditorClassIdentifier: ProjectGame2D.Runtime::ButtonSfx
-  _playHoverSfx: 1
   _clickSound: 0
 --- !u!114 &2200000007
 MonoBehaviour:
@@ -11936,7 +11970,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d30e6d7f15fbd8e47b83af0148053e64, type: 3}
   m_Name: 
   m_EditorClassIdentifier: ProjectGame2D.Runtime::ButtonSfx
-  _playHoverSfx: 1
   _clickSound: 0
 --- !u!1 &2400000001
 GameObject:
@@ -12097,3 +12130,4 @@ SceneRoots:
   - {fileID: 1424345209}
   - {fileID: 358754853}
   - {fileID: 2030496593}
+  - {fileID: 417643704}

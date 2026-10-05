@@ -208,6 +208,7 @@ public sealed class EnemyUniversal : MonoBehaviour, IDamageable, ISlowable, IPul
             return;
 
         _stunUntil = Mathf.Max(_stunUntil, Time.time + Mathf.Max(0f, duration));
+        SoundFXManager.PlaySfxAt(SfxIds.CombatStunApply, transform.position);
     }
 
     private float _vulnerableMultiplier = 1f;
@@ -289,6 +290,7 @@ public sealed class EnemyUniversal : MonoBehaviour, IDamageable, ISlowable, IPul
         HealthChanged?.Invoke(_currentHealth, _maxHealth);
         if (_currentHealth <= 0f) { EnterState(State.Dead); return; }
 
+        EnemySfx.Hurt(this);
         EnterState(State.Hurt);
         if (_rigidbody != null && direction != Vector2.zero && knockbackForce > 0f)
         {
@@ -362,6 +364,7 @@ public sealed class EnemyUniversal : MonoBehaviour, IDamageable, ISlowable, IPul
         _activeAttack = attack;
         Face(_playerTransform.position - transform.position);
         EnterState(State.Attack);
+        EnemySfx.Attack(this);
         _animator.SetTrigger(attack.animatorTriggerHash);
         if (attack.type == AttackType.Melee)
             BeginLaunch(attack);
@@ -526,6 +529,7 @@ public sealed class EnemyUniversal : MonoBehaviour, IDamageable, ISlowable, IPul
         if (_state != State.Attack || _activeAttack?.type != AttackType.Projectile
             || _activeAttack.projectilePrefab == null) return;
 
+        EnemySfx.ProjectileLaunch(this);
         Transform origin = _activeAttack.projectileOrigin != null ? _activeAttack.projectileOrigin : transform;
         Vector2 offset = _activeAttack.projectileSpawnOffset;
         if (_activeAttack.rotateProjectileOffsetWithDirection)
@@ -581,6 +585,7 @@ public sealed class EnemyUniversal : MonoBehaviour, IDamageable, ISlowable, IPul
         if (state == State.Hurt) _animator.SetTrigger(IsHit);
         if (state != State.Dead) return;
 
+        EnemySfx.Death(this);
         GrantExperience();
         if (!string.IsNullOrEmpty(_enemyId))
             QuestDomainEvents.RaiseEnemyKilled(_enemyId, _areaId);

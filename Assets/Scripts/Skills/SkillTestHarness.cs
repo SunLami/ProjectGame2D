@@ -196,6 +196,7 @@ public class SkillTestHarness : MonoBehaviour
     {
         Vector3 spawnPosition = _player.transform.position + Vector3.up * _spawnHeightOffset;
         SkillProjectile instance = Instantiate(_projectilePrefab, spawnPosition, Quaternion.identity);
+        SoundFXManager.PlaySfx(SfxIds.SkillWaterS1Cast);
         instance.Launch(direction, _projectileSpeed, _projectileRange);
 
         // Weapon must stay hidden at least until the projectile could plausibly finish its flight
@@ -373,6 +374,8 @@ public class SkillTestHarness : MonoBehaviour
     {
         Vector3 spawnPosition = _player.SkillOrigin;
         SkillProjectile instance = Instantiate(_earthProjectilePrefab, spawnPosition, Quaternion.identity);
+        instance.SetImpactSfx(SfxIds.SkillEarthS1Impact);
+        SoundFXManager.PlaySfx(SfxIds.SkillEarthS1Cast);
         instance.Launch(direction, _earthProjectileSpeed, _earthProjectileRange);
 
         float travelTime = _earthProjectileSpeed > 0f ? _earthProjectileRange / _earthProjectileSpeed : 0f;
@@ -395,6 +398,7 @@ public class SkillTestHarness : MonoBehaviour
 
     private void OnGroundTargetConfirmed(Vector2 position)
     {
+        SoundFXManager.PlaySfx(SfxIds.SkillWaterS2Cast);
         Instantiate(_groundImpactPrefab, (Vector3)position, Quaternion.identity);
         _player.ExtendSkillCastHide(_groundCastHideDuration);
     }
@@ -471,6 +475,7 @@ public class SkillTestHarness : MonoBehaviour
         // Spawned at the player's skill origin (body center, shared with the aim indicator so preview
         // and beam line up) and set to follow it every frame so the beam doesn't stay planted at the
         // cast-time spot.
+        SoundFXManager.PlaySfx(SfxIds.SkillWaterS3Charge);
         SkillBeam instance = Instantiate(_beamPrefab, _player.SkillOrigin, Quaternion.identity);
         instance.SetFollowTarget(_player.transform, _player.SkillOriginOffset);
         instance.Launch(direction, _beamRange);

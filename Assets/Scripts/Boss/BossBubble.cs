@@ -20,8 +20,9 @@ public sealed class BossBubble : MonoBehaviour, IDamageable
     public bool IsDead => _popped;
 
     public static BossBubble Spawn(Vector2 position, Vector2 direction, BossDefinition definition, BossController owner,
-        float damage, Transform parent)
+        float damage, Transform parent, float sizeScale = 1f)
     {
+        float hitRadius = definition.bubbleHitRadius * Mathf.Max(0.2f, sizeScale);
         var go = new GameObject("BossBubble");
         go.transform.SetParent(parent, true);
         go.transform.position = position;
@@ -40,14 +41,14 @@ public sealed class BossBubble : MonoBehaviour, IDamageable
         // WaterOrb_Wobble frames are large: scale so the visible bubble matches the hit radius (diameter ~ 2 x radius)
         float scale = 1f;
         if (frames != null && frames.Length > 0 && frames[0].bounds.size.x > 0.01f)
-            scale = definition.bubbleHitRadius * 2f / frames[0].bounds.size.x;
+            scale = hitRadius * 2f / frames[0].bounds.size.x;
         else
-            scale = definition.bubbleHitRadius * 2f;
+            scale = hitRadius * 2f;
         go.transform.localScale = Vector3.one * scale;
 
         var trigger = go.AddComponent<CircleCollider2D>();
         trigger.isTrigger = true;
-        float colliderRadius = definition.bubbleHitRadius / Mathf.Max(0.01f, scale);
+        float colliderRadius = hitRadius / Mathf.Max(0.01f, scale);
         trigger.radius = colliderRadius;
         var solid = go.AddComponent<CircleCollider2D>();
         solid.isTrigger = false;
@@ -60,7 +61,7 @@ public sealed class BossBubble : MonoBehaviour, IDamageable
         bubble._direction = direction.normalized;
         bubble._speed = definition.bubbleSpeed;
         bubble._life = definition.bubbleLifeSeconds;
-        bubble._hitRadius = definition.bubbleHitRadius;
+        bubble._hitRadius = hitRadius;
         bubble._damage = damage;
         bubble._knockback = definition.bubbleKnockback;
         bubble._owner = owner;
@@ -103,6 +104,7 @@ public sealed class BossBubble : MonoBehaviour, IDamageable
     private void Pop(bool hit)
     {
         _popped = true;
+        SoundFXManager.PlaySfxAt(SfxIds.BosswBubblePop, transform.position);
         BossVfx.Spawn("Water/WaterDropletProjectile_Impact", transform.position, hit ? 1.4f : 1f, 14f, false, 0.8f, 10);
         Destroy(gameObject);
     }

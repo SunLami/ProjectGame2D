@@ -115,6 +115,7 @@ public sealed class BossShrineUI : MonoBehaviour
             return;
 
         _placed++;
+        SoundFXManager.PlaySfx(SfxIds.BossShrineOrbPlace);
         Refresh();
     }
 

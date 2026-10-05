@@ -54,6 +54,15 @@ public class SkillBeam : MonoBehaviour
         _followOffset = offset;
     }
 
+    private SfxLoopHandle _loop;
+
+    private void OnDestroy()
+    {
+        _loop?.Stop(0.15f);
+        if (_loop != null)
+            SoundFXManager.PlaySfx(SfxIds.SkillWaterS3End);
+    }
+
     private void Awake()
     {
         if (_renderer == null)
@@ -72,6 +81,7 @@ public class SkillBeam : MonoBehaviour
     public void Launch(Vector2 direction, float maxLength)
     {
         _maxLength = Mathf.Max(0.01f, maxLength);
+        _loop ??= SoundFXManager.StartLoop(SfxIds.SkillWaterS3BeamLoop, 1f, 1f, 0.1f);
         float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
         transform.rotation = Quaternion.Euler(0f, 0f, angle);
         SetVisualLength(_maxLength);

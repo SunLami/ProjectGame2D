@@ -119,6 +119,7 @@ public class SkillMeteorStorm : MonoBehaviour
     private IEnumerator Run()
     {
         // A. Gather + B. warning ring
+        SoundFXManager.PlaySfxAt(SfxIds.SkillEarthS4Charge, _center);
         StartCoroutine(GatherRoutine());
         SkillScreenFX.Dim(0.35f, _gatherDuration);
         SkillScreenFX.Shake(0.04f, _gatherDuration);
@@ -145,6 +146,7 @@ public class SkillMeteorStorm : MonoBehaviour
         yield return new WaitForSeconds(finaleImpactDelay);
 
         // E. aftermath
+        SoundFXManager.PlaySfxAt(SfxIds.SkillEarthS4Aftermath, _center);
         float elapsed = 0f;
         float tick = 0f;
         SkillScreenFX.Dim(0f, 1.5f);
@@ -348,6 +350,7 @@ public class SkillMeteorStorm : MonoBehaviour
                 {
                     Sprite first = _meteorFrames is { Length: > 0 } ? _meteorFrames[0] : null;
                     meteor = CreateSprite("Meteor", first, position + Vector2.up * _fallHeight, scale, 0);
+                    SoundFXManager.PlaySfxAt(SfxIds.SkillEarthS4MeteorFall, position);
                     meteor.sortingLayerName = "Player";
                     meteor.sortingOrder = 100;
                     if (crystal)
@@ -389,6 +392,7 @@ public class SkillMeteorStorm : MonoBehaviour
         float damage = crystal ? _crystalDamage : _damage;
         ApplyBlast(position, _blastRadius, damage, _knockback, crystal ? _crystalStun : 0f, hit);
 
+        SoundFXManager.PlaySfxAt(SfxIds.SkillEarthS4MeteorImpact, position);
         SpawnImpactVfx(position, crystal ? 0.9f : 1.2f);
         AddCrater(position, _craterScale * (crystal ? 0.85f : 1f));
         SpawnShards(position);
@@ -425,6 +429,8 @@ public class SkillMeteorStorm : MonoBehaviour
         var hit = new HashSet<MonoBehaviour>();
         ApplyBlast(position, _finaleRadius, _finaleDamage, _finaleKnockback, _finaleStun, hit);
 
+        SoundFXManager.PlaySfxAt(SfxIds.SkillEarthS4Finale, position);
+        SoundFXManager.PlaySfx(SfxIds.SkillScreenSlam);
         SpawnImpactVfx(position, 3f);
         AddCrater(position, _craterScale * 2.4f);
         StartCoroutine(ShockwaveRoutine(position));

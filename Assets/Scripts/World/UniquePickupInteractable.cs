@@ -42,6 +42,7 @@ public sealed class UniquePickupInteractable : MonoBehaviour, IPersistentWorldOb
         }
 
         InventoryManager.Instance.AddItem(item, _quantity);
+        SoundFXManager.PlaySfxAt(SfxIds.WorldUniquePickup, transform.position);
         _collected = true;
         ApplyVisual();
         granted = true;

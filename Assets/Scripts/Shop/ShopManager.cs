@@ -145,6 +145,7 @@ public sealed class ShopManager : MonoBehaviour
         InventoryManager.Instance.SpendGold(totalCost);
         InventoryManager.Instance.AddItem(item, quantity);
         result = ShopTransactionResult.Success;
+        SoundFXManager.PlaySfx(SfxIds.ShopBuy);
         QuestDomainEvents.RaiseItemPurchased(itemId, quantity, shopId);
         return true;
     }
@@ -251,6 +252,7 @@ public sealed class ShopManager : MonoBehaviour
         InventoryManager.Instance.RemoveItem(item, quantity);
         InventoryManager.Instance.AddGold(totalValue);
         result = ShopTransactionResult.Success;
+        SoundFXManager.PlaySfx(SfxIds.ShopSell);
         return true;
     }
 

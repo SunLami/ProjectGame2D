@@ -62,6 +62,7 @@ public class SkillSpikeCone : MonoBehaviour
         _origin = origin;
         _damageMultiplier = damageMultiplier;
         transform.position = origin;
+        SoundFXManager.PlaySfxAt(SfxIds.SkillEarthS3Cone, origin + direction.normalized * (range * 0.4f));
 
         // The arena wall must not stop this skill: strip its layer from the blocking mask.
         int wallLayer = LayerMask.NameToLayer(_ignoredWallLayerName);

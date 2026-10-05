@@ -43,6 +43,7 @@ public class SkillSpikeCage : MonoBehaviour
         if (!first)
             return;
 
+        SoundFXManager.PlaySfxAt(SfxIds.SkillEarthS3Cage, target.position);
         _targetCollider = target.GetComponentInChildren<Collider2D>();
         _targetRenderer = target.GetComponentInChildren<SpriteRenderer>();
         foreach (MonoBehaviour behaviour in target.GetComponentsInParent<MonoBehaviour>())

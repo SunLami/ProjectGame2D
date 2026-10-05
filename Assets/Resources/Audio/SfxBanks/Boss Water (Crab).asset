@@ -1,0 +1,236 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 665474dd81c7d6148a54d65f2ba476bc, type: 3}
+  m_Name: Boss Water (Crab)
+  m_EditorClassIdentifier: ProjectGame2D.Runtime::SfxBank
+  title: Boss Water (Crab)
+  rows:
+  - label: Awaken
+    id: sfx.bossw.awaken
+    category: Boss
+    description: Crab emerges and roars
+    clips:
+    - {fileID: 8300000, guid: 82c8823e7e06d5248a25b34735fa8169, type: 3}
+    volume: 1
+    pitchJitter: 0
+    minInterval: 0
+    maxVoices: 0
+    loop: 0
+  - label: Bubble pop
+    id: sfx.bossw.bubble_pop
+    category: Boss
+    description: Bubble bursts
+    clips:
+    - {fileID: 8300000, guid: 4b0970c3f0db3b44bb7b693d978faaa3, type: 3}
+    - {fileID: 8300000, guid: 925917c0718622e448227216ca22df9a, type: 3}
+    - {fileID: 8300000, guid: 7438322ce1281314fbc6d0e3cc82ff06, type: 3}
+    volume: 0.75
+    pitchJitter: 0.05
+    minInterval: 0.05
+    maxVoices: 4
+    loop: 0
+  - label: Bubble spit
+    id: sfx.bossw.bubble_spit
+    category: Boss
+    description: Crab spits a bubble
+    clips:
+    - {fileID: 8300000, guid: b76b1267de086c847b753bbf5bec5517, type: 3}
+    - {fileID: 8300000, guid: 1be1052447f22bd4c830dd0dfa8fdfcc, type: 3}
+    - {fileID: 8300000, guid: 849d174060da5484c9309a0b9bec353b, type: 3}
+    volume: 0.7
+    pitchJitter: 0.04
+    minInterval: 0.1
+    maxVoices: 3
+    loop: 0
+  - label: Burrow dive
+    id: sfx.bossw.burrow_dive
+    category: Boss
+    description: Crab sinks into the sand
+    clips:
+    - {fileID: 8300000, guid: c0c4715d2f17f114bbbad9340a4750da, type: 3}
+    volume: 0.85
+    pitchJitter: 0
+    minInterval: 0.3
+    maxVoices: 0
+    loop: 0
+  - label: Claw hold
+    id: sfx.bossw.claw_hold
+    category: Boss
+    description: 'Both claws land: player held'
+    clips:
+    - {fileID: 8300000, guid: 80570ddffd842d0479b04eafe84ca502, type: 3}
+    volume: 0.7
+    pitchJitter: 0
+    minInterval: 0.3
+    maxVoices: 0
+    loop: 0
+  - label: Claw snap
+    id: sfx.bossw.claw_snap
+    category: Boss
+    description: Claw snaps shut
+    clips:
+    - {fileID: 8300000, guid: b516f8da09d3bb4448ff6c38aed90e19, type: 3}
+    - {fileID: 8300000, guid: 13e58c3f95555dc49973e0f61a608866, type: 3}
+    - {fileID: 8300000, guid: 6bdf33b3594f4fa4abd322fcbab4d776, type: 3}
+    volume: 0.9
+    pitchJitter: 0.03
+    minInterval: 0.1
+    maxVoices: 3
+    loop: 0
+  - label: Claw windup
+    id: sfx.bossw.claw_windup
+    category: Boss
+    description: Claws raise before the clamp
+    clips:
+    - {fileID: 8300000, guid: 1e0aae34b41a1bc4abdf090de05e944f, type: 3}
+    volume: 0.7
+    pitchJitter: 0
+    minInterval: 0.2
+    maxVoices: 0
+    loop: 0
+  - label: Death
+    id: sfx.bossw.death
+    category: Boss
+    description: Crab collapses
+    clips:
+    - {fileID: 8300000, guid: 14e39deba9bdcab4d8ad5ebfb62e4ce1, type: 3}
+    volume: 1
+    pitchJitter: 0
+    minInterval: 0
+    maxVoices: 0
+    loop: 0
+  - label: Emerge
+    id: sfx.bossw.emerge
+    category: Boss
+    description: Crab bursts out of the sand
+    clips:
+    - {fileID: 8300000, guid: 4022e42e798909148a0678d4ad1f8d40, type: 3}
+    - {fileID: 8300000, guid: a22c3972f37ef004e94cc74d619a815f, type: 3}
+    volume: 1
+    pitchJitter: 0.03
+    minInterval: 0.3
+    maxVoices: 0
+    loop: 0
+  - label: Hit
+    id: sfx.bossw.hit
+    category: Boss
+    description: Crab takes damage
+    clips:
+    - {fileID: 8300000, guid: 60a51d6a7fbde2a40abc73cf861e8361, type: 3}
+    - {fileID: 8300000, guid: da9d3e18f2c2f1c46942816c7dd469ca, type: 3}
+    - {fileID: 8300000, guid: 8138518ba9f0787439be2ab936cb84b5, type: 3}
+    volume: 0.65
+    pitchJitter: 0.05
+    minInterval: 0.06
+    maxVoices: 3
+    loop: 0
+  - label: Mound loop
+    id: sfx.bossw.mound_loop
+    category: Boss
+    description: Sand mound chasing the player
+    clips:
+    - {fileID: 8300000, guid: d24a448ee47e18048a5037f48e1d8143, type: 3}
+    volume: 0.6
+    pitchJitter: 0
+    minInterval: 0
+    maxVoices: 0
+    loop: 1
+  - label: Phase roar
+    id: sfx.bossw.phase_roar
+    category: Boss
+    description: Phase change roar
+    clips:
+    - {fileID: 8300000, guid: 6a090f29f4ad9324fb0a5a35b4a79764, type: 3}
+    - {fileID: 8300000, guid: 5239f51bad821114280d0a14d275fa64, type: 3}
+    volume: 1
+    pitchJitter: 0
+    minInterval: 0
+    maxVoices: 0
+    loop: 0
+  - label: Recovery
+    id: sfx.bossw.recovery
+    category: Boss
+    description: Crab slumps and recovers
+    clips:
+    - {fileID: 8300000, guid: 77de86cbdf1dc9944845743c216e51a2, type: 3}
+    volume: 0.7
+    pitchJitter: 0
+    minInterval: 0
+    maxVoices: 0
+    loop: 0
+  - label: Wave hit
+    id: sfx.bossw.wave_hit
+    category: Boss
+    description: Wave hits the player
+    clips:
+    - {fileID: 8300000, guid: 0a9c18612d6d95e4ab69f5c940655c6d, type: 3}
+    volume: 0.9
+    pitchJitter: 0
+    minInterval: 0.3
+    maxVoices: 0
+    loop: 0
+  - label: Wave rush
+    id: sfx.bossw.wave_rush
+    category: Boss
+    description: Tidal wave sweeps the arena
+    clips:
+    - {fileID: 8300000, guid: b558485ce56a82b4191d75e91207d93a, type: 3}
+    volume: 0.85
+    pitchJitter: 0
+    minInterval: 0.4
+    maxVoices: 0
+    loop: 0
+  - label: Wave warning
+    id: sfx.bossw.wave_warning
+    category: Boss
+    description: Conch horn before the wave
+    clips:
+    - {fileID: 8300000, guid: bf693a038900e8045b09c72657ef1c6d, type: 3}
+    volume: 0.8
+    pitchJitter: 0
+    minInterval: 0.4
+    maxVoices: 0
+    loop: 0
+  - label: Whirl charge
+    id: sfx.bossw.whirl_charge
+    category: Boss
+    description: Whirlpool opens
+    clips:
+    - {fileID: 8300000, guid: 32cd7f1c183393e4a9ed6cb3590cd233, type: 3}
+    volume: 0.8
+    pitchJitter: 0
+    minInterval: 0.5
+    maxVoices: 0
+    loop: 0
+  - label: Whirl jet
+    id: sfx.bossw.whirl_jet
+    category: Boss
+    description: Water jets start spinning
+    clips:
+    - {fileID: 8300000, guid: 194ad9f3109e7914cbe4c0e9a59457d9, type: 3}
+    - {fileID: 8300000, guid: b276a8fcbec867342860831a089a19b6, type: 3}
+    volume: 0.8
+    pitchJitter: 0.04
+    minInterval: 0.1
+    maxVoices: 3
+    loop: 0
+  - label: Whirl loop
+    id: sfx.bossw.whirl_loop
+    category: Boss
+    description: Whirlpool pulling
+    clips:
+    - {fileID: 8300000, guid: 205a5287bc7b96d48b8c20dbdbdc3b8e, type: 3}
+    volume: 0.7
+    pitchJitter: 0
+    minInterval: 0
+    maxVoices: 0
+    loop: 1

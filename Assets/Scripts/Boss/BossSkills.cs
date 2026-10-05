@@ -22,11 +22,76 @@ public sealed partial class BossController
             case BossSkillId.SandAmbush: return SandAmbushSkill();
             case BossSkillId.TidalWave: return TidalWaveSkill();
             case BossSkillId.Whirlpool: return WhirlpoolSkill();
+            case BossSkillId.FeatherVolley: return FeatherVolleySkill();
+            case BossSkillId.TalonDive: return TalonDiveSkill();
+            case BossSkillId.Cyclones: return CyclonesSkill();
+            case BossSkillId.GaleWall: return GaleWallSkill();
+            case BossSkillId.CrescentBlades: return CrescentBladesSkill();
+            case BossSkillId.SkyStorm: return SkyStormSkill();
             default: return null;
         }
     }
 
     // ---------------------------------------------------------------- shared helpers
+
+    /// <summary>Earth-golem SFX only for now (Boss Water and Wind get their own sets later).</summary>
+    private bool UsesEarthSfx => _definition != null && _definition.bossId == "boss.earth_golem";
+
+    private bool UsesWaterSfx => _definition != null && _definition.bossId == "boss.water_crab";
+
+    private void BossSfx(string id, Vector2? at = null)
+    {
+        if (!UsesEarthSfx)
+            return;
+        PlayBossSfx(id, at);
+    }
+
+    /// <summary>Water-crab SFX (the Earth ones use <see cref="BossSfx(string, Vector2?)"/>).</summary>
+    private void WaterSfx(string id, Vector2? at = null)
+    {
+        if (UsesWaterSfx)
+            PlayBossSfx(id, at);
+    }
+
+    /// <summary>Events every boss has (awaken, hit, death...): each boss plays its own sound.</summary>
+    private void BossSfx(string earthId, string waterId, Vector2? at = null)
+    {
+        if (UsesEarthSfx)
+            PlayBossSfx(earthId, at);
+        else if (UsesWaterSfx)
+            PlayBossSfx(waterId, at);
+        else if (UsesWindOwl)
+            PlayBossSfx(OwlEventId(waterId), at);
+    }
+
+    /// <summary>The owl's version of an event every boss has (the call sites name the Earth and Water ids).</summary>
+    private static string OwlEventId(string waterId)
+    {
+        switch (waterId)
+        {
+            case SfxIds.BosswAwaken: return SfxIds.BossowlAwaken;
+            case SfxIds.BosswRecovery: return SfxIds.BossowlRecovery;
+            case SfxIds.BosswPhaseRoar: return SfxIds.BossowlPhaseRoar;
+            case SfxIds.BosswHit: return SfxIds.BossowlHit;
+            case SfxIds.BosswDeath: return SfxIds.BossowlDeath;
+            default: return waterId;
+        }
+    }
+
+    /// <summary>Wind-owl SFX (sfx.bossowl.*).</summary>
+    private void OwlSfx(string id, Vector2? at = null)
+    {
+        if (UsesWindOwl)
+            PlayBossSfx(id, at);
+    }
+
+    private static void PlayBossSfx(string id, Vector2? at)
+    {
+        if (at.HasValue)
+            SoundFXManager.PlaySfxAt(id, at.Value);
+        else
+            SoundFXManager.PlaySfx(id);
+    }
 
     private float Damage(float multiplier) => _definition.baseDamage * multiplier * _definition.difficultyDamageScale;
 
@@ -58,7 +123,10 @@ public sealed partial class BossController
         Vector2 direction = ((Vector2)player.transform.position - from);
         if (direction.sqrMagnitude < 0.0001f)
             direction = Vector2.down;
+        float lastHurt = player.LastHurtTime;
         player.TakeDamage(Damage(multiplier), direction.normalized, knockback);
+        if (player.LastHurtTime > lastHurt)
+            CombatFeedback.PlayerHitSpark(player.transform.position, CombatFeedback.ElementOf(_definition.bossId));
     }
 
     /// <summary>Hurts the player once (per `alreadyHit` set) if inside the circle.</summary>
@@ -104,6 +172,8 @@ public sealed partial class BossController
             return target;
         });
 
+        BossSfx(SfxIds.BossSlamWindup);
+        BossSfx(SfxIds.BossTelegraph, target);
         SetPose(new Vector2(0f, 0.9f), new Vector2(0.97f, 1.06f), windup * 0.8f);
         PlayClip(BossClipId.Slam, windup);
         yield return new WaitForSeconds(Mathf.Min(_definition.slamLockSeconds, windup * 0.5f));
@@ -113,6 +183,7 @@ public sealed partial class BossController
         ContinueClip();
         SetPose(new Vector2(0f, -0.3f), new Vector2(1.06f, 0.94f), 0.08f);
         StrikeCircle(target, _definition.slamRadius, _definition.slamDamage, _definition.slamKnockback, new HashSet<Player>());
+        BossSfx(SfxIds.BossSlam, target);
         TrackObject(BossVfx.Spawn("Shockwave_Expand", target, _definition.slamRadius / 1.8f, 14f, false, 1.2f, 5));
         TrackObject(BossVfx.Spawn("RockProjectile_Impact", target, 1.8f, 14f, false, 1f, 7));
         SkillScreenFX.Shake(0.22f, 0.3f);
@@ -173,9 +244,11 @@ public sealed partial class BossController
     private IEnumerator RainDrop(Vector2 position, float lead)
     {
         BossTelegraphVisual telegraph = Track(BossTelegraph.Circle(position, _definition.rainRadius, lead));
+        BossSfx(SfxIds.BossTelegraph, position);
         float fallTime = Mathf.Min(0.4f, lead * 0.5f);
         yield return new WaitForSeconds(lead - fallTime);
 
+        BossSfx(SfxIds.BossRainDrop, position);
         GameObject rock = TrackObject(BossVfx.Spawn("RockChunk_Hover", position + Vector2.up * 9f, 0.9f, 10f, true, 0f, 8));
         for (float t = 0f; t < fallTime; t += Time.deltaTime)
         {
@@ -188,6 +261,7 @@ public sealed partial class BossController
             Destroy(rock);
 
         StrikeCircle(position, _definition.rainRadius, _definition.rainDamage, _definition.rainKnockback, new HashSet<Player>());
+        BossSfx(SfxIds.BossRainImpact, position);
         TrackObject(BossVfx.Spawn("RockProjectile_Impact", position, 1.3f, 14f, false, 1f, 7));
         TrackObject(BossVfx.Spawn("MeteorCrater_Smolder", position, 0.7f, 10f, false, 2.5f, -80));
         SkillScreenFX.Shake(0.08f, 0.15f);
@@ -211,9 +285,10 @@ public sealed partial class BossController
             directions.Add(direction);
             float length = DistanceToBounds(origin, direction, _definition.laneLength);
             lengths.Add(length);
-            Track(BossTelegraph.Line(origin, direction, length, _definition.laneWidth, duration));
+            Track(BossTelegraph.Line(origin, direction, length, _definition.laneWidth, duration, true));
         }
 
+        BossSfx(SfxIds.BossTelegraph, origin);
         SetPose(new Vector2(0f, 0.7f), new Vector2(0.98f, 1.05f), duration * 0.8f);
         PlayClip(BossClipId.Stomp, duration);
         yield return new WaitForSeconds(duration);
@@ -240,6 +315,7 @@ public sealed partial class BossController
         for (float distance = 2f; distance <= length; distance += segment)
         {
             Vector2 point = origin + direction * distance;
+            BossSfx(SfxIds.BossSpikeLane, point);
             TrackObject(BossVfx.Spawn("RockSpike_Rise", point, 0.95f, 14f, false, 1.4f, 6));
             StrikeCircle(point, _definition.laneWidth * 0.6f, _definition.laneDamage, _definition.laneKnockback, alreadyHit);
             StartCoroutine(SpikeLinger(point, alreadyHit));
@@ -270,7 +346,8 @@ public sealed partial class BossController
 
         float windup = Tele(_definition.fistWindup);
         float lineLength = Mathf.Max(4f, DistanceToBounds(origin, direction, _definition.fistLineLength));
-        Track(BossTelegraph.Line(origin, direction, lineLength, _definition.fistLineWidth, windup));
+        Track(BossTelegraph.Line(origin, direction, lineLength, _definition.fistLineWidth, windup, true));
+        BossSfx(SfxIds.BossTelegraph, origin);
         SetPose(-direction * 0.5f + Vector2.up * 0.3f, new Vector2(1.02f, 1.02f), windup * 0.9f);
         PlayClip(BossClipId.Fist, windup);
         yield return new WaitForSeconds(windup);
@@ -290,6 +367,7 @@ public sealed partial class BossController
         fist.AddComponent<SkillFrameAnimator>().Play(stoneFist ? fistFrames : BossVfx.Frames("RockProjectile_Fly"), 14f, true);
 
         _fistAway = true;
+        BossSfx(SfxIds.BossFistLaunch, origin);
         SetPose(direction * 0.6f, new Vector2(1.03f, 0.98f), 0.1f);
         SkillScreenFX.Shake(0.15f, 0.2f);
 
@@ -316,6 +394,7 @@ public sealed partial class BossController
         }
 
         _fistAway = false;
+        BossSfx(SfxIds.BossFistImpact, transform.position);
         if (fist != null)
             Destroy(fist);
         TrackObject(BossVfx.Spawn("RockProjectile_Impact", transform.position, 1.4f, 14f, false, 1f, 8));
@@ -330,6 +409,7 @@ public sealed partial class BossController
 
         float charge = Tele(_definition.resonanceChargeSeconds);
 
+        BossSfx(SfxIds.BossResonanceCharge, center);
         SetPose(new Vector2(0f, 1f), new Vector2(1.08f, 1.08f), charge);
         PlayClip(BossClipId.Resonance, charge);
         GameObject runes = TrackObject(BossVfx.Spawn("EarthRune_Pulse", center, 2.6f, 12f, true,
@@ -376,6 +456,8 @@ public sealed partial class BossController
             yield break;
 
         SkillScreenFX.Shake(0.1f, 0.2f);
+        BossSfx(SfxIds.BossResonanceBurst, center);
+        BossSfx(SfxIds.BossRockBullet, center);
         Sprite[] frames = BossVfx.Frames("RockProjectile_Fly");
         var rocks = new Transform[count];
         var directions = new Vector2[count];

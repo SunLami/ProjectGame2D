@@ -1,6 +1,11 @@
 # Kế hoạch SFX Combat Player + Bộ Skill Thủy/Địa/Phong (DemoScene-first)
 
-Trạng thái: **PLAN — chờ user chốt** (2026-10-03). Mở rộng `AudioSfxSystem.md` (D-058) Phase C. Quyết định: D-082.
+Trạng thái: **IMPLEMENTED (D-103) — chờ user nghe test** (kế hoạch ban đầu 2026-10-03). Mở rộng `AudioSfxSystem.md` (D-058) Phase C. Quyết định: D-082.
+
+## Phân công (2026-10-04) — cập nhật
+
+User đổi phân công: **Claude tự triển khai toàn bộ** (tìm Freesound, build, wire, test) và mở rộng phạm vi ra toàn game (UI/Inventory/Quest/World/Fishing/Farming/Ambience + Boss Earth).
+Kết quả và điểm gọi thực tế ghi ở `SfxPipeline.md` (D-103); tài liệu này giữ nguyên làm lịch sử ý tưởng ban đầu. Việc Boss Water/Wind làm sau.
 
 ## 0. Phạm vi và nguyên tắc
 

@@ -1,0 +1,289 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 665474dd81c7d6148a54d65f2ba476bc, type: 3}
+  m_Name: Boss Wind (Owl)
+  m_EditorClassIdentifier: ProjectGame2D.Runtime::SfxBank
+  title: Boss Wind (Owl)
+  rows:
+  - label: Awaken
+    id: sfx.bossowl.awaken
+    category: Boss
+    description: Owl awakens
+    clips:
+    - {fileID: 8300000, guid: d3effc14945a7df45ab7972cb8ce2f6b, type: 3}
+    - {fileID: 8300000, guid: 60201407273068d4bb42027e6d7e2f9d, type: 3}
+    volume: 1
+    pitchJitter: 0
+    minInterval: 0
+    maxVoices: 0
+    loop: 0
+  - label: Blade cut
+    id: sfx.bossowl.blade_cut
+    category: Boss
+    description: Crescent blades fly out
+    clips:
+    - {fileID: 8300000, guid: db5324c7679a4024ba4c30fed5791a3c, type: 3}
+    - {fileID: 8300000, guid: 10105f07ddad6e74fa8ca8b5d5684af4, type: 3}
+    - {fileID: 8300000, guid: fab46c2aea1c77b4585f8ee63ef74a51, type: 3}
+    volume: 0.85
+    pitchJitter: 0.04
+    minInterval: 0.1
+    maxVoices: 3
+    loop: 0
+  - label: Blade hit
+    id: sfx.bossowl.blade_hit
+    category: Boss
+    description: A blade cuts the player
+    clips:
+    - {fileID: 8300000, guid: 72ee60ba39b30d943a43d656c4bf2784, type: 3}
+    volume: 0.8
+    pitchJitter: 0
+    minInterval: 0.1
+    maxVoices: 0
+    loop: 0
+  - label: Cyclone cast
+    id: sfx.bossowl.cyclone_cast
+    category: Boss
+    description: Rapid wing beats stir up cyclones
+    clips:
+    - {fileID: 8300000, guid: 7832e7ff3bb56294cb8779823353f019, type: 3}
+    volume: 0.8
+    pitchJitter: 0
+    minInterval: 0.3
+    maxVoices: 0
+    loop: 0
+  - label: Cyclone hit
+    id: sfx.bossowl.cyclone_hit
+    category: Boss
+    description: Cyclone throws the player
+    clips:
+    - {fileID: 8300000, guid: df9b9c8814fb8994eab9ae5be59ded6d, type: 3}
+    volume: 0.8
+    pitchJitter: 0
+    minInterval: 0.2
+    maxVoices: 0
+    loop: 0
+  - label: Cyclone loop
+    id: sfx.bossowl.cyclone_loop
+    category: Boss
+    description: A cyclone wanders the platform
+    clips:
+    - {fileID: 8300000, guid: 10e5b4b1eed25114b9488fe216c44480, type: 3}
+    volume: 0.5
+    pitchJitter: 0
+    minInterval: 0
+    maxVoices: 0
+    loop: 1
+  - label: Death
+    id: sfx.bossowl.death
+    category: Boss
+    description: Owl falls
+    clips:
+    - {fileID: 8300000, guid: 02fc23b876810624ebc9ab389be29207, type: 3}
+    volume: 1
+    pitchJitter: 0
+    minInterval: 0
+    maxVoices: 0
+    loop: 0
+  - label: Dive hit
+    id: sfx.bossowl.dive_hit
+    category: Boss
+    description: Owl slams down on the target
+    clips:
+    - {fileID: 8300000, guid: 843c1cc024a96e54c8d382b808137973, type: 3}
+    volume: 1
+    pitchJitter: 0
+    minInterval: 0.3
+    maxVoices: 0
+    loop: 0
+  - label: Dive warning
+    id: sfx.bossowl.dive_warning
+    category: Boss
+    description: 'A shadow grows: the owl is coming down'
+    clips:
+    - {fileID: 8300000, guid: 279efb31150204a449fc4d76f06d61c6, type: 3}
+    volume: 0.7
+    pitchJitter: 0
+    minInterval: 0.4
+    maxVoices: 0
+    loop: 0
+  - label: Feather hit
+    id: sfx.bossowl.feather_hit
+    category: Boss
+    description: A feather hits the player
+    clips:
+    - {fileID: 8300000, guid: ecfd23100704e754c9565f0b09b09328, type: 3}
+    - {fileID: 8300000, guid: 78cff80848f9cdb45b1a842028a50354, type: 3}
+    volume: 0.6
+    pitchJitter: 0.05
+    minInterval: 0.05
+    maxVoices: 3
+    loop: 0
+  - label: Floor break
+    id: sfx.bossowl.floor_break
+    category: Boss
+    description: A floor section breaks away
+    clips:
+    - {fileID: 8300000, guid: dd17f05ab18dba642bd9cbdd6fde74e1, type: 3}
+    - {fileID: 8300000, guid: c42cabdb07fd0a941a0739b5b44190bb, type: 3}
+    volume: 0.95
+    pitchJitter: 0.03
+    minInterval: 0.3
+    maxVoices: 0
+    loop: 0
+  - label: Floor warn
+    id: sfx.bossowl.floor_warn
+    category: Boss
+    description: A section of floor starts to flicker
+    clips:
+    - {fileID: 8300000, guid: 41222109ae5c1f2429f074857f336326, type: 3}
+    volume: 0.5
+    pitchJitter: 0
+    minInterval: 0.4
+    maxVoices: 0
+    loop: 0
+  - label: Hit
+    id: sfx.bossowl.hit
+    category: Boss
+    description: Owl takes damage
+    clips:
+    - {fileID: 8300000, guid: 571d89525dd26c6438ef0c7774f6f18f, type: 3}
+    - {fileID: 8300000, guid: 292c1ab81191303418b5aa6ec40d6a1c, type: 3}
+    - {fileID: 8300000, guid: 17a6697c0bdbe9747b8482d28d7d5dd5, type: 3}
+    volume: 0.65
+    pitchJitter: 0.05
+    minInterval: 0.06
+    maxVoices: 3
+    loop: 0
+  - label: Phase roar
+    id: sfx.bossowl.phase_roar
+    category: Boss
+    description: Phase change screech
+    clips:
+    - {fileID: 8300000, guid: 5b1f25457e03255438065e9c622d5293, type: 3}
+    - {fileID: 8300000, guid: 74d870e27f2909e4eb45926af4479c67, type: 3}
+    volume: 1
+    pitchJitter: 0
+    minInterval: 0
+    maxVoices: 0
+    loop: 0
+  - label: Recovery
+    id: sfx.bossowl.recovery
+    category: Boss
+    description: Owl lands, winded
+    clips:
+    - {fileID: 8300000, guid: b9eacb026c2a48b4da5ff9db32aa5f29, type: 3}
+    volume: 0.7
+    pitchJitter: 0
+    minInterval: 0
+    maxVoices: 0
+    loop: 0
+  - label: Slash windup
+    id: sfx.bossowl.slash_windup
+    category: Boss
+    description: Wings lift before the blades
+    clips:
+    - {fileID: 8300000, guid: 689ad4c648c098e42861def71d319cd2, type: 3}
+    volume: 0.65
+    pitchJitter: 0
+    minInterval: 0.2
+    maxVoices: 0
+    loop: 0
+  - label: Storm charge
+    id: sfx.bossowl.storm_charge
+    category: Boss
+    description: Owl circles overhead as the storm builds
+    clips:
+    - {fileID: 8300000, guid: a8c3eaf1428356e45ac36b18468aa321, type: 3}
+    volume: 0.85
+    pitchJitter: 0
+    minInterval: 0.5
+    maxVoices: 0
+    loop: 0
+  - label: Storm end
+    id: sfx.bossowl.storm_end
+    category: Boss
+    description: The storm dies and the owl drops, spent
+    clips:
+    - {fileID: 8300000, guid: 8b67ca02010278b4c954920391e4e6f8, type: 3}
+    volume: 0.8
+    pitchJitter: 0
+    minInterval: 0.4
+    maxVoices: 0
+    loop: 0
+  - label: Takeoff
+    id: sfx.bossowl.takeoff
+    category: Boss
+    description: Owl beats its wings and rises out of sight
+    clips:
+    - {fileID: 8300000, guid: 2bdc0ffd46445ae408ebc75c75748be9, type: 3}
+    volume: 0.85
+    pitchJitter: 0
+    minInterval: 0.3
+    maxVoices: 0
+    loop: 0
+  - label: Volley fling
+    id: sfx.bossowl.volley_fling
+    category: Boss
+    description: Wings fling out a fan of feathers
+    clips:
+    - {fileID: 8300000, guid: b9a3fc9bc4810de45941424f0169453e, type: 3}
+    - {fileID: 8300000, guid: bfcb7c5e53d48734f88fc3801881bf2f, type: 3}
+    volume: 0.9
+    pitchJitter: 0.03
+    minInterval: 0.2
+    maxVoices: 0
+    loop: 0
+  - label: Volley windup
+    id: sfx.bossowl.volley_windup
+    category: Boss
+    description: Wings draw back before the feather volley
+    clips:
+    - {fileID: 8300000, guid: f1fba847e1e09184dbf9ce7a5f6b3342, type: 3}
+    volume: 0.7
+    pitchJitter: 0
+    minInterval: 0.2
+    maxVoices: 0
+    loop: 0
+  - label: Wall hit
+    id: sfx.bossowl.wall_hit
+    category: Boss
+    description: Wall hits the player
+    clips:
+    - {fileID: 8300000, guid: 1aede8e89b475c444acd17b1e55706f7, type: 3}
+    volume: 0.9
+    pitchJitter: 0
+    minInterval: 0.3
+    maxVoices: 0
+    loop: 0
+  - label: Wall rush
+    id: sfx.bossowl.wall_rush
+    category: Boss
+    description: The wall of wind sweeps across the platform
+    clips:
+    - {fileID: 8300000, guid: cfc8f56f7d9b47f4aaff00e259eef139, type: 3}
+    volume: 0.85
+    pitchJitter: 0
+    minInterval: 0.4
+    maxVoices: 0
+    loop: 0
+  - label: Wall warning
+    id: sfx.bossowl.wall_warning
+    category: Boss
+    description: Owl banks and the gale gathers
+    clips:
+    - {fileID: 8300000, guid: 20723af593cf3f440a6f54f86a77b828, type: 3}
+    volume: 0.7
+    pitchJitter: 0
+    minInterval: 0.4
+    maxVoices: 0
+    loop: 0

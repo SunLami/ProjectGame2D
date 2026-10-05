@@ -2,7 +2,7 @@ using System;
 using UnityEngine;
 
 /// <summary>Clips the boss body can play (D-092, BossAnimationPlan.md).</summary>
-public enum BossClipId { Idle, Move, Slam, Raise, Stomp, Fist, Resonance, Recovery, Snap, Burrow, Emerge, Spit, Whirl }
+public enum BossClipId { Idle, Move, Slam, Raise, Stomp, Fist, Resonance, Recovery, Snap, Burrow, Emerge, Spit, Whirl, Volley, TakeOff, Dive, Flap, Sweep, Slash, Circle, Death }
 
 /// <summary>
 /// Plays the full-frame boss animations on the body renderer. Without an action the boss loops Idle (or Move

@@ -57,6 +57,7 @@ public sealed class ChestInteractable : MonoBehaviour, IPersistentWorldObject
         }
 
         InventoryManager.Instance.AddItem(item, _rewardQuantity);
+        SoundFXManager.PlaySfxAt(SfxIds.WorldChestOpen, transform.position);
         _opened = true;
         ApplyVisual();
         granted = true;
@@ -100,6 +101,7 @@ public sealed class ChestInteractable : MonoBehaviour, IPersistentWorldObject
         IReadOnlyList<InventoryItemGrant> grants)
     {
         _opening = true;
+        SoundFXManager.PlaySfxAt(SfxIds.WorldChestOpen, transform.position);
         Sprite[] frames = GetOpenFrames();
         if (frames.Length > 0 && _spriteRenderer != null)
         {

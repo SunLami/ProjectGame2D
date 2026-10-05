@@ -82,7 +82,14 @@ public class SkillBoomerang : MonoBehaviour
 
         if (owner != null)
             transform.position = owner.SkillOrigin;
+
+        SoundFXManager.PlaySfx(SfxIds.SkillWindS1Throw);
+        _loop = SoundFXManager.StartLoop(SfxIds.SkillWindS1Loop, 0.8f, 1f, 0.1f);
     }
+
+    private SfxLoopHandle _loop;
+
+    private void OnDestroy() => _loop?.Stop(0.1f);
 
     private void Update()
     {
@@ -140,6 +147,7 @@ public class SkillBoomerang : MonoBehaviour
 
     private void Catch()
     {
+        SoundFXManager.PlaySfx(SfxIds.SkillWindS1Catch);
         if (_impactVfxPrefab != null)
         {
             GameObject vfx = Instantiate(_impactVfxPrefab, _owner.SkillOrigin, Quaternion.identity);

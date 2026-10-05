@@ -19,7 +19,7 @@ public static class CrabBossBuilder
     public static void Build()
     {
         Directory.CreateDirectory(Folder);
-        foreach (string sheet in new[] { "Crab_Idle_9f", "Crab_Move_9f", "Crab_Snap_9f", "Crab_Recovery_9f", "Crab_Burrow_9f" })
+        foreach (string sheet in new[] { "Crab_Idle_9f", "Crab_Move_9f", "Crab_Snap_9f", "Crab_Recovery_9f", "Crab_Burrow_9f", "Crab_Spit_9f", "Crab_Whirl_9f", "Crab_Slam_9f", "Crab_Resonance_9f" })
             ConfigureSheet(AnimFolder + sheet + ".png", 9);
 
         var definition = AssetDatabase.LoadAssetAtPath<BossDefinition>(DefinitionPath);
@@ -39,6 +39,10 @@ public static class CrabBossBuilder
         Sprite[] snap = LoadFrames("Crab_Snap_9f");
         Sprite[] recovery = LoadFrames("Crab_Recovery_9f");
         Sprite[] burrow = LoadFrames("Crab_Burrow_9f");
+        Sprite[] spit = LoadFrames("Crab_Spit_9f");
+        Sprite[] whirl = LoadFrames("Crab_Whirl_9f");
+        Sprite[] slam = LoadFrames("Crab_Slam_9f");
+        Sprite[] resonance = LoadFrames("Crab_Resonance_9f");
 
         var root = new GameObject("WaterCrabBoss");
         root.transform.localScale = Vector3.one * 0.75f;
@@ -58,9 +62,11 @@ public static class CrabBossBuilder
             Clip(BossClipId.Recovery, recovery, 8f, false, 6),
             Clip(BossClipId.Burrow, burrow, 12f, false, 7), // sinks into the sand, holds almost gone while the mound chases
             Clip(BossClipId.Emerge, burrow.Reverse().ToArray(), 12f, false, -1),
-            // still borrowed from Snap (dedicated Spit/Whirl clips are a later polish):
-            Clip(BossClipId.Spit, snap.Take(4).ToArray(), 10f, false, 3),
-            Clip(BossClipId.Whirl, snap.Take(5).ToArray(), 9f, false, 4),
+            // D-103+: dedicated layered clips (claws up to the mouth and a head dip to spit; claws raised and body rocking to whirl)
+            Clip(BossClipId.Spit, spit, 11f, false, 4),
+            Clip(BossClipId.Whirl, whirl, 10f, false, 5),
+            Clip(BossClipId.Slam, slam, 11f, false, 4),           // Tidal Wave: claws high, then crash down
+            Clip(BossClipId.Resonance, resonance, 10f, false, 4), // roar on phase change: claws spread and shake
         });
 
         var shadow = new GameObject("Shadow");
@@ -84,6 +90,12 @@ public static class CrabBossBuilder
         solidHurtbox.radius = hurtbox.radius;
         solidHurtbox.offset = hurtbox.offset;
         solidHurtbox.excludeLayers = ~0;
+
+        // D-108: a smaller solid body that really collides, so the player cannot walk through the crab
+        var bodyBlock = root.AddComponent<CircleCollider2D>();
+        bodyBlock.isTrigger = false;
+        bodyBlock.radius = 2.0f;
+        bodyBlock.offset = new Vector2(0f, 0.2f);
 
         var controller = root.AddComponent<BossController>();
         var serialized = new SerializedObject(controller);
@@ -169,10 +181,11 @@ public static class CrabBossBuilder
         importer.textureCompression = TextureImporterCompression.Uncompressed;
         importer.alphaIsTransparency = true;
         importer.mipmapEnabled = false;
-        importer.maxTextureSize = 4096;
+        importer.maxTextureSize = 8192;
         importer.SaveAndReimport();
 
         var texture = AssetDatabase.LoadAssetAtPath<Texture2D>(path);
+        // wide strips (the 17-frame owl clips are 6528 px) must not be downscaled or the slicing below drifts
         if (texture == null)
             return;
 

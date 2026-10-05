@@ -15,6 +15,13 @@ public enum BossSkillId
     SandAmbush,
     TidalWave,
     Whirlpool,
+    // Wind owl (D-111)
+    FeatherVolley,
+    TalonDive,
+    Cyclones,
+    GaleWall,
+    CrescentBlades,
+    SkyStorm,
 }
 
 [Serializable]
@@ -180,6 +187,24 @@ public sealed class BossDefinition : ScriptableObject
     public float clampSecondRotateDegrees = 25f;
     public float clampDamage = 1f;
     public float clampKnockback = 5f;
+    [Tooltip("Seconds the player is held in place when two cuts in a row connect (D-103).")]
+    public float clampRootSeconds = 0.6f;
+    [Tooltip("D-106: the crab chases the player and cuts this many times per Claw Clamp (per phase).")]
+    public int[] clampCutsByPhase = { 3, 3, 4 };
+    [Tooltip("Speed of the crab while it runs the player down between cuts.")]
+    public float clampChaseSpeed = 7f;
+    [Tooltip("Damage multiplier of one chasing cut (there are several per skill).")]
+    public float clampCutDamage = 0.8f;
+
+    [Header("Water skill 2 - Bubble rings (D-106)")]
+    [Tooltip("Bubbles in wave 1, 2 and 3 for phase 1 / 2 / 3 (a full ring of 360 degrees each).")]
+    public int[] bubbleRingWave1ByPhase = { 8, 10, 12 };
+    public int[] bubbleRingWave2ByPhase = { 14, 18, 22 };
+    public int[] bubbleRingWave3ByPhase = { 20, 26, 32 };
+    [Tooltip("Seconds between two waves.")]
+    public float bubbleWaveInterval = 1.1f;
+    [Tooltip("Size and damage of a ring bubble relative to a normal bubble.")]
+    public float bubbleRingScale = 0.65f;
 
     [Header("Water skill 2 - Bubble Trap")]
     public int[] bubbleCountByPhase = { 3, 4, 5 };
@@ -222,8 +247,92 @@ public sealed class BossDefinition : ScriptableObject
     public float whirlJetSeconds = 2f;
     public float whirlJetLength = 12f;
     public float whirlJetWidth = 1.6f;
+    [Tooltip("D-107: extra jets in phase 2 / 3 on top of whirlJetCount.")]
+    public int[] whirlExtraJetsByPhase = { 0, 1, 2 };
+    [Tooltip("Seconds the jet lanes are shown (and the pull keeps going) before the jets lash out.")]
+    public float whirlJetTelegraphSeconds = 0.9f;
+    [Tooltip("Share of the pull speed that keeps dragging the player while the jets spin.")]
+    [Range(0f, 1f)] public float whirlPullDuringJets = 0.45f;
     public float whirlJetSpinDegreesPerSecond = 120f;
     public float whirlJetDamage = 0.8f;
+
+
+    [Header("Wind - cosmetic wind direction (ArenaWind, D-111; the player is not pushed by it)")]
+    [Tooltip("The wind turns to a new direction every random(min, max) seconds.")]
+    public Vector2 windDirectionChangeSeconds = new Vector2(15f, 20f);
+    [Tooltip("Damage multiplier when the player is pushed hard into the platform edge or an obstacle.")]
+    public float windImpactDamage = 0.4f;
+
+    [Header("Wind skill 1 - Feather Volley")]
+    public int[] featherCountByPhase = { 9, 15, 21 };
+    public float featherFanDegrees = 60f;
+    public float featherWindup = 0.7f;
+    public float featherSpeed = 11f;
+    public float featherHitRadius = 0.45f;
+    public float featherLifeSeconds = 3.2f;
+    public float featherDamage = 0.5f;
+    [Tooltip("Degrees per second a feather turns toward the player during its first second.")]
+    public float featherHomingDegrees = 25f;
+    [Tooltip("Phase 2+ adds a second fan crossing the first; phase 3 turns the volley into a spiral.")]
+    public bool[] featherSecondFanByPhase = { false, true, true };
+    public bool[] featherSpiralByPhase = { false, false, true };
+
+    [Header("Wind skill 2 - Talon Dive")]
+    public float diveTakeoffSeconds = 0.9f;
+    public float diveShadowSeconds = 1.4f;
+    [Tooltip("The target stops following the player this long before the strike.")]
+    public float diveLockSeconds = 0.4f;
+    public float diveRadius = 3.5f;
+    public float diveDamage = 1f;
+    public float diveKnockback = 4f;
+    public int[] diveTargetsByPhase = { 1, 1, 3 };
+    [Tooltip("Seconds the owl stays perched (vulnerable) after the last strike.")]
+    public float[] divePerchByPhase = { 2f, 2f, 1.3f };
+
+    [Header("Wind skill 3 - Cyclones")]
+    public int[] cycloneCountByPhase = { 2, 3, 3 };
+    public float cycloneWarnSeconds = 0.8f;
+    public float cycloneLifeSeconds = 6f;
+    public float cycloneSpeed = 3f;
+    public float cycloneHitRadius = 1.1f;
+    public float cycloneDamage = 0.8f;
+    public float cycloneStunSeconds = 0.5f;
+
+    [Header("Wind skill 4 - Gale Wall")]
+    public float wallWarnSeconds = 1.5f;
+    public float wallSpeed = 14f;
+    public float wallThickness = 1.6f;
+    public float wallDamage = 0.8f;
+    [Tooltip("Units per second the wall shoves the player along while it overlaps them.")]
+    public float wallPushSpeed = 9f;
+    [Tooltip("Length of the safe shadow behind an obstacle (the wind totems).")]
+    public float wallShelterLength = 6f;
+    public float wallShelterHalfWidth = 1.9f;
+
+    [Header("Wind skill 5 - Crescent Blades")]
+    public int[] crescentCountByPhase = { 2, 2, 3 };
+    public float crescentWarnSeconds = 0.9f;
+    public float crescentSpeed = 13f;
+    public float crescentHitRadius = 0.9f;
+    public float crescentDamage = 1f;
+
+    [Header("Wind skill 6 - Sky Storm (ultimate)")]
+    [Tooltip("Seconds each collapsing floor tier flickers before it breaks.")]
+    public float stormTierWarnSeconds = 1.2f;
+    public float stormBrokenSeconds = 3.2f;
+    public float stormTickDamage = 0.5f;
+    public float stormTickInterval = 0.5f;
+    public float stormPushSpeed = 5f;
+    public float stormDimAlpha = 0.45f;
+    [Tooltip("Radii of the safe 'eye' after each floor collapse (the whole platform outside it breaks, outermost first). Replaces the rect tiers below.")]
+    public float[] stormEyeRadii = { 17f, 13f, 9.5f, 6.5f };
+    [Tooltip("Obsolete since the eye version (kept so existing assets still load): floor tiers that break one after another, outermost first (world rects). Default: the two horizontal arms of the Wind arena.")]
+    public Rect[] stormTierRects =
+    {
+        new Rect(-31.65f, -11.6f, 5.65f, 17.6f), new Rect(22.95f, -11.6f, 6f, 17.6f),
+        new Rect(-26f, -11.6f, 6f, 17.6f), new Rect(17f, -11.6f, 5.95f, 17.6f),
+        new Rect(-20f, -11.6f, 6.55f, 17.6f), new Rect(13.45f, -11.6f, 3.55f, 17.6f),
+    };
 
     public int PhaseIndexForHealthFraction(float fraction)
     {
@@ -329,6 +438,57 @@ public sealed class BossDefinition : ScriptableObject
                 {
                     Combo("F", new BossComboStep(BossSkillId.BubbleTrap, true), new BossComboStep(BossSkillId.SandAmbush), new BossComboStep(BossSkillId.ClawClamp)),
                     Combo("G", new BossComboStep(BossSkillId.Whirlpool), new BossComboStep(BossSkillId.ClawClamp), new BossComboStep(BossSkillId.ClawClamp)),
+                },
+            },
+        };
+        return definition;
+    }
+
+
+    /// <summary>The Wind owl encounter of WindBossCombatPlan.md section 5.</summary>
+    public static BossDefinition CreateWindOwlDefaults()
+    {
+        var definition = CreateInstance<BossDefinition>();
+        definition.name = "WindOwlBoss";
+        definition.bossId = "boss.wind_owl";
+        definition.displayName = "Sky Owl";
+        definition.moveSpeed = 3.4f;
+        definition.ultimateSkill = BossSkillId.SkyStorm;
+        definition.ultimateRecoverySeconds = 4f;
+        definition.impactVfx = "Wind/WindImpact_Burst";
+        definition.phaseVfx = "Wind/WindRing_Flow";
+        definition.phases = new[]
+        {
+            new BossPhase
+            {
+                name = "Phase 1", startsBelowHealth = 1f, telegraphScale = 1f, telegraphMinSeconds = 0.8f, recoverySeconds = 3f,
+                gapBetweenSkills = 0.6f, ultimateEveryCombos = 0,
+                combos = new[]
+                {
+                    Combo("A", new BossComboStep(BossSkillId.FeatherVolley), new BossComboStep(BossSkillId.TalonDive)),
+                    Combo("B", new BossComboStep(BossSkillId.Cyclones), new BossComboStep(BossSkillId.GaleWall)),
+                },
+            },
+            new BossPhase
+            {
+                name = "Phase 2", startsBelowHealth = 0.65f, telegraphScale = 0.9f, telegraphMinSeconds = 0.8f, recoverySeconds = 2.5f,
+                gapBetweenSkills = 0.5f, ultimateEveryCombos = 3,
+                combos = new[]
+                {
+                    Combo("C", new BossComboStep(BossSkillId.CrescentBlades), new BossComboStep(BossSkillId.FeatherVolley)),
+                    Combo("D", new BossComboStep(BossSkillId.GaleWall, true), new BossComboStep(BossSkillId.Cyclones)),
+                    Combo("E", new BossComboStep(BossSkillId.TalonDive), new BossComboStep(BossSkillId.TalonDive), new BossComboStep(BossSkillId.CrescentBlades)),
+                },
+            },
+            new BossPhase
+            {
+                name = "Phase 3 - Tempest", startsBelowHealth = 0.30f, telegraphScale = 0.8f, telegraphMinSeconds = 0.6f, recoverySeconds = 1.8f,
+                gapBetweenSkills = 0.4f, ultimateEveryCombos = 2,
+                combos = new[]
+                {
+                    Combo("F", new BossComboStep(BossSkillId.TalonDive)),
+                    Combo("G", new BossComboStep(BossSkillId.CrescentBlades), new BossComboStep(BossSkillId.FeatherVolley)),
+                    Combo("H", new BossComboStep(BossSkillId.GaleWall, true), new BossComboStep(BossSkillId.Cyclones)),
                 },
             },
         };
