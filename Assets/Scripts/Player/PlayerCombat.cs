@@ -27,7 +27,10 @@ public partial class Player
                 && GameCursorManager.Instance.IsPointerOverNonCombatInteraction)
             return;
         if (!_stats.TryConsumeAttackStamina())
+        {
+            SoundFXManager.PlaySfx(SfxIds.PlayerExhausted);
             return;
+        }
 
         _isAttacking = true;
         if (_isRunning && _moveInput != Vector2.zero)
@@ -53,6 +56,7 @@ public partial class Player
         if (!_isAttacking || _isHit || _isDead || _isCastingSkill)
             return;
 
+        SoundFXManager.PlaySfx(SfxIds.CombatPlayerAttack);
         _attackHitbox.Configure(_attackFxRenderer, _lastFacingDirection, _attackHitboxOffset);
         _attackHitbox.BeginAttack();
     }
@@ -65,7 +69,9 @@ public partial class Player
         Vector2 direction = targetTransform != null
             ? ((Vector2)targetTransform.position - (Vector2)transform.position).normalized
             : _lastFacingDirection;
-        target.TakeDamage(_stats.RollOutgoingDamage(out _), direction, _attackKnockbackForce);
+        float damage = _stats.RollOutgoingDamage(out bool isCritical);
+        target.TakeDamage(damage, direction, _attackKnockbackForce);
+        SoundFXManager.PlaySfx(isCritical ? SfxIds.CombatHitCrit : SfxIds.CombatHitImpact);
     }
 
     private void UpdateDirectionToMouse()

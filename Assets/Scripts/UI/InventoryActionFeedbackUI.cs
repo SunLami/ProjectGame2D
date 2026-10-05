@@ -21,6 +21,7 @@ public sealed class InventoryActionFeedbackUI : MonoBehaviour
             _instance = Build();
 
         _instance.gameObject.SetActive(true);
+        SoundFXManager.PlaySfx(SfxIds.UiNotification);
         _instance._text.text = message;
         _instance._hideAtUnscaledTime = Time.unscaledTime + DisplaySeconds;
         _instance.transform.SetAsLastSibling();

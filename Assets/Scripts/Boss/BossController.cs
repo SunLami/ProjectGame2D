@@ -89,6 +89,8 @@ public sealed partial class BossController : MonoBehaviour, IDamageable, ISlowab
 
     private void OnDestroy()
     {
+        StopWaterLoops();
+        EndWindFight();
         if (_effectsRoot != null)
             Destroy(_effectsRoot.gameObject);
     }
@@ -103,12 +105,27 @@ public sealed partial class BossController : MonoBehaviour, IDamageable, ISlowab
 
     private Vector2 ClampInside(Vector2 point, float margin = 0f)
     {
-        if (!_hasBounds)
-            return point;
+        if (_hasBounds)
+        {
+            point = new Vector2(
+                Mathf.Clamp(point.x, _bounds.xMin + margin, _bounds.xMax - margin),
+                Mathf.Clamp(point.y, _bounds.yMin + margin, _bounds.yMax - margin));
+        }
 
-        return new Vector2(
-            Mathf.Clamp(point.x, _bounds.xMin + margin, _bounds.xMax - margin),
-            Mathf.Clamp(point.y, _bounds.yMin + margin, _bounds.yMax - margin));
+        // D-110: arenas that are not a rectangle (Wind's sky platform) also give an outline the boss stays inside
+        if (_polygon != null)
+            point = ArenaPolygon.Constrain(_polygon, point, Mathf.Max(0.5f, margin));
+
+        // D-106: walk around solid arena objects (teleport pillar, totems) instead of through them
+        return BossObstacle.PushOut(point, 1.3f);
+    }
+
+    private Vector2[] _polygon;
+
+    /// <summary>Optional outline of a non-rectangular arena (D-110); the rectangle from <see cref="SetArenaBounds"/> still applies.</summary>
+    public void SetArenaPolygon(Vector2[] polygon)
+    {
+        _polygon = polygon != null && polygon.Length >= 3 ? polygon : null;
     }
 
     /// <summary>How far a ray from `origin` along `direction` travels before leaving the arena (capped).</summary>
@@ -128,6 +145,7 @@ public sealed partial class BossController : MonoBehaviour, IDamageable, ISlowab
     public void Initialize(BossDefinition definition)
     {
         _definition = definition;
+        BossTelegraph.SetElement(CombatFeedback.ElementOf(definition.bossId));
         _health = definition.maxHealth;
     }
 
@@ -163,9 +181,11 @@ public sealed partial class BossController : MonoBehaviour, IDamageable, ISlowab
 
         _alpha = 1f;
         _poseOffset = Vector2.zero;
+        BossSfx(SfxIds.BossAwaken, SfxIds.BosswAwaken, transform.position);
         SkillScreenFX.Shake(0.15f, 0.4f);
         if (TideController.Instance != null)
             TideController.Instance.BeginFight(_definition);
+        BeginWindFight();
         if (_runFightLoop)
             yield return FightRoutine();
         else
@@ -199,6 +219,8 @@ public sealed partial class BossController : MonoBehaviour, IDamageable, ISlowab
     private IEnumerator FightRoutine()
     {
         _state = BossState.Fighting;
+        if (UsesWaterSfx)
+            StartCoroutine(WaterChaseLoop());
         while (_state != BossState.Dead)
         {
             while (PlayerIsGone())
@@ -264,6 +286,7 @@ public sealed partial class BossController : MonoBehaviour, IDamageable, ISlowab
     {
         _activeSkills++;
         SkillStarted?.Invoke(id);
+        ShowCastAura();
         try
         {
             yield return SkillRoutine(id);
@@ -274,6 +297,25 @@ public sealed partial class BossController : MonoBehaviour, IDamageable, ISlowab
         }
     }
 
+    /// <summary>A short charge-up glow on the boss while a skill starts (element aura, Pixellab art).</summary>
+    private void ShowCastAura()
+    {
+        Sprite[] frames = BossVfx.Frames(CombatFeedback.AuraName(CombatFeedback.ElementOf(_definition.bossId)));
+        if (frames == null || frames.Length == 0)
+            return;
+
+        var aura = new GameObject("CastAura");
+        aura.transform.SetParent(transform, false);
+        aura.transform.localPosition = new Vector3(0f, 0.6f, 0f);
+        aura.transform.localScale = Vector3.one * 3.2f;
+        var renderer = aura.AddComponent<SpriteRenderer>();
+        renderer.sortingLayerName = "Default";
+        renderer.sortingOrder = 11;
+        renderer.color = new Color(1f, 1f, 1f, 0.9f);
+        aura.AddComponent<SkillFrameAnimator>().Play(frames, 16f, true);
+        aura.AddComponent<FadeAndDestroy>().Begin(1.1f, 0.35f);
+    }
+
     private IEnumerator RecoveryRoutine(float seconds, float damageTaken)
     {
         _recovering = true;
@@ -281,6 +323,7 @@ public sealed partial class BossController : MonoBehaviour, IDamageable, ISlowab
         _recoveryStunExtended = false;
         _recoveryEnd = Time.time + seconds;
         RecoveryStarted?.Invoke(seconds);
+        BossSfx(SfxIds.BossRecovery, SfxIds.BosswRecovery, transform.position);
         SetPose(new Vector2(0f, -0.5f), new Vector2(1.04f, 0.93f), 0.25f);
         PlayClip(BossClipId.Recovery, 0.7f);
 
@@ -305,13 +348,18 @@ public sealed partial class BossController : MonoBehaviour, IDamageable, ISlowab
         _phaseComboCounter = 0;
         if (TideController.Instance != null)
             TideController.Instance.SetPhase(_phaseIndex);
+        if (UsesWindOwl && ArenaWind.Instance != null)
+            ArenaWind.Instance.SetPhase(_phaseIndex);
         PhaseChanged?.Invoke(_phaseIndex);
+        BossSfx(SfxIds.BossPhaseRoar, SfxIds.BosswPhaseRoar, transform.position);
 
         SetPose(new Vector2(0f, 0.6f), new Vector2(1.08f, 1.08f), 0.3f);
         PlayClip(BossClipId.Resonance, 0.6f);
         SkillScreenFX.Shake(0.35f, _definition.phaseTransitionSeconds);
-        SkillScreenFX.Flash(new Color(0.5f, 1f, 0.6f), 0.35f, 0.8f);
+        SkillScreenFX.Flash(UsesWindOwl ? new Color(0.75f, 0.92f, 1f) : new Color(0.5f, 1f, 0.6f), 0.35f, 0.8f);
         BossVfx.Spawn(_definition.phaseVfx, transform.position, 2.4f, 12f, true, _definition.phaseTransitionSeconds, -90);
+        if (UsesWindOwl)
+            StartCoroutine(WindScreechPush());
         yield return new WaitForSeconds(_definition.phaseTransitionSeconds);
 
         ContinueClip();
@@ -348,15 +396,18 @@ public sealed partial class BossController : MonoBehaviour, IDamageable, ISlowab
 
     public void TakeDamage(float damage, Vector2 knockbackDirection, float knockbackForce)
     {
-        if (_state == BossState.Dead || damage <= 0f || _burrowed)
+        if (_state == BossState.Dead || damage <= 0f || _burrowed || _airborne)
             return;
 
         // Untouchable while it is appearing or roaring into the next phase.
         if (_state == BossState.Dormant || _state == BossState.Spawning || _state == BossState.PhaseTransition)
             return;
 
-        _health = Mathf.Max(0f, _health - damage * ComputeDamageTakenMultiplier());
-        _flashUntil = Time.time + 0.08f;
+        float multiplier = ComputeDamageTakenMultiplier();
+        _health = Mathf.Max(0f, _health - damage * multiplier);
+        _flashUntil = Time.time + 0.1f;
+        CombatFeedback.BossHit(transform.position, CombatFeedback.ElementOf(_definition.bossId), damage * multiplier, multiplier > 1.01f);
+        BossSfx(SfxIds.BossHit, SfxIds.BosswHit, transform.position);
         HealthChanged?.Invoke(_health, _definition.maxHealth);
 
         if (_health <= 0f)
@@ -402,13 +453,19 @@ public sealed partial class BossController : MonoBehaviour, IDamageable, ISlowab
         _recovering = false;
         _fistAway = false;
         _burrowed = false;
+        _airborne = false;
         SetBodyVisible(true);
         if (TideController.Instance != null)
             TideController.Instance.EndFight();
+        EndWindFight();
+        if (UsesWindOwl)
+            SkillScreenFX.Dim(0f, 0.6f);
         foreach (Transform child in _effectsRoot)
             Destroy(child.gameObject);
 
-        PlayClip(BossClipId.Recovery, 0.5f);
+        StopWaterLoops();
+        BossSfx(SfxIds.BossDeath, SfxIds.BosswDeath, transform.position);
+        PlayClip(UsesWindOwl ? BossClipId.Death : BossClipId.Recovery, 0.5f);
         SkillScreenFX.HitStopAndSlowMo(0.08f, 0.35f, 0.9f);
         SkillScreenFX.Shake(0.4f, 1.2f);
         SetPose(new Vector2(0f, -0.4f), new Vector2(1.05f, 0.9f), 0.4f);
@@ -423,6 +480,7 @@ public sealed partial class BossController : MonoBehaviour, IDamageable, ISlowab
             yield return null;
         }
 
+        BossSfx(SfxIds.BossVictory, SfxIds.BossVictory);
         Died?.Invoke();
         Destroy(gameObject);
     }

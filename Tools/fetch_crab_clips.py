@@ -10,12 +10,16 @@ from PIL import Image
 
 OUT = "Assets/Art/BossArena/Water/Boss/Anim"
 ONLY = sys.argv[1:]  # optional clip names; empty = all
-DRAWINGS = {
-    "Idle": "da7ad646-5960-4dd5-8d32-cfdbb9da96a6",
-    "Move": "2ebed04c-b520-4df8-8add-bac24b514711",
-    "Snap": "54866c6f-a80f-43cf-8c35-99a7b378407f",
-    "Recovery": "0178766d-93e3-4c9c-bbf0-c0188b39fa68",
-    "Burrow": "70ead6c0-6578-4e8c-a970-17e7f8f4b92a",
+DRAWINGS = {  # layered clips of the NEW base CrabUp_256 (both claws raised), 2026-10-05
+    "Idle": "634257d5-05a8-4e92-b993-df727c959ecf",
+    "Move": "d80ecb05-f7c8-446b-8cf4-55d1b7fabd3d",
+    "Snap": "d6470680-f37a-471a-85f9-68a043dfcbe4",
+    "Recovery": "ea04d857-8732-4ae2-be07-c9a7b3ac957f",
+    "Burrow": "83d02d84-3964-4661-9f4e-f4917777001c",
+    "Spit": "7510c9a6-e7b2-4197-92a3-911b9500d7b8",
+    "Whirl": "b0dd7769-f106-4d51-aede-5baabbc11501",
+    "Slam": "d4572900-c9fa-4219-bc01-90c04bc98f27",
+    "Resonance": "79237daa-4489-4323-90d4-8aa2f1665489",
 }
 W = H = 320
 SPECK = 40  # connected pieces smaller than this (px) that do not touch the main body are removed

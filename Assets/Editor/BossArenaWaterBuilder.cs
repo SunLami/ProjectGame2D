@@ -68,6 +68,7 @@ public static class BossArenaWaterBuilder
         BossArenaEarthBuilder.BuildFootstepTilemap(arenaRoot.transform);
 
         // shrine (D-090) + ritual (D-091) for the crab: conch statue offered a Water Orb, four coral totems fire the beams
+        EnableDash();
         ItemSO orb = EnsureOrbItem();
         BossShrineBuilder.Apply(scene, orb);
         BuildTotems(arenaRoot.transform);
@@ -315,6 +316,30 @@ public static class BossArenaWaterBuilder
             new Vector2(WalkHalfWidth, WalkTop), new Vector2(WalkHalfWidth, WalkBottom),
             new Vector2(-WalkHalfWidth, WalkBottom),
         };
+    }
+
+    /// <summary>The Player's dash is enabled per scene (PlayerDash._dashScenes); the Earth copy only lists DemoScene and Earth, so every boss arena adds itself.</summary>
+    private static void EnableDash()
+    {
+        var dash = Object.FindAnyObjectByType<Player>(FindObjectsInactive.Include);
+        if (dash == null)
+            return;
+
+        var serialized = new SerializedObject(dash);
+        SerializedProperty list = serialized.FindProperty("_dashScenes");
+        foreach (string scene in new[] { "BossArena_Earth", "BossArena_Water", "BossArena_Wind" })
+        {
+            bool present = false;
+            for (int i = 0; i < list.arraySize; i++)
+                present |= list.GetArrayElementAtIndex(i).stringValue == scene;
+            if (!present)
+            {
+                list.arraySize++;
+                list.GetArrayElementAtIndex(list.arraySize - 1).stringValue = scene;
+            }
+        }
+
+        serialized.ApplyModifiedPropertiesWithoutUndo();
     }
 
     private static void AddToBuildSettings()

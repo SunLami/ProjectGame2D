@@ -42,6 +42,7 @@ public class SkillGroundImpact : MonoBehaviour
 
         if (_frames is { Length: > 0 } && _renderer != null)
             _renderer.sprite = _frames[0];
+        SoundFXManager.PlaySfxAt(SfxIds.SkillWaterS2Splash, transform.position);
     }
 
     private void Update()

@@ -78,6 +78,7 @@ public sealed class FarmPlot : MonoBehaviour
         }
 
         _crop = seed.Crop;
+        SoundFXManager.PlaySfxAt(SfxIds.FarmPlant, transform.position);
         _plantedAtUtcTicks = DateTime.UtcNow.Ticks;
         _lastStage = -1;
         SetHighlighted(false);
@@ -107,6 +108,7 @@ public sealed class FarmPlot : MonoBehaviour
         }
 
         if (_cropRenderer != null) _cropRenderer.enabled = false;
+        SoundFXManager.PlaySfxAt(SfxIds.FarmHarvest, transform.position);
         yield return ResourceLootFlyVisual.Play(transform.position, player, grants);
         if (InventoryManager.Instance == null || !InventoryManager.Instance.TryAddBatch(grants))
         {

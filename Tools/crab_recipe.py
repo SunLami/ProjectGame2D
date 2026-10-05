@@ -186,13 +186,13 @@ CLIPS["spit"] = (
 )
 CLIPS["whirl"] = (
     {"rest": P(),
-     "a": P(larm=16, rarm=16, root=(0, -1), antl=4, antr=4),
-     "b": P(larm=32, rarm=32, root=(-3, -2), antl=8, antr=8),
-     "c": P(larm=48, rarm=48, root=(3, -3), antl=10, antr=10),
-     "d": P(larm=60, rarm=60, root=(-3, -4), antl=12, antr=12),
-     "e": P(larm=66, rarm=66, root=(3, -4), antl=14, antr=14),
-     "f": P(larm=60, rarm=60, root=(-2, -3), antl=10, antr=10),
-     "g": P(larm=34, rarm=34, root=(1, -1), antl=4, antr=4)},
+     "a": P(larm=12, rarm=10, root=(0, -1), antl=4, antr=4),
+     "b": P(larm=22, rarm=20, root=(-2, -2), antl=8, antr=8),
+     "c": P(larm=30, rarm=28, root=(2, -3), antl=10, antr=10),
+     "d": P(larm=38, rarm=34, root=(-2, -4), antl=12, antr=12),
+     "e": P(larm=42, rarm=38, root=(2, -4), antl=14, antr=14),
+     "f": P(larm=38, rarm=34, root=(-1, -3), antl=10, antr=10),
+     "g": P(larm=22, rarm=20, root=(1, -1), antl=4, antr=4)},
     ["rest", "a", "b", "c", "d", "e", "f", "g", "rest"],
     [80, 80, 80, 80, 80, 80, 80, 80, 90],
 )

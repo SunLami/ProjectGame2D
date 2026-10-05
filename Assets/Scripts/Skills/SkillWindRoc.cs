@@ -143,6 +143,7 @@ public class SkillWindRoc : MonoBehaviour
     private IEnumerator Run()
     {
         // 1. gather + warnings
+        SoundFXManager.PlaySfx(SfxIds.SkillWindS4Charge);
         StartCoroutine(GatherRoutine());
         StartCoroutine(RippleWarningRoutine());
         CreateMarkerRing();
@@ -180,12 +181,21 @@ public class SkillWindRoc : MonoBehaviour
         Destroy(gameObject);
     }
 
+    private float _flapTimer;
+
     private void Update()
     {
         if (!_flying)
             return;
 
         _progress += _rocSpeed * Time.deltaTime;
+        _flapTimer -= Time.deltaTime;
+        if (_flapTimer <= 0f)
+        {
+            _flapTimer = 0.55f;
+            SoundFXManager.PlaySfx(SfxIds.SkillWindS4Flap);
+        }
+
         UpdateRoc();
         CaptureAlongPath();
         UpdateCarried();
@@ -411,6 +421,7 @@ public class SkillWindRoc : MonoBehaviour
 
     private void SpawnRoc()
     {
+        SoundFXManager.PlaySfx(SfxIds.SkillWindS4Screech);
         _roc = CreateAnimated("WindRoc", _rocFrames, GroundPoint(), _rocScale, 90, true, 12f);
         _roc.sortingLayerName = "Player";
         _persistent.Add(_roc.gameObject);
@@ -682,6 +693,7 @@ public class SkillWindRoc : MonoBehaviour
     private IEnumerator FinaleRoutine()
     {
         _finaleStarted = true;
+        SoundFXManager.PlaySfx(SfxIds.SkillWindS4Dive);
 
         // Throw every captured enemy forward; each lands with damage and a stun.
         foreach (Carried c in _carried)
@@ -771,6 +783,8 @@ public class SkillWindRoc : MonoBehaviour
 
     private IEnumerator ShockwaveRoutine(Vector2 center)
     {
+        SoundFXManager.PlaySfxAt(SfxIds.SkillWindS4Shockwave, center);
+        SoundFXManager.PlaySfx(SfxIds.SkillScreenSlam);
         if (_shockwaveFrames is not { Length: > 0 })
             yield break;
 
@@ -864,6 +878,7 @@ public class SkillWindRoc : MonoBehaviour
             yield return null;
         }
 
+        SoundFXManager.PlaySfxAt(SfxIds.SkillWindS4FeatherRain, ground);
         StrikeAt(ground, 0.5f, _rainFeatherDamage, Vector2.zero, new HashSet<MonoBehaviour>());
 
         if (feather != null)

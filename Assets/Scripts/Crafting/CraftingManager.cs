@@ -113,6 +113,7 @@ public sealed class CraftingManager : MonoBehaviour
         InventoryManager.Instance.AddItem(outputItem, recipe.OutputQuantity);
 
         result = CraftingTransactionResult.Success;
+        SoundFXManager.PlaySfx(SfxIds.CraftComplete);
         QuestDomainEvents.RaiseItemCrafted(recipe.OutputItemId, recipe.OutputQuantity, stationTag);
         return true;
     }

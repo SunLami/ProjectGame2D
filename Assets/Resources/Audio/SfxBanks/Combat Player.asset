@@ -1,0 +1,221 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 665474dd81c7d6148a54d65f2ba476bc, type: 3}
+  m_Name: Combat Player
+  m_EditorClassIdentifier: ProjectGame2D.Runtime::SfxBank
+  title: Combat Player
+  rows:
+  - label: Enemy death
+    id: sfx.combat.enemy_death
+    category: Combat
+    description: Generic enemy dies (fallback)
+    clips:
+    - {fileID: 8300000, guid: cbc749b227e8417428fc33d481d54e65, type: 3}
+    - {fileID: 8300000, guid: ce55545e071b06d4fbb98ccf619913cc, type: 3}
+    volume: 0.8
+    pitchJitter: 0.06
+    minInterval: 0
+    maxVoices: 0
+    loop: 0
+  - label: Enemy hit
+    id: sfx.combat.enemy_hit
+    category: Combat
+    description: Generic enemy takes damage (fallback)
+    clips:
+    - {fileID: 8300000, guid: fdec881ed97557f42b6403f3ba366a9d, type: 3}
+    - {fileID: 8300000, guid: 760c5d2205342464d8494c681775ef23, type: 3}
+    - {fileID: 8300000, guid: b7766e2d1289f834dbfc705f42804ff8, type: 3}
+    volume: 0.7
+    pitchJitter: 0.08
+    minInterval: 0.05
+    maxVoices: 0
+    loop: 0
+  - label: Hit crit
+    id: sfx.combat.hit_crit
+    category: Combat
+    description: Critical hit (heavier layer)
+    clips:
+    - {fileID: 8300000, guid: 82c65e9ee56f65044a496861fff13a7e, type: 3}
+    volume: 1
+    pitchJitter: 0.04
+    minInterval: 0
+    maxVoices: 0
+    loop: 0
+  - label: Hit impact
+    id: sfx.combat.hit_impact
+    category: Combat
+    description: Player attack lands on a target
+    clips:
+    - {fileID: 8300000, guid: 78a1f9218efea574e8fec71dde3ca9e8, type: 3}
+    - {fileID: 8300000, guid: 66cd3382cef9d574191783033ea6fb39, type: 3}
+    - {fileID: 8300000, guid: 1196135ae2153c34199f659505f334f3, type: 3}
+    - {fileID: 8300000, guid: 96899ca34492e0b41ab2f5d5b1951d45, type: 3}
+    volume: 0.9
+    pitchJitter: 0.06
+    minInterval: 0.04
+    maxVoices: 0
+    loop: 0
+  - label: Player attack
+    id: sfx.combat.player_attack
+    category: Combat
+    description: Weapon swing (animation event ActivatePlayerAttackHitbox)
+    clips:
+    - {fileID: 8300000, guid: 78fd4534ea499c04aab487e56a015b56, type: 3}
+    - {fileID: 8300000, guid: cf0d44d771bfb934b936fc0c61073a1a, type: 3}
+    - {fileID: 8300000, guid: 403b80a98421ce0419da45d2066ef84f, type: 3}
+    - {fileID: 8300000, guid: 64edfd5ab69e50f4ba53513de97dde80, type: 3}
+    volume: 0.8
+    pitchJitter: 0.07
+    minInterval: 0
+    maxVoices: 0
+    loop: 0
+  - label: Player death
+    id: sfx.combat.player_death
+    category: Combat
+    description: Player dies
+    clips:
+    - {fileID: 8300000, guid: b885b94bb0f4ecc429f131eb93cfcf8e, type: 3}
+    - {fileID: 8300000, guid: 7234b9e6af2071a43947072e463bc5a3, type: 3}
+    volume: 0.95
+    pitchJitter: 0
+    minInterval: 0
+    maxVoices: 0
+    loop: 0
+  - label: Player dodge
+    id: sfx.combat.player_dodge
+    category: Combat
+    description: Player dodged a hit
+    clips:
+    - {fileID: 8300000, guid: 3d980a9f5c7852446b49c5a393b267ff, type: 3}
+    - {fileID: 8300000, guid: b891bc91a92b3474b9d037d8c63fae89, type: 3}
+    volume: 0.7
+    pitchJitter: 0.08
+    minInterval: 0.15
+    maxVoices: 0
+    loop: 0
+  - label: Player hurt
+    id: sfx.combat.player_hurt
+    category: Combat
+    description: Player takes damage
+    clips:
+    - {fileID: 8300000, guid: 966d6af316b4ed64b8fc2de365026a44, type: 3}
+    - {fileID: 8300000, guid: 3f7589dbd7989934f86d2951584b08ff, type: 3}
+    - {fileID: 8300000, guid: 5ac9a989be26fd943922577805461e9e, type: 3}
+    volume: 0.85
+    pitchJitter: 0.05
+    minInterval: 0.25
+    maxVoices: 0
+    loop: 0
+  - label: Projectile impact
+    id: sfx.combat.projectile_impact
+    category: Combat
+    description: Enemy projectile hits
+    clips:
+    - {fileID: 8300000, guid: 2aaab8966ea16c54198af025317fd193, type: 3}
+    - {fileID: 8300000, guid: 5a5b7f00e3d18cc4c83722124bab717f, type: 3}
+    volume: 0.75
+    pitchJitter: 0.07
+    minInterval: 0.06
+    maxVoices: 0
+    loop: 0
+  - label: Projectile launch
+    id: sfx.combat.projectile_launch
+    category: Combat
+    description: Enemy projectile fired
+    clips:
+    - {fileID: 8300000, guid: e3caae51c2779674f839bed28b3c9fff, type: 3}
+    - {fileID: 8300000, guid: e301c89997993324b90e3e099c54f6d3, type: 3}
+    volume: 0.7
+    pitchJitter: 0.07
+    minInterval: 0.08
+    maxVoices: 0
+    loop: 0
+  - label: Skill aim cancel
+    id: sfx.combat.skill_aim_cancel
+    category: Combat
+    description: Skill aim cancelled
+    clips:
+    - {fileID: 8300000, guid: 31e9ef0094c311d4991aa8c1bdfd57a6, type: 3}
+    volume: 0.5
+    pitchJitter: 0
+    minInterval: 0.2
+    maxVoices: 0
+    loop: 0
+  - label: Skill aim confirm
+    id: sfx.combat.skill_aim_confirm
+    category: Combat
+    description: Skill aim confirmed
+    clips:
+    - {fileID: 8300000, guid: e703eb391ef12434d86c00b41502f79c, type: 3}
+    volume: 0.7
+    pitchJitter: 0
+    minInterval: 0
+    maxVoices: 0
+    loop: 0
+  - label: Skill aim start
+    id: sfx.combat.skill_aim_start
+    category: Combat
+    description: Begin aiming a skill
+    clips:
+    - {fileID: 8300000, guid: 5e1e28bc3c3b5bf40930a2ba704d8397, type: 3}
+    volume: 0.55
+    pitchJitter: 0
+    minInterval: 0.2
+    maxVoices: 0
+    loop: 0
+  - label: Stun apply
+    id: sfx.combat.stun_apply
+    category: Combat
+    description: Target stunned
+    clips:
+    - {fileID: 8300000, guid: dc7e1d723a4b6944b9f329e90a63edd5, type: 3}
+    volume: 0.7
+    pitchJitter: 0.05
+    minInterval: 0.25
+    maxVoices: 0
+    loop: 0
+  - label: Dash
+    id: sfx.player.dash
+    category: Combat
+    description: Player dash start
+    clips:
+    - {fileID: 8300000, guid: 5fe76c75af4425d4b99d064eac3d9ef0, type: 3}
+    - {fileID: 8300000, guid: f8e6c9f8bd162bf409639d4c4a1e4504, type: 3}
+    volume: 0.75
+    pitchJitter: 0.06
+    minInterval: 0.2
+    maxVoices: 0
+    loop: 0
+  - label: Exhausted
+    id: sfx.player.exhausted
+    category: Combat
+    description: Out of stamina when attacking/dashing
+    clips:
+    - {fileID: 8300000, guid: f425633591a24a84f91cf36862e1bf71, type: 3}
+    - {fileID: 8300000, guid: 7ccd82f1daa3bde4ba6121904219ecfd, type: 3}
+    - {fileID: 8300000, guid: 2eabda6e8a24ea04cadc49b9cdc129d4, type: 3}
+    volume: 0.7
+    pitchJitter: 0.04
+    minInterval: 1.2
+    maxVoices: 0
+    loop: 0
+  - label: Level up
+    id: sfx.player.level_up
+    category: Combat
+    description: Player gained a level
+    clips:
+    - {fileID: 8300000, guid: dc487ac2bb0e2894a954d74f25dc3cab, type: 3}
+    volume: 0.85
+    pitchJitter: 0
+    minInterval: 0
+    maxVoices: 0
+    loop: 0

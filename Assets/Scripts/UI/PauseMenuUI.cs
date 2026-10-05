@@ -267,6 +267,7 @@ public class PauseMenuUI : MonoBehaviour
 
     private void HandleSaveSucceeded()
     {
+        SoundFXManager.PlaySfx(SfxIds.UiSaveSuccess);
         SaveSlotInfo active = FindSlot(_sessionController.RefreshSlots(), _sessionController.ActiveSlotId);
         string timestamp = active.Metadata != null && active.Metadata.lastSavedUtcTicks > 0
             ? new DateTime(active.Metadata.lastSavedUtcTicks, DateTimeKind.Utc).ToLocalTime().ToString("yyyy-MM-dd  HH:mm:ss")

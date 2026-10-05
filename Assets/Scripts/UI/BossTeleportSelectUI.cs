@@ -100,6 +100,7 @@ public sealed class BossTeleportSelectUI : MonoBehaviour
 
         TeleportDestination destination = _selected.Destination;
         Action<TeleportDestination> callback = _onChosen;
+        SoundFXManager.PlaySfx(SfxIds.BossTeleport);
         Close();
         callback?.Invoke(destination);
     }

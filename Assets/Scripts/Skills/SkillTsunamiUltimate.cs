@@ -83,6 +83,7 @@ public class SkillTsunamiUltimate : MonoBehaviour
     private IEnumerator Run()
     {
         // 1. gather
+        SoundFXManager.PlaySfx(SfxIds.SkillWaterS4Charge);
         StartCoroutine(GatherRoutine());
         StartCoroutine(RippleWarningRoutine());
         SkillScreenFX.Dim(_dimAlpha, _gatherDuration, _dimTint);
@@ -101,6 +102,7 @@ public class SkillTsunamiUltimate : MonoBehaviour
             SkillScreenFX.Shake(last ? 0.3f : 0.1f + 0.05f * i, last ? 0.5f : 0.25f);
 
             SkillTsunamiWave wave = Instantiate(_wavePrefab, origin, Quaternion.identity);
+            SoundFXManager.PlaySfx(SfxIds.SkillWaterS4Wave);
             wave.TargetHit += OnWaveHit;
             if (last)
                 wave.Ended += OnLastWaveEnded;
@@ -376,6 +378,8 @@ public class SkillTsunamiUltimate : MonoBehaviour
             yield break;
         _finaleDone = true;
 
+        SoundFXManager.PlaySfxAt(SfxIds.SkillWaterS4Crash, position);
+        SoundFXManager.PlaySfx(SfxIds.SkillScreenSlam);
         SkillScreenFX.Dim(0f, 1.2f);
         SkillScreenFX.Flash(new Color(0.7f, 0.95f, 1f), 0.8f, 0.6f);
         SkillScreenFX.Shake(0.5f, 0.7f);
@@ -503,6 +507,7 @@ public class SkillTsunamiUltimate : MonoBehaviour
 
     private IEnumerator RainRoutine(Vector2 center)
     {
+        SfxLoopHandle rainLoop = SoundFXManager.StartLoop(SfxIds.SkillWaterS4AftermathRain, 0.6f, 1f, 0.5f);
         float t = 0f;
         float spawnTimer = 0f;
         while (t < _rainDuration)
@@ -518,6 +523,8 @@ public class SkillTsunamiUltimate : MonoBehaviour
 
             yield return null;
         }
+
+        rainLoop.Stop(1f);
     }
 
     private IEnumerator RaindropRoutine(Vector2 position)

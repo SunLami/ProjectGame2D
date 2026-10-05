@@ -99,11 +99,17 @@ public class SkillRockArena : MonoBehaviour
         ApplyFloorAppear(0f);
     }
 
+    private SfxLoopHandle _stunLoop;
+
     private void Start()
     {
         BuildPillars();
         BuildWall();
+        SoundFXManager.PlaySfxAt(SfxIds.SkillEarthS2Rise, transform.position);
+        _stunLoop = SoundFXManager.StartLoop(SfxIds.SkillEarthS2StunLoop, 0.7f, 1f, 0.4f);
     }
+
+    private void OnDestroy() => _stunLoop?.Stop(0.4f);
 
     private void BuildPillars()
     {
@@ -342,6 +348,7 @@ public class SkillRockArena : MonoBehaviour
     private void SpawnSpikeWave(int waveIndex)
     {
         Vector2 center = transform.position;
+        SoundFXManager.PlaySfxAt(SfxIds.SkillEarthS2Spike, center);
         float maxRing = _radius * _spikePlacementRatio;
         // Round the ring count up and re-divide so the outermost ring lands exactly on maxRing
         // (no empty band between the last ring and the wall).

@@ -55,6 +55,8 @@ public sealed class BossArenaController : MonoBehaviour
     [Header("Arena")]
     [Tooltip("Walkable area in world units. Boss skills keep their targets and lines inside it.")]
     [SerializeField] private Rect _walkableBounds = new Rect(-31.8f, -16f, 63.6f, 31.7f);
+    [Tooltip("D-110: optional outline for non-rectangular arenas (Wind's cross-shaped platform); empty = the rectangle only.")]
+    [SerializeField] private Vector2[] _walkablePolygon;
 
     [Header("Flow")]
     [SerializeField, Min(0f)] private float _resetDelaySeconds = 4f;
@@ -80,6 +82,33 @@ public sealed class BossArenaController : MonoBehaviour
 
         ShowStatue(true);
         SetSealAlpha(_sealIdleAlpha);
+        RegisterObstacles();
+    }
+
+    /// <summary>D-106: the boss walks around the teleport pillar and the ritual totems instead of through them.</summary>
+    private void RegisterObstacles()
+    {
+        foreach (TeleportPillarInteractable pillar in FindObjectsByType<TeleportPillarInteractable>(FindObjectsInactive.Exclude))
+        {
+            Collider2D collider = pillar.GetComponent<Collider2D>();
+            Vector2 center = collider != null ? (Vector2)collider.bounds.center : (Vector2)pillar.transform.position;
+            float radius = collider != null ? Mathf.Max(collider.bounds.extents.x, collider.bounds.extents.y) : 0.8f;
+            BossObstacle.Add(pillar.gameObject, center, Mathf.Max(0.8f, radius));
+        }
+
+        if (_ritualEmitters == null)
+            return;
+
+        foreach (Transform emitter in _ritualEmitters)
+        {
+            if (emitter == null)
+                continue;
+            Collider2D totemBody = emitter.parent != null ? emitter.parent.GetComponent<Collider2D>() : null;
+            if (totemBody != null)
+                BossObstacle.Add(emitter.gameObject, totemBody.bounds.center, Mathf.Max(totemBody.bounds.extents.x, totemBody.bounds.extents.y));
+            else
+                BossObstacle.Add(emitter.gameObject, emitter.position, 1.1f);
+        }
     }
 
     private void Update()
@@ -164,8 +193,10 @@ public sealed class BossArenaController : MonoBehaviour
         State = ArenaState.Summoning;
         if (_statueCollider != null)
             _statueCollider.enabled = false;
+        SetStatueHighlightEnabled(false);
 
         StartCoroutine(FadeSeal(1f, 1.4f));
+        SoundFXManager.PlaySfx(SfxIds.BossArenaLock);
 
         float vanishLength = 1f;
         if (_statueVanishFrames != null && _statueVanishFrames.Length > 0)
@@ -198,6 +229,8 @@ public sealed class BossArenaController : MonoBehaviour
 
         // The plinth that is left over fades away.
         yield return FadeStatue(0f, 0.6f);
+        if (_statueRenderer != null)
+            _statueRenderer.enabled = false; // the hover-outline material ignores the sprite's alpha, so hide the renderer for real
         SpawnBoss();
         StartCoroutine(FadeSeal(_sealFightAlpha, 3f));
     }
@@ -215,6 +248,7 @@ public sealed class BossArenaController : MonoBehaviour
         _boss = instance.GetComponent<BossController>();
         _boss.Initialize(Instantiate(_definition));
         _boss.SetArenaBounds(_walkableBounds);
+        _boss.SetArenaPolygon(_walkablePolygon);
         BossHealthBarUI.Create(_boss);
         BossOffscreenIndicator.Create(_boss);
         _boss.Died += OnBossDied;
@@ -247,6 +281,7 @@ public sealed class BossArenaController : MonoBehaviour
             return;
 
         _statueRenderer.enabled = true;
+        SetStatueHighlightEnabled(fullyVisible);
         Color color = _statueRenderer.color;
         color.a = fullyVisible ? 1f : 0f;
         _statueRenderer.color = color;
@@ -254,6 +289,22 @@ public sealed class BossArenaController : MonoBehaviour
             _statueCollider.enabled = fullyVisible;
         if (fullyVisible && _statueAnimator != null && _statueIdleFrames != null && _statueIdleFrames.Length > 0)
             _statueAnimator.Play(_statueIdleFrames, _idleFrameRate, true);
+    }
+
+    /// <summary>The shrine statue carries a HoverOutline (material swap). While the summon runs it must be off, or the outline material keeps
+    /// drawing the statue at full alpha even after the fade (the statue "does not disappear").</summary>
+    private void SetStatueHighlightEnabled(bool enabled)
+    {
+        if (_statueRenderer == null)
+            return;
+
+        var outline = _statueRenderer.GetComponent<HoverOutline>();
+        if (outline == null)
+            return;
+
+        if (!enabled)
+            outline.SetHighlighted(false);
+        outline.enabled = enabled;
     }
 
     private IEnumerator FadeStatue(float targetAlpha, float seconds)

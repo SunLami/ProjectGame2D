@@ -52,6 +52,7 @@ public partial class Player
         // detonates where its line ends); 0 = no circle.
         _skillAimEndRadius = Mathf.Max(0f, endCircleRadius);
         _pendingSkillConfirmCallback = onConfirm;
+        SoundFXManager.PlaySfx(SfxIds.CombatSkillAimStart);
         BeginSkillCast();
 
         EnsureSkillAimIndicator();
@@ -70,6 +71,7 @@ public partial class Player
         _pendingSkillConfirmCallback = null;
         if (_skillAimIndicator != null)
             _skillAimIndicator.gameObject.SetActive(false);
+        SoundFXManager.PlaySfx(SfxIds.CombatSkillAimCancel);
         EndSkillCast();
     }
 
@@ -111,6 +113,7 @@ public partial class Player
 
         Action<Vector2> callback = _pendingSkillConfirmCallback;
         _pendingSkillConfirmCallback = null;
+        SoundFXManager.PlaySfx(SfxIds.CombatSkillAimConfirm);
         callback?.Invoke(_skillAimDirection);
     }
 

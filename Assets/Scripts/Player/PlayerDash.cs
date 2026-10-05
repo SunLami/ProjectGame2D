@@ -92,14 +92,19 @@ public partial class Player
 
     public bool TryStartDash()
     {
-        if (!DashAllowedInThisScene || _isDashing || Time.time < _nextDashTime
+        if (!DashAllowedInThisScene || _isDashing || IsRooted || Time.time < _nextDashTime
             || _isDead || _deathPending || _isHit || _isAttacking
             || _isAimingSkill || _isCastingSkill
             || !GameStateManager.AllowsGameplayInput)
             return false;
 
         if (!_stats.TryConsumeStamina(_dashStaminaCost))
+        {
+            SoundFXManager.PlaySfx(SfxIds.PlayerExhausted);
             return false;
+        }
+
+        SoundFXManager.PlaySfx(SfxIds.PlayerDash);
 
         Vector2 direction = _moveInput != Vector2.zero ? _moveInput.normalized : _lastMovementFacingDirection;
         _dashRoutine = StartCoroutine(DashRoutine(direction));

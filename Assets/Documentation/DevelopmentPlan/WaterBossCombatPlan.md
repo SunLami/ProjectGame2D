@@ -63,3 +63,12 @@ Mỗi skill có telegraph đọc được và né được bằng chạy hoặc 
 - Shrine ốc tù và + Water Orb, 4 totem san hô bắn tia aqua, clip Burrow riêng; hiệu ứng nước thay đá cho xuất hiện/chết/chuyển phase.
 - **Trận đầy đủ đã chạy** (player bất tử, ×3 tốc độ): thứ tự skill đúng thiết kế — P1 `A: Kìm Kẹp→Bong Bóng`, `B: Lặn→Sóng`; P2 `C: Kìm Kẹp→Lặn→Bong Bóng`, `D: Sóng+Bong Bóng`, `E: Lặn→Lặn→Kìm Kẹp`, rồi **Xoáy Nước**; P3 `F`, `G`...; cua chết → tượng hiện lại, triều rút về, bong bóng dọn sạch.
 - Chưa làm: giữ chân Kìm Kẹp, clip riêng cho Phun và Xoáy, decor/chuyển động môi trường còn lại, âm thanh, cân bằng.
+
+### 10.2 Cập nhật (D-104): hoàn thiện skill + SFX
+- Giữ chân Kìm Kẹp **đã làm** (0.6 s khi trúng cả hai nhịp; nhịp 1 hất nhẹ). Clip riêng cho Phun (Spit) và Xoáy (Whirl) **đã làm**.
+- Art mới cho skill: gò cát (`SandMound_Move`), cát bắn (`SandBurst_Hit`), vệt càng (`ClawSlash_Hit`), tường sóng (`TidalWall_Flow`); vòi Xoáy dùng `WaterBeam_Flow`. Không còn thanh màu trơn trong skill nào của cua.
+- SFX: 19 sound `sfx.bossw.*` (xem `SfxPipeline.md`), mỗi skill có tiếng báo/tung đòn/trúng, loop cho gò cát và xoáy.
+- Còn lại: decor/chuyển động môi trường, cân bằng (chưa đo), hiển thị nước nông của triều vẫn là tấm nước mờ.
+- **D-105:** cua được gen lại tư thế hai càng giơ lên (đủ chân hai bên) và toàn bộ clip dựng lại từ bản đó (thêm `Slam` cho Sóng Triều và `Resonance` cho gầm đổi phase).
+- **D-106:** cua đuổi theo player giữa các skill; Kìm Kẹp là chuỗi dí-và-chém; Bong Bóng là 3 đợt vòng tròn 360° tăng dần; thủy triều dùng asset bờ nước animate (`TideEdge_Flow`).
+- **D-107:** Xoáy Nước hiện vùng hút + tầm vòi trước khi mở xoáy; vòi là xúc tuộc nước quay tăng tốc rồi đảo chiều, hất player vào tâm, kết thúc bằng vòng nước bùng ra; totem san hô có collider đủ lớn.

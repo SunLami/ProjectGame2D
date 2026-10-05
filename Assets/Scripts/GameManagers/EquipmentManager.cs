@@ -189,6 +189,7 @@ public class EquipmentManager : MonoBehaviour
 
         ClearVisual(slot);
         _equipped[slot] = null;
+        SoundFXManager.PlaySfx(SfxIds.InventoryUnequip);
 
         if (useTargetSlot)
         {
@@ -202,6 +203,7 @@ public class EquipmentManager : MonoBehaviour
         }
 
         RefreshPlayerStats();
+        SoundFXManager.PlaySfx(SfxIds.InventoryEquip);
         OnEquipmentChanged?.Invoke();
         return true;
     }

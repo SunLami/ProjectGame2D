@@ -49,6 +49,17 @@ public partial class Player
 
     public bool IsSlowed => Time.time < _slowUntil && _slowMultiplier < 0.999f;
 
+    private float _rootUntil;
+
+    /// <summary>Holds the player in place for `seconds` (Water boss Claw Clamp, D-103): no walking and no dash while rooted;
+    /// attacks and skills still work. The longest root wins and it expires by itself.</summary>
+    public void ApplyRoot(float seconds)
+    {
+        _rootUntil = Mathf.Max(_rootUntil, Time.time + Mathf.Max(0f, seconds));
+    }
+
+    public bool IsRooted => Time.time < _rootUntil;
+
     private float CurrentMoveSpeed => _stats.MoveSpeed
         * (_isRunning && _stats.HasStamina ? _stats.SprintMultiplier : 1f)
         * (Time.time < _slowUntil ? _slowMultiplier : 1f);
@@ -75,7 +86,7 @@ public partial class Player
             return;
         }
 
-        _rigidbody.linearVelocity = _moveInput * CurrentMoveSpeed;
+        _rigidbody.linearVelocity = IsRooted ? Vector2.zero : _moveInput * CurrentMoveSpeed;
     }
 
     public void OnMove(InputAction.CallbackContext context)

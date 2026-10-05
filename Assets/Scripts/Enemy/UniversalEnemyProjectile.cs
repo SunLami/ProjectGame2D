@@ -31,6 +31,7 @@ public sealed class UniversalEnemyProjectile : MonoBehaviour
         if (player == null || player.IsDead) return;
         Vector2 direction = (player.transform.position - transform.position).normalized;
         player.TakeDamage(_damage, direction, _knockback);
+        SoundFXManager.PlaySfxAt(SfxIds.CombatProjectileImpact, transform.position);
         if (_destroyOnHit) Destroy(gameObject);
     }
 }

@@ -52,6 +52,7 @@ public static class SummonRitualFX
         targetGlow.transform.localScale = Vector3.zero;
 
         // 1) charge: the eyes flare up and flicker
+        SoundFXManager.PlaySfxAt(SfxIds.BossRitualCharge, target);
         for (float t = 0f; t < chargeSeconds; t += Time.deltaTime)
         {
             float k = Mathf.Clamp01(t / chargeSeconds);
@@ -74,6 +75,7 @@ public static class SummonRitualFX
             beam.Core.enabled = true;
         }
 
+        SfxLoopHandle beamLoop = SoundFXManager.StartLoop(SfxIds.BossRitualBeamLoop, 0.8f, 1f, 0.15f);
         float nextJitter = 0f;
         var jitter = new float[BeamPoints];
         for (float e = 0f; e < beamSeconds; e += Time.deltaTime)
@@ -121,6 +123,8 @@ public static class SummonRitualFX
             beam.Core.enabled = false;
         }
 
+        beamLoop.Stop(0.1f);
+        SoundFXManager.PlaySfxAt(SfxIds.BossRitualExplosion, target);
         SkillScreenFX.Flash(new Color(0.8f, 1f, 0.8f), 0.55f, 0.6f);
         SkillScreenFX.Shake(0.35f, 0.7f);
         onImpact?.Invoke();

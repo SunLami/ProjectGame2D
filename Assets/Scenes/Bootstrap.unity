@@ -2544,6 +2544,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SoundFXManager
   _playerFootPos: {fileID: 0}
+  _nearDistance: 5
+  _farDistance: 24
 --- !u!114 &662427546
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2575,6 +2577,11 @@ MonoBehaviour:
     - {fileID: 8300000, guid: af56fd4081b16374aac7309fadf63c0f, type: 3}
     - {fileID: 8300000, guid: fbcece9de773bfd4cb34c33e216ebbb4, type: 3}
     - {fileID: 8300000, guid: 6d21aea7ca4713c49bfb0523e78da370, type: 3}
+    volume: 0
+    pitchJitter: 0
+    minInterval: 0
+    maxVoices: 0
+    loop: 0
   - groupName: PlayerGrassRun
     audioClips:
     - {fileID: 8300000, guid: 2f7ff290a9d7a56499b917877f0c6564, type: 3}
@@ -2593,27 +2600,1180 @@ MonoBehaviour:
     - {fileID: 8300000, guid: 33f6972cde23acf4aa54e8793a9aded7, type: 3}
     - {fileID: 8300000, guid: c2b3d742809c5ab41adb6256d12c6f15, type: 3}
     - {fileID: 8300000, guid: c60c69fbe1e50fa47b9b41dbeacc90b8, type: 3}
+    volume: 0
+    pitchJitter: 0
+    minInterval: 0
+    maxVoices: 0
+    loop: 0
   - groupName: sfx.ui.hover
     audioClips:
     - {fileID: 8300000, guid: 24abad7163218554db3368482187c59d, type: 3}
+    volume: 0
+    pitchJitter: 0
+    minInterval: 0
+    maxVoices: 0
+    loop: 0
   - groupName: sfx.ui.click_primary
     audioClips:
     - {fileID: 8300000, guid: 05a6caf42c25f104b979d665fbca89cd, type: 3}
+    volume: 0
+    pitchJitter: 0
+    minInterval: 0
+    maxVoices: 0
+    loop: 0
   - groupName: sfx.ui.click_secondary
     audioClips:
     - {fileID: 8300000, guid: 62b9e746da15f0441a029218b4555906, type: 3}
+    volume: 0
+    pitchJitter: 0
+    minInterval: 0
+    maxVoices: 0
+    loop: 0
   - groupName: sfx.ui.toggle
     audioClips:
     - {fileID: 8300000, guid: 7c1f44106a840494c85a5dcd2c6ff4e0, type: 3}
+    volume: 0
+    pitchJitter: 0
+    minInterval: 0
+    maxVoices: 0
+    loop: 0
   - groupName: sfx.ui.error
     audioClips:
     - {fileID: 8300000, guid: 46c9747d6885a1f4185233cb247c969a, type: 3}
+    volume: 0
+    pitchJitter: 0
+    minInterval: 0
+    maxVoices: 0
+    loop: 0
   - groupName: sfx.ui.popup_open
     audioClips:
     - {fileID: 8300000, guid: 24cdefad391e2fc40aefe85ada4bac41, type: 3}
+    volume: 0
+    pitchJitter: 0
+    minInterval: 0
+    maxVoices: 0
+    loop: 0
   - groupName: sfx.ui.popup_close
     audioClips:
     - {fileID: 8300000, guid: c4e359e4d0bd7014fac75f346d92486a, type: 3}
+    volume: 0
+    pitchJitter: 0
+    minInterval: 0
+    maxVoices: 0
+    loop: 0
+  - groupName: sfx.boss.shrine_orb_place
+    audioClips:
+    - {fileID: 8300000, guid: 9d9d66c84c9dfcf49bf9eb1e49d33229, type: 3}
+    volume: 0.8
+    pitchJitter: 0
+    minInterval: 0
+    maxVoices: 0
+    loop: 0
+  - groupName: sfx.boss.ritual_charge
+    audioClips:
+    - {fileID: 8300000, guid: cb2213d557316c642aeb1fc49ef825f0, type: 3}
+    volume: 0.8
+    pitchJitter: 0
+    minInterval: 0
+    maxVoices: 0
+    loop: 0
+  - groupName: sfx.boss.ritual_beam_loop
+    audioClips:
+    - {fileID: 8300000, guid: 3a3ed7be7fde4354c82a53ebbd63cc72, type: 3}
+    volume: 0.7
+    pitchJitter: 0
+    minInterval: 0
+    maxVoices: 0
+    loop: 1
+  - groupName: sfx.boss.ritual_explosion
+    audioClips:
+    - {fileID: 8300000, guid: 6c7ecbcafd36519458e4f530ba630a1e, type: 3}
+    volume: 1
+    pitchJitter: 0
+    minInterval: 0
+    maxVoices: 0
+    loop: 0
+  - groupName: sfx.boss.awaken
+    audioClips:
+    - {fileID: 8300000, guid: 2deacf6bb3c5a244bae2d61b74b2f26f, type: 3}
+    volume: 1
+    pitchJitter: 0
+    minInterval: 0
+    maxVoices: 0
+    loop: 0
+  - groupName: sfx.boss.phase_roar
+    audioClips:
+    - {fileID: 8300000, guid: 19a46e2818fb2614db71508dcd75b35e, type: 3}
+    - {fileID: 8300000, guid: 5c2e317429e1cb348b93e645bdbb4fa1, type: 3}
+    volume: 1
+    pitchJitter: 0
+    minInterval: 0
+    maxVoices: 0
+    loop: 0
+  - groupName: sfx.boss.telegraph
+    audioClips:
+    - {fileID: 8300000, guid: 630bfaedffebbe14384b2e3c60bd665b, type: 3}
+    volume: 0.4
+    pitchJitter: 0
+    minInterval: 0.15
+    maxVoices: 3
+    loop: 0
+  - groupName: sfx.boss.slam
+    audioClips:
+    - {fileID: 8300000, guid: be1f11dd157e23f46b32099cf97fc5af, type: 3}
+    - {fileID: 8300000, guid: bee46ba6fb606c14a878858a5da228d2, type: 3}
+    volume: 1
+    pitchJitter: 0.05
+    minInterval: 0.12
+    maxVoices: 3
+    loop: 0
+  - groupName: sfx.boss.slam_windup
+    audioClips:
+    - {fileID: 8300000, guid: 1f65b68ed1d038e4692e56332bbefe79, type: 3}
+    volume: 0.8
+    pitchJitter: 0.05
+    minInterval: 0.2
+    maxVoices: 0
+    loop: 0
+  - groupName: sfx.boss.rain_drop
+    audioClips:
+    - {fileID: 8300000, guid: 9514812522fb6fe4a8b0c0d6e0f86d56, type: 3}
+    volume: 0.5
+    pitchJitter: 0.1
+    minInterval: 0.06
+    maxVoices: 4
+    loop: 0
+  - groupName: sfx.boss.rain_impact
+    audioClips:
+    - {fileID: 8300000, guid: 108e33cc53056dd41983504841187fa9, type: 3}
+    - {fileID: 8300000, guid: 670ef5376aaecf34cab1a2f4d5170133, type: 3}
+    - {fileID: 8300000, guid: e17618bb726328f49bfb4134aad85758, type: 3}
+    volume: 0.75
+    pitchJitter: 0.1
+    minInterval: 0.05
+    maxVoices: 6
+    loop: 0
+  - groupName: sfx.boss.spike_lane
+    audioClips:
+    - {fileID: 8300000, guid: 218eb4ece4f5f3f48a06266ba0ab7adb, type: 3}
+    - {fileID: 8300000, guid: 7ba03bc93d19afd45a49fe06be06e91b, type: 3}
+    volume: 0.85
+    pitchJitter: 0.07
+    minInterval: 0.08
+    maxVoices: 4
+    loop: 0
+  - groupName: sfx.boss.fist_launch
+    audioClips:
+    - {fileID: 8300000, guid: f58a97bccff3f6040b4054a6177c42b3, type: 3}
+    volume: 0.9
+    pitchJitter: 0.05
+    minInterval: 0
+    maxVoices: 0
+    loop: 0
+  - groupName: sfx.boss.fist_impact
+    audioClips:
+    - {fileID: 8300000, guid: 6b065e1782211004797710909381f26f, type: 3}
+    volume: 1
+    pitchJitter: 0.05
+    minInterval: 0
+    maxVoices: 0
+    loop: 0
+  - groupName: sfx.boss.resonance_charge
+    audioClips:
+    - {fileID: 8300000, guid: c6899f08e16b01e42aefcb361bd30bd1, type: 3}
+    volume: 0.85
+    pitchJitter: 0
+    minInterval: 0
+    maxVoices: 0
+    loop: 0
+  - groupName: sfx.boss.resonance_burst
+    audioClips:
+    - {fileID: 8300000, guid: 72fe73ab7c3442349883f8d2f9f8af89, type: 3}
+    volume: 0.9
+    pitchJitter: 0.05
+    minInterval: 0.1
+    maxVoices: 3
+    loop: 0
+  - groupName: sfx.boss.rock_bullet
+    audioClips:
+    - {fileID: 8300000, guid: 070e721becbcad84c80d1e695eb29945, type: 3}
+    - {fileID: 8300000, guid: 20597ea85ea0d08498b9feb253c998f9, type: 3}
+    volume: 0.5
+    pitchJitter: 0.1
+    minInterval: 0.05
+    maxVoices: 4
+    loop: 0
+  - groupName: sfx.boss.recovery
+    audioClips:
+    - {fileID: 8300000, guid: f303edff79fc6fa48b63ddf00d0af4d7, type: 3}
+    volume: 0.8
+    pitchJitter: 0
+    minInterval: 0
+    maxVoices: 0
+    loop: 0
+  - groupName: sfx.boss.hit
+    audioClips:
+    - {fileID: 8300000, guid: 26b355e978e8ed34895be531e073a1ac, type: 3}
+    - {fileID: 8300000, guid: 6dd9c8f369633fd47aa5201bc12ee531, type: 3}
+    volume: 0.6
+    pitchJitter: 0.1
+    minInterval: 0.06
+    maxVoices: 3
+    loop: 0
+  - groupName: sfx.boss.death
+    audioClips:
+    - {fileID: 8300000, guid: 3e50a3594f387be4bbfce6bbbf79a319, type: 3}
+    volume: 1
+    pitchJitter: 0
+    minInterval: 0
+    maxVoices: 0
+    loop: 0
+  - groupName: sfx.boss.victory
+    audioClips:
+    - {fileID: 8300000, guid: 25f9e6252c935d847a6aa07768022a5e, type: 3}
+    volume: 0.8
+    pitchJitter: 0
+    minInterval: 0
+    maxVoices: 0
+    loop: 0
+  - groupName: sfx.boss.teleport
+    audioClips:
+    - {fileID: 8300000, guid: f48c0699f4b6e9f4690badaa35e2b847, type: 3}
+    - {fileID: 8300000, guid: 2e07a825523a6284a8de206d9aae6110, type: 3}
+    volume: 0.85
+    pitchJitter: 0
+    minInterval: 0
+    maxVoices: 0
+    loop: 0
+  - groupName: sfx.boss.arena_lock
+    audioClips:
+    - {fileID: 8300000, guid: eb1ab055ef861c6459233b01f8bfb71e, type: 3}
+    volume: 0.85
+    pitchJitter: 0
+    minInterval: 0
+    maxVoices: 0
+    loop: 0
+  - groupName: sfx.combat.player_attack
+    audioClips:
+    - {fileID: 8300000, guid: 78fd4534ea499c04aab487e56a015b56, type: 3}
+    - {fileID: 8300000, guid: cf0d44d771bfb934b936fc0c61073a1a, type: 3}
+    - {fileID: 8300000, guid: 403b80a98421ce0419da45d2066ef84f, type: 3}
+    - {fileID: 8300000, guid: 64edfd5ab69e50f4ba53513de97dde80, type: 3}
+    volume: 0.8
+    pitchJitter: 0.07
+    minInterval: 0
+    maxVoices: 0
+    loop: 0
+  - groupName: sfx.combat.hit_impact
+    audioClips:
+    - {fileID: 8300000, guid: 78a1f9218efea574e8fec71dde3ca9e8, type: 3}
+    - {fileID: 8300000, guid: 66cd3382cef9d574191783033ea6fb39, type: 3}
+    - {fileID: 8300000, guid: 1196135ae2153c34199f659505f334f3, type: 3}
+    - {fileID: 8300000, guid: 96899ca34492e0b41ab2f5d5b1951d45, type: 3}
+    volume: 0.9
+    pitchJitter: 0.06
+    minInterval: 0.04
+    maxVoices: 0
+    loop: 0
+  - groupName: sfx.combat.hit_crit
+    audioClips:
+    - {fileID: 8300000, guid: 82c65e9ee56f65044a496861fff13a7e, type: 3}
+    volume: 1
+    pitchJitter: 0.04
+    minInterval: 0
+    maxVoices: 0
+    loop: 0
+  - groupName: sfx.combat.player_hurt
+    audioClips:
+    - {fileID: 8300000, guid: 966d6af316b4ed64b8fc2de365026a44, type: 3}
+    - {fileID: 8300000, guid: 3f7589dbd7989934f86d2951584b08ff, type: 3}
+    - {fileID: 8300000, guid: 5ac9a989be26fd943922577805461e9e, type: 3}
+    volume: 0.85
+    pitchJitter: 0.05
+    minInterval: 0.25
+    maxVoices: 0
+    loop: 0
+  - groupName: sfx.combat.player_dodge
+    audioClips:
+    - {fileID: 8300000, guid: 3d980a9f5c7852446b49c5a393b267ff, type: 3}
+    - {fileID: 8300000, guid: b891bc91a92b3474b9d037d8c63fae89, type: 3}
+    volume: 0.7
+    pitchJitter: 0.08
+    minInterval: 0.15
+    maxVoices: 0
+    loop: 0
+  - groupName: sfx.combat.player_death
+    audioClips:
+    - {fileID: 8300000, guid: b885b94bb0f4ecc429f131eb93cfcf8e, type: 3}
+    - {fileID: 8300000, guid: 7234b9e6af2071a43947072e463bc5a3, type: 3}
+    volume: 0.95
+    pitchJitter: 0
+    minInterval: 0
+    maxVoices: 0
+    loop: 0
+  - groupName: sfx.player.dash
+    audioClips:
+    - {fileID: 8300000, guid: 5fe76c75af4425d4b99d064eac3d9ef0, type: 3}
+    - {fileID: 8300000, guid: f8e6c9f8bd162bf409639d4c4a1e4504, type: 3}
+    volume: 0.75
+    pitchJitter: 0.06
+    minInterval: 0.2
+    maxVoices: 0
+    loop: 0
+  - groupName: sfx.player.exhausted
+    audioClips:
+    - {fileID: 8300000, guid: f425633591a24a84f91cf36862e1bf71, type: 3}
+    - {fileID: 8300000, guid: 7ccd82f1daa3bde4ba6121904219ecfd, type: 3}
+    - {fileID: 8300000, guid: 2eabda6e8a24ea04cadc49b9cdc129d4, type: 3}
+    volume: 0.7
+    pitchJitter: 0.04
+    minInterval: 1.2
+    maxVoices: 0
+    loop: 0
+  - groupName: sfx.player.level_up
+    audioClips:
+    - {fileID: 8300000, guid: dc487ac2bb0e2894a954d74f25dc3cab, type: 3}
+    volume: 0.85
+    pitchJitter: 0
+    minInterval: 0
+    maxVoices: 0
+    loop: 0
+  - groupName: sfx.combat.enemy_hit
+    audioClips:
+    - {fileID: 8300000, guid: fdec881ed97557f42b6403f3ba366a9d, type: 3}
+    - {fileID: 8300000, guid: 760c5d2205342464d8494c681775ef23, type: 3}
+    - {fileID: 8300000, guid: b7766e2d1289f834dbfc705f42804ff8, type: 3}
+    volume: 0.7
+    pitchJitter: 0.08
+    minInterval: 0.05
+    maxVoices: 0
+    loop: 0
+  - groupName: sfx.combat.enemy_death
+    audioClips:
+    - {fileID: 8300000, guid: cbc749b227e8417428fc33d481d54e65, type: 3}
+    - {fileID: 8300000, guid: ce55545e071b06d4fbb98ccf619913cc, type: 3}
+    volume: 0.8
+    pitchJitter: 0.06
+    minInterval: 0
+    maxVoices: 0
+    loop: 0
+  - groupName: sfx.enemy.slime_hurt
+    audioClips:
+    - {fileID: 8300000, guid: 902e974a33eda6649b27ca61d9b5d32d, type: 3}
+    - {fileID: 8300000, guid: 6289079db29e3334da2f9c089734af89, type: 3}
+    - {fileID: 8300000, guid: 6bf548a50e7fb5d4b8a68fcc48aac65b, type: 3}
+    volume: 0.8
+    pitchJitter: 0.1
+    minInterval: 0.06
+    maxVoices: 0
+    loop: 0
+  - groupName: sfx.enemy.slime_death
+    audioClips:
+    - {fileID: 8300000, guid: 8e2611ff9ec658e4eacd0491badeed05, type: 3}
+    - {fileID: 8300000, guid: ab28c676b067cf04ca42d3d06db6e537, type: 3}
+    - {fileID: 8300000, guid: 2c93c62ebb015ba4b96aa4d2c120b543, type: 3}
+    volume: 0.85
+    pitchJitter: 0.06
+    minInterval: 0
+    maxVoices: 0
+    loop: 0
+  - groupName: sfx.enemy.slime_attack
+    audioClips:
+    - {fileID: 8300000, guid: 51091eb6ab0067b499e7ca2748658bae, type: 3}
+    - {fileID: 8300000, guid: 1d294b3d9760b244e8198f1347217291, type: 3}
+    volume: 0.65
+    pitchJitter: 0.1
+    minInterval: 0.2
+    maxVoices: 0
+    loop: 0
+  - groupName: sfx.enemy.goblin_hurt
+    audioClips:
+    - {fileID: 8300000, guid: 26c8f3f63ae9d6d478a23c0f480702c9, type: 3}
+    - {fileID: 8300000, guid: 88a067096d0193f45a6eb38040ee1ade, type: 3}
+    volume: 0.85
+    pitchJitter: 0.07
+    minInterval: 0.1
+    maxVoices: 0
+    loop: 0
+  - groupName: sfx.enemy.goblin_death
+    audioClips:
+    - {fileID: 8300000, guid: 7deb800abaf5d2346ba0e07496e9c352, type: 3}
+    - {fileID: 8300000, guid: 070f04c2326921e4db34ba0ea1fb65f4, type: 3}
+    volume: 0.9
+    pitchJitter: 0.05
+    minInterval: 0
+    maxVoices: 0
+    loop: 0
+  - groupName: sfx.enemy.goblin_attack
+    audioClips:
+    - {fileID: 8300000, guid: 38831a56c9f177941b1ab78c7951a5ab, type: 3}
+    - {fileID: 8300000, guid: d399d7eacf34dd245993c756fd4a0b6f, type: 3}
+    volume: 0.75
+    pitchJitter: 0.07
+    minInterval: 0.3
+    maxVoices: 0
+    loop: 0
+  - groupName: sfx.combat.projectile_launch
+    audioClips:
+    - {fileID: 8300000, guid: e3caae51c2779674f839bed28b3c9fff, type: 3}
+    - {fileID: 8300000, guid: e301c89997993324b90e3e099c54f6d3, type: 3}
+    volume: 0.7
+    pitchJitter: 0.07
+    minInterval: 0.08
+    maxVoices: 0
+    loop: 0
+  - groupName: sfx.combat.projectile_impact
+    audioClips:
+    - {fileID: 8300000, guid: 2aaab8966ea16c54198af025317fd193, type: 3}
+    - {fileID: 8300000, guid: 5a5b7f00e3d18cc4c83722124bab717f, type: 3}
+    volume: 0.75
+    pitchJitter: 0.07
+    minInterval: 0.06
+    maxVoices: 0
+    loop: 0
+  - groupName: sfx.combat.stun_apply
+    audioClips:
+    - {fileID: 8300000, guid: dc7e1d723a4b6944b9f329e90a63edd5, type: 3}
+    volume: 0.7
+    pitchJitter: 0.05
+    minInterval: 0.25
+    maxVoices: 0
+    loop: 0
+  - groupName: sfx.combat.skill_aim_start
+    audioClips:
+    - {fileID: 8300000, guid: 5e1e28bc3c3b5bf40930a2ba704d8397, type: 3}
+    volume: 0.55
+    pitchJitter: 0
+    minInterval: 0.2
+    maxVoices: 0
+    loop: 0
+  - groupName: sfx.combat.skill_aim_confirm
+    audioClips:
+    - {fileID: 8300000, guid: e703eb391ef12434d86c00b41502f79c, type: 3}
+    volume: 0.7
+    pitchJitter: 0
+    minInterval: 0
+    maxVoices: 0
+    loop: 0
+  - groupName: sfx.combat.skill_aim_cancel
+    audioClips:
+    - {fileID: 8300000, guid: 31e9ef0094c311d4991aa8c1bdfd57a6, type: 3}
+    volume: 0.5
+    pitchJitter: 0
+    minInterval: 0.2
+    maxVoices: 0
+    loop: 0
+  - groupName: sfx.skill.cast_generic
+    audioClips:
+    - {fileID: 8300000, guid: 9d343e0ada81c5d42a0418dd3e026404, type: 3}
+    - {fileID: 8300000, guid: a1887c96ff8e6284093d289808a1da17, type: 3}
+    volume: 0.75
+    pitchJitter: 0.03
+    minInterval: 0.1
+    maxVoices: 0
+    loop: 0
+  - groupName: sfx.skill.hit_flesh
+    audioClips:
+    - {fileID: 8300000, guid: cd8f7bf1fd52919429cb1038602448aa, type: 3}
+    - {fileID: 8300000, guid: 7ad7942a12e854848be6397fc546ddc6, type: 3}
+    volume: 0.6
+    pitchJitter: 0.05
+    minInterval: 0.08
+    maxVoices: 3
+    loop: 0
+  - groupName: sfx.skill.screen_slam
+    audioClips:
+    - {fileID: 8300000, guid: 61da2dbc2d8de6a46b875bee353e1446, type: 3}
+    volume: 0.8
+    pitchJitter: 0
+    minInterval: 0.3
+    maxVoices: 0
+    loop: 0
+  - groupName: sfx.skill.water_s1_cast
+    audioClips:
+    - {fileID: 8300000, guid: 2b5b06a06122b66498fe83da3ed9c11d, type: 3}
+    - {fileID: 8300000, guid: 9bc4d2bcaba76af4ca7ab6d9570e9dd8, type: 3}
+    - {fileID: 8300000, guid: 0ff7ac833117c1c4ba5dd3cb2cd375ae, type: 3}
+    volume: 0.75
+    pitchJitter: 0.03
+    minInterval: 0.08
+    maxVoices: 3
+    loop: 0
+  - groupName: sfx.skill.water_s1_impact
+    audioClips:
+    - {fileID: 8300000, guid: 52227898f5a45ed4c8f4fc8ca0f63b70, type: 3}
+    - {fileID: 8300000, guid: bd42c6b1156289a4faada5de53799b0f, type: 3}
+    - {fileID: 8300000, guid: c4272f162b9034246a1a29a8fdd2162c, type: 3}
+    volume: 0.7
+    pitchJitter: 0.05
+    minInterval: 0.05
+    maxVoices: 4
+    loop: 0
+  - groupName: sfx.skill.water_s2_cast
+    audioClips:
+    - {fileID: 8300000, guid: ddbb6204159873f468aaed3af2453835, type: 3}
+    volume: 0.75
+    pitchJitter: 0
+    minInterval: 0
+    maxVoices: 0
+    loop: 0
+  - groupName: sfx.skill.water_s2_splash
+    audioClips:
+    - {fileID: 8300000, guid: 8de2a3320eb2dd543a63f6c9f9936c23, type: 3}
+    - {fileID: 8300000, guid: 39852eac71cead74abb48b1d41f4b3be, type: 3}
+    volume: 0.85
+    pitchJitter: 0.03
+    minInterval: 0.1
+    maxVoices: 3
+    loop: 0
+  - groupName: sfx.skill.water_s3_charge
+    audioClips:
+    - {fileID: 8300000, guid: be06115fdf16c7b4687de91be515b2da, type: 3}
+    volume: 0.7
+    pitchJitter: 0
+    minInterval: 0
+    maxVoices: 0
+    loop: 0
+  - groupName: sfx.skill.water_s3_beam_loop
+    audioClips:
+    - {fileID: 8300000, guid: 2478dcdadb70ec645b7256da0f730c3b, type: 3}
+    volume: 0.65
+    pitchJitter: 0
+    minInterval: 0
+    maxVoices: 0
+    loop: 1
+  - groupName: sfx.skill.water_s3_end
+    audioClips:
+    - {fileID: 8300000, guid: 677bc0996fbfb66498ef2e4b0fcf8bc6, type: 3}
+    volume: 0.65
+    pitchJitter: 0
+    minInterval: 0
+    maxVoices: 0
+    loop: 0
+  - groupName: sfx.skill.water_s4_charge
+    audioClips:
+    - {fileID: 8300000, guid: 0d68b9277ab3c3947af72fbd5a9832d9, type: 3}
+    volume: 0.8
+    pitchJitter: 0
+    minInterval: 0
+    maxVoices: 0
+    loop: 0
+  - groupName: sfx.skill.water_s4_wave
+    audioClips:
+    - {fileID: 8300000, guid: b1d1e4c23cded2745986abd9fc68ea1c, type: 3}
+    volume: 0.8
+    pitchJitter: 0
+    minInterval: 0
+    maxVoices: 0
+    loop: 0
+  - groupName: sfx.skill.water_s4_crash
+    audioClips:
+    - {fileID: 8300000, guid: 45e91c2f55172314ea0aa59b753420c3, type: 3}
+    volume: 0.95
+    pitchJitter: 0
+    minInterval: 0.2
+    maxVoices: 0
+    loop: 0
+  - groupName: sfx.skill.water_s4_aftermath_rain
+    audioClips:
+    - {fileID: 8300000, guid: f35ff04bcdd3013498ec7bfd15eeb496, type: 3}
+    volume: 0.45
+    pitchJitter: 0
+    minInterval: 0
+    maxVoices: 0
+    loop: 1
+  - groupName: sfx.skill.earth_s1_cast
+    audioClips:
+    - {fileID: 8300000, guid: 57d63821bd7aa0749ab72a8e617b2a0b, type: 3}
+    - {fileID: 8300000, guid: 911624350f6954d43a288309c42233f7, type: 3}
+    volume: 0.75
+    pitchJitter: 0.03
+    minInterval: 0.08
+    maxVoices: 3
+    loop: 0
+  - groupName: sfx.skill.earth_s1_impact
+    audioClips:
+    - {fileID: 8300000, guid: abf8cd08d8ecf18498949e2411b989e9, type: 3}
+    - {fileID: 8300000, guid: bcbd7b57dfb87054494ece6a280ba8d4, type: 3}
+    - {fileID: 8300000, guid: 15307ec71ccdf1b459769c58dfafd9ed, type: 3}
+    volume: 0.75
+    pitchJitter: 0.05
+    minInterval: 0.05
+    maxVoices: 4
+    loop: 0
+  - groupName: sfx.skill.earth_s2_rise
+    audioClips:
+    - {fileID: 8300000, guid: 18dad61b61c8d7d45b9ad8378a56fe45, type: 3}
+    volume: 0.85
+    pitchJitter: 0
+    minInterval: 0
+    maxVoices: 0
+    loop: 0
+  - groupName: sfx.skill.earth_s2_spike
+    audioClips:
+    - {fileID: 8300000, guid: adb4a23e31ce03a4aa63170d88feccaf, type: 3}
+    - {fileID: 8300000, guid: fab175d8b13dabc43afd82b018c8d93c, type: 3}
+    volume: 0.7
+    pitchJitter: 0.05
+    minInterval: 0.06
+    maxVoices: 4
+    loop: 0
+  - groupName: sfx.skill.earth_s2_stun_loop
+    audioClips:
+    - {fileID: 8300000, guid: d7eedebc645896844898da4173a7e5b1, type: 3}
+    volume: 0.5
+    pitchJitter: 0
+    minInterval: 0
+    maxVoices: 0
+    loop: 1
+  - groupName: sfx.skill.earth_s3_cone
+    audioClips:
+    - {fileID: 8300000, guid: d952ef409d3037648959173b49e416c4, type: 3}
+    volume: 0.8
+    pitchJitter: 0.03
+    minInterval: 0.1
+    maxVoices: 0
+    loop: 0
+  - groupName: sfx.skill.earth_s3_cage
+    audioClips:
+    - {fileID: 8300000, guid: 06c3a73b44782f44cb373ad013ff7206, type: 3}
+    volume: 0.8
+    pitchJitter: 0.03
+    minInterval: 0
+    maxVoices: 0
+    loop: 0
+  - groupName: sfx.skill.earth_s4_charge
+    audioClips:
+    - {fileID: 8300000, guid: a826c2b09617bb148a59e76194b1ef51, type: 3}
+    volume: 0.75
+    pitchJitter: 0
+    minInterval: 0
+    maxVoices: 0
+    loop: 0
+  - groupName: sfx.skill.earth_s4_meteor_fall
+    audioClips:
+    - {fileID: 8300000, guid: 6ec8fe795505b5d489cebae89540a936, type: 3}
+    volume: 0.5
+    pitchJitter: 0.05
+    minInterval: 0.1
+    maxVoices: 4
+    loop: 0
+  - groupName: sfx.skill.earth_s4_meteor_impact
+    audioClips:
+    - {fileID: 8300000, guid: 5db9b1ab299c471459353724ca48e563, type: 3}
+    - {fileID: 8300000, guid: 4e9a933443f91e944b100e966d0f827d, type: 3}
+    volume: 0.75
+    pitchJitter: 0.05
+    minInterval: 0.06
+    maxVoices: 6
+    loop: 0
+  - groupName: sfx.skill.earth_s4_finale
+    audioClips:
+    - {fileID: 8300000, guid: 4d3a8594a809a1e4090d54747152b998, type: 3}
+    volume: 0.95
+    pitchJitter: 0
+    minInterval: 0
+    maxVoices: 0
+    loop: 0
+  - groupName: sfx.skill.earth_s4_aftermath
+    audioClips:
+    - {fileID: 8300000, guid: ed4dc33565280bb4fa70be0cc542738a, type: 3}
+    - {fileID: 8300000, guid: 4e2ac47f08a8507419c1b0fba313df5d, type: 3}
+    volume: 0.55
+    pitchJitter: 0
+    minInterval: 0
+    maxVoices: 0
+    loop: 0
+  - groupName: sfx.skill.wind_s1_throw
+    audioClips:
+    - {fileID: 8300000, guid: 13f17bd02c782bb418e6749fe2daac61, type: 3}
+    - {fileID: 8300000, guid: 4e89b7e57746a4c4d89860a2088a4082, type: 3}
+    volume: 0.75
+    pitchJitter: 0.03
+    minInterval: 0.1
+    maxVoices: 0
+    loop: 0
+  - groupName: sfx.skill.wind_s1_loop
+    audioClips:
+    - {fileID: 8300000, guid: c628a0c72338bd14bacd7c6287f815de, type: 3}
+    volume: 0.4
+    pitchJitter: 0
+    minInterval: 0
+    maxVoices: 0
+    loop: 1
+  - groupName: sfx.skill.wind_s1_catch
+    audioClips:
+    - {fileID: 8300000, guid: 275ad311b237ed643a26d3c601afaec2, type: 3}
+    volume: 0.65
+    pitchJitter: 0.03
+    minInterval: 0
+    maxVoices: 0
+    loop: 0
+  - groupName: sfx.skill.wind_s2_cast
+    audioClips:
+    - {fileID: 8300000, guid: 7baa1f728704af44ba43476f9a3b1b11, type: 3}
+    volume: 0.75
+    pitchJitter: 0
+    minInterval: 0
+    maxVoices: 0
+    loop: 0
+  - groupName: sfx.skill.wind_s2_lift_loop
+    audioClips:
+    - {fileID: 8300000, guid: 2d882eb58981a9a4b8520ac47dba58ee, type: 3}
+    volume: 0.5
+    pitchJitter: 0
+    minInterval: 0
+    maxVoices: 0
+    loop: 1
+  - groupName: sfx.skill.wind_s2_land
+    audioClips:
+    - {fileID: 8300000, guid: fcf10cf3c15c0f04e938f03411ba7a48, type: 3}
+    volume: 0.6
+    pitchJitter: 0.05
+    minInterval: 0.06
+    maxVoices: 3
+    loop: 0
+  - groupName: sfx.skill.wind_s3_pulse
+    audioClips:
+    - {fileID: 8300000, guid: dd92bbdf2037c8b42a598e0dc2c4160e, type: 3}
+    - {fileID: 8300000, guid: 52b6e1434eb8982468db86dbf8e6ba73, type: 3}
+    volume: 0.75
+    pitchJitter: 0.03
+    minInterval: 0.1
+    maxVoices: 0
+    loop: 0
+  - groupName: sfx.skill.wind_s3_wall_slam
+    audioClips:
+    - {fileID: 8300000, guid: 1dccc21d0e7e8ff49b124748a1edb312, type: 3}
+    volume: 0.7
+    pitchJitter: 0.05
+    minInterval: 0.08
+    maxVoices: 3
+    loop: 0
+  - groupName: sfx.skill.wind_s4_charge
+    audioClips:
+    - {fileID: 8300000, guid: 351ea0b3f08b5de489debaea1270a2a8, type: 3}
+    volume: 0.75
+    pitchJitter: 0
+    minInterval: 0
+    maxVoices: 0
+    loop: 0
+  - groupName: sfx.skill.wind_s4_screech
+    audioClips:
+    - {fileID: 8300000, guid: bc24765117f0d1e4fa254288c0ca331b, type: 3}
+    - {fileID: 8300000, guid: bf33442448f60e54f8efdb35f3eb4ae0, type: 3}
+    volume: 0.85
+    pitchJitter: 0.03
+    minInterval: 0
+    maxVoices: 0
+    loop: 0
+  - groupName: sfx.skill.wind_s4_flap
+    audioClips:
+    - {fileID: 8300000, guid: 827d88ee31f112e4e84d31c1c31ecab4, type: 3}
+    - {fileID: 8300000, guid: 25a881f5a7aa6bf479410e2a3e82e6d0, type: 3}
+    volume: 0.65
+    pitchJitter: 0.04
+    minInterval: 0.25
+    maxVoices: 2
+    loop: 0
+  - groupName: sfx.skill.wind_s4_dive
+    audioClips:
+    - {fileID: 8300000, guid: fcfa1ce56da08dc4aa66625c7685ea79, type: 3}
+    volume: 0.85
+    pitchJitter: 0
+    minInterval: 0
+    maxVoices: 0
+    loop: 0
+  - groupName: sfx.skill.wind_s4_shockwave
+    audioClips:
+    - {fileID: 8300000, guid: 6eabba198946cad46a4dbda263743d76, type: 3}
+    volume: 0.95
+    pitchJitter: 0
+    minInterval: 0.2
+    maxVoices: 0
+    loop: 0
+  - groupName: sfx.skill.wind_s4_feather_rain
+    audioClips:
+    - {fileID: 8300000, guid: 78986d9128519fb4bb32c0e829c17c31, type: 3}
+    - {fileID: 8300000, guid: 094725387ff00d245889b041ca82989b, type: 3}
+    volume: 0.4
+    pitchJitter: 0.06
+    minInterval: 0.08
+    maxVoices: 3
+    loop: 0
+  - groupName: sfx.ui.tab
+    audioClips:
+    - {fileID: 8300000, guid: 42980802042569b44a6791f63c8d835d, type: 3}
+    - {fileID: 8300000, guid: 2e0e03c24ce96d843a84f14c4d1b5487, type: 3}
+    volume: 0.6
+    pitchJitter: 0.04
+    minInterval: 0.05
+    maxVoices: 0
+    loop: 0
+  - groupName: sfx.ui.notification
+    audioClips:
+    - {fileID: 8300000, guid: e93bb01185ec6b147aad8db4105903f4, type: 3}
+    - {fileID: 8300000, guid: ce14469e28247ac44aa916aa67cbdb66, type: 3}
+    volume: 0.6
+    pitchJitter: 0
+    minInterval: 0.3
+    maxVoices: 0
+    loop: 0
+  - groupName: sfx.ui.save_success
+    audioClips:
+    - {fileID: 8300000, guid: f430fc89d3e10e14db6a078a73ec8a06, type: 3}
+    volume: 0.55
+    pitchJitter: 0
+    minInterval: 0.5
+    maxVoices: 0
+    loop: 0
+  - groupName: sfx.ui.dialogue_blip
+    audioClips:
+    - {fileID: 8300000, guid: 7df2f140cb6842648967d6a5f46d312a, type: 3}
+    volume: 0.35
+    pitchJitter: 0.12
+    minInterval: 0.04
+    maxVoices: 0
+    loop: 0
+  - groupName: sfx.inventory.open
+    audioClips:
+    - {fileID: 8300000, guid: 0bcec40383643e344926b6e8ea2d32b2, type: 3}
+    volume: 0.7
+    pitchJitter: 0.03
+    minInterval: 0.1
+    maxVoices: 0
+    loop: 0
+  - groupName: sfx.inventory.close
+    audioClips:
+    - {fileID: 8300000, guid: ad3f0dd19535b2a408a1ab61f73b9e66, type: 3}
+    volume: 0.7
+    pitchJitter: 0.03
+    minInterval: 0.1
+    maxVoices: 0
+    loop: 0
+  - groupName: sfx.inventory.pickup
+    audioClips:
+    - {fileID: 8300000, guid: 494600bfbf6da3743a04972d9019f276, type: 3}
+    - {fileID: 8300000, guid: 1aa1a76b5310586478103624ff4c9e89, type: 3}
+    volume: 0.7
+    pitchJitter: 0.08
+    minInterval: 0.05
+    maxVoices: 3
+    loop: 0
+  - groupName: sfx.inventory.drop
+    audioClips:
+    - {fileID: 8300000, guid: b9316c2bd9efa974f9359cbd7633c1d1, type: 3}
+    - {fileID: 8300000, guid: 3e412c876da0843448a21d9e93f61c8e, type: 3}
+    volume: 0.65
+    pitchJitter: 0.08
+    minInterval: 0.05
+    maxVoices: 0
+    loop: 0
+  - groupName: sfx.inventory.equip
+    audioClips:
+    - {fileID: 8300000, guid: 2a348862c9c678542988f969fa83dbeb, type: 3}
+    - {fileID: 8300000, guid: 3e6a799f3f51db24bb57d908e534c6e1, type: 3}
+    volume: 0.7
+    pitchJitter: 0.05
+    minInterval: 0.08
+    maxVoices: 0
+    loop: 0
+  - groupName: sfx.inventory.unequip
+    audioClips:
+    - {fileID: 8300000, guid: 1363f18d695de2049a3f663f9911b292, type: 3}
+    volume: 0.6
+    pitchJitter: 0.05
+    minInterval: 0.08
+    maxVoices: 0
+    loop: 0
+  - groupName: sfx.inventory.use_potion
+    audioClips:
+    - {fileID: 8300000, guid: a6c0bc82a68ea7c4e83402b82c17a466, type: 3}
+    - {fileID: 8300000, guid: d89714313fe2be447852aabe9fbe3d65, type: 3}
+    volume: 0.7
+    pitchJitter: 0.04
+    minInterval: 0.2
+    maxVoices: 0
+    loop: 0
+  - groupName: sfx.quest.accept
+    audioClips:
+    - {fileID: 8300000, guid: 0c77344603b35cc44b0b4a478d225855, type: 3}
+    volume: 0.7
+    pitchJitter: 0
+    minInterval: 0.3
+    maxVoices: 0
+    loop: 0
+  - groupName: sfx.quest.objective
+    audioClips:
+    - {fileID: 8300000, guid: 00d687bb6775bc64faa3d5d72db6dbe0, type: 3}
+    volume: 0.6
+    pitchJitter: 0
+    minInterval: 0.3
+    maxVoices: 0
+    loop: 0
+  - groupName: sfx.quest.complete
+    audioClips:
+    - {fileID: 8300000, guid: eac47dbb653ee8645a2272cda7bbb526, type: 3}
+    volume: 0.8
+    pitchJitter: 0
+    minInterval: 0.5
+    maxVoices: 0
+    loop: 0
+  - groupName: sfx.shop.buy
+    audioClips:
+    - {fileID: 8300000, guid: daf1f61743b3d7d4da2658767ad090c8, type: 3}
+    - {fileID: 8300000, guid: 9eb1720d922d8fd4a82e238e0cfdbeff, type: 3}
+    volume: 0.7
+    pitchJitter: 0.05
+    minInterval: 0.1
+    maxVoices: 0
+    loop: 0
+  - groupName: sfx.shop.sell
+    audioClips:
+    - {fileID: 8300000, guid: 223391831c0912c4c853f2ce8c1dd324, type: 3}
+    volume: 0.7
+    pitchJitter: 0.05
+    minInterval: 0.1
+    maxVoices: 0
+    loop: 0
+  - groupName: sfx.craft.start
+    audioClips:
+    - {fileID: 8300000, guid: 34b82e92499b261469d709a851cd3120, type: 3}
+    volume: 0.7
+    pitchJitter: 0.05
+    minInterval: 0.2
+    maxVoices: 0
+    loop: 0
+  - groupName: sfx.craft.complete
+    audioClips:
+    - {fileID: 8300000, guid: 94f83d39eec765148a9ad382503c25e4, type: 3}
+    volume: 0.8
+    pitchJitter: 0
+    minInterval: 0.3
+    maxVoices: 0
+    loop: 0
+  - groupName: sfx.world.chest_open
+    audioClips:
+    - {fileID: 8300000, guid: 1a4102feb757e33468b0d2896b0e96d0, type: 3}
+    - {fileID: 8300000, guid: 108a9ec830326af40bb1966bb8b8664c, type: 3}
+    volume: 0.8
+    pitchJitter: 0.04
+    minInterval: 0.3
+    maxVoices: 0
+    loop: 0
+  - groupName: sfx.world.unique_pickup
+    audioClips:
+    - {fileID: 8300000, guid: ba3685ee9a5937a48aa4218f32531802, type: 3}
+    volume: 0.8
+    pitchJitter: 0
+    minInterval: 0.3
+    maxVoices: 0
+    loop: 0
+  - groupName: sfx.world.harvest_wood
+    audioClips:
+    - {fileID: 8300000, guid: 1d83bcbef7774a747ac5befb33f1d9cd, type: 3}
+    - {fileID: 8300000, guid: 0567d015e6303f7488b36ca5eea5d78f, type: 3}
+    volume: 0.8
+    pitchJitter: 0.07
+    minInterval: 0.1
+    maxVoices: 0
+    loop: 0
+  - groupName: sfx.world.harvest_stone
+    audioClips:
+    - {fileID: 8300000, guid: 2c0122f15620c7548bb8776a2b7edde3, type: 3}
+    - {fileID: 8300000, guid: 5030e82f0ed35774691cd85e64bd7f0b, type: 3}
+    - {fileID: 8300000, guid: e52d23e5297466141adfea3a08977f86, type: 3}
+    volume: 0.8
+    pitchJitter: 0.07
+    minInterval: 0.1
+    maxVoices: 0
+    loop: 0
+  - groupName: sfx.world.harvest_plant
+    audioClips:
+    - {fileID: 8300000, guid: 1c17e62bf58d2ae4895bd6bf52c0b4d9, type: 3}
+    - {fileID: 8300000, guid: ebf628316bf9ed140bbf0bc03f8d5dbb, type: 3}
+    - {fileID: 8300000, guid: c83277ae079f57c4fa12f8229a09f707, type: 3}
+    volume: 0.7
+    pitchJitter: 0.08
+    minInterval: 0.1
+    maxVoices: 0
+    loop: 0
+  - groupName: sfx.world.resource_depleted
+    audioClips:
+    - {fileID: 8300000, guid: 15730feb1f5defa41bb84eef64932111, type: 3}
+    volume: 0.6
+    pitchJitter: 0
+    minInterval: 0.2
+    maxVoices: 0
+    loop: 0
+  - groupName: sfx.world.gate_exit
+    audioClips:
+    - {fileID: 8300000, guid: b50d6775e4f9b2e45ae30be623db79ac, type: 3}
+    volume: 0.6
+    pitchJitter: 0
+    minInterval: 0.5
+    maxVoices: 0
+    loop: 0
+  - groupName: sfx.fishing.cast
+    audioClips:
+    - {fileID: 8300000, guid: 9fce1e464243ef242af5ff1e070b8c31, type: 3}
+    - {fileID: 8300000, guid: cc55fb4c9b2f4f74fba535afdfc23dc5, type: 3}
+    volume: 0.75
+    pitchJitter: 0.05
+    minInterval: 0.3
+    maxVoices: 0
+    loop: 0
+  - groupName: sfx.fishing.splash
+    audioClips:
+    - {fileID: 8300000, guid: 0d04cd6c71606c642b8c8933ff87914d, type: 3}
+    - {fileID: 8300000, guid: adb760c1e29fdec44b0597ef1feca664, type: 3}
+    volume: 0.7
+    pitchJitter: 0.06
+    minInterval: 0.2
+    maxVoices: 0
+    loop: 0
+  - groupName: sfx.fishing.bite
+    audioClips:
+    - {fileID: 8300000, guid: b09ffc8a1df725140a1b69adbb48088b, type: 3}
+    volume: 0.8
+    pitchJitter: 0
+    minInterval: 0.3
+    maxVoices: 0
+    loop: 0
+  - groupName: sfx.fishing.reel
+    audioClips:
+    - {fileID: 8300000, guid: e0a4b77015ef9864686e6bd78271e8b4, type: 3}
+    - {fileID: 8300000, guid: 1090b0e4a648f3c4fa84152b85ae115b, type: 3}
+    volume: 0.55
+    pitchJitter: 0.06
+    minInterval: 0.15
+    maxVoices: 0
+    loop: 0
+  - groupName: sfx.fishing.catch
+    audioClips:
+    - {fileID: 8300000, guid: 8bfd547baaaef5349ae5f454434f6dad, type: 3}
+    volume: 0.8
+    pitchJitter: 0
+    minInterval: 0.3
+    maxVoices: 0
+    loop: 0
+  - groupName: sfx.fishing.fail
+    audioClips:
+    - {fileID: 8300000, guid: 2a788884454ad2140bfa65d498ba1943, type: 3}
+    volume: 0.6
+    pitchJitter: 0
+    minInterval: 0.3
+    maxVoices: 0
+    loop: 0
+  - groupName: sfx.farm.plant
+    audioClips:
+    - {fileID: 8300000, guid: 41d2a34f5c43f6a449ae189657e1ddbb, type: 3}
+    volume: 0.7
+    pitchJitter: 0.06
+    minInterval: 0.1
+    maxVoices: 0
+    loop: 0
+  - groupName: sfx.farm.harvest
+    audioClips:
+    - {fileID: 8300000, guid: b21371ea578ee8c4a996c23b96c7c569, type: 3}
+    volume: 0.75
+    pitchJitter: 0.06
+    minInterval: 0.1
+    maxVoices: 0
+    loop: 0
+  - groupName: sfx.farm.water
+    audioClips:
+    - {fileID: 8300000, guid: d266b59a940cbe6448e1fbc096c71ee1, type: 3}
+    volume: 0.6
+    pitchJitter: 0.06
+    minInterval: 0.2
+    maxVoices: 0
+    loop: 0
+  - groupName: sfx.step.stone
+    audioClips:
+    - {fileID: 8300000, guid: 6b1b326a2131ef64389af296e413ef5e, type: 3}
+    - {fileID: 8300000, guid: 80a3bf4f3d77a594b96abe5d24dfeb10, type: 3}
+    - {fileID: 8300000, guid: 492d42b52f1fb344399e97e6250ee950, type: 3}
+    volume: 0.7
+    pitchJitter: 0.07
+    minInterval: 0.12
+    maxVoices: 0
+    loop: 0
+  - groupName: sfx.step.sand
+    audioClips:
+    - {fileID: 8300000, guid: bd57ff9b5bfcb054a8b2d3e25d36ef92, type: 3}
+    - {fileID: 8300000, guid: 23ecfab2325a2bb419c5131927e5fb1e, type: 3}
+    volume: 0.7
+    pitchJitter: 0.07
+    minInterval: 0.12
+    maxVoices: 0
+    loop: 0
+  - groupName: sfx.step.grass
+    audioClips:
+    - {fileID: 8300000, guid: e4e69bbafab41ae4b914859aa28181fa, type: 3}
+    - {fileID: 8300000, guid: 2cbd2123a1748974d80c9e15e128eef6, type: 3}
+    - {fileID: 8300000, guid: 1f6558ffe499a0a4db43b18dcbb2e6a8, type: 3}
+    volume: 0.7
+    pitchJitter: 0.07
+    minInterval: 0.12
+    maxVoices: 0
+    loop: 0
+  - groupName: sfx.amb.forest
+    audioClips:
+    - {fileID: 8300000, guid: 75147743842e6054198a15ba2c4ce138, type: 3}
+    volume: 0.5
+    pitchJitter: 0
+    minInterval: 0
+    maxVoices: 0
+    loop: 1
+  - groupName: sfx.amb.village
+    audioClips:
+    - {fileID: 8300000, guid: 0821512769b4af743a4f37283c4c1c79, type: 3}
+    volume: 0.5
+    pitchJitter: 0
+    minInterval: 0
+    maxVoices: 0
+    loop: 1
+  - groupName: sfx.amb.beach
+    audioClips:
+    - {fileID: 8300000, guid: 85759699b6950354aaf86b9cdd97431b, type: 3}
+    volume: 0.55
+    pitchJitter: 0
+    minInterval: 0
+    maxVoices: 0
+    loop: 1
+  - groupName: sfx.amb.campfire
+    audioClips:
+    - {fileID: 8300000, guid: 77e6f13c173ca964b83e16773b7b5d25, type: 3}
+    volume: 0.45
+    pitchJitter: 0
+    minInterval: 0
+    maxVoices: 0
+    loop: 1
+  - groupName: sfx.amb.wind
+    audioClips:
+    - {fileID: 8300000, guid: 3a95fa5d5c950bb48ab99292bad5d048, type: 3}
+    volume: 0.5
+    pitchJitter: 0
+    minInterval: 0
+    maxVoices: 0
+    loop: 1
+  - groupName: sfx.amb.cave
+    audioClips:
+    - {fileID: 8300000, guid: 05efd80bd69eaaa4b83a15a583a6e88e, type: 3}
+    volume: 0.5
+    pitchJitter: 0
+    minInterval: 0
+    maxVoices: 0
+    loop: 1
+  - groupName: sfx.amb.night
+    audioClips:
+    - {fileID: 8300000, guid: 53cdda44dfa517e4ba2a57c493e52d08, type: 3}
+    volume: 0.4
+    pitchJitter: 0
+    minInterval: 0
+    maxVoices: 0
+    loop: 1
 --- !u!82 &662427547
 AudioSource:
   m_ObjectHideFlags: 0

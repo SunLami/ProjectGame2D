@@ -1,0 +1,90 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 665474dd81c7d6148a54d65f2ba476bc, type: 3}
+  m_Name: Enemy
+  m_EditorClassIdentifier: ProjectGame2D.Runtime::SfxBank
+  title: Enemy
+  rows:
+  - label: Goblin attack
+    id: sfx.enemy.goblin_attack
+    category: Combat
+    description: Goblin swings
+    clips:
+    - {fileID: 8300000, guid: 38831a56c9f177941b1ab78c7951a5ab, type: 3}
+    - {fileID: 8300000, guid: d399d7eacf34dd245993c756fd4a0b6f, type: 3}
+    volume: 0.75
+    pitchJitter: 0.07
+    minInterval: 0.3
+    maxVoices: 0
+    loop: 0
+  - label: Goblin death
+    id: sfx.enemy.goblin_death
+    category: Combat
+    description: Goblin dies
+    clips:
+    - {fileID: 8300000, guid: 7deb800abaf5d2346ba0e07496e9c352, type: 3}
+    - {fileID: 8300000, guid: 070f04c2326921e4db34ba0ea1fb65f4, type: 3}
+    volume: 0.9
+    pitchJitter: 0.05
+    minInterval: 0
+    maxVoices: 0
+    loop: 0
+  - label: Goblin hurt
+    id: sfx.enemy.goblin_hurt
+    category: Combat
+    description: Goblin hit
+    clips:
+    - {fileID: 8300000, guid: 26c8f3f63ae9d6d478a23c0f480702c9, type: 3}
+    - {fileID: 8300000, guid: 88a067096d0193f45a6eb38040ee1ade, type: 3}
+    volume: 0.85
+    pitchJitter: 0.07
+    minInterval: 0.1
+    maxVoices: 0
+    loop: 0
+  - label: Slime attack
+    id: sfx.enemy.slime_attack
+    category: Combat
+    description: Slime lunge/attack
+    clips:
+    - {fileID: 8300000, guid: 51091eb6ab0067b499e7ca2748658bae, type: 3}
+    - {fileID: 8300000, guid: 1d294b3d9760b244e8198f1347217291, type: 3}
+    volume: 0.65
+    pitchJitter: 0.1
+    minInterval: 0.2
+    maxVoices: 0
+    loop: 0
+  - label: Slime death
+    id: sfx.enemy.slime_death
+    category: Combat
+    description: Slime dies
+    clips:
+    - {fileID: 8300000, guid: 8e2611ff9ec658e4eacd0491badeed05, type: 3}
+    - {fileID: 8300000, guid: ab28c676b067cf04ca42d3d06db6e537, type: 3}
+    - {fileID: 8300000, guid: 2c93c62ebb015ba4b96aa4d2c120b543, type: 3}
+    volume: 0.85
+    pitchJitter: 0.06
+    minInterval: 0
+    maxVoices: 0
+    loop: 0
+  - label: Slime hurt
+    id: sfx.enemy.slime_hurt
+    category: Combat
+    description: Slime hit
+    clips:
+    - {fileID: 8300000, guid: 902e974a33eda6649b27ca61d9b5d32d, type: 3}
+    - {fileID: 8300000, guid: 6289079db29e3334da2f9c089734af89, type: 3}
+    - {fileID: 8300000, guid: 6bf548a50e7fb5d4b8a68fcc48aac65b, type: 3}
+    volume: 0.8
+    pitchJitter: 0.1
+    minInterval: 0.06
+    maxVoices: 0
+    loop: 0

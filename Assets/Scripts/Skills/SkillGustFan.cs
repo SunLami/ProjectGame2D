@@ -79,6 +79,7 @@ public class SkillGustFan : MonoBehaviour
     private void Pulse(int index)
     {
         SkillScreenFX.Shake(0.05f + 0.03f * index, 0.2f);
+        SoundFXManager.PlaySfxAt(SfxIds.SkillWindS3Pulse, _origin + _direction * (_range * 0.3f));
         StartCoroutine(GustVisualRoutine());
         SpawnStreakPuffs();
         ApplyPush();
@@ -177,6 +178,7 @@ public class SkillGustFan : MonoBehaviour
             yield break;
 
         target.TakeDamage(_slamDamage, Vector2.zero, 0f);
+        SoundFXManager.PlaySfxAt(SfxIds.SkillWindS3WallSlam, point);
 
         if (candidate is IStunnable stunnable)
         {
