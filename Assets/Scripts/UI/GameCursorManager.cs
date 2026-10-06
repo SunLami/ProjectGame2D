@@ -47,6 +47,8 @@ public sealed class GameCursorManager : MonoBehaviour
     private ChestInteractable _hoveredChest;
     private FishingSpotInteractable _hoveredFishingSpot;
     private FarmPlot _hoveredFarmPlot;
+    private TeleportPillarInteractable _hoveredPillar;
+    private BossShrineInteractable _hoveredShrine;
     private HoverOutline _hoveredOutline;
 
     public static GameCursorManager Instance { get; private set; }
@@ -129,6 +131,20 @@ public sealed class GameCursorManager : MonoBehaviour
         {
             _hoveredChest.TryBeginOpen();
         }
+        else if (_current == GameCursorType.Interact
+            && _hoveredPillar != null
+            && Mouse.current != null
+            && Mouse.current.leftButton.wasPressedThisFrame)
+        {
+            _hoveredPillar.TryOpen();
+        }
+        else if (_current == GameCursorType.Interact
+            && _hoveredShrine != null
+            && Mouse.current != null
+            && Mouse.current.leftButton.wasPressedThisFrame)
+        {
+            _hoveredShrine.TryOpen();
+        }
     }
 
     private GameCursorType ResolveCursor()
@@ -141,6 +157,8 @@ public sealed class GameCursorManager : MonoBehaviour
         _hoveredChest = null;
         _hoveredFishingSpot = null;
         _hoveredFarmPlot = null;
+        _hoveredPillar = null;
+        _hoveredShrine = null;
         _hoveredOutline = null;
         if (Mouse.current == null
             || GameStateManager.Instance == null
@@ -195,6 +213,12 @@ public sealed class GameCursorManager : MonoBehaviour
             else if (target.Cursor == GameCursorType.Interact
                 && collider.GetComponentInParent<ChestInteractable>(true) != null)
                 _hoveredChest = collider.GetComponentInParent<ChestInteractable>(true);
+            else if (target.Cursor == GameCursorType.Interact
+                && collider.GetComponentInParent<TeleportPillarInteractable>(true) != null)
+                _hoveredPillar = collider.GetComponentInParent<TeleportPillarInteractable>(true);
+            else if (target.Cursor == GameCursorType.Interact
+                && collider.GetComponentInParent<BossShrineInteractable>(true) != null)
+                _hoveredShrine = collider.GetComponentInParent<BossShrineInteractable>(true);
 
             return target.Cursor;
         }

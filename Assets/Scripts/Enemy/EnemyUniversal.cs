@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody2D), typeof(Animator))]
-public sealed class EnemyUniversal : MonoBehaviour, IDamageable
+public sealed class EnemyUniversal : MonoBehaviour, IDamageable, ISlowable, IPullable, IVulnerable, IStunnable, IAirborne
 {
     public enum State { Idle, Patrol, Chase, Attack, Hurt, Dead, ReturnHome }
     public enum AttackType { Melee, Area, Projectile }
@@ -141,6 +141,13 @@ public sealed class EnemyUniversal : MonoBehaviour, IDamageable
         if (_state == State.Dead) return;
         _desiredVelocity = Vector2.zero;
 
+        // Stun freezes AI and movement entirely; checked before the pull so a stunned enemy is not dragged.
+        if (IsStunned)
+            return;
+
+        if (TryApplyPullMovement())
+            return;
+
         switch (_state)
         {
             case State.Idle: UpdateIdle(); break;
@@ -152,7 +159,14 @@ public sealed class EnemyUniversal : MonoBehaviour, IDamageable
 
     private void FixedUpdate()
     {
-        if (_state != State.Hurt && _rigidbody != null)
+        if (_rigidbody == null)
+            return;
+
+        // An active pull (e.g. a vortex's suction) takes priority over the brief Hurt state that
+        // TakeDamage enters on every tick -- otherwise the per-tick damage would repeatedly block
+        // velocity sync here and the pull would stutter instead of reading as continuous.
+        bool isPulling = Time.time < _pullUntil;
+        if (isPulling || _state != State.Hurt)
             _rigidbody.linearVelocity = _state == State.Dead
                 ? Vector2.zero
                 : _launchRoutine != null ? _launchVelocity : _desiredVelocity;
@@ -171,13 +185,112 @@ public sealed class EnemyUniversal : MonoBehaviour, IDamageable
         gameObject.SetActive(false);
     }
 
+    public void ApplyAirborne(float duration, float height)
+    {
+        if (IsDead)
+            return;
+
+        // Airborne = unable to act for the duration (stun) + lifted visuals drawn by EnemyAirborneVisual.
+        ApplyStun(duration);
+        EnemyAirborneVisual visual = GetComponent<EnemyAirborneVisual>();
+        if (visual == null)
+            visual = gameObject.AddComponent<EnemyAirborneVisual>();
+        visual.Begin(duration, height);
+    }
+
+    private float _stunUntil;
+
+    public bool IsStunned => Time.time < _stunUntil;
+
+    public void ApplyStun(float duration)
+    {
+        if (IsDead)
+            return;
+
+        _stunUntil = Mathf.Max(_stunUntil, Time.time + Mathf.Max(0f, duration));
+        SoundFXManager.PlaySfxAt(SfxIds.CombatStunApply, transform.position);
+    }
+
+    private float _vulnerableMultiplier = 1f;
+    private float _vulnerableUntil;
+
+    public void ApplyVulnerability(float damageTakenMultiplier, float duration)
+    {
+        if (IsDead)
+            return;
+
+        float until = Time.time + Mathf.Max(0f, duration);
+        if (Time.time >= _vulnerableUntil || damageTakenMultiplier >= _vulnerableMultiplier)
+            _vulnerableMultiplier = Mathf.Max(1f, damageTakenMultiplier);
+        _vulnerableUntil = Mathf.Max(_vulnerableUntil, until);
+    }
+
+    private float CurrentDamageTakenMultiplier => Time.time < _vulnerableUntil ? _vulnerableMultiplier : 1f;
+
+    private float _slowMultiplier = 1f;
+    private float _slowUntil;
+
+    public void ApplySlow(float speedMultiplier, float duration)
+    {
+        if (IsDead)
+            return;
+
+        float until = Time.time + Mathf.Max(0f, duration);
+        if (until >= _slowUntil)
+        {
+            _slowMultiplier = Mathf.Clamp01(speedMultiplier);
+            _slowUntil = until;
+        }
+    }
+
+    private float CurrentSlowMultiplier => Time.time < _slowUntil ? _slowMultiplier : 1f;
+
+    private Vector2 _pullTarget;
+    private float _pullSpeed;
+    private float _pullUntil;
+
+    public void ApplyPull(Vector2 targetPosition, float speed, float duration)
+    {
+        if (IsDead)
+            return;
+
+        _pullTarget = targetPosition;
+        _pullSpeed = speed;
+        _pullUntil = Time.time + Mathf.Max(0f, duration);
+    }
+
+    /// <summary>While an active pull hasn't expired, overrides normal AI movement for this frame so
+    /// the enemy visibly travels toward the pull source (e.g. a vortex center) instead of its usual
+    /// idle/patrol/chase behavior.</summary>
+    private bool TryApplyPullMovement()
+    {
+        if (Time.time >= _pullUntil)
+            return false;
+
+        Vector2 toTarget = _pullTarget - (Vector2)transform.position;
+        if (toTarget.sqrMagnitude <= 0.0025f)
+        {
+            _desiredVelocity = Vector2.zero;
+            return true;
+        }
+
+        Vector2 direction = toTarget.normalized;
+        Face(direction);
+        _desiredVelocity = direction * _pullSpeed;
+        _animator.SetBool(IsWalking, true);
+        _animator.SetBool(IsRunning, false);
+        return true;
+    }
+
     public void TakeDamage(float damage, Vector2 direction = default, float knockbackForce = 0f)
     {
         if (_state == State.Dead || damage <= 0f) return;
+        damage *= CurrentDamageTakenMultiplier;
         _currentHealth = Mathf.Max(0f, _currentHealth - damage);
         HealthChanged?.Invoke(_currentHealth, _maxHealth);
         if (_currentHealth <= 0f) { EnterState(State.Dead); return; }
 
+        EnemySfx.Hurt(this);
         EnterState(State.Hurt);
         if (_rigidbody != null && direction != Vector2.zero && knockbackForce > 0f)
         {
@@ -251,6 +364,7 @@ public sealed class EnemyUniversal : MonoBehaviour, IDamageable
         _activeAttack = attack;
         Face(_playerTransform.position - transform.position);
         EnterState(State.Attack);
+        EnemySfx.Attack(this);
         _animator.SetTrigger(attack.animatorTriggerHash);
         if (attack.type == AttackType.Melee)
             BeginLaunch(attack);
@@ -415,6 +529,7 @@ public sealed class EnemyUniversal : MonoBehaviour, IDamageable
         if (_state != State.Attack || _activeAttack?.type != AttackType.Projectile
             || _activeAttack.projectilePrefab == null) return;
 
+        EnemySfx.ProjectileLaunch(this);
         Transform origin = _activeAttack.projectileOrigin != null ? _activeAttack.projectileOrigin : transform;
         Vector2 offset = _activeAttack.projectileSpawnOffset;
         if (_activeAttack.rotateProjectileOffsetWithDirection)
@@ -470,6 +585,7 @@ public sealed class EnemyUniversal : MonoBehaviour, IDamageable
         if (state == State.Hurt) _animator.SetTrigger(IsHit);
         if (state != State.Dead) return;
 
+        EnemySfx.Death(this);
         GrantExperience();
         if (!string.IsNullOrEmpty(_enemyId))
             QuestDomainEvents.RaiseEnemyKilled(_enemyId, _areaId);
@@ -502,7 +618,7 @@ public sealed class EnemyUniversal : MonoBehaviour, IDamageable
         Vector2 direction = (target - (Vector2)transform.position).normalized;
         Face(direction);
         float speed = running ? _chaseSpeed : _patrolSpeed;
-        _desiredVelocity = direction * speed;
+        _desiredVelocity = direction * speed * CurrentSlowMultiplier;
         _animator.SetBool(IsWalking, true);
         _animator.SetBool(IsRunning, running);
     }

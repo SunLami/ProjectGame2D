@@ -57,6 +57,44 @@ cập nhật tài liệu liên quan trước hoặc cùng lúc với code.
     Inventory v5 làm reference khi migration từng gameplay UI.
 23. [Audio SFX System](AudioSfxSystem.md): catalog SFX one-shot cho MainMenu/IntroCutscene/MapNhat,
     kiến trúc `SoundFXManager.PlaySfx`/`SoundFXLibrary`, convention ID/file và handoff gen audio cho Codex.
+24. [Resource Content](ResourceContent.md): ID, node drop, recipe, NPC market và khoảng giá chuẩn cho resource sheet.
+25. [Equipment Content](EquipmentContent.md): tên, level gate, stat, giá, recipe và NPC chuẩn cho Equipment sheet.
+26. [Pixellab Character Asset Pipeline](PixellabCharacterAssetPipeline.md): cấu trúc asset Player gốc
+    (Parts/canvas/SpriteLibrary) và bài học kỹ thuật từ nhánh gen animation nhân vật (Fishing/Farming)
+    bằng Pixellab — nhánh này đã dừng, xem SkillVfxPipeline.md §5 cho lý do; giữ lại làm tham khảo kỹ
+    thuật (pivot/PPU thật, kỹ thuật tách layer) nếu quay lại sau.
+27. [Skill VFX Pipeline](SkillVfxPipeline.md): kế hoạch đang làm — skill projectile/định hướng dùng
+    lại animation tấn công có sẵn, layer `SkillFX` mới + ẩn/hiện Weapon lúc cast, quy trình gen VFX
+    bằng Pixellab (đơn giản hơn animation nhân vật vì không cần tách layer). Khung 6 skill-shape dùng
+    chung mọi nguyên tố; phạm vi production hiện tại thu hẹp còn 3 nguyên tố khớp Boss (Thủy/Địa/Phong,
+    D-070) thay vì 7 nguyên tố — bộ Hỏa giữ làm tham khảo template.
+28. [Thuy Skill VFX Art Style Guide](ThuySkillVfxArtStyleGuide.md): công thức prompt chuẩn bắt buộc
+    (D-072) cho mọi VFX Thủy — hard-edged chunky cel-shade, nước phải "turbulent" (mép răng cưa + bọt
+    trắng, lốc xoáy phải có lỗ tối ở tâm), quy tắc animation chống giật/seam (reverse-frame thay vì lặp
+    frame hoặc ghép nhiều object), cộng các lưu ý kỹ thuật Sorting Layer/Y-sort và giới hạn base64 của
+    Pixellab MCP. Đọc trước khi gen VFX cho bất kỳ skill Thủy/Địa/Phong nào tiếp theo.
+29. [Geo Skill VFX Art Style Guide](GeoSkillVfxArtStyleGuide.md): style guide bộ Địa/Nham (D-075),
+    kế thừa D-072, bảng màu nâu đất/be, đá góc cạnh; Skill 1 Thạch Trụ đã có asset.
+30. [Wind Skill VFX Art Style Guide](WindSkillVfxArtStyleGuide.md): style guide bộ Phong (D-080), kế thừa D-072/D-075, bảng màu
+    trắng/mint/xanh ngọc, gió vẽ bằng vệt cong + lá + lông; mọi hiệu ứng là animation Pixellab.
+31. [Combat & Skill SFX Plan](CombatSkillSfxPlan.md): kế hoạch SFX combat Player + 3 bộ skill (D-082), DemoScene-first,
+    kèm ứng viên Freesound CC0 và hạ tầng audio đề xuất; chờ user duyệt.
+32. [Boss Arena Map Design](BossArenaMapDesign.md): thiết kế map boss Thủy/Địa/Phong (D-083), khung layout chung,
+    cấu trúc scene, điểm nối trụ teleport/trụ triệu hồi, kế hoạch asset (đã chốt các điểm mở).
+33. [Boss Arena Art Style Guide](BossArenaArtStyleGuide.md): art arena "skill-grade" — Pixen chi tiết PPU 48 (thay tileset 16px),
+    công thức prompt, bảng màu theo hệ, mẫu pilot Earth.
+34. [Boss Encounter Concepts](BossEncounterConcepts.md): ý tưởng 3 boss Địa/Thủy/Phong — môi trường, bộ 5 skill, đợt combo,
+    cơ chế map riêng, animation/ngân sách (D-084); chờ user duyệt.
+35. [Earth Boss Combat Plan](EarthBossCombatPlan.md): combat boss Earth có Dash (D-086) — 5 skill, 3 phase, đợt Combo→Recovery,
+    kiến trúc `BossController/BossDefinition`, kết quả kiểm chứng Play Mode.
+36. [Boss Animation Plan](BossAnimationPlan.md): animation boss Earth phương án A (D-092) — 8 clip animate_image 256×256, phát theo skill,
+    ánh xạ pose↔skill, tiêu chí M4.
+37. [Water Boss Combat Plan](WaterBossCombatPlan.md): đề xuất combat boss Thủy (cua D) — cơ chế triều, 5 skill, đợt, art/kiến trúc cần thêm;
+    chờ user duyệt (D-101 sau khi duyệt).
+38. [SFX Pipeline & Full-Game SFX](SfxPipeline.md): pipeline Tools/sfx (Freesound → WAV/OGG, QA, CREDITS), hạ tầng runtime, điểm gọi và kiểm chứng SFX toàn game (D-103); Boss Water/Wind làm sau.
+39. [Enemy Pathfinding Plan](EnemyPathfindingPlan.md): kế hoạch A* grid tự viết cho enemy thường (D-109) — kiến trúc, data, gate, test; chưa implement, chờ user duyệt.
+40. [Wind Boss Combat Plan](WindBossCombatPlan.md): boss Cú Thần Thiên Phong (D-111) — 6 skill, 3 phase, map Thiên Đài `BossArena_Wind` (D-110), art cắt lớp + clip cast; chờ user duyệt trước khi code skill.
+41. [Boss Combat Audit](BossCombatAudit.md): kiểm tra combat Earth/Water/Wind (số đo Play Mode, lỗi, so với game chuyên nghiệp, đề xuất code + asset); chờ user chọn việc làm.
 
 ## Quy tắc quản trị tài liệu
 
@@ -82,7 +120,11 @@ cập nhật tài liệu liên quan trước hoặc cùng lúc với code.
 - Save đã là hệ thống save slot hoàn chỉnh: 3 slot, atomic write/backup, migration V1→Current, Save
   Game slot picker (Empty/Overwrite/Save As/Delete) trong Pause Menu. Chi tiết:
   [SaveAndWorldPersistence.md](SaveAndWorldPersistence.md).
-- Build Settings hiện dùng `MainMenu` index 0 và `MapNhat` index 1. Từ 2026-09-07,
+- Build Settings hiện dùng `Bootstrap` index 0, `StudioIntro` index 1, sau đó `MainMenu`,
+  `IntroCutscene` và `MapNhat`. `StudioIntro` bắt buộc phát đủ tối thiểu 8 giây của
+  `LogoSaigonMelon.mp4` kèm audio, không cho skip, rồi tự chuyển vào `MainMenu`; Return Main Menu
+  không phát lại splash (D-061).
+  Từ 2026-09-07,
   `MainMenuController._gameplaySceneName = "MapNhat"` — New Game/Continue vào thẳng `MapNhat` sau
   Loading (D-019 Accepted). `DemoScene` đã bị **gỡ khỏi Build Settings** (theo yêu cầu người dùng
   2026-09-07) nhưng file scene vẫn còn nguyên và vẫn là integration playground (D-001 không đổi) —

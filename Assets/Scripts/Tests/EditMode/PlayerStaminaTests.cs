@@ -57,6 +57,31 @@ public sealed class PlayerStaminaTests
     }
 
     [Test]
+    public void TryConsumeStamina_IsAllOrNothingAndFreeForNonPositiveCost()
+    {
+        GameObject playerObject = new GameObject("PlayerStat_Dash_Stamina_Test");
+        PlayerStat stat = playerObject.AddComponent<PlayerStat>();
+        SetPrivate(stat, "_stamina", 30f);
+
+        try
+        {
+            Assert.IsTrue(stat.TryConsumeStamina(0f));
+            Assert.IsTrue(stat.TryConsumeStamina(-5f));
+            Assert.AreEqual(30f, stat.Stamina, 0.001f);
+
+            Assert.IsTrue(stat.TryConsumeStamina(20f));
+            Assert.AreEqual(10f, stat.Stamina, 0.001f);
+
+            Assert.IsFalse(stat.TryConsumeStamina(20f));
+            Assert.AreEqual(10f, stat.Stamina, 0.001f);
+        }
+        finally
+        {
+            Object.DestroyImmediate(playerObject);
+        }
+    }
+
+    [Test]
     public void PlayerHUD_StartRefreshesStaminaAfterPlayerAwakeOrdering()
     {
         GameObject playerObject = new GameObject("PlayerStat_HUD_Lifecycle_Test");

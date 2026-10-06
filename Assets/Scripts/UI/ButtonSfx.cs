@@ -1,10 +1,13 @@
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-/// <summary>Presentation-only: plays hover/click SFX via SoundFXManager.PlaySfx. Attach to any
-/// Selectable (Button, Toggle, Slider handle...) that should have UI feedback. See
-/// AudioSfxSystem.md for the SFX ID catalog and D-058 for the architecture decision.</summary>
-public sealed class ButtonSfx : MonoBehaviour, IPointerEnterHandler, IPointerClickHandler
+/// <summary>Presentation-only: plays click/submit/toggle SFX via SoundFXManager.PlaySfx. Attach to
+/// any Selectable (Button, Toggle...) that should have UI feedback. See AudioSfxSystem.md for the
+/// SFX ID catalog and D-058 for the architecture decision. Hover/selection SFX was removed by
+/// owner decision (2026-09-29): rapid hover/selection across dense lists (Crafting, Inventory,
+/// Shop, Quest) produced constant noise, so this now only fires on an actual click/submit/toggle
+/// commitment, never on pointer-enter or keyboard/gamepad selection change.</summary>
+public sealed class ButtonSfx : MonoBehaviour, IPointerClickHandler, ISubmitHandler
 {
     public enum ClickSound
     {
@@ -14,16 +17,19 @@ public sealed class ButtonSfx : MonoBehaviour, IPointerEnterHandler, IPointerCli
         None
     }
 
-    [SerializeField] private bool _playHoverSfx = true;
     [SerializeField] private ClickSound _clickSound = ClickSound.Primary;
 
-    public void OnPointerEnter(PointerEventData eventData)
+    public void OnPointerClick(PointerEventData eventData)
     {
-        if (_playHoverSfx)
-            SoundFXManager.PlaySfx("sfx.ui.hover");
+        PlayClick();
     }
 
-    public void OnPointerClick(PointerEventData eventData)
+    public void OnSubmit(BaseEventData eventData)
+    {
+        PlayClick();
+    }
+
+    private void PlayClick()
     {
         switch (_clickSound)
         {

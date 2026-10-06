@@ -110,6 +110,8 @@ public sealed class FishingMinigameController : MonoBehaviour
         }
 
         InventoryManager.Instance.RemoveItem(selectedBait, 1);
+        SoundFXManager.PlaySfx(SfxIds.FishingCast);
+        SoundFXManager.PlaySfx(SfxIds.FishingSplash);
 
         _spot = spot;
         _definition = definition;
@@ -134,6 +136,7 @@ public sealed class FishingMinigameController : MonoBehaviour
                 yield break;
 
             _phase = SessionPhase.BiteReady;
+            SoundFXManager.PlaySfx(SfxIds.FishingBite);
             _ui?.ShowBitePrompt();
             float elapsed = 0f;
             while (_phase == SessionPhase.BiteReady && elapsed < _definition.HookWindowSeconds)
@@ -159,6 +162,7 @@ public sealed class FishingMinigameController : MonoBehaviour
         }
 
         _phase = SessionPhase.Minigame;
+        SoundFXManager.PlaySfx(SfxIds.FishingReel);
         _remainingTime = _definition.TimeLimitSeconds;
         _progress = 0f;
         _fishPosition = Random.value;
@@ -170,6 +174,8 @@ public sealed class FishingMinigameController : MonoBehaviour
         _ui?.ShowMinigame(_selectedFish, _remainingTime);
         UpdatePresentation();
     }
+
+    private float _reelTickTimer;
 
     private void TickMinigame(float deltaTime)
     {
@@ -201,6 +207,13 @@ public sealed class FishingMinigameController : MonoBehaviour
 
         bool touchingFish = Mathf.Abs(_fishPosition - _catchZonePosition)
             <= (_definition.CatchZoneSize * 0.5f + 0.035f);
+        _reelTickTimer -= deltaTime;
+        if (touchingFish && _reelTickTimer <= 0f)
+        {
+            _reelTickTimer = 0.45f;
+            SoundFXManager.PlaySfx(SfxIds.FishingReel);
+        }
+
         _progress += (touchingFish
             ? _definition.CatchProgressPerSecond
             : -_definition.ProgressLossPerSecond) * deltaTime;
@@ -224,12 +237,17 @@ public sealed class FishingMinigameController : MonoBehaviour
         }
 
         int value = _selectedFish.GetValueForWeight(weightGrams);
+        SoundFXManager.PlaySfx(SfxIds.FishingCatch);
         BeginResult(
             $"Caught {_selectedFish.itemName}\n{weightGrams / 1000f:0.00} kg  -  {value} gold",
             _selectedFish.icon);
     }
 
-    private void CompleteFailure(string message) => BeginResult(message, null);
+    private void CompleteFailure(string message)
+    {
+        SoundFXManager.PlaySfx(SfxIds.FishingFail);
+        BeginResult(message, null);
+    }
 
     private void BeginResult(string message, Sprite revealedFishIcon)
     {

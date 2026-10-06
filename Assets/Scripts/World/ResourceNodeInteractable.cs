@@ -65,6 +65,9 @@ public sealed class ResourceNodeInteractable : MonoBehaviour, IPersistentWorldOb
             return false;
 
         _currentHealth = Mathf.Max(0f, _currentHealth - HarvestDamage);
+        SoundFXManager.PlaySfxAt(HarvestType == ResourceHarvestType.Chopping ? SfxIds.WorldHarvestWood : SfxIds.WorldHarvestStone, transform.position);
+        if (_currentHealth <= 0f)
+            SoundFXManager.PlaySfxAt(SfxIds.WorldResourceDepleted, transform.position);
         PlayWhiteFlash(_currentHealth <= 0f);
         return true;
     }
@@ -103,6 +106,7 @@ public sealed class ResourceNodeInteractable : MonoBehaviour, IPersistentWorldOb
     private IEnumerator GatherRoutine()
     {
         _isResolving = true;
+        SoundFXManager.PlaySfxAt(SfxIds.WorldHarvestPlant, transform.position);
         PlayWhiteFlash(false);
         float duration = _definition != null ? _definition.GatheringDuration : 1.2f;
         float elapsed = 0f;
@@ -146,6 +150,7 @@ public sealed class ResourceNodeInteractable : MonoBehaviour, IPersistentWorldOb
         }
 
         SetNodeVisible(false);
+        SoundFXManager.PlaySfxAt(SfxIds.InventoryPickup, transform.position);
         yield return ResourceLootFlyVisual.Play(transform.position, player, grants);
 
         InventoryManager inventory = InventoryManager.Instance;

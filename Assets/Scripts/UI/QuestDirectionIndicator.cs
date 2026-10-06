@@ -91,8 +91,18 @@ public sealed class QuestDirectionIndicator : MonoBehaviour
 
     private void Update()
     {
+        GameStateManager state = GameStateManager.Instance;
+        if (state != null && state.CurrentState == GameState.GameplayMenu
+            && state.CurrentMenuPage == GameplayMenuPage.Map)
+        {
+            HideAll();
+            return;
+        }
+
         if (_questManager == null)
             _questManager = QuestManager.Instance;
+        if (_camera == null)
+            _camera = Camera.main;
         if (_player == null)
         {
             GameObject playerObject = GameObject.FindGameObjectWithTag("Player");

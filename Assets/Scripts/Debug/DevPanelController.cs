@@ -32,11 +32,15 @@ public sealed class DevPanelController : MonoBehaviour
     [Header("Combat")]
     [SerializeField] private Toggle _godModeToggle;
 
+    [Header("Inventory")]
+    [SerializeField] private Toggle _seedStartingItemsToggle;
+
     [Header("Teleport")]
     [SerializeField] private RectTransform _teleportContainer;
 
     private Dictionary<string, ItemSO> _itemLookup;
     private SpawnRegistry _spawnRegistry;
+    private InventorySeeder _inventorySeeder;
 
     private void Awake()
     {
@@ -47,6 +51,7 @@ public sealed class DevPanelController : MonoBehaviour
         }
 
         _godModeToggle.onValueChanged.AddListener(OnGodModeChanged);
+        _seedStartingItemsToggle.onValueChanged.AddListener(OnSeedStartingItemsChanged);
         _panelRoot.SetActive(false);
     }
 
@@ -59,7 +64,10 @@ public sealed class DevPanelController : MonoBehaviour
         bool willOpen = !_panelRoot.activeSelf;
         _panelRoot.SetActive(willOpen);
         if (willOpen)
+        {
             RefreshTeleportButtons();
+            RefreshSeedStartingItemsToggle();
+        }
     }
 
     public void ClosePanel() => _panelRoot.SetActive(false);
@@ -168,6 +176,31 @@ public sealed class DevPanelController : MonoBehaviour
         if (stat == null) { SetFeedback("PlayerStat not found in scene."); return; }
         stat.IsInvulnerable = enabled;
         SetFeedback(enabled ? "God Mode: ON." : "God Mode: OFF.");
+    }
+
+    // --------------------------------------------------------------------------------- Inventory
+
+    // InventorySeeder lives in the persistent Bootstrap scene, so it's found once and reused across
+    // gameplay scene reloads just like SpawnRegistry above. The toggle only affects the *next* New
+    // Game session -- seeding for the current session (if any) has already run in
+    // PlayerSpawnReadinessSource.Start() before this panel could be opened.
+    private void RefreshSeedStartingItemsToggle()
+    {
+        _inventorySeeder ??= FindAnyObjectByType<InventorySeeder>();
+        if (_inventorySeeder == null) return;
+
+        _seedStartingItemsToggle.SetIsOnWithoutNotify(_inventorySeeder.SeedingEnabled);
+    }
+
+    private void OnSeedStartingItemsChanged(bool enabled)
+    {
+        _inventorySeeder ??= FindAnyObjectByType<InventorySeeder>();
+        if (_inventorySeeder == null) { SetFeedback("InventorySeeder not found in scene."); return; }
+
+        _inventorySeeder.SeedingEnabled = enabled;
+        SetFeedback(enabled
+            ? "Seed starting items: ON (applies to the next New Game)."
+            : "Seed starting items: OFF (applies to the next New Game).");
     }
 
     // ---------------------------------------------------------------------------------- Teleport

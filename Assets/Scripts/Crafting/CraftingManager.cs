@@ -70,6 +70,19 @@ public sealed class CraftingManager : MonoBehaviour
             return false;
         }
 
+        if (!ItemResolver.TryResolve(recipe.OutputItemId, out ItemSO outputItem))
+        {
+            result = CraftingTransactionResult.InsufficientOutputCapacity;
+            return false;
+        }
+
+        if (outputItem is EquipmentItemSO equipment
+            && (PlayerStat.Instance == null || PlayerStat.Instance.Level < equipment.requiredLevel))
+        {
+            result = CraftingTransactionResult.LevelTooLow;
+            return false;
+        }
+
         if (InventoryManager.Instance == null)
         {
             result = CraftingTransactionResult.InsufficientIngredients;
@@ -89,8 +102,7 @@ public sealed class CraftingManager : MonoBehaviour
             resolvedIngredients[i] = item;
         }
 
-        if (!ItemResolver.TryResolve(recipe.OutputItemId, out ItemSO outputItem)
-            || !InventoryManager.Instance.HasCapacityFor(outputItem, recipe.OutputQuantity))
+        if (!InventoryManager.Instance.HasCapacityFor(outputItem, recipe.OutputQuantity))
         {
             result = CraftingTransactionResult.InsufficientOutputCapacity;
             return false;
@@ -101,6 +113,7 @@ public sealed class CraftingManager : MonoBehaviour
         InventoryManager.Instance.AddItem(outputItem, recipe.OutputQuantity);
 
         result = CraftingTransactionResult.Success;
+        SoundFXManager.PlaySfx(SfxIds.CraftComplete);
         QuestDomainEvents.RaiseItemCrafted(recipe.OutputItemId, recipe.OutputQuantity, stationTag);
         return true;
     }

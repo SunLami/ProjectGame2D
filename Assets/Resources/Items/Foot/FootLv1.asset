@@ -13,13 +13,28 @@ MonoBehaviour:
   m_Name: FootLv1
   m_EditorClassIdentifier: Assembly-CSharp::EquipmentItemSO
   itemId: foot_lvl1
-  itemName: Foot Lv1
-  description: "Foot Lv1 (ch\u1EC9 t\u0103ng ch\u1EC9 s\u1ED1, kh\xF4ng \u0111\u1ED5i
-    h\xECnh d\u1EA1ng nh\xE2n v\u1EADt; icon t\u1EA1m th\u1EDDi)."
+  itemName: Hunter's Leap
+  description:
   icon: {fileID: 3434086634727231013, guid: 8716d16f084234142a8aa89415f008cb, type: 3}
   type: 1
   isStackable: 0
   maxStackSize: 1
+  _minBuyPrice: 88
+  _maxBuyPrice: 144
+  _minSellPrice: 44
+  _maxSellPrice: 72
   slot: 5
+  requiredLevel: 5
   spriteLibraryAsset: {fileID: 0}
   headSpriteLibraryAsset: {fileID: 0}
+  statModifiers:
+    maxHealth: 0
+    attackDamage: 0
+    defense: 0
+    moveSpeed: 0.1
+    sprintMultiplier: 0
+    criticalChance: 0
+    criticalMultiplier: 0
+    damageReduction: 0
+    healthRegeneration: 0
+    dodgeChance: 0

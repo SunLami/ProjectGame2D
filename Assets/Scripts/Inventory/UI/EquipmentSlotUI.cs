@@ -44,7 +44,10 @@ public class EquipmentSlotUI : MonoBehaviour, IPointerClickHandler, IDropHandler
     public void OnPointerClick(PointerEventData eventData)
     {
         if (eventData.clickCount != 2) return;
-        EquipmentManager.Instance.Unequip(_slot);
+
+        EquipmentItemSO equipped = EquipmentManager.Instance.GetEquipped(_slot);
+        if (equipped != null && !EquipmentManager.Instance.Unequip(_slot))
+            InventoryActionFeedbackUI.Show(EquipFeedback.BuildUnequipFailureMessage(equipped));
     }
 
     public void OnDrop(PointerEventData eventData)
@@ -56,7 +59,8 @@ public class EquipmentSlotUI : MonoBehaviour, IPointerClickHandler, IDropHandler
 
         if (sourceSlot.Item is EquipmentItemSO equipmentItem && equipmentItem.slot == _slot)
         {
-            EquipmentManager.Instance.Equip(equipmentItem, sourceSlot.Slot);
+            if (!EquipmentManager.Instance.Equip(equipmentItem, sourceSlot.Slot))
+                InventoryActionFeedbackUI.Show(EquipFeedback.BuildEquipFailureMessage(equipmentItem));
         }
     }
 

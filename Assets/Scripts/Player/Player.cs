@@ -20,6 +20,14 @@ public partial class Player : MonoBehaviour, IDamageable
 
     private bool _deathPending;
 
+    [Header("Hurt feedback")]
+    [Tooltip("Seconds after a hit during which further damage is ignored (the sprite blinks). 0 = off. Stops multi-hit boss moves from stacking in a few frames.")]
+    [SerializeField, Min(0f)] private float _hurtInvulnerabilitySeconds = 0.45f;
+    private float _hurtInvulnerableUntil;
+
+    /// <summary>Time.time of the last hit that actually damaged the player (boss skills compare it to know whether their hit landed).</summary>
+    public float LastHurtTime { get; private set; } = -100f;
+
     public bool IsMoving => _isMoving;
     public bool IsAttacking => _isAttacking;
     public bool IsRunning => _isRunning;
@@ -35,6 +43,7 @@ public partial class Player : MonoBehaviour, IDamageable
 
         CacheCombatReferences();
         CacheVisualReferences();
+        CacheSkillFxReferences();
         BindSharedManagers();
     }
 
@@ -63,17 +72,28 @@ public partial class Player : MonoBehaviour, IDamageable
 
         if (_isRunning && !_stats.HasStamina)
             SetRunning(false);
+
+        TickSkillAim();
+        TickGroundTargetAim();
+        TickSkillVisualRestore();
+        TickDashInputBinding();
     }
 
     public void TakeDamage(float damageAmount, Vector2 knockbackDirection, float knockbackForce)
     {
-        if (_isDead || _deathPending || damageAmount <= 0f)
+        if (_isDead || _deathPending || damageAmount <= 0f || IsDashInvulnerable || Time.time < _hurtInvulnerableUntil)
             return;
 
         PlayerDamageResult result = _stats.ReceiveDamage(damageAmount);
+        if (result.Outcome == PlayerDamageOutcome.Dodged)
+            SoundFXManager.PlaySfx(SfxIds.CombatPlayerDodge);
         if (result.Outcome is PlayerDamageOutcome.Ignored or PlayerDamageOutcome.Dodged)
             return;
 
+        SoundFXManager.PlaySfx(SfxIds.CombatPlayerHurt);
+        LastHurtTime = Time.time;
+        _hurtInvulnerableUntil = Time.time + _hurtInvulnerabilitySeconds;
+        CombatFeedback.PlayerHurt(this, result.DamageTaken, _hurtInvulnerabilitySeconds);
         _deathPending = result.Outcome == PlayerDamageOutcome.Killed;
         _isHit = true;
         _isAttacking = false;
@@ -107,6 +127,7 @@ public partial class Player : MonoBehaviour, IDamageable
         _isAttacking = false;
         DisableAttackHitbox();
         StopMovement();
+        SoundFXManager.PlaySfx(SfxIds.CombatPlayerDeath);
 
         _animator.ResetTrigger(IsHitHash);
         _animator.ResetTrigger(AttackHash);

@@ -438,6 +438,21 @@ public sealed class QuestManagerPlayModeTests
     }
 
     [Test]
+    public void TrackedTalkQuest_ExposesItsNpcAsFirstDirectionTarget()
+    {
+        QuestDefinition quest = MakeDefinition(
+            "quest.trainer_greeting",
+            new[] { MakeObjective(QuestObjectiveType.Talk, "npc.town.guildmaster") },
+            giverNpcId: "npc.town.guildmaster");
+        _manager.ConfigureForTests(MakeCatalog(quest));
+
+        Assert.IsTrue(_manager.TryAcceptQuest(quest.QuestId));
+        CollectionAssert.AreEqual(
+            new[] { "npc.town.guildmaster" },
+            new List<string>(_manager.GetActionableNpcIds()));
+    }
+
+    [Test]
     public void Abandon_ResetsProgressAndRequiresNpcGiverToAcceptAgain()
     {
         const string questId = "quest.abandon";

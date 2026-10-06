@@ -1,0 +1,175 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 665474dd81c7d6148a54d65f2ba476bc, type: 3}
+  m_Name: Skill Phong (Wind)
+  m_EditorClassIdentifier: ProjectGame2D.Runtime::SfxBank
+  title: Skill Phong (Wind)
+  rows:
+  - label: "Phong \xB7 Skill 1 \xB7 Catch"
+    id: sfx.skill.wind_s1_catch
+    category: Skill
+    description: Blade caught
+    clips:
+    - {fileID: 8300000, guid: 275ad311b237ed643a26d3c601afaec2, type: 3}
+    volume: 0.65
+    pitchJitter: 0.03
+    minInterval: 0
+    maxVoices: 0
+    loop: 0
+  - label: "Phong \xB7 Skill 1 \xB7 Loop"
+    id: sfx.skill.wind_s1_loop
+    category: Skill
+    description: Blade in flight
+    clips:
+    - {fileID: 8300000, guid: c628a0c72338bd14bacd7c6287f815de, type: 3}
+    volume: 0.4
+    pitchJitter: 0
+    minInterval: 0
+    maxVoices: 0
+    loop: 1
+  - label: "Phong \xB7 Skill 1 \xB7 Throw"
+    id: sfx.skill.wind_s1_throw
+    category: Skill
+    description: Wind blade thrown
+    clips:
+    - {fileID: 8300000, guid: 13f17bd02c782bb418e6749fe2daac61, type: 3}
+    - {fileID: 8300000, guid: 4e89b7e57746a4c4d89860a2088a4082, type: 3}
+    volume: 0.75
+    pitchJitter: 0.03
+    minInterval: 0.1
+    maxVoices: 0
+    loop: 0
+  - label: "Phong \xB7 Skill 2 \xB7 Cast"
+    id: sfx.skill.wind_s2_cast
+    category: Skill
+    description: Whirlwind cast
+    clips:
+    - {fileID: 8300000, guid: 7baa1f728704af44ba43476f9a3b1b11, type: 3}
+    volume: 0.75
+    pitchJitter: 0
+    minInterval: 0
+    maxVoices: 0
+    loop: 0
+  - label: "Phong \xB7 Skill 2 \xB7 Land"
+    id: sfx.skill.wind_s2_land
+    category: Skill
+    description: Enemy lands
+    clips:
+    - {fileID: 8300000, guid: fcf10cf3c15c0f04e938f03411ba7a48, type: 3}
+    volume: 0.6
+    pitchJitter: 0.05
+    minInterval: 0.06
+    maxVoices: 3
+    loop: 0
+  - label: "Phong \xB7 Skill 2 \xB7 Lift loop"
+    id: sfx.skill.wind_s2_lift_loop
+    category: Skill
+    description: Whirlwind lifting
+    clips:
+    - {fileID: 8300000, guid: 2d882eb58981a9a4b8520ac47dba58ee, type: 3}
+    volume: 0.5
+    pitchJitter: 0
+    minInterval: 0
+    maxVoices: 0
+    loop: 1
+  - label: "Phong \xB7 Skill 3 \xB7 Pulse"
+    id: sfx.skill.wind_s3_pulse
+    category: Skill
+    description: Gust fan pulse
+    clips:
+    - {fileID: 8300000, guid: dd92bbdf2037c8b42a598e0dc2c4160e, type: 3}
+    - {fileID: 8300000, guid: 52b6e1434eb8982468db86dbf8e6ba73, type: 3}
+    volume: 0.75
+    pitchJitter: 0.03
+    minInterval: 0.1
+    maxVoices: 0
+    loop: 0
+  - label: "Phong \xB7 Skill 3 \xB7 Wall slam"
+    id: sfx.skill.wind_s3_wall_slam
+    category: Skill
+    description: Enemy slams the wall
+    clips:
+    - {fileID: 8300000, guid: 1dccc21d0e7e8ff49b124748a1edb312, type: 3}
+    volume: 0.7
+    pitchJitter: 0.05
+    minInterval: 0.08
+    maxVoices: 3
+    loop: 0
+  - label: "Phong \xB7 Skill 4 \xB7 Charge"
+    id: sfx.skill.wind_s4_charge
+    category: Skill
+    description: Wind roc charge
+    clips:
+    - {fileID: 8300000, guid: 351ea0b3f08b5de489debaea1270a2a8, type: 3}
+    volume: 0.75
+    pitchJitter: 0
+    minInterval: 0
+    maxVoices: 0
+    loop: 0
+  - label: "Phong \xB7 Skill 4 \xB7 Dive"
+    id: sfx.skill.wind_s4_dive
+    category: Skill
+    description: Roc dives
+    clips:
+    - {fileID: 8300000, guid: fcfa1ce56da08dc4aa66625c7685ea79, type: 3}
+    volume: 0.85
+    pitchJitter: 0
+    minInterval: 0
+    maxVoices: 0
+    loop: 0
+  - label: "Phong \xB7 Skill 4 \xB7 Feather rain"
+    id: sfx.skill.wind_s4_feather_rain
+    category: Skill
+    description: Feather rain tick
+    clips:
+    - {fileID: 8300000, guid: 78986d9128519fb4bb32c0e829c17c31, type: 3}
+    - {fileID: 8300000, guid: 094725387ff00d245889b041ca82989b, type: 3}
+    volume: 0.4
+    pitchJitter: 0.06
+    minInterval: 0.08
+    maxVoices: 3
+    loop: 0
+  - label: "Phong \xB7 Skill 4 \xB7 Flap"
+    id: sfx.skill.wind_s4_flap
+    category: Skill
+    description: Wing flap
+    clips:
+    - {fileID: 8300000, guid: 827d88ee31f112e4e84d31c1c31ecab4, type: 3}
+    - {fileID: 8300000, guid: 25a881f5a7aa6bf479410e2a3e82e6d0, type: 3}
+    volume: 0.65
+    pitchJitter: 0.04
+    minInterval: 0.25
+    maxVoices: 2
+    loop: 0
+  - label: "Phong \xB7 Skill 4 \xB7 Screech"
+    id: sfx.skill.wind_s4_screech
+    category: Skill
+    description: Roc appears
+    clips:
+    - {fileID: 8300000, guid: bc24765117f0d1e4fa254288c0ca331b, type: 3}
+    - {fileID: 8300000, guid: bf33442448f60e54f8efdb35f3eb4ae0, type: 3}
+    volume: 0.85
+    pitchJitter: 0.03
+    minInterval: 0
+    maxVoices: 0
+    loop: 0
+  - label: "Phong \xB7 Skill 4 \xB7 Shockwave"
+    id: sfx.skill.wind_s4_shockwave
+    category: Skill
+    description: Dive shockwave
+    clips:
+    - {fileID: 8300000, guid: 6eabba198946cad46a4dbda263743d76, type: 3}
+    volume: 0.95
+    pitchJitter: 0
+    minInterval: 0.2
+    maxVoices: 0
+    loop: 0

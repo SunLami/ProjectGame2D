@@ -1,0 +1,154 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 665474dd81c7d6148a54d65f2ba476bc, type: 3}
+  m_Name: Skill Dia (Earth)
+  m_EditorClassIdentifier: ProjectGame2D.Runtime::SfxBank
+  title: Skill Dia (Earth)
+  rows:
+  - label: "\u0110\u1ECBa \xB7 Skill 1 \xB7 Cast"
+    id: sfx.skill.earth_s1_cast
+    category: Skill
+    description: Rock thrown
+    clips:
+    - {fileID: 8300000, guid: 57d63821bd7aa0749ab72a8e617b2a0b, type: 3}
+    - {fileID: 8300000, guid: 911624350f6954d43a288309c42233f7, type: 3}
+    volume: 0.75
+    pitchJitter: 0.03
+    minInterval: 0.08
+    maxVoices: 3
+    loop: 0
+  - label: "\u0110\u1ECBa \xB7 Skill 1 \xB7 Impact"
+    id: sfx.skill.earth_s1_impact
+    category: Skill
+    description: Rock impact
+    clips:
+    - {fileID: 8300000, guid: abf8cd08d8ecf18498949e2411b989e9, type: 3}
+    - {fileID: 8300000, guid: bcbd7b57dfb87054494ece6a280ba8d4, type: 3}
+    - {fileID: 8300000, guid: 15307ec71ccdf1b459769c58dfafd9ed, type: 3}
+    volume: 0.75
+    pitchJitter: 0.05
+    minInterval: 0.05
+    maxVoices: 4
+    loop: 0
+  - label: "\u0110\u1ECBa \xB7 Skill 2 \xB7 Rise"
+    id: sfx.skill.earth_s2_rise
+    category: Skill
+    description: Rock arena rises
+    clips:
+    - {fileID: 8300000, guid: 18dad61b61c8d7d45b9ad8378a56fe45, type: 3}
+    volume: 0.85
+    pitchJitter: 0
+    minInterval: 0
+    maxVoices: 0
+    loop: 0
+  - label: "\u0110\u1ECBa \xB7 Skill 2 \xB7 Spike"
+    id: sfx.skill.earth_s2_spike
+    category: Skill
+    description: Arena spike
+    clips:
+    - {fileID: 8300000, guid: adb4a23e31ce03a4aa63170d88feccaf, type: 3}
+    - {fileID: 8300000, guid: fab175d8b13dabc43afd82b018c8d93c, type: 3}
+    volume: 0.7
+    pitchJitter: 0.05
+    minInterval: 0.06
+    maxVoices: 4
+    loop: 0
+  - label: "\u0110\u1ECBa \xB7 Skill 2 \xB7 Stun loop"
+    id: sfx.skill.earth_s2_stun_loop
+    category: Skill
+    description: Arena spinning ring
+    clips:
+    - {fileID: 8300000, guid: d7eedebc645896844898da4173a7e5b1, type: 3}
+    volume: 0.5
+    pitchJitter: 0
+    minInterval: 0
+    maxVoices: 0
+    loop: 1
+  - label: "\u0110\u1ECBa \xB7 Skill 3 \xB7 Cage"
+    id: sfx.skill.earth_s3_cage
+    category: Skill
+    description: Spike cage
+    clips:
+    - {fileID: 8300000, guid: 06c3a73b44782f44cb373ad013ff7206, type: 3}
+    volume: 0.8
+    pitchJitter: 0.03
+    minInterval: 0
+    maxVoices: 0
+    loop: 0
+  - label: "\u0110\u1ECBa \xB7 Skill 3 \xB7 Cone"
+    id: sfx.skill.earth_s3_cone
+    category: Skill
+    description: Spike cone
+    clips:
+    - {fileID: 8300000, guid: d952ef409d3037648959173b49e416c4, type: 3}
+    volume: 0.8
+    pitchJitter: 0.03
+    minInterval: 0.1
+    maxVoices: 0
+    loop: 0
+  - label: "\u0110\u1ECBa \xB7 Skill 4 \xB7 Aftermath"
+    id: sfx.skill.earth_s4_aftermath
+    category: Skill
+    description: Debris settling
+    clips:
+    - {fileID: 8300000, guid: ed4dc33565280bb4fa70be0cc542738a, type: 3}
+    - {fileID: 8300000, guid: 4e2ac47f08a8507419c1b0fba313df5d, type: 3}
+    volume: 0.55
+    pitchJitter: 0
+    minInterval: 0
+    maxVoices: 0
+    loop: 0
+  - label: "\u0110\u1ECBa \xB7 Skill 4 \xB7 Charge"
+    id: sfx.skill.earth_s4_charge
+    category: Skill
+    description: Meteor storm charge
+    clips:
+    - {fileID: 8300000, guid: a826c2b09617bb148a59e76194b1ef51, type: 3}
+    volume: 0.75
+    pitchJitter: 0
+    minInterval: 0
+    maxVoices: 0
+    loop: 0
+  - label: "\u0110\u1ECBa \xB7 Skill 4 \xB7 Finale"
+    id: sfx.skill.earth_s4_finale
+    category: Skill
+    description: Meteor storm finale
+    clips:
+    - {fileID: 8300000, guid: 4d3a8594a809a1e4090d54747152b998, type: 3}
+    volume: 0.95
+    pitchJitter: 0
+    minInterval: 0
+    maxVoices: 0
+    loop: 0
+  - label: "\u0110\u1ECBa \xB7 Skill 4 \xB7 Meteor fall"
+    id: sfx.skill.earth_s4_meteor_fall
+    category: Skill
+    description: Meteor falling
+    clips:
+    - {fileID: 8300000, guid: 6ec8fe795505b5d489cebae89540a936, type: 3}
+    volume: 0.5
+    pitchJitter: 0.05
+    minInterval: 0.1
+    maxVoices: 4
+    loop: 0
+  - label: "\u0110\u1ECBa \xB7 Skill 4 \xB7 Meteor impact"
+    id: sfx.skill.earth_s4_meteor_impact
+    category: Skill
+    description: Meteor impact
+    clips:
+    - {fileID: 8300000, guid: 5db9b1ab299c471459353724ca48e563, type: 3}
+    - {fileID: 8300000, guid: 4e9a933443f91e944b100e966d0f827d, type: 3}
+    volume: 0.75
+    pitchJitter: 0.05
+    minInterval: 0.06
+    maxVoices: 6
+    loop: 0

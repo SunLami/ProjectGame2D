@@ -91,6 +91,7 @@ public sealed class InventoryItemTooltipUI : MonoBehaviour
         if (item.isStackable) lines.Add($"Stack size: {item.maxStackSize}");
         if (item is EquipmentItemSO equipment)
         {
+            lines.Add($"Required level: {equipment.requiredLevel}");
             PlayerStatModifiers m = equipment.statModifiers;
             Add(lines, "Max Health", m.maxHealth);
             Add(lines, "Attack Damage", m.attackDamage);

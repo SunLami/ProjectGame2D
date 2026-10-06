@@ -1,0 +1,94 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 665474dd81c7d6148a54d65f2ba476bc, type: 3}
+  m_Name: Quest and Shop
+  m_EditorClassIdentifier: ProjectGame2D.Runtime::SfxBank
+  title: Quest and Shop
+  rows:
+  - label: Complete
+    id: sfx.craft.complete
+    category: Commerce
+    description: Crafting complete
+    clips:
+    - {fileID: 8300000, guid: 94f83d39eec765148a9ad382503c25e4, type: 3}
+    volume: 0.8
+    pitchJitter: 0
+    minInterval: 0.3
+    maxVoices: 0
+    loop: 0
+  - label: Start
+    id: sfx.craft.start
+    category: Commerce
+    description: Crafting begins
+    clips:
+    - {fileID: 8300000, guid: 34b82e92499b261469d709a851cd3120, type: 3}
+    volume: 0.7
+    pitchJitter: 0.05
+    minInterval: 0.2
+    maxVoices: 0
+    loop: 0
+  - label: Accept
+    id: sfx.quest.accept
+    category: Quest
+    description: Quest accepted
+    clips:
+    - {fileID: 8300000, guid: 0c77344603b35cc44b0b4a478d225855, type: 3}
+    volume: 0.7
+    pitchJitter: 0
+    minInterval: 0.3
+    maxVoices: 0
+    loop: 0
+  - label: Complete
+    id: sfx.quest.complete
+    category: Quest
+    description: Quest complete / turned in
+    clips:
+    - {fileID: 8300000, guid: eac47dbb653ee8645a2272cda7bbb526, type: 3}
+    volume: 0.8
+    pitchJitter: 0
+    minInterval: 0.5
+    maxVoices: 0
+    loop: 0
+  - label: Objective
+    id: sfx.quest.objective
+    category: Quest
+    description: Objective progress
+    clips:
+    - {fileID: 8300000, guid: 00d687bb6775bc64faa3d5d72db6dbe0, type: 3}
+    volume: 0.6
+    pitchJitter: 0
+    minInterval: 0.3
+    maxVoices: 0
+    loop: 0
+  - label: Buy
+    id: sfx.shop.buy
+    category: Commerce
+    description: Item bought
+    clips:
+    - {fileID: 8300000, guid: daf1f61743b3d7d4da2658767ad090c8, type: 3}
+    - {fileID: 8300000, guid: 9eb1720d922d8fd4a82e238e0cfdbeff, type: 3}
+    volume: 0.7
+    pitchJitter: 0.05
+    minInterval: 0.1
+    maxVoices: 0
+    loop: 0
+  - label: Sell
+    id: sfx.shop.sell
+    category: Commerce
+    description: Item sold
+    clips:
+    - {fileID: 8300000, guid: 223391831c0912c4c853f2ce8c1dd324, type: 3}
+    volume: 0.7
+    pitchJitter: 0.05
+    minInterval: 0.1
+    maxVoices: 0
+    loop: 0

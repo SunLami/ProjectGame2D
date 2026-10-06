@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -10,9 +11,12 @@ public class InventorySlotUI : MonoBehaviour, IPointerClickHandler, IPointerEnte
 
     private InventorySlot _slot;
     private GameObject _dragIcon;
+    private bool _dropWasHandled;
 
     public ItemSO Item => _slot?.item;
     public InventorySlot Slot => _slot;
+
+    private void OnDisable() => InventoryItemTooltipUI.Instance?.Hide();
 
     public void SetSlot(InventorySlot slot)
     {
@@ -43,7 +47,8 @@ public class InventorySlotUI : MonoBehaviour, IPointerClickHandler, IPointerEnte
 
         if (_slot.item is EquipmentItemSO equipmentItem && EquipmentManager.Instance != null)
         {
-            EquipmentManager.Instance.Equip(equipmentItem, _slot);
+            if (!EquipmentManager.Instance.Equip(equipmentItem, _slot))
+                InventoryActionFeedbackUI.Show(EquipFeedback.BuildEquipFailureMessage(equipmentItem));
         }
     }
 
@@ -77,13 +82,17 @@ public class InventorySlotUI : MonoBehaviour, IPointerClickHandler, IPointerEnte
         EquipmentSlotUI sourceEquipSlot = eventData.pointerDrag.GetComponent<EquipmentSlotUI>();
         if (sourceEquipSlot != null)
         {
-            EquipmentManager.Instance.Unequip(sourceEquipSlot.Slot, _slot);
+            EquipmentItemSO equipped = EquipmentManager.Instance.GetEquipped(sourceEquipSlot.Slot);
+            if (equipped != null && !EquipmentManager.Instance.Unequip(sourceEquipSlot.Slot, _slot))
+                InventoryActionFeedbackUI.Show(EquipFeedback.BuildUnequipFailureMessage(equipped));
         }
     }
 
     public void OnBeginDrag(PointerEventData eventData)
     {
         if (_slot == null || _slot.IsEmpty) return;
+
+        _dropWasHandled = false;
 
         InventoryItemTooltipUI.Instance?.Hide();
 
@@ -125,5 +134,44 @@ public class InventorySlotUI : MonoBehaviour, IPointerClickHandler, IPointerEnte
         }
 
         _iconImage.color = Color.white;
+
+        // Drag-to-discard: released past the Inventory window's own bounds (out into the world),
+        // not just onto empty space between slots inside the window -- that still just snaps back.
+        if (!_dropWasHandled && !IsDroppedOnQuickBar(eventData)
+            && _slot != null && !_slot.IsEmpty && IsDroppedOutsideInventoryWindow(eventData))
+            InventoryDiscardConfirmUI.Instance?.Open(_slot);
+
+        _dropWasHandled = false;
+    }
+
+    /// <summary>Called by valid drop targets outside the Inventory window so EndDrag does not
+    /// reinterpret the same release as a discard gesture.</summary>
+    public void MarkDropHandled() => _dropWasHandled = true;
+
+    private static bool IsDroppedOnQuickBar(PointerEventData eventData)
+    {
+        if (eventData == null || EventSystem.current == null)
+            return false;
+
+        var results = new List<RaycastResult>();
+        EventSystem.current.RaycastAll(eventData, results);
+        foreach (RaycastResult result in results)
+        {
+            if (result.gameObject.GetComponentInParent<QuickBarSlotUI>() != null)
+                return true;
+        }
+
+        return false;
+    }
+
+    private bool IsDroppedOutsideInventoryWindow(PointerEventData eventData)
+    {
+        InventoryWindowUI window = GetComponentInParent<InventoryWindowUI>();
+        RectTransform windowRect = window != null ? window.WindowRect : null;
+        if (windowRect == null)
+            return false;
+
+        Camera eventCamera = eventData.pressEventCamera;
+        return !RectTransformUtility.RectangleContainsScreenPoint(windowRect, eventData.position, eventCamera);
     }
 }

@@ -1,0 +1,93 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 665474dd81c7d6148a54d65f2ba476bc, type: 3}
+  m_Name: Ambience
+  m_EditorClassIdentifier: ProjectGame2D.Runtime::SfxBank
+  title: Ambience
+  rows:
+  - label: Beach
+    id: sfx.amb.beach
+    category: Ambience
+    description: Beach / water arena
+    clips:
+    - {fileID: 8300000, guid: 85759699b6950354aaf86b9cdd97431b, type: 3}
+    volume: 0.55
+    pitchJitter: 0
+    minInterval: 0
+    maxVoices: 0
+    loop: 1
+  - label: Campfire
+    id: sfx.amb.campfire
+    category: Ambience
+    description: Campfire
+    clips:
+    - {fileID: 8300000, guid: 77e6f13c173ca964b83e16773b7b5d25, type: 3}
+    volume: 0.45
+    pitchJitter: 0
+    minInterval: 0
+    maxVoices: 0
+    loop: 1
+  - label: Cave
+    id: sfx.amb.cave
+    category: Ambience
+    description: Earth arena / ruins
+    clips:
+    - {fileID: 8300000, guid: 05efd80bd69eaaa4b83a15a583a6e88e, type: 3}
+    volume: 0.5
+    pitchJitter: 0
+    minInterval: 0
+    maxVoices: 0
+    loop: 1
+  - label: Forest
+    id: sfx.amb.forest
+    category: Ambience
+    description: Forest / village day
+    clips:
+    - {fileID: 8300000, guid: 75147743842e6054198a15ba2c4ce138, type: 3}
+    volume: 0.5
+    pitchJitter: 0
+    minInterval: 0
+    maxVoices: 0
+    loop: 1
+  - label: Night
+    id: sfx.amb.night
+    category: Ambience
+    description: Night
+    clips:
+    - {fileID: 8300000, guid: 53cdda44dfa517e4ba2a57c493e52d08, type: 3}
+    volume: 0.4
+    pitchJitter: 0
+    minInterval: 0
+    maxVoices: 0
+    loop: 1
+  - label: Village
+    id: sfx.amb.village
+    category: Ambience
+    description: Village
+    clips:
+    - {fileID: 8300000, guid: 0821512769b4af743a4f37283c4c1c79, type: 3}
+    volume: 0.5
+    pitchJitter: 0
+    minInterval: 0
+    maxVoices: 0
+    loop: 1
+  - label: Phong
+    id: sfx.amb.wind
+    category: Ambience
+    description: Wind arena / plains
+    clips:
+    - {fileID: 8300000, guid: 3a95fa5d5c950bb48ab99292bad5d048, type: 3}
+    volume: 0.5
+    pitchJitter: 0
+    minInterval: 0
+    maxVoices: 0
+    loop: 1

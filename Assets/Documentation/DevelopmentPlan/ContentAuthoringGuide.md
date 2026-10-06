@@ -115,6 +115,12 @@ The prefab root owns `ResourceNodeInteractable` and a 2D collider. Bind `_visual
 the prefab root—so hiding presentation does not stop its cooldown coroutine. Every scene instance needs
 a unique `_persistentId`, an `_areaId`, and explicit registration in `WorldObjectRegistry`.
 
+**Hover highlight (D-055):** add a `HoverOutline` component to the same GameObject as the node's
+`SpriteRenderer` (usually the `_visualRoot` child). `GameCursorManager` finds it automatically via
+`GetComponentInParent` — no code change needed. Skipping this just means the node never gets the
+white hover-silhouette other interactables (NPCs, fishing spot, farm crops) already show; it doesn't
+break gathering itself.
+
 For the current sample content, run **Tools/Project Game 2D/Build Demo Resource Nodes**. It rebuilds
 the three placeholder item assets, definitions, prefabs and DemoScene instances for Copper Ore, Wood
 Log and Medicinal Leaf without changing their stable `itemId` values.
@@ -211,6 +217,11 @@ assets directly when changing the Buy/Sell catalogs for their matching NPCs.
 | `requiredStationTag` | Empty = craftable anywhere. Otherwise must match the `stationTag` passed to `CraftingManager.TryCraft` (e.g. `station.forge`) — station gating is data (a string tag), not a new code path per station. |
 | `npcId` | Optional — stable `npcId` that offers this recipe as a Crafting capability. |
 
+Store recipe assets under `Assets/Crafting/Recipes/<NPC display name>/` according to `npcId`. The
+current mapping is Merric (`npc.town.artificer`), Agnes (`npc.town.hermetist`), Cenhelm
+(`npc.town.elder`), Oswin (`npc.town.gastronome`) and Cuthbert (`npc.town.mixologist`). Moving an
+existing recipe must preserve its `.meta` file so catalog references and GUIDs remain stable.
+
 `CraftingManager` is one shared transaction engine for every recipe — adding a recipe is purely
 authoring a new `RecipeDefinition` asset and registering it in the catalog the scene's
 `CraftingManager` reads from; it never means adding a method.
@@ -239,7 +250,9 @@ chests in the same scene need two different `persistentId`s (`world.chest.forest
 1. Instantiate/drag the chest prefab into the target scene via Unity MCP (`manage_gameobject` /
    `manage_prefabs`), positioned where it should sit.
 2. On its `ChestInteractable` component, set `_persistentId` to a new, scene-unique ID (e.g.
-   `world.chest.<area>.<NN>`), `_rewardItemId` to a valid item, `_rewardQuantity`.
+   `world.chest.<area>.<NN>`), `_rewardItemId` to a valid item, `_rewardQuantity`. Add a
+   `HoverOutline` component next to its `SpriteRenderer` for the hover white-outline highlight
+   (D-055) — same one-line addition for `UniquePickupInteractable`.
 3. Add the new `ChestInteractable` GameObject to the scene's `WorldObjectRegistry`'s `_entries` array
    via the Inspector (Unity MCP `manage_components`) — the registry **only knows about objects
    explicitly listed here**; it never uses `Find`/`FindObjectsByType` to discover them, so a chest

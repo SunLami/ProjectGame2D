@@ -22,10 +22,16 @@ public static class TutorialOverlayLightFantasySkinBuilder
         Transform dialog = RequireChild(confirmation, "Dialog");
 
         Sprite instructionBoard = ImportSprite(TutorialRoot + "tutorial_instruction_panel_v1.png", new Rect(2f, 80f, 1435f, 213f));
-        Sprite skipDialog = ImportSprite("Assets/Resources/UI/Tutorial/LightFantasy/tutorial_skip_dialog_hd.png");
         Sprite primaryButton = ImportSprite(MainMenuRoot + "landing_action_button.png");
         Sprite dangerButton = ImportSprite(MainMenuRoot + "slot_delete_button.png");
         Sprite hoverButton = ImportSprite(MainMenuRoot + "landing_action_button_hover.png");
+        // SkipConfirmation reuses the SessionUX confirmation board + Dialogue action button (same
+        // Dark Inventory Style assets as SessionUXConfirmationPopupLightFantasySkinBuilder) instead
+        // of the old LightFantasy skip-dialog/landing-button assets -- those looked out of place
+        // next to the rest of the (now Dark Inventory Style) gameplay UI. See D-049. InstructionPanel
+        // (above/below) still uses the LightFantasy primary/danger/hover trio -- untouched on purpose.
+        Sprite skipDialog = ImportSprite("Assets/Resources/UI/SessionUX/DarkInventoryStyle/session_confirmation_board_v3.png");
+        Sprite actionButton = ImportSprite("Assets/Resources/UI/Dialogue/DarkInventoryStyle/dialogue_action_button_v1.png");
 
         SetImage(instruction.gameObject, instructionBoard, false, true);
         RectTransform instructionRect = instruction.GetComponent<RectTransform>();
@@ -57,16 +63,18 @@ public static class TutorialOverlayLightFantasySkinBuilder
 
         TMP_Text title = RequireChild(dialog, "Title").GetComponent<TMP_Text>();
         SetTopCenteredRect(title.rectTransform, new Vector2(430f, 34f), -72f);
-        StyleText(title, 23f, new Color(0.28f, 0.14f, 0.055f, 1f), TextAlignmentOptions.Center);
+        // Light-on-dark now that the board is the dark charcoal SessionUX one, not the old light
+        // parchment skip-dialog art (dark-brown text on charcoal would be unreadable).
+        StyleText(title, 23f, new Color(1f, 0.93f, 0.72f, 1f), TextAlignmentOptions.Center);
 
         TMP_Text message = RequireChild(dialog, "Message").GetComponent<TMP_Text>();
         SetTopCenteredRect(message.rectTransform, new Vector2(450f, 64f), -122f);
-        StyleText(message, 14f, new Color(0.32f, 0.18f, 0.08f, 1f), TextAlignmentOptions.Center);
+        StyleText(message, 14f, new Color(0.85f, 0.80f, 0.70f, 1f), TextAlignmentOptions.Center);
 
         Button confirm = RequireChild(dialog, "ConfirmSkipButton").GetComponent<Button>();
         Button cancel = RequireChild(dialog, "CancelSkipButton").GetComponent<Button>();
-        StyleButton(confirm, dangerButton, hoverButton, new Vector2(-100f, 30f), new Vector2(180f, 44f));
-        StyleButton(cancel, primaryButton, hoverButton, new Vector2(100f, 30f), new Vector2(180f, 44f));
+        StyleActionButton(confirm, actionButton, danger: true, new Vector2(-100f, 30f), new Vector2(180f, 44f));
+        StyleActionButton(cancel, actionButton, danger: false, new Vector2(100f, 30f), new Vector2(180f, 44f));
 
         EditorUtility.SetDirty(overlayUI.gameObject);
         EditorSceneManager.MarkSceneDirty(overlayUI.gameObject.scene);
@@ -115,6 +123,55 @@ public static class TutorialOverlayLightFantasySkinBuilder
             labelRect.pivot = new Vector2(0.5f, 0.5f);
             labelRect.offsetMin = Vector2.zero;
             labelRect.offsetMax = Vector2.zero;
+        }
+    }
+
+    // ColorTint-based button styling for the SkipConfirmation dialog (Dark Inventory Style) -- same
+    // formula as SessionUXConfirmationPopupLightFantasySkinBuilder.StyleButton, distinct from the
+    // hover-sprite-swap StyleButton below which InstructionPanel's SkipButton still uses.
+    private static void StyleActionButton(Button button, Sprite sprite, bool danger, Vector2 position, Vector2 size)
+    {
+        Image image = button.GetComponent<Image>();
+        if (image == null) image = button.gameObject.AddComponent<Image>();
+        image.sprite = sprite;
+        image.type = Image.Type.Simple;
+        image.preserveAspect = false;
+        image.color = Color.white;
+        image.raycastTarget = true;
+        EditorUtility.SetDirty(image);
+
+        Outline outline = button.GetComponent<Outline>();
+        if (outline != null) outline.enabled = false;
+
+        MainMenuButtonHoverVisual hoverVisual = button.GetComponent<MainMenuButtonHoverVisual>();
+        if (hoverVisual != null) UnityEngine.Object.DestroyImmediate(hoverVisual);
+
+        button.targetGraphic = image;
+        button.transition = Selectable.Transition.ColorTint;
+        ColorBlock colors = button.colors;
+        colors.normalColor = danger ? new Color(0.72f, 0.30f, 0.25f, 1f) : Color.white;
+        colors.highlightedColor = danger ? new Color(1f, 0.48f, 0.38f, 1f) : new Color(0.58f, 0.82f, 1f, 1f);
+        colors.pressedColor = danger ? new Color(0.52f, 0.18f, 0.16f, 1f) : new Color(0.68f, 0.55f, 0.30f, 1f);
+        colors.disabledColor = new Color(0.45f, 0.42f, 0.34f, 0.65f);
+        colors.fadeDuration = 0.08f;
+        button.colors = colors;
+        EditorUtility.SetDirty(button);
+
+        RectTransform rect = button.GetComponent<RectTransform>();
+        rect.anchorMin = new Vector2(0.5f, 0.5f);
+        rect.anchorMax = new Vector2(0.5f, 0.5f);
+        rect.pivot = new Vector2(0.5f, 0.5f);
+        rect.anchoredPosition = position;
+        rect.sizeDelta = size;
+
+        TMP_Text label = button.GetComponentInChildren<TMP_Text>(true);
+        if (label != null)
+        {
+            label.font = AssetDatabase.LoadAssetAtPath<TMP_FontAsset>("Assets/Fonts/DigitalDisco SDF v3.asset");
+            label.color = new Color(1f, 0.94f, 0.72f, 1f);
+            label.alignment = TextAlignmentOptions.Center;
+            label.raycastTarget = false;
+            EditorUtility.SetDirty(label);
         }
     }
 

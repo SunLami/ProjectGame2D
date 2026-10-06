@@ -13,12 +13,28 @@ MonoBehaviour:
   m_Name: HeadLv7
   m_EditorClassIdentifier: Assembly-CSharp::EquipmentItemSO
   itemId: head_lvl7
-  itemName: Head Lv7
-  description: "Trang b\u1ECB \u0111\u1EA7u Swordsman c\u1EA5p 7 (icon t\u1EA1m th\u1EDDi)."
+  itemName: Ignitium Precept
+  description:
   icon: {fileID: -1154410560983737585, guid: 8716d16f084234142a8aa89415f008cb, type: 3}
   type: 1
   isStackable: 0
   maxStackSize: 1
+  _minBuyPrice: 5250
+  _maxBuyPrice: 6964
+  _minSellPrice: 2625
+  _maxSellPrice: 3482
   slot: 0
+  requiredLevel: 30
   spriteLibraryAsset: {fileID: 7108339969198208228, guid: 97f19ac73d5491546b6c2823deab0178, type: 3}
   headSpriteLibraryAsset: {fileID: 0}
+  statModifiers:
+    maxHealth: 0
+    attackDamage: 0
+    defense: 10
+    moveSpeed: 0
+    sprintMultiplier: 0
+    criticalChance: 0.015
+    criticalMultiplier: 0
+    damageReduction: 0
+    healthRegeneration: 0
+    dodgeChance: 0

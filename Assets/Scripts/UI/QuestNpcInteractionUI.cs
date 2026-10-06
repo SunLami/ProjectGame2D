@@ -7,6 +7,12 @@ using UnityEngine.UI;
 /// <summary>Minimal scene NPC capability that routes quest actions through QuestNpcInteractionService.</summary>
 public sealed class QuestNpcInteractionUI : MonoBehaviour
 {
+    private const string AvailableMarkerResource = "UI/Quest/Markers/quest_available_marker";
+    private const string TurnInMarkerResource = "UI/Quest/Markers/quest_turnin_marker";
+    private const string MarkerImageObjectName = "QuestMarkerImage";
+    private const float MarkerImageVerticalOffset = -24f;
+    private static readonly Vector2 MarkerSize = new(96f, 96f);
+
     [SerializeField] private string _npcId;
     [SerializeField] private TMP_Text _markerText;
     [SerializeField] private GameObject _promptRoot;
@@ -36,9 +42,14 @@ public sealed class QuestNpcInteractionUI : MonoBehaviour
     private readonly HashSet<Collider2D> _playerColliders = new();
     private QuestManager _questManager;
     private QuestNpcInteractionService _service;
+    private Image _markerImage;
+    private Sprite _availableMarker;
+    private Sprite _turnInMarker;
 
     private void OnEnable()
     {
+        InitializeMarkerPresentation();
+        HideFeedbackText();
         _interactionButton.onClick.AddListener(TryInteract);
         BindQuestManager();
         QuestNpcRegistry.Register(_npcId, transform);
@@ -189,9 +200,7 @@ public sealed class QuestNpcInteractionUI : MonoBehaviour
         if (_service == null || !_service.TryGetTurnInQuest(_npcId, out QuestDefinition turnIn))
             return false;
 
-        _feedbackText.text = _service.TryTurnIn(_npcId, turnIn.QuestId, out QuestTurnInResult result)
-            ? $"Completed: {turnIn.DisplayName}"
-            : FormatTurnInFailure(result);
+        _service.TryTurnIn(_npcId, turnIn.QuestId, out _);
         return true;
     }
 
@@ -200,16 +209,14 @@ public sealed class QuestNpcInteractionUI : MonoBehaviour
         if (_service == null || offered == null)
             return;
 
-        _feedbackText.text = _service.TryAcceptQuest(_npcId, offered.QuestId)
-            ? $"Accepted: {offered.DisplayName}"
-            : "Quest is no longer available.";
+        _service.TryAcceptQuest(_npcId, offered.QuestId);
     }
 
     private void Refresh()
     {
         if (_service == null)
         {
-            _markerText.text = string.Empty;
+            SetMarker(null, string.Empty);
             _promptRoot.SetActive(false);
             return;
         }
@@ -217,7 +224,9 @@ public sealed class QuestNpcInteractionUI : MonoBehaviour
         bool canTurnIn = _service.TryGetTurnInQuest(_npcId, out QuestDefinition turnIn);
         QuestDefinition offered = null;
         bool canOffer = !canTurnIn && _service.TryGetOfferedQuest(_npcId, out offered);
-        _markerText.text = canTurnIn ? "?" : canOffer ? "!" : string.Empty;
+        SetMarker(
+            canTurnIn ? _turnInMarker : canOffer ? _availableMarker : null,
+            canTurnIn ? "?" : canOffer ? "!" : string.Empty);
 
         // The "LEFT CLICK -- ACCEPT/TURN IN <quest>" prompt bubble no longer shows (same call as
         // TraderNpcInteractionUI.Refresh(), for the same reason: the Talk cursor + HoverOutline
@@ -226,12 +235,64 @@ public sealed class QuestNpcInteractionUI : MonoBehaviour
         _promptRoot.SetActive(false);
     }
 
-    private static string FormatTurnInFailure(QuestTurnInResult result) => result switch
+    private void InitializeMarkerPresentation()
     {
-        QuestTurnInResult.ObjectivesIncomplete => "Objectives are not complete.",
-        QuestTurnInResult.InsufficientInventoryCapacity => "Not enough inventory space.",
-        QuestTurnInResult.AlreadyCompleted => "Quest was already completed.",
-        QuestTurnInResult.QuestNotFound => "This NPC cannot turn in that quest.",
-        _ => "Unable to turn in quest."
-    };
+        if (_markerText == null)
+            return;
+
+        _markerText.rectTransform.sizeDelta = MarkerSize;
+        _markerText.fontSize = 56f;
+        _markerText.alignment = TextAlignmentOptions.Center;
+
+        Transform imageTransform = _markerText.transform.Find(MarkerImageObjectName);
+        if (imageTransform == null)
+        {
+            var imageObject = new GameObject(
+                MarkerImageObjectName,
+                typeof(RectTransform),
+                typeof(CanvasRenderer),
+                typeof(Image));
+            imageTransform = imageObject.transform;
+            imageTransform.SetParent(_markerText.transform, false);
+        }
+
+        RectTransform imageRect = (RectTransform)imageTransform;
+        imageRect.anchorMin = Vector2.zero;
+        imageRect.anchorMax = Vector2.one;
+        imageRect.offsetMin = Vector2.zero;
+        imageRect.offsetMax = Vector2.zero;
+        imageRect.anchoredPosition = new Vector2(0f, MarkerImageVerticalOffset);
+
+        _markerImage = imageTransform.GetComponent<Image>();
+
+        _markerImage.raycastTarget = false;
+        _markerImage.preserveAspect = true;
+        _availableMarker = Resources.Load<Sprite>(AvailableMarkerResource);
+        _turnInMarker = Resources.Load<Sprite>(TurnInMarkerResource);
+    }
+
+    private void SetMarker(Sprite sprite, string fallbackText)
+    {
+        bool useSprite = sprite != null;
+        if (_markerImage != null)
+        {
+            _markerImage.sprite = sprite;
+            _markerImage.enabled = useSprite;
+        }
+
+        if (_markerText != null)
+        {
+            _markerText.text = useSprite ? string.Empty : fallbackText;
+            _markerText.enabled = !useSprite && !string.IsNullOrEmpty(fallbackText);
+        }
+    }
+
+    private void HideFeedbackText()
+    {
+        if (_feedbackText != null)
+        {
+            _feedbackText.text = string.Empty;
+            _feedbackText.gameObject.SetActive(false);
+        }
+    }
 }

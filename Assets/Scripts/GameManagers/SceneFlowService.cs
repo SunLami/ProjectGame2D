@@ -202,6 +202,10 @@ public sealed class SceneFlowService : MonoBehaviour
                     yield return unloadOldBootstrap;
             }
 
+            // This is an internal manager reset, not a new process launch. The fresh Bootstrap
+            // must not let BootstrapSceneLoader replay StudioIntro while this transition is
+            // already loading IntroCutscene/MapNhat/MainMenu below.
+            BootstrapSceneLoader.SuppressNextAutomaticEntryLoad();
             AsyncOperation freshBootstrapLoad = SceneManager.LoadSceneAsync(BootstrapSceneName, LoadSceneMode.Additive);
             if (freshBootstrapLoad != null)
                 yield return freshBootstrapLoad;

@@ -128,6 +128,17 @@ During chain: dialogue/progress/turn-in
 After chain completed: offer Main Quest
 ```
 
+Production content in `MapNhat` follows this concrete order:
+
+```text
+Wigheard training chain (`quest.trainer_greeting` → `quest.equip_weapon` → `quest.trainer_killquest`)
+→ Cenhelm Tutorial Quest (`quest.tutorial.crafting.001`)
+→ Cenhelm Main Quest (`quest.main.001`)
+```
+
+The direction indicator must therefore not treat Cenhelm as an actionable quest giver until
+`quest.trainer_killquest` is Completed.
+
 ## Reward transaction
 
 Turn-in phải atomic:

@@ -122,6 +122,7 @@ public class EquipmentManager : MonoBehaviour
     {
         if (item == null || sourceSlot == null || sourceSlot.item != item) return false;
         if (InventoryManager.Instance == null) return false;
+        if (PlayerStat.Instance != null && PlayerStat.Instance.Level < item.requiredLevel) return false;
 
         EquipmentItemSO previous = GetEquipped(item.slot);
 
@@ -188,6 +189,7 @@ public class EquipmentManager : MonoBehaviour
 
         ClearVisual(slot);
         _equipped[slot] = null;
+        SoundFXManager.PlaySfx(SfxIds.InventoryUnequip);
 
         if (useTargetSlot)
         {
@@ -201,6 +203,7 @@ public class EquipmentManager : MonoBehaviour
         }
 
         RefreshPlayerStats();
+        SoundFXManager.PlaySfx(SfxIds.InventoryEquip);
         OnEquipmentChanged?.Invoke();
         return true;
     }

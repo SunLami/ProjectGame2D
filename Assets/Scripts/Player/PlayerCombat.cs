@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
 
 public partial class Player
@@ -18,13 +19,18 @@ public partial class Player
 
     public void OnAttack(InputAction.CallbackContext context)
     {
-        if (!context.started || _isAttacking || _isHit || _isDead
+        if (!context.started || _isAttacking || _isHit || _isDead || _isAimingSkill || _isDashing
             || !GameStateManager.AllowsGameplayInput
+            || EventSystem.current != null && EventSystem.current.IsPointerOverGameObject()
+            || IsPointerOverGameplayHud()
             || GameCursorManager.Instance != null
                 && GameCursorManager.Instance.IsPointerOverNonCombatInteraction)
             return;
         if (!_stats.TryConsumeAttackStamina())
+        {
+            SoundFXManager.PlaySfx(SfxIds.PlayerExhausted);
             return;
+        }
 
         _isAttacking = true;
         if (_isRunning && _moveInput != Vector2.zero)
@@ -40,15 +46,17 @@ public partial class Player
     {
         DisableAttackHitbox();
         _isAttacking = false;
+        _isCastingSkill = false;
     }
 
     public void CloseAttackHitbox() => DisableAttackHitbox();
 
     public void ActivatePlayerAttackHitbox()
     {
-        if (!_isAttacking || _isHit || _isDead)
+        if (!_isAttacking || _isHit || _isDead || _isCastingSkill)
             return;
 
+        SoundFXManager.PlaySfx(SfxIds.CombatPlayerAttack);
         _attackHitbox.Configure(_attackFxRenderer, _lastFacingDirection, _attackHitboxOffset);
         _attackHitbox.BeginAttack();
     }
@@ -61,7 +69,9 @@ public partial class Player
         Vector2 direction = targetTransform != null
             ? ((Vector2)targetTransform.position - (Vector2)transform.position).normalized
             : _lastFacingDirection;
-        target.TakeDamage(_stats.RollOutgoingDamage(out _), direction, _attackKnockbackForce);
+        float damage = _stats.RollOutgoingDamage(out bool isCritical);
+        target.TakeDamage(damage, direction, _attackKnockbackForce);
+        SoundFXManager.PlaySfx(isCritical ? SfxIds.CombatHitCrit : SfxIds.CombatHitImpact);
     }
 
     private void UpdateDirectionToMouse()
@@ -76,6 +86,30 @@ public partial class Player
         Vector2 direction = (worldPosition - transform.position).normalized;
         if (direction != Vector2.zero)
             SetFacingDirection(direction);
+    }
+
+    private static bool IsPointerOverGameplayHud()
+    {
+        if (Pointer.current == null)
+            return false;
+
+        Vector2 screenPosition = Pointer.current.position.ReadValue();
+        return ContainsScreenPoint("PlayerHUD", screenPosition)
+            || ContainsScreenPoint("BottomHUD", screenPosition)
+            || ContainsScreenPoint("Minimap", screenPosition);
+    }
+
+    private static bool ContainsScreenPoint(string objectName, Vector2 screenPosition)
+    {
+        GameObject hudObject = GameObject.Find(objectName);
+        if (hudObject == null || !hudObject.TryGetComponent(out RectTransform rect))
+            return false;
+
+        Canvas canvas = rect.GetComponentInParent<Canvas>();
+        Camera eventCamera = canvas != null && canvas.renderMode != RenderMode.ScreenSpaceOverlay
+            ? canvas.worldCamera
+            : null;
+        return RectTransformUtility.RectangleContainsScreenPoint(rect, screenPosition, eventCamera);
     }
 
     private void DisableAttackHitbox() => _attackHitbox?.EndAttack();

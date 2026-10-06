@@ -1,0 +1,213 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8024c83b1620739449042775c372531a, type: 3}
+  m_Name: WaterCrabBoss
+  m_EditorClassIdentifier: ProjectGame2D.Runtime::BossDefinition
+  bossId: boss.water_crab
+  displayName: Tidal Crab
+  maxHealth: 2400
+  baseDamage: 14
+  moveSpeed: 2.6
+  recoveryDamageTaken: 1.25
+  ultimateRecoveryDamageTaken: 1.5
+  fistAwayDamageTaken: 1.15
+  spawnFadeSeconds: 2.5
+  phaseTransitionSeconds: 2
+  difficultyDamageScale: 1
+  impactVfx: Water/WaterRainSplash_Hit
+  phaseVfx: Water/WaterGatherRing_Swirl
+  ultimateSkill: 10
+  phases:
+  - name: Phase 1
+    startsBelowHealth: 1
+    telegraphScale: 1
+    telegraphMinSeconds: 0.8
+    recoverySeconds: 3
+    gapBetweenSkills: 0.6
+    ultimateEveryCombos: 0
+    combos:
+    - name: A
+      steps:
+      - skill: 6
+        parallelWithNext: 0
+      - skill: 7
+        parallelWithNext: 0
+    - name: B
+      steps:
+      - skill: 8
+        parallelWithNext: 0
+      - skill: 9
+        parallelWithNext: 0
+  - name: Phase 2
+    startsBelowHealth: 0.65
+    telegraphScale: 0.9
+    telegraphMinSeconds: 0.8
+    recoverySeconds: 2.5
+    gapBetweenSkills: 0.5
+    ultimateEveryCombos: 3
+    combos:
+    - name: C
+      steps:
+      - skill: 6
+        parallelWithNext: 0
+      - skill: 8
+        parallelWithNext: 0
+      - skill: 7
+        parallelWithNext: 0
+    - name: D
+      steps:
+      - skill: 9
+        parallelWithNext: 1
+      - skill: 7
+        parallelWithNext: 0
+    - name: E
+      steps:
+      - skill: 8
+        parallelWithNext: 0
+      - skill: 8
+        parallelWithNext: 0
+      - skill: 6
+        parallelWithNext: 0
+  - name: Phase 3 - Flood
+    startsBelowHealth: 0.3
+    telegraphScale: 0.8
+    telegraphMinSeconds: 0.6
+    recoverySeconds: 1.8
+    gapBetweenSkills: 0.4
+    ultimateEveryCombos: 2
+    combos:
+    - name: F
+      steps:
+      - skill: 7
+        parallelWithNext: 1
+      - skill: 8
+        parallelWithNext: 0
+      - skill: 6
+        parallelWithNext: 0
+    - name: G
+      steps:
+      - skill: 10
+        parallelWithNext: 0
+      - skill: 6
+        parallelWithNext: 0
+      - skill: 6
+        parallelWithNext: 0
+  slamRadius: 3.6
+  slamWindup: 1
+  slamLockSeconds: 0.15
+  slamDamage: 1
+  slamKnockback: 6
+  slamDoubleDelay: 0.5
+  slamDoubleWindup: 0.7
+  rainCountByPhase: 06000000090000000c000000
+  rainRadius: 2
+  rainLead: 0.9
+  rainSpacing: 0.22
+  rainDamage: 0.7
+  rainKnockback: 4
+  rainPredictSeconds: 0.6
+  rainSpreadRadius: 9
+  rainMinSpacing: 2.4
+  laneCountByPhase: 030000000500000007000000
+  laneStepDegrees: 22
+  laneWidth: 1.4
+  laneLength: 22
+  laneTelegraph: 0.9
+  laneDamage: 0.9
+  laneKnockback: 3
+  laneSpreadSpeed: 40
+  fistLineWidth: 2
+  fistLineLength: 26
+  fistWindup: 0.8
+  fistSpeed: 24
+  fistDamage: 1.3
+  fistReturnDamage: 0.6
+  fistKnockback: 7
+  fistHoverSeconds: 1.6
+  fistReturnSpeed: 18
+  resonanceChargeSeconds: 1.8
+  resonanceRingsByPhase: 030000000300000004000000
+  resonanceRingInterval: 0.9
+  resonanceRingSpeed: 9
+  resonanceRingThickness: 1.1
+  resonanceGapDegreesByPhase:
+  - 40
+  - 40
+  - 34
+  resonanceGapMarkerLead: 0.6
+  resonanceDamage: 1.1
+  resonanceKnockback: 5
+  resonanceMaxRadius: 40
+  resonanceBurstVolleysByPhase: 040000000500000006000000
+  resonanceBurstBulletsByPhase: 14000000180000001c000000
+  resonanceBurstSpeed: 8
+  resonanceBurstHitRadius: 0.45
+  resonanceBurstDamage: 0.8
+  resonanceBurstTelegraphSeconds: 0.5
+  ultimateRecoverySeconds: 4.5
+  tideCycleSecondsByPhase:
+  - 40
+  - 20
+  - 20
+  tideDepthByPhase:
+  - 8
+  - 8
+  - 17
+  tideShallowPlayerSpeed: 0.6
+  tideCrabSpeedMultiplier: 2
+  clampRadius: 5
+  clampArcDegrees: 100
+  clampWindup: 0.9
+  clampSecondDelay: 0.5
+  clampSecondRotateDegrees: 25
+  clampDamage: 1
+  clampKnockback: 5
+  clampRootSeconds: 0.6
+  bubbleCountByPhase: 030000000400000005000000
+  bubbleSpeed: 3
+  bubbleHitRadius: 1
+  bubbleLifeSeconds: 9
+  bubbleSpawnInterval: 0.45
+  bubblePredictSeconds: 0.8
+  bubbleDamage: 0.9
+  bubbleKnockback: 5
+  ambushSinkSeconds: 0.7
+  ambushChaseSeconds: 2
+  ambushChaseSpeed: 6
+  ambushRadius: 3.2
+  ambushWarnSeconds: 0.8
+  ambushDamage: 1.2
+  ambushKnockback: 8
+  ambushStandSeconds: 0.8
+  waveWarnSeconds: 1.5
+  waveGapCountByPhase: 020000000200000001000000
+  waveGapWidthByPhase:
+  - 4.5
+  - 4.5
+  - 4
+  waveSpeed: 14
+  waveThickness: 1.2
+  waveDamage: 1.2
+  wavePushDistance: 3
+  whirlRadius: 9
+  whirlWarnSeconds: 2
+  whirlPullSeconds: 3
+  whirlPullSpeed: 3.5
+  whirlCoreRadius: 2.5
+  whirlTickDamage: 0.5
+  whirlTickInterval: 0.5
+  whirlJetCount: 4
+  whirlJetSeconds: 2
+  whirlJetLength: 12
+  whirlJetWidth: 1.6
+  whirlJetSpinDegreesPerSecond: 120
+  whirlJetDamage: 0.8

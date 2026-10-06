@@ -163,6 +163,44 @@ public sealed class CraftingManagerPlayModeTests
     }
 
     [Test]
+    public void TryCraft_EquipmentRequiresItsEquipLevel_ConsumesNothingWhenLevelIsTooLow()
+    {
+        ItemSO iron = MakeItem("item.material.iron_bar");
+        var sword = ScriptableObject.CreateInstance<EquipmentItemSO>();
+        sword.itemId = "sword_lvl3";
+        sword.isStackable = false;
+        sword.maxStackSize = 1;
+        sword.requiredLevel = 10;
+        _scratchAssets.Add(sword);
+        var resolver = new FakeItemResolver();
+        resolver.Register(iron);
+        resolver.Register(sword);
+        RecipeDefinition recipe = MakeRecipe(
+            "recipe.equipment.sword_lvl3", "npc.town.artificer", "station.forge",
+            "sword_lvl3", 1, ("item.material.iron_bar", 5));
+        _manager.ConfigureForTests(MakeCatalog(recipe), resolver);
+        InventoryManager.Instance.AddItem(iron, 5);
+
+        var playerRoot = new GameObject("PlayerStatFixture");
+        PlayerStat stats = playerRoot.AddComponent<PlayerStat>();
+        stats.RestoreProgression(9, 0);
+        try
+        {
+            Assert.IsFalse(_manager.TryCraft(recipe.RecipeId, "station.forge", out CraftingTransactionResult tooLow));
+            Assert.AreEqual(CraftingTransactionResult.LevelTooLow, tooLow);
+            Assert.IsTrue(InventoryManager.Instance.HasItem(iron, 5), "Failed craft must not consume ingredients.");
+
+            stats.RestoreProgression(10, 0);
+            Assert.IsTrue(_manager.TryCraft(recipe.RecipeId, "station.forge", out CraftingTransactionResult success));
+            Assert.AreEqual(CraftingTransactionResult.Success, success);
+        }
+        finally
+        {
+            Object.DestroyImmediate(playerRoot);
+        }
+    }
+
+    [Test]
     public void TryCraft_InsufficientOutputCapacity_ConsumesNothing()
     {
         ItemSO wood = MakeItem("item.material.wood");

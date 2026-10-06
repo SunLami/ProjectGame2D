@@ -7,14 +7,15 @@ using UnityEditor;
 /// <summary>
 /// Lives on the Bootstrap scene (the one that owns _Managers/_UI and never unloads during
 /// gameplay). On a real build, Bootstrap is always build index 0 and this additively loads
-/// MainMenu right after it. In the Editor, hitting Play on any scene routes through Bootstrap
+/// StudioIntro right after it. In the Editor, hitting Play on any scene routes through Bootstrap
 /// first (see PlayModeBootstrap) -- this reads which scene the developer actually had open and
 /// loads that instead, so direct Play-on-MapNhat iteration keeps working unchanged.
 /// </summary>
 [DefaultExecutionOrder(-950)]
 public sealed class BootstrapSceneLoader : MonoBehaviour
 {
-    private const string DefaultEntryScene = "MainMenu";
+    private const string DefaultEntryScene = "StudioIntro";
+    private static bool _suppressNextAutomaticEntryLoad;
 
 #if UNITY_EDITOR
     // Must match PlayModeBootstrap.LastEditedScenePrefKey (Assets/Editor/PlayModeBootstrap.cs).
@@ -25,10 +26,26 @@ public sealed class BootstrapSceneLoader : MonoBehaviour
 
     private void Start()
     {
+        if (_suppressNextAutomaticEntryLoad)
+        {
+            _suppressNextAutomaticEntryLoad = false;
+            return;
+        }
+
         string targetScene = ResolveTargetScene();
         if (!SceneManager.GetSceneByName(targetScene).isLoaded)
             SceneManager.LoadSceneAsync(targetScene, LoadSceneMode.Additive);
     }
+
+    /// <summary>
+    /// SceneFlowService reloads Bootstrap to reset persistent managers between sessions. That
+    /// internal reload must not replay the process-start StudioIntro or load any other content;
+    /// SceneFlowService itself owns the destination scene operation already in progress.
+    /// </summary>
+    public static void SuppressNextAutomaticEntryLoad() => _suppressNextAutomaticEntryLoad = true;
+
+    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+    private static void ResetProcessState() => _suppressNextAutomaticEntryLoad = false;
 
     private static string ResolveTargetScene()
     {

@@ -1,15 +1,20 @@
+using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-public sealed class QuickBarSlotUI : MonoBehaviour, IPointerClickHandler, IDropHandler
+public sealed class QuickBarSlotUI : MonoBehaviour, IPointerClickHandler, IDropHandler,
+    IBeginDragHandler, IDragHandler, IEndDragHandler
 {
     [SerializeField, Range(0, QuickBarSaveData.SlotCount - 1)] private int _slotIndex;
     [SerializeField] private Image _icon;
     [SerializeField] private TMP_Text _quantity;
     [SerializeField] private Image _selection;
     private bool _subscribed;
+    private bool _isDragging;
+    private RectTransform _dragGhost;
+    private RectTransform _dragCanvasRect;
 
     private void OnEnable()
     {
@@ -22,7 +27,12 @@ public sealed class QuickBarSlotUI : MonoBehaviour, IPointerClickHandler, IDropH
         if (!_subscribed) Subscribe();
     }
 
-    private void OnDisable() => Unsubscribe();
+    private void OnDisable()
+    {
+        Unsubscribe();
+        CleanupDragGhost();
+        _isDragging = false;
+    }
 
     public void Configure(int slotIndex, Image icon, TMP_Text quantity, Image selection)
     {
@@ -43,6 +53,18 @@ public sealed class QuickBarSlotUI : MonoBehaviour, IPointerClickHandler, IDropH
 
     public void OnDrop(PointerEventData eventData)
     {
+        QuickBarSlotUI quickBarSource = eventData.pointerDrag != null
+            ? eventData.pointerDrag.GetComponent<QuickBarSlotUI>()
+            : null;
+        if (quickBarSource != null && quickBarSource != this &&
+            quickBarSource.TryGetAssignedItem(out ItemSO quickBarItem) && QuickBarManager.Instance != null)
+        {
+            QuickBarManager.Instance.Assign(_slotIndex, quickBarItem);
+            QuickBarManager.Instance.Clear(quickBarSource._slotIndex);
+            QuickBarManager.Instance.Select(_slotIndex);
+            return;
+        }
+
         InventorySlotUI source = eventData.pointerDrag != null
             ? eventData.pointerDrag.GetComponent<InventorySlotUI>()
             : null;
@@ -50,7 +72,48 @@ public sealed class QuickBarSlotUI : MonoBehaviour, IPointerClickHandler, IDropH
         {
             QuickBarManager.Instance.Assign(_slotIndex, source.Item);
             QuickBarManager.Instance.Select(_slotIndex);
+            source.MarkDropHandled();
         }
+    }
+
+    public void OnBeginDrag(PointerEventData eventData)
+    {
+        if (!TryGetAssignedItem(out ItemSO item)) return;
+
+        _isDragging = true;
+        Canvas canvas = GetComponentInParent<Canvas>();
+        _dragCanvasRect = canvas != null ? canvas.transform as RectTransform : null;
+        if (_dragCanvasRect == null || item.icon == null) return;
+
+        GameObject ghost = new("QuickBarDragGhost", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
+        _dragGhost = ghost.GetComponent<RectTransform>();
+        _dragGhost.SetParent(_dragCanvasRect, false);
+        _dragGhost.SetAsLastSibling();
+        _dragGhost.sizeDelta = _icon != null
+            ? _icon.rectTransform.rect.size
+            : new Vector2(31f, 31f);
+
+        Image ghostImage = ghost.GetComponent<Image>();
+        ghostImage.sprite = item.icon;
+        ghostImage.preserveAspect = true;
+        ghostImage.raycastTarget = false;
+        ghostImage.color = new Color(1f, 1f, 1f, 0.85f);
+        UpdateDragGhost(eventData);
+    }
+
+    public void OnDrag(PointerEventData eventData)
+    {
+        if (_isDragging) UpdateDragGhost(eventData);
+    }
+
+    public void OnEndDrag(PointerEventData eventData)
+    {
+        bool shouldClear = _isDragging && !IsPointerOverQuickBarSlot(eventData);
+        CleanupDragGhost();
+        _isDragging = false;
+
+        if (shouldClear)
+            QuickBarManager.Instance?.Clear(_slotIndex);
     }
 
     private void Subscribe()
@@ -70,6 +133,42 @@ public sealed class QuickBarSlotUI : MonoBehaviour, IPointerClickHandler, IDropH
         if (InventoryManager.Instance != null) InventoryManager.Instance.OnInventoryChanged -= Refresh;
         _subscribed = false;
     }
+
+    private bool TryGetAssignedItem(out ItemSO item)
+    {
+        item = null;
+        return QuickBarManager.Instance != null &&
+               QuickBarManager.Instance.TryGetAssignedItem(_slotIndex, out item);
+    }
+
+    private void UpdateDragGhost(PointerEventData eventData)
+    {
+        if (_dragGhost == null || _dragCanvasRect == null) return;
+        if (RectTransformUtility.ScreenPointToLocalPointInRectangle(
+                _dragCanvasRect, eventData.position, eventData.pressEventCamera, out Vector2 localPoint))
+            _dragGhost.localPosition = localPoint;
+    }
+
+    private static bool IsPointerOverQuickBarSlot(PointerEventData eventData)
+    {
+        if (EventSystem.current == null) return false;
+
+        var results = new List<RaycastResult>();
+        EventSystem.current.RaycastAll(eventData, results);
+        foreach (RaycastResult result in results)
+            if (result.gameObject.GetComponentInParent<QuickBarSlotUI>() != null)
+                return true;
+        return false;
+    }
+
+    private void CleanupDragGhost()
+    {
+        if (_dragGhost != null) Destroy(_dragGhost.gameObject);
+        _dragGhost = null;
+        _dragCanvasRect = null;
+    }
+
+    private void OnDestroy() => CleanupDragGhost();
 
     private void Refresh()
     {

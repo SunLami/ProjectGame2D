@@ -1,0 +1,89 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &7392237041825780970
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 947835723420619452}
+  - component: {fileID: 6750393146458430550}
+  m_Layer: 0
+  m_Name: WindGustFan_TranGio
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &947835723420619452
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7392237041825780970}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &6750393146458430550
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7392237041825780970}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 941e7605a22e89e448581ff72b912e13, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ProjectGame2D.Runtime::SkillGustFan
+  _gustFrames:
+  - {fileID: 2922315248130569266, guid: 701ff73e544bb1842a77e47ee1580875, type: 3}
+  - {fileID: -6446534103982013485, guid: 701ff73e544bb1842a77e47ee1580875, type: 3}
+  - {fileID: -4399029653392413741, guid: 701ff73e544bb1842a77e47ee1580875, type: 3}
+  - {fileID: -1417503134791990273, guid: 701ff73e544bb1842a77e47ee1580875, type: 3}
+  - {fileID: -2866650275957911013, guid: 701ff73e544bb1842a77e47ee1580875, type: 3}
+  - {fileID: -874860896217095452, guid: 701ff73e544bb1842a77e47ee1580875, type: 3}
+  - {fileID: 4394799906202412503, guid: 701ff73e544bb1842a77e47ee1580875, type: 3}
+  - {fileID: -8482099060340565453, guid: 701ff73e544bb1842a77e47ee1580875, type: 3}
+  - {fileID: 8606769105125728058, guid: 701ff73e544bb1842a77e47ee1580875, type: 3}
+  - {fileID: 2683272891935942139, guid: 701ff73e544bb1842a77e47ee1580875, type: 3}
+  - {fileID: -3589027178578815460, guid: 701ff73e544bb1842a77e47ee1580875, type: 3}
+  - {fileID: 5032074142919874100, guid: 701ff73e544bb1842a77e47ee1580875, type: 3}
+  - {fileID: -2876365976467461632, guid: 701ff73e544bb1842a77e47ee1580875, type: 3}
+  - {fileID: -4533336028076460485, guid: 701ff73e544bb1842a77e47ee1580875, type: 3}
+  - {fileID: -7195167323336863783, guid: 701ff73e544bb1842a77e47ee1580875, type: 3}
+  - {fileID: -6354345061960847638, guid: 701ff73e544bb1842a77e47ee1580875, type: 3}
+  _puffFrames:
+  - {fileID: -700933480600356992, guid: 53109f3cc87de7b49a1f4599c7b8d219, type: 3}
+  - {fileID: 6100015422598922173, guid: 53109f3cc87de7b49a1f4599c7b8d219, type: 3}
+  - {fileID: -2055874352103894756, guid: 53109f3cc87de7b49a1f4599c7b8d219, type: 3}
+  - {fileID: 6953833815748559371, guid: 53109f3cc87de7b49a1f4599c7b8d219, type: 3}
+  - {fileID: -3019290324737377983, guid: 53109f3cc87de7b49a1f4599c7b8d219, type: 3}
+  - {fileID: 5256675909824218598, guid: 53109f3cc87de7b49a1f4599c7b8d219, type: 3}
+  - {fileID: -961035427912208949, guid: 53109f3cc87de7b49a1f4599c7b8d219, type: 3}
+  - {fileID: -1244374596053749498, guid: 53109f3cc87de7b49a1f4599c7b8d219, type: 3}
+  - {fileID: -1852974374594609067, guid: 53109f3cc87de7b49a1f4599c7b8d219, type: 3}
+  _slamVfxPrefab: {fileID: 1901511324171239432, guid: 865eaff011d027e4e8dd602318a573cb, type: 3}
+  _stunIndicatorPrefab: {fileID: 4203134180813673505, guid: 0e4239b8c3c21d54e96d04688bad27fa, type: 3}
+  _effectFrameRate: 12
+  _pulseCount: 3
+  _pulseInterval: 0.35
+  _pulseDamage: 8
+  _gustSpeed: 14
+  _pushSpeed: 10
+  _pushDuration: 0.25
+  _pushCastRadius: 0.3
+  _slamDamage: 18
+  _slamStun: 0.8
+  _slamShake: 0.1
+  _targetLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295

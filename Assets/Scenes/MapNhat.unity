@@ -269,7 +269,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d30e6d7f15fbd8e47b83af0148053e64, type: 3}
   m_Name: 
   m_EditorClassIdentifier: ProjectGame2D.Runtime::ButtonSfx
-  _playHoverSfx: 1
   _clickSound: 0
 --- !u!1 &26042978
 GameObject:
@@ -637,8 +636,24 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d30e6d7f15fbd8e47b83af0148053e64, type: 3}
   m_Name: 
   m_EditorClassIdentifier: ProjectGame2D.Runtime::ButtonSfx
-  _playHoverSfx: 1
   _clickSound: 0
+--- !u!1 &53277742 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 5261745787805472583, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+  m_PrefabInstance: {fileID: 1366218425}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &53277745
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 53277742}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5d99099959d6f1a4fb47b151ab021c45, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ProjectGame2D.Runtime::HoverOutline
 --- !u!1001 &57633187
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -691,6 +706,10 @@ PrefabInstance:
       propertyPath: _plotId
       value: farm.mapnhat.plot.003
       objectReference: {fileID: 0}
+    - target: {fileID: 2920842790040878123, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: _cropOutline
+      value: 
+      objectReference: {fileID: 1422121991}
     - target: {fileID: 8688889621308454510, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
       propertyPath: m_Name
       value: FarmPlot_003
@@ -698,7 +717,10 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 5261745787805472583, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1422121991}
   m_SourcePrefab: {fileID: 100100000, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
 --- !u!114 &57633188 stripped
 MonoBehaviour:
@@ -768,6 +790,10 @@ PrefabInstance:
       propertyPath: _plotId
       value: farm.mapnhat.plot.006
       objectReference: {fileID: 0}
+    - target: {fileID: 2920842790040878123, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: _cropOutline
+      value: 
+      objectReference: {fileID: 452247951}
     - target: {fileID: 8688889621308454510, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
       propertyPath: m_Name
       value: FarmPlot_006
@@ -775,7 +801,10 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 5261745787805472583, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 452247951}
   m_SourcePrefab: {fileID: 100100000, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
 --- !u!114 &85794974 stripped
 MonoBehaviour:
@@ -1140,6 +1169,23 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 1
   m_BlendShapeWeights: []
+--- !u!1 &145076615 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 5261745787805472583, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+  m_PrefabInstance: {fileID: 2032496337}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &145076618
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 145076615}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5d99099959d6f1a4fb47b151ab021c45, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ProjectGame2D.Runtime::HoverOutline
 --- !u!1 &172812724
 GameObject:
   m_ObjectHideFlags: 0
@@ -29773,7 +29819,7 @@ Tilemap:
       - {fileID: -1615318996, guid: ad14db5d5ca2fd04e82b139e5d1dd524, type: 3}
       - {fileID: -832549809, guid: ad14db5d5ca2fd04e82b139e5d1dd524, type: 3}
       - {fileID: 1567531226, guid: ad14db5d5ca2fd04e82b139e5d1dd524, type: 3}
-      m_AnimationSpeed: 5
+      m_AnimationSpeed: 5.0000005
       m_AnimationTimeOffset: 0
       m_Flags: 0
   - first: {x: 45, y: -67, z: 0}
@@ -29903,7 +29949,7 @@ Tilemap:
       - {fileID: -1615318996, guid: ad14db5d5ca2fd04e82b139e5d1dd524, type: 3}
       - {fileID: -832549809, guid: ad14db5d5ca2fd04e82b139e5d1dd524, type: 3}
       - {fileID: 1567531226, guid: ad14db5d5ca2fd04e82b139e5d1dd524, type: 3}
-      m_AnimationSpeed: 5.0000005
+      m_AnimationSpeed: 5
       m_AnimationTimeOffset: 0
       m_Flags: 0
   - first: {x: 55, y: -67, z: 0}
@@ -30007,7 +30053,7 @@ Tilemap:
       - {fileID: -1615318996, guid: ad14db5d5ca2fd04e82b139e5d1dd524, type: 3}
       - {fileID: -832549809, guid: ad14db5d5ca2fd04e82b139e5d1dd524, type: 3}
       - {fileID: 1567531226, guid: ad14db5d5ca2fd04e82b139e5d1dd524, type: 3}
-      m_AnimationSpeed: 5.0000005
+      m_AnimationSpeed: 5
       m_AnimationTimeOffset: 0
       m_Flags: 0
   - first: {x: 63, y: -67, z: 0}
@@ -30124,7 +30170,7 @@ Tilemap:
       - {fileID: -1615318996, guid: ad14db5d5ca2fd04e82b139e5d1dd524, type: 3}
       - {fileID: -832549809, guid: ad14db5d5ca2fd04e82b139e5d1dd524, type: 3}
       - {fileID: 1567531226, guid: ad14db5d5ca2fd04e82b139e5d1dd524, type: 3}
-      m_AnimationSpeed: 5
+      m_AnimationSpeed: 5.0000005
       m_AnimationTimeOffset: 0
       m_Flags: 0
   - first: {x: 72, y: -67, z: 0}
@@ -30605,7 +30651,7 @@ Tilemap:
       - {fileID: 121880533, guid: ad14db5d5ca2fd04e82b139e5d1dd524, type: 3}
       - {fileID: 738093862, guid: ad14db5d5ca2fd04e82b139e5d1dd524, type: 3}
       - {fileID: 1667820229, guid: ad14db5d5ca2fd04e82b139e5d1dd524, type: 3}
-      m_AnimationSpeed: 5
+      m_AnimationSpeed: 5.0000005
       m_AnimationTimeOffset: 0
       m_Flags: 0
   - first: {x: 1, y: -56, z: 0}
@@ -31151,7 +31197,7 @@ Tilemap:
       - {fileID: -206539366, guid: ad14db5d5ca2fd04e82b139e5d1dd524, type: 3}
       - {fileID: 2096194186, guid: ad14db5d5ca2fd04e82b139e5d1dd524, type: 3}
       - {fileID: -905803912, guid: ad14db5d5ca2fd04e82b139e5d1dd524, type: 3}
-      m_AnimationSpeed: 5
+      m_AnimationSpeed: 5.0000005
       m_AnimationTimeOffset: 0
       m_Flags: 0
   - first: {x: 4, y: -50, z: 0}
@@ -31177,7 +31223,7 @@ Tilemap:
       - {fileID: 661363949, guid: ad14db5d5ca2fd04e82b139e5d1dd524, type: 3}
       - {fileID: -1617802963, guid: ad14db5d5ca2fd04e82b139e5d1dd524, type: 3}
       - {fileID: -1818316260, guid: ad14db5d5ca2fd04e82b139e5d1dd524, type: 3}
-      m_AnimationSpeed: 5.0000005
+      m_AnimationSpeed: 5
       m_AnimationTimeOffset: 0
       m_Flags: 0
   - first: {x: 36, y: -50, z: 0}
@@ -31242,7 +31288,7 @@ Tilemap:
       - {fileID: 661363949, guid: ad14db5d5ca2fd04e82b139e5d1dd524, type: 3}
       - {fileID: -1617802963, guid: ad14db5d5ca2fd04e82b139e5d1dd524, type: 3}
       - {fileID: -1818316260, guid: ad14db5d5ca2fd04e82b139e5d1dd524, type: 3}
-      m_AnimationSpeed: 5.0000005
+      m_AnimationSpeed: 5
       m_AnimationTimeOffset: 0
       m_Flags: 0
   - first: {x: 56, y: -50, z: 0}
@@ -31372,7 +31418,7 @@ Tilemap:
       - {fileID: 661363949, guid: ad14db5d5ca2fd04e82b139e5d1dd524, type: 3}
       - {fileID: -1617802963, guid: ad14db5d5ca2fd04e82b139e5d1dd524, type: 3}
       - {fileID: -1818316260, guid: ad14db5d5ca2fd04e82b139e5d1dd524, type: 3}
-      m_AnimationSpeed: 5
+      m_AnimationSpeed: 5.0000005
       m_AnimationTimeOffset: 0
       m_Flags: 0
   - first: {x: 66, y: -50, z: 0}
@@ -31931,7 +31977,7 @@ Tilemap:
       - {fileID: 121880533, guid: ad14db5d5ca2fd04e82b139e5d1dd524, type: 3}
       - {fileID: 738093862, guid: ad14db5d5ca2fd04e82b139e5d1dd524, type: 3}
       - {fileID: 1667820229, guid: ad14db5d5ca2fd04e82b139e5d1dd524, type: 3}
-      m_AnimationSpeed: 5.0000005
+      m_AnimationSpeed: 5
       m_AnimationTimeOffset: 0
       m_Flags: 0
   - first: {x: -12, y: -36, z: 0}
@@ -32646,7 +32692,7 @@ Tilemap:
       - {fileID: 661363949, guid: ad14db5d5ca2fd04e82b139e5d1dd524, type: 3}
       - {fileID: -1617802963, guid: ad14db5d5ca2fd04e82b139e5d1dd524, type: 3}
       - {fileID: -1818316260, guid: ad14db5d5ca2fd04e82b139e5d1dd524, type: 3}
-      m_AnimationSpeed: 5.0000005
+      m_AnimationSpeed: 5
       m_AnimationTimeOffset: 0
       m_Flags: 0
   - first: {x: -29, y: -8, z: 0}
@@ -36452,6 +36498,23 @@ Tilemap:
     e31: 0
     e32: 0
     e33: 1
+--- !u!1 &196272062 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 5261745787805472583, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+  m_PrefabInstance: {fileID: 689995815}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &196272065
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 196272062}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5d99099959d6f1a4fb47b151ab021c45, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ProjectGame2D.Runtime::HoverOutline
 --- !u!1001 &203101895
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -36711,6 +36774,10 @@ PrefabInstance:
       propertyPath: _plotId
       value: farm.mapnhat.plot.019
       objectReference: {fileID: 0}
+    - target: {fileID: 2920842790040878123, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: _cropOutline
+      value: 
+      objectReference: {fileID: 389354311}
     - target: {fileID: 8688889621308454510, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
       propertyPath: m_Name
       value: FarmPlot_019
@@ -36718,7 +36785,10 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 5261745787805472583, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 389354311}
   m_SourcePrefab: {fileID: 100100000, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
 --- !u!114 &221537898 stripped
 MonoBehaviour:
@@ -145671,6 +145741,23 @@ EdgeCollider2D:
   m_AdjacentEndPoint: {x: 0, y: 0}
   m_UseAdjacentStartPoint: 0
   m_UseAdjacentEndPoint: 0
+--- !u!1 &360038319 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 5261745787805472583, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+  m_PrefabInstance: {fileID: 520976702}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &360038322
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 360038319}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5d99099959d6f1a4fb47b151ab021c45, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ProjectGame2D.Runtime::HoverOutline
 --- !u!1 &371697648
 GameObject:
   m_ObjectHideFlags: 0
@@ -145899,6 +145986,23 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 167812508504398168, guid: 55302d83e73d62d469073c2f3c5885f0, type: 3}
   m_PrefabInstance: {fileID: 7727704437584487520}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &389354308 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 5261745787805472583, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+  m_PrefabInstance: {fileID: 221537897}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &389354311
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 389354308}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5d99099959d6f1a4fb47b151ab021c45, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ProjectGame2D.Runtime::HoverOutline
 --- !u!1 &400965282
 GameObject:
   m_ObjectHideFlags: 0
@@ -146372,6 +146476,10 @@ PrefabInstance:
       propertyPath: _plotId
       value: farm.mapnhat.plot.016
       objectReference: {fileID: 0}
+    - target: {fileID: 2920842790040878123, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: _cropOutline
+      value: 
+      objectReference: {fileID: 1367459219}
     - target: {fileID: 8688889621308454510, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
       propertyPath: m_Name
       value: FarmPlot_016
@@ -146379,7 +146487,10 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 5261745787805472583, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1367459219}
   m_SourcePrefab: {fileID: 100100000, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
 --- !u!114 &412137609 stripped
 MonoBehaviour:
@@ -146397,6 +146508,56 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
   m_PrefabInstance: {fileID: 412137608}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &413558382
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 413558384}
+  - component: {fileID: 413558383}
+  m_Layer: 0
+  m_Name: SceneAmbience
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &413558383
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 413558382}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f8309e53afa08304ca2002d670e634ad, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ProjectGame2D.Runtime::SceneAmbience
+  _bedId: sfx.amb.village
+  _secondBedId: sfx.amb.forest
+  _bedLevel: 0.6
+  _secondBedLevel: 0.3
+  _fadeInSeconds: 2
+  _fallbackFootstepId: 
+--- !u!4 &413558384
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 413558382}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &416973439
 GameObject:
   m_ObjectHideFlags: 0
@@ -146541,6 +146702,10 @@ PrefabInstance:
       propertyPath: _plotId
       value: farm.mapnhat.plot.021
       objectReference: {fileID: 0}
+    - target: {fileID: 2920842790040878123, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: _cropOutline
+      value: 
+      objectReference: {fileID: 1394089691}
     - target: {fileID: 8688889621308454510, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
       propertyPath: m_Name
       value: FarmPlot_021
@@ -146548,7 +146713,10 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 5261745787805472583, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1394089691}
   m_SourcePrefab: {fileID: 100100000, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
 --- !u!114 &425795151 stripped
 MonoBehaviour:
@@ -146566,6 +146734,23 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
   m_PrefabInstance: {fileID: 425795150}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &452247948 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 5261745787805472583, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+  m_PrefabInstance: {fileID: 85794973}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &452247951
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 452247948}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5d99099959d6f1a4fb47b151ab021c45, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ProjectGame2D.Runtime::HoverOutline
 --- !u!1 &453506155
 GameObject:
   m_ObjectHideFlags: 0
@@ -147120,11 +147305,45 @@ EdgeCollider2D:
   m_AdjacentEndPoint: {x: 0, y: 0}
   m_UseAdjacentStartPoint: 0
   m_UseAdjacentEndPoint: 0
+--- !u!1 &453884669 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 5261745787805472583, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+  m_PrefabInstance: {fileID: 760150711}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &453884672
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 453884669}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5d99099959d6f1a4fb47b151ab021c45, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ProjectGame2D.Runtime::HoverOutline
 --- !u!4 &454842281 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4690270231353569524, guid: 52d3ebaf5ad38174ab1e04bf8a11ca00, type: 3}
   m_PrefabInstance: {fileID: 1438207973}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &461413589 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 5261745787805472583, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+  m_PrefabInstance: {fileID: 1117632279}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &461413592
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 461413589}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5d99099959d6f1a4fb47b151ab021c45, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ProjectGame2D.Runtime::HoverOutline
 --- !u!1 &479123160
 GameObject:
   m_ObjectHideFlags: 0
@@ -149488,6 +149707,10 @@ PrefabInstance:
       propertyPath: _plotId
       value: farm.mapnhat.plot.014
       objectReference: {fileID: 0}
+    - target: {fileID: 2920842790040878123, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: _cropOutline
+      value: 
+      objectReference: {fileID: 360038322}
     - target: {fileID: 8688889621308454510, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
       propertyPath: m_Name
       value: FarmPlot_014
@@ -149495,7 +149718,10 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 5261745787805472583, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 360038322}
   m_SourcePrefab: {fileID: 100100000, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
 --- !u!114 &520976703 stripped
 MonoBehaviour:
@@ -149663,7 +149889,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d30e6d7f15fbd8e47b83af0148053e64, type: 3}
   m_Name: 
   m_EditorClassIdentifier: ProjectGame2D.Runtime::ButtonSfx
-  _playHoverSfx: 1
   _clickSound: 0
 --- !u!1 &549187011
 GameObject:
@@ -154706,6 +154931,23 @@ Tilemap:
     e31: 0
     e32: 0
     e33: 1
+--- !u!1 &596846558 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 5261745787805472583, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+  m_PrefabInstance: {fileID: 598470125}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &596846561
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 596846558}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5d99099959d6f1a4fb47b151ab021c45, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ProjectGame2D.Runtime::HoverOutline
 --- !u!1001 &598470125
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -154758,6 +155000,10 @@ PrefabInstance:
       propertyPath: _plotId
       value: farm.mapnhat.plot.010
       objectReference: {fileID: 0}
+    - target: {fileID: 2920842790040878123, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: _cropOutline
+      value: 
+      objectReference: {fileID: 596846561}
     - target: {fileID: 8688889621308454510, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
       propertyPath: m_Name
       value: FarmPlot_010
@@ -154765,7 +155011,10 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 5261745787805472583, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 596846561}
   m_SourcePrefab: {fileID: 100100000, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
 --- !u!114 &598470126 stripped
 MonoBehaviour:
@@ -156162,6 +156411,10 @@ PrefabInstance:
       propertyPath: _plotId
       value: farm.mapnhat.plot.005
       objectReference: {fileID: 0}
+    - target: {fileID: 2920842790040878123, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: _cropOutline
+      value: 
+      objectReference: {fileID: 1259234874}
     - target: {fileID: 8688889621308454510, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
       propertyPath: m_Name
       value: FarmPlot_005
@@ -156169,7 +156422,10 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 5261745787805472583, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1259234874}
   m_SourcePrefab: {fileID: 100100000, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
 --- !u!114 &672246178 stripped
 MonoBehaviour:
@@ -156342,6 +156598,10 @@ PrefabInstance:
       propertyPath: _plotId
       value: farm.mapnhat.plot.009
       objectReference: {fileID: 0}
+    - target: {fileID: 2920842790040878123, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: _cropOutline
+      value: 
+      objectReference: {fileID: 196272065}
     - target: {fileID: 8688889621308454510, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
       propertyPath: m_Name
       value: FarmPlot_009
@@ -156349,7 +156609,10 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 5261745787805472583, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 196272065}
   m_SourcePrefab: {fileID: 100100000, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
 --- !u!114 &689995816 stripped
 MonoBehaviour:
@@ -156504,6 +156767,23 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 697029953}
   m_CullTransparentMesh: 1
+--- !u!1 &755562104 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 5261745787805472583, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+  m_PrefabInstance: {fileID: 805781703}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &755562107
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 755562104}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5d99099959d6f1a4fb47b151ab021c45, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ProjectGame2D.Runtime::HoverOutline
 --- !u!1001 &760150711
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -156556,6 +156836,10 @@ PrefabInstance:
       propertyPath: _plotId
       value: farm.mapnhat.plot.012
       objectReference: {fileID: 0}
+    - target: {fileID: 2920842790040878123, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: _cropOutline
+      value: 
+      objectReference: {fileID: 453884672}
     - target: {fileID: 8688889621308454510, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
       propertyPath: m_Name
       value: FarmPlot_012
@@ -156563,7 +156847,10 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 5261745787805472583, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 453884672}
   m_SourcePrefab: {fileID: 100100000, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
 --- !u!114 &760150712 stripped
 MonoBehaviour:
@@ -156736,7 +157023,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d30e6d7f15fbd8e47b83af0148053e64, type: 3}
   m_Name: 
   m_EditorClassIdentifier: ProjectGame2D.Runtime::ButtonSfx
-  _playHoverSfx: 1
   _clickSound: 0
 --- !u!1001 &805781703
 PrefabInstance:
@@ -156790,6 +157076,10 @@ PrefabInstance:
       propertyPath: _plotId
       value: farm.mapnhat.plot.013
       objectReference: {fileID: 0}
+    - target: {fileID: 2920842790040878123, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: _cropOutline
+      value: 
+      objectReference: {fileID: 755562107}
     - target: {fileID: 8688889621308454510, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
       propertyPath: m_Name
       value: FarmPlot_013
@@ -156797,7 +157087,10 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 5261745787805472583, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 755562107}
   m_SourcePrefab: {fileID: 100100000, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
 --- !u!114 &805781704 stripped
 MonoBehaviour:
@@ -157018,6 +157311,10 @@ PrefabInstance:
       propertyPath: _plotId
       value: farm.mapnhat.plot.015
       objectReference: {fileID: 0}
+    - target: {fileID: 2920842790040878123, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: _cropOutline
+      value: 
+      objectReference: {fileID: 2005941105}
     - target: {fileID: 8688889621308454510, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
       propertyPath: m_Name
       value: FarmPlot_015
@@ -157025,7 +157322,10 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 5261745787805472583, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 2005941105}
   m_SourcePrefab: {fileID: 100100000, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
 --- !u!114 &909738718 stripped
 MonoBehaviour:
@@ -157043,6 +157343,101 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
   m_PrefabInstance: {fileID: 909738717}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &910000000
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 910000001}
+  - component: {fileID: 910000002}
+  - component: {fileID: 910000003}
+  m_Layer: 0
+  m_Name: NorthExitToMapDuy
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &910000001
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 910000000}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 51.8, y: 23.45, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!61 &910000002
+BoxCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 910000000}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_ForceSendLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ForceReceiveLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ContactCaptureLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_CallbackLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_IsTrigger: 1
+  m_UsedByEffector: 0
+  m_CompositeOperation: 0
+  m_CompositeOrder: 0
+  m_Offset: {x: 1.155302, y: 0}
+  m_SpriteTilingProperty:
+    border: {x: 0, y: 0, z: 0, w: 0}
+    pivot: {x: 0, y: 0}
+    oldSize: {x: 0, y: 0}
+    newSize: {x: 0, y: 0}
+    adaptiveTilingThreshold: 0
+    drawMode: 0
+    adaptiveTiling: 0
+  m_AutoTiling: 0
+  m_Size: {x: 4.270817, y: 1}
+  m_EdgeRadius: 0
+--- !u!114 &910000003
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 910000000}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 95d93874b57e4faba419534bb45b3321, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ProjectGame2D.Runtime::WorldExitGate
+  _destinationSceneName: MapDuy
+  _unavailableMessage: Comming Soon
+  _returnClearance: 1
+  _walkSpeed: 2
 --- !u!1 &921096778
 GameObject:
   m_ObjectHideFlags: 0
@@ -187117,6 +187512,10 @@ PrefabInstance:
       propertyPath: _plotId
       value: farm.mapnhat.plot.017
       objectReference: {fileID: 0}
+    - target: {fileID: 2920842790040878123, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: _cropOutline
+      value: 
+      objectReference: {fileID: 461413592}
     - target: {fileID: 8688889621308454510, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
       propertyPath: m_Name
       value: FarmPlot_017
@@ -187124,7 +187523,10 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 5261745787805472583, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 461413592}
   m_SourcePrefab: {fileID: 100100000, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
 --- !u!114 &1117632280 stripped
 MonoBehaviour:
@@ -187142,6 +187544,23 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
   m_PrefabInstance: {fileID: 1117632279}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &1129139307 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 5261745787805472583, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+  m_PrefabInstance: {fileID: 1129521292}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1129139310
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1129139307}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5d99099959d6f1a4fb47b151ab021c45, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ProjectGame2D.Runtime::HoverOutline
 --- !u!1001 &1129521292
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -187194,6 +187613,10 @@ PrefabInstance:
       propertyPath: _plotId
       value: farm.mapnhat.plot.020
       objectReference: {fileID: 0}
+    - target: {fileID: 2920842790040878123, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: _cropOutline
+      value: 
+      objectReference: {fileID: 1129139310}
     - target: {fileID: 8688889621308454510, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
       propertyPath: m_Name
       value: FarmPlot_020
@@ -187201,7 +187624,10 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 5261745787805472583, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1129139310}
   m_SourcePrefab: {fileID: 100100000, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
 --- !u!114 &1129521293 stripped
 MonoBehaviour:
@@ -201393,6 +201819,10 @@ PrefabInstance:
       propertyPath: _plotId
       value: farm.mapnhat.plot.001
       objectReference: {fileID: 0}
+    - target: {fileID: 2920842790040878123, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: _cropOutline
+      value: 
+      objectReference: {fileID: 1875249273}
     - target: {fileID: 8688889621308454510, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
       propertyPath: m_Name
       value: FarmPlot_001
@@ -201400,7 +201830,10 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 5261745787805472583, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1875249273}
   m_SourcePrefab: {fileID: 100100000, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
 --- !u!114 &1248020601 stripped
 MonoBehaviour:
@@ -201794,6 +202227,23 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1249339653}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5d99099959d6f1a4fb47b151ab021c45, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ProjectGame2D.Runtime::HoverOutline
+--- !u!1 &1259234871 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 5261745787805472583, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+  m_PrefabInstance: {fileID: 672246177}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1259234874
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1259234871}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 5d99099959d6f1a4fb47b151ab021c45, type: 3}
@@ -231822,6 +232272,10 @@ PrefabInstance:
       propertyPath: _plotId
       value: farm.mapnhat.plot.004
       objectReference: {fileID: 0}
+    - target: {fileID: 2920842790040878123, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: _cropOutline
+      value: 
+      objectReference: {fileID: 53277745}
     - target: {fileID: 8688889621308454510, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
       propertyPath: m_Name
       value: FarmPlot_004
@@ -231829,7 +232283,10 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 5261745787805472583, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 53277745}
   m_SourcePrefab: {fileID: 100100000, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
 --- !u!114 &1366218426 stripped
 MonoBehaviour:
@@ -231847,11 +232304,45 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
   m_PrefabInstance: {fileID: 1366218425}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &1367459216 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 5261745787805472583, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+  m_PrefabInstance: {fileID: 412137608}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1367459219
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1367459216}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5d99099959d6f1a4fb47b151ab021c45, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ProjectGame2D.Runtime::HoverOutline
 --- !u!4 &1382563555 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 6941412956494677770, guid: 285a4140d280c0c4ead2b1e775820e06, type: 3}
   m_PrefabInstance: {fileID: 2001063970}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &1394089688 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 5261745787805472583, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+  m_PrefabInstance: {fileID: 425795150}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1394089691
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1394089688}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5d99099959d6f1a4fb47b151ab021c45, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ProjectGame2D.Runtime::HoverOutline
 --- !u!1001 &1402945604
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -231904,6 +232395,10 @@ PrefabInstance:
       propertyPath: _plotId
       value: farm.mapnhat.plot.018
       objectReference: {fileID: 0}
+    - target: {fileID: 2920842790040878123, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: _cropOutline
+      value: 
+      objectReference: {fileID: 1761752210}
     - target: {fileID: 8688889621308454510, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
       propertyPath: m_Name
       value: FarmPlot_018
@@ -231911,7 +232406,10 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 5261745787805472583, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1761752210}
   m_SourcePrefab: {fileID: 100100000, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
 --- !u!114 &1402945605 stripped
 MonoBehaviour:
@@ -232021,6 +232519,23 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1451288695}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1422121988 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 5261745787805472583, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+  m_PrefabInstance: {fileID: 57633187}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1422121991
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1422121988}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5d99099959d6f1a4fb47b151ab021c45, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ProjectGame2D.Runtime::HoverOutline
 --- !u!1001 &1422975825
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -232720,6 +233235,10 @@ PrefabInstance:
       propertyPath: _plotId
       value: farm.mapnhat.plot.011
       objectReference: {fileID: 0}
+    - target: {fileID: 2920842790040878123, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: _cropOutline
+      value: 
+      objectReference: {fileID: 1789921174}
     - target: {fileID: 8688889621308454510, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
       propertyPath: m_Name
       value: FarmPlot_011
@@ -232727,7 +233246,10 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 5261745787805472583, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1789921174}
   m_SourcePrefab: {fileID: 100100000, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
 --- !u!114 &1469819562 stripped
 MonoBehaviour:
@@ -234225,7 +234747,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d30e6d7f15fbd8e47b83af0148053e64, type: 3}
   m_Name: 
   m_EditorClassIdentifier: ProjectGame2D.Runtime::ButtonSfx
-  _playHoverSfx: 1
   _clickSound: 0
 --- !u!1 &1582652948
 GameObject:
@@ -235697,6 +236218,17 @@ MonoBehaviour:
   _attackFxRenderer: {fileID: 26042979}
   _attackHitboxOffset: 0.6
   _attackKnockbackForce: 2.5
+  _dashScenes:
+  - DemoScene
+  _dashDistance: 3.2
+  _dashDuration: 0.2
+  _dashCooldown: 0.8
+  _dashStaminaCost: 20
+  _dashInvulnerableDuration: 0.12
+  _dashAfterimage: 1
+  _dashAfterimageColor: {r: 0.65, g: 0.9, b: 1, a: 0.5}
+  _skillOriginOffset: {x: 0, y: 0.5}
+  _skillFxRenderer: {fileID: 0}
   _weaponRenderer: {fileID: 0}
   _weaponSortingOrderRight: 1
   _weaponSortingOrderLeft: -1
@@ -236007,6 +236539,40 @@ MonoBehaviour:
   _bobSpeed: 2.5
   _nearRadius: 12
   _edgeMargin: 60
+--- !u!1 &1761752207 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 5261745787805472583, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+  m_PrefabInstance: {fileID: 1402945604}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1761752210
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1761752207}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5d99099959d6f1a4fb47b151ab021c45, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ProjectGame2D.Runtime::HoverOutline
+--- !u!1 &1789921171 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 5261745787805472583, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+  m_PrefabInstance: {fileID: 1469819561}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1789921174
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1789921171}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5d99099959d6f1a4fb47b151ab021c45, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ProjectGame2D.Runtime::HoverOutline
 --- !u!1 &1800817338
 GameObject:
   m_ObjectHideFlags: 0
@@ -254753,6 +255319,23 @@ Tilemap:
     e31: 0
     e32: 0
     e33: 1
+--- !u!1 &1856805674 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 5261745787805472583, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+  m_PrefabInstance: {fileID: 1864022171}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1856805677
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1856805674}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5d99099959d6f1a4fb47b151ab021c45, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ProjectGame2D.Runtime::HoverOutline
 --- !u!1001 &1864022171
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -254805,6 +255388,10 @@ PrefabInstance:
       propertyPath: _plotId
       value: farm.mapnhat.plot.002
       objectReference: {fileID: 0}
+    - target: {fileID: 2920842790040878123, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: _cropOutline
+      value: 
+      objectReference: {fileID: 1856805677}
     - target: {fileID: 8688889621308454510, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
       propertyPath: m_Name
       value: FarmPlot_002
@@ -254812,7 +255399,10 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 5261745787805472583, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1856805677}
   m_SourcePrefab: {fileID: 100100000, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
 --- !u!114 &1864022172 stripped
 MonoBehaviour:
@@ -254830,6 +255420,23 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
   m_PrefabInstance: {fileID: 1864022171}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &1875249270 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 5261745787805472583, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+  m_PrefabInstance: {fileID: 1248020600}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1875249273
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1875249270}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5d99099959d6f1a4fb47b151ab021c45, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ProjectGame2D.Runtime::HoverOutline
 --- !u!4 &1876956608 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 5511594499526101917, guid: 8a11982a4784a2842a7a0e36815a87d0, type: 3}
@@ -255927,6 +256534,10 @@ PrefabInstance:
       propertyPath: _plotId
       value: farm.mapnhat.plot.008
       objectReference: {fileID: 0}
+    - target: {fileID: 2920842790040878123, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: _cropOutline
+      value: 
+      objectReference: {fileID: 1999675316}
     - target: {fileID: 8688889621308454510, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
       propertyPath: m_Name
       value: FarmPlot_008
@@ -255934,7 +256545,10 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 5261745787805472583, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1999675316}
   m_SourcePrefab: {fileID: 100100000, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
 --- !u!114 &1935760631 stripped
 MonoBehaviour:
@@ -256468,7 +257082,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d30e6d7f15fbd8e47b83af0148053e64, type: 3}
   m_Name: 
   m_EditorClassIdentifier: ProjectGame2D.Runtime::ButtonSfx
-  _playHoverSfx: 1
   _clickSound: 0
 --- !u!1 &1994078753
 GameObject:
@@ -256632,6 +257245,23 @@ MonoBehaviour:
     Time: 0
     Smoothing: 0
     IgnoreY: 0
+--- !u!1 &1999675313 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 5261745787805472583, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+  m_PrefabInstance: {fileID: 1935760630}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1999675316
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1999675313}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5d99099959d6f1a4fb47b151ab021c45, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ProjectGame2D.Runtime::HoverOutline
 --- !u!1001 &2001063970
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -256791,6 +257421,23 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2001063973}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5d99099959d6f1a4fb47b151ab021c45, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ProjectGame2D.Runtime::HoverOutline
+--- !u!1 &2005941102 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 5261745787805472583, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+  m_PrefabInstance: {fileID: 909738717}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &2005941105
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2005941102}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 5d99099959d6f1a4fb47b151ab021c45, type: 3}
@@ -258828,7 +259475,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d30e6d7f15fbd8e47b83af0148053e64, type: 3}
   m_Name: 
   m_EditorClassIdentifier: ProjectGame2D.Runtime::ButtonSfx
-  _playHoverSfx: 1
   _clickSound: 0
 --- !u!1 &2026746582
 GameObject:
@@ -259155,6 +259801,10 @@ PrefabInstance:
       propertyPath: _plotId
       value: farm.mapnhat.plot.007
       objectReference: {fileID: 0}
+    - target: {fileID: 2920842790040878123, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: _cropOutline
+      value: 
+      objectReference: {fileID: 145076618}
     - target: {fileID: 8688889621308454510, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
       propertyPath: m_Name
       value: FarmPlot_007
@@ -259162,7 +259812,10 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 5261745787805472583, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 145076618}
   m_SourcePrefab: {fileID: 100100000, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
 --- !u!114 &2032496338 stripped
 MonoBehaviour:
@@ -259467,7 +260120,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d30e6d7f15fbd8e47b83af0148053e64, type: 3}
   m_Name: 
   m_EditorClassIdentifier: ProjectGame2D.Runtime::ButtonSfx
-  _playHoverSfx: 1
   _clickSound: 0
 --- !u!1 &2057428362
 GameObject:
@@ -267602,7 +268254,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d30e6d7f15fbd8e47b83af0148053e64, type: 3}
   m_Name: 
   m_EditorClassIdentifier: ProjectGame2D.Runtime::ButtonSfx
-  _playHoverSfx: 1
   _clickSound: 0
 --- !u!222 &6530951104800597530
 CanvasRenderer:
@@ -268070,3 +268721,5 @@ SceneRoots:
   - {fileID: 1246029956}
   - {fileID: 1235708358}
   - {fileID: 1839170709}
+  - {fileID: 910000001}
+  - {fileID: 413558384}
