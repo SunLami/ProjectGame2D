@@ -15,6 +15,7 @@ public static class NewGameFactory
             player = new PlayerSaveData
             {
                 level = 1,
+                skills = new SkillProgressionSaveData(),
                 currentExperience = 0,
                 health = -1f,
                 location = new PlayerLocationSaveData

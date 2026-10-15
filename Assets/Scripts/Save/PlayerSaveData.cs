@@ -7,5 +7,6 @@ public sealed class PlayerSaveData
     public int level = 1;
     public int currentExperience;
     public float health = -1f;
+    public SkillProgressionSaveData skills;
     public PlayerLocationSaveData location = new();
 }

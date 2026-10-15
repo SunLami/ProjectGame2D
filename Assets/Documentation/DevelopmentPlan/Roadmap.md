@@ -1,5 +1,30 @@
 # Development Roadmap
 
+2026-10-14 D-117: Inventory categories and Used Items/Active/Inactive configuration implemented,
+with eligibility checks and active-use event for teammate integration. Effects remain teammate-owned.
+Owner manual verification pending; no new automated or Play Mode test run claimed.
+
+2026-10-14 owner-requested next slice: DemoScene Q/E/R/T cast the learned skills assigned in four
+loadout slots; Tab kit switching/debug Test Skill button removed. Existing aim/confirm mechanics retained.
+Manual verification belongs to owner; no automated test/Play Mode changes for this slice. See SkillProgression.md.
+
+2026-10-13: owner authorized D-116 runtime Skill Points/learning and ghost drag-loadout, with save V13.
+Implementation/verification status: SkillProgression.md. Production promotion and skill casting remain separate.
+
+2026-10-14: Skill Points/learning/drag-loadout verification: EditMode 46/46 (2026-10-13),
+PlayMode capture/restore/dirty 21/21. Owner now handles manual Unity tests; no production/build acceptance claimed.
+
+SkillPanel asset stage (D-116): 12 Water/Earth/Wind icons and English tooltip copy authored in
+SkillIconAssetPack.md; per-element learning costs 2/3/4/5. This historical asset-only milestone is
+superseded by the runtime implementation and verification above; asset completion alone is not feature completion.
+
+2026-10-10 UI asset continuation: six new frame/component PNGs plus reused Inventory Close X,
+documented in SkillPanelUIAssetPack.md. Prefab presentation and 1920x1080 checks are recorded in the implementation report below.
+
+UI presentation assembly now created in SkillPanel.prefab and DemoScene; see
+SkillPanelImplementationReport.md for verification and remaining backend work. No learning/save milestone
+is marked complete by this UI slice.
+
 ## Nguyên tắc triển khai
 
 Mỗi phase tạo ra một lát cắt có thể kiểm chứng. Không xây đồng thời Save, Quest và World persistence
@@ -320,6 +345,22 @@ thêm trước khi sản xuất content quy mô lớn.
   chạy này, không ghi nhận failure và đã được clear an toàn.
 
 ## Trình tự bắt buộc
+
+### PlayerHUD consolidation — 2026-10-09 (in progress)
+
+D-115 supersedes the historical eight-slot HUD contract: four slots shared with Inventory, PlayerHUD
+bottom-left at 1920x1080, EXP label and fill-only vitals including runtime mana. Remove BottomHUD
+without removing Map/Character/Minimap. V11→V12 migration and verification: `PlayerHUDRedesign.md`.
+
+### Inventory presentation slice — 2026-10-07
+
+D-114: năm category bookmarks và Quick Assign 1–4, giữ nguyên tám quick slot/save contract.
+Owner yêu cầu dùng nguyên ảnh khung approved; source prefab giữ overlay text/icon/hit target riêng.
+Audit live DemoScene tại 1920x1080 phát hiện và gỡ 827 Bootstrap geometry overrides thuộc Inventory;
+sửa raycast blocker, empty-slot targets và reset scroll khi mở. Các luồng filter, quick assignment,
+swap, equip/unequip, tooltip, discard/cancel và 20 vòng open/close đã qua kiểm tra live in-memory.
+Trạng thái regression/production smoke mới nhất ghi tại `InventoryTabbedImplementationReport.md`;
+không coi screenshot preview là thay thế cho acceptance trong scene/build.
 
 ```text
 Phase 0

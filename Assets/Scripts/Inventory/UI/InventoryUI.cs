@@ -8,14 +8,28 @@ public class InventoryUI : MonoBehaviour
 
     private readonly List<InventorySlotUI> _slotUIs = new List<InventorySlotUI>();
     private int _currentPage;
+    private InventoryCategory _category;
+    private readonly List<InventorySlot> _visibleSlots = new();
+
+    public void SelectCategory(InventoryCategory category)
+    {
+        _category = category;
+        _currentPage = 0;
+        InventoryItemTooltipUI.Instance?.Hide();
+        Refresh();
+        var scroll = _slotContainer.GetComponentInParent<UnityEngine.UI.ScrollRect>();
+        if (scroll != null) scroll.verticalNormalizedPosition = 1f;
+    }
 
     private int SlotsPerPage => _slotUIs.Count;
     private int PageCount => InventoryManager.Instance == null || SlotsPerPage == 0
         ? 1
-        : Mathf.Max(1, Mathf.CeilToInt(InventoryManager.Instance.Slots.Count / (float)SlotsPerPage));
+        : Mathf.Max(1, Mathf.CeilToInt(_visibleSlots.Count / (float)SlotsPerPage));
 
     private void OnEnable()
     {
+        _category = InventoryCategory.All;
+        _currentPage = 0;
         if (InventoryManager.Instance == null) return;
         InventoryManager.Instance.OnInventoryChanged += Refresh;
 
@@ -36,6 +50,8 @@ public class InventoryUI : MonoBehaviour
     {
         yield return null;
         UnityEngine.UI.LayoutRebuilder.ForceRebuildLayoutImmediate(_slotContainer as RectTransform);
+        var scroll = _slotContainer.GetComponentInParent<UnityEngine.UI.ScrollRect>();
+        if (scroll != null) scroll.verticalNormalizedPosition = 1f;
     }
 
     private void OnDisable()
@@ -65,11 +81,19 @@ public class InventoryUI : MonoBehaviour
         if (_slotUIs.Count == 0 || InventoryManager.Instance == null) return;
 
         int offset = _currentPage * SlotsPerPage;
+        _visibleSlots.Clear();
+        foreach (InventorySlot slot in InventoryManager.Instance.Slots)
+            if (_category == InventoryCategory.All || (!slot.IsEmpty &&
+                (_category == InventoryCategory.Equipment ? slot.item is EquipmentItemSO :
+                (slot.item.inventoryCategory & _category) != 0)))
+                _visibleSlots.Add(slot);
         for (int i = 0; i < _slotUIs.Count; i++)
         {
             int globalIndex = offset + i;
-            InventorySlot slot = globalIndex < InventoryManager.Instance.Slots.Count ? InventoryManager.Instance.Slots[globalIndex] : null;
+            InventorySlot slot = globalIndex < _visibleSlots.Count ? _visibleSlots[globalIndex] : null;
             _slotUIs[i].SetSlot(slot);
+            int visibleCells = Mathf.Max(30, Mathf.CeilToInt(Mathf.Min(_visibleSlots.Count - offset, SlotsPerPage) / 6f) * 6);
+            _slotUIs[i].gameObject.SetActive(i < visibleCells);
         }
     }
 }

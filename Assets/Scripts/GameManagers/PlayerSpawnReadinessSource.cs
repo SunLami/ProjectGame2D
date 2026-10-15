@@ -19,6 +19,8 @@ public sealed class PlayerSpawnReadinessSource : MonoBehaviour, IGameplayReadine
     [SerializeField] private Transform _playerTransform;
     [SerializeField] private SpawnRegistry _spawnRegistry;
     [SerializeField] private InventorySeeder _inventorySeeder;
+    [Tooltip("Optional demo-only inventory fixture. Ignored for New Game and Continue.")]
+    [SerializeField] private ItemDatabase _developmentInventory;
     [SerializeField] private WorldObjectRegistry _worldRegistry;
     [SerializeField] private FarmingManager _farmingManager;
 
@@ -45,6 +47,9 @@ public sealed class PlayerSpawnReadinessSource : MonoBehaviour, IGameplayReadine
         GameSession session = GameSessionManager.Instance != null
             ? GameSessionManager.Instance.Current
             : default;
+
+        if (session.Kind == GameSessionKind.Development && _developmentInventory != null && InventoryManager.Instance != null)
+            InventoryManager.Instance.GetComponent<InventorySeeder>()?.SeedDevelopmentInventory(_developmentInventory);
 
         if (session.SaveData?.player != null)
         {
@@ -74,7 +79,10 @@ public sealed class PlayerSpawnReadinessSource : MonoBehaviour, IGameplayReadine
 
         // 1. Base progression -- health is finalized last, after equipment is known.
         if (_playerStat != null)
+        {
             _playerStat.RestoreProgression(playerData.level, playerData.currentExperience);
+            _playerStat.Skills.Restore(playerData.skills, playerData.level);
+        }
 
         // 2. Position.
         RestorePosition(playerData.location);

@@ -4,6 +4,13 @@ Tài liệu này là source of truth cho quick bar item assignment và cơ chế
 
 ## Quick bar contract
 
+Current D-115/D-117 contract supersedes historical bullets below: four slots, keys 1–4; only
+ItemSO.usedItems can be assigned. Seeds/bait are Inactive and selected without consumption.
+Potion/Food/Drink are Active. ActivateSlot emits ActiveItemUseRequested(ItemSO) only during gameplay
+with positive quantity. Teammate must subscribe/unsubscribe one effect owner, validate use and own
+atomic effect/Inventory consumption. No handler means no effect or consumption. Select is selection
+only for UI clicks and drag/drop. Legacy ineligible IDs are preserved but cannot resolve as usable.
+
 - Có đúng 8 slot. Assignment lưu stable `itemId`, không lưu index/reference của `InventorySlot`.
 - Kéo một item thường từ Inventory lên quick slot để gán; click hoặc phím số 1–8 để chọn.
 - Kéo item đã gán ra ngoài toàn bộ quick slot để xóa assignment. Kéo sang quick slot khác sẽ chuyển

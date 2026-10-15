@@ -1,5 +1,15 @@
 # Sandbox RPG Development Plan
 
+Skill Points/learning/loadout V13 integration: [Skill Progression](SkillProgression.md).
+
+SkillPanel assets: [Skill Icon Asset Pack](SkillIconAssetPack.md) — 12 icons, English tooltip copy and learning costs (D-116); runtime status in SkillProgression.md.
+
+SkillPanel frame/components: [UI Asset Pack](SkillPanelUIAssetPack.md) — separate generated components; assembled in the presentation prefab below.
+
+SkillPanel presentation: [Implementation Report](SkillPanelImplementationReport.md) — prefab and DemoScene overlay; current learning/progression backend in SkillProgression.md.
+
+SkillHUD (bottom-right, Q/E/R/T + Shield), per-skill cooldown, and Shield block/VFX: see D-118 in [Decision Register](DecisionRegister.md).
+
 Đây là bộ tài liệu nguồn chuẩn để phát triển luồng nền tảng của project. Khi một quyết định thay đổi,
 cập nhật tài liệu liên quan trước hoặc cùng lúc với code.
 
@@ -95,8 +105,14 @@ cập nhật tài liệu liên quan trước hoặc cùng lúc với code.
 39. [Enemy Pathfinding Plan](EnemyPathfindingPlan.md): kế hoạch A* grid tự viết cho enemy thường (D-109) — kiến trúc, data, gate, test; chưa implement, chờ user duyệt.
 40. [Wind Boss Combat Plan](WindBossCombatPlan.md): boss Cú Thần Thiên Phong (D-111) — 6 skill, 3 phase, map Thiên Đài `BossArena_Wind` (D-110), art cắt lớp + clip cast; chờ user duyệt trước khi code skill.
 41. [Boss Combat Audit](BossCombatAudit.md): kiểm tra combat Earth/Water/Wind (số đo Play Mode, lỗi, so với game chuyên nghiệp, đề xuất code + asset); chờ user chọn việc làm.
+42. [Inventory Tabbed Redesign Plan](InventoryTabbedRedesignPlan.md): kế hoạch độ lại toàn bộ
+    `InventoryUIController` với bookmark All/Weapon/Resources/Food/Potion và Quick Assign 1–4; giữ
+    contract quick bar tám slot hiện có, chờ owner duyệt mapping category trước khi gen/implement.
 
 ## Quy tắc quản trị tài liệu
+
+- [PlayerHUD consolidation](PlayerHUDRedesign.md): D-115, owner-approved bottom-left four-slot HUD,
+  fill-only HP/STA/MP, EXP text and V11→V12 quick-bar migration (2026-10-09).
 
 - Đây là source of truth bắt buộc trước mọi thay đổi code, prefab, scene, data asset hoặc save contract.
 - Trước khi triển khai, phải đọc tài liệu subsystem liên quan và đối chiếu yêu cầu mới với Decision Register.

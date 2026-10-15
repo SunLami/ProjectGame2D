@@ -8,6 +8,20 @@ public class InventorySeeder : MonoBehaviour
     [SerializeField] private ItemDatabase _database;
     [Tooltip("Turn off for real play so New Game starts with an empty inventory. Turn back on to seed the full ItemDatabase for testing.")]
     [SerializeField] private bool _seedingEnabled = true;
+    private bool _developmentSeedAttempted;
+
+    public void SeedDevelopmentInventory(ItemDatabase database)
+    {
+        if (_developmentSeedAttempted || database == null || !_seedingEnabled || GameSessionManager.Instance == null ||
+            GameSessionManager.Instance.Current.Kind != GameSessionKind.Development || InventoryManager.Instance == null)
+            return;
+        _developmentSeedAttempted = true;
+        foreach (var slot in InventoryManager.Instance.Slots)
+            if (!slot.IsEmpty) return;
+        foreach (var entry in database.items)
+            if (entry.item != null && !InventoryManager.Instance.AddItem(entry.item, entry.amount))
+                Debug.LogWarning($"Development inventory could not fully add {entry.item.itemId}.", this);
+    }
 
     // Also toggleable at runtime from the Dev Panel (DevPanelController) so QA doesn't need the
     // Unity Editor to switch between real-play and full-seed New Game sessions.

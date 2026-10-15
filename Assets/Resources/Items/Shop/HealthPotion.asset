@@ -14,9 +14,17 @@ MonoBehaviour:
   m_EditorClassIdentifier: ProjectGame2D.Runtime::ItemSO
   itemId: item.consumable.health_potion
   itemName: Health Potion
-  description: Restores health (placeholder icon; consumption effect not implemented
-    in this phase).
+  description: Restores 40 health instantly when used from an active quick-bar slot.
   icon: {fileID: 5552222305880193392, guid: c7c7d7a73d7f29247b70bd55ea26d388, type: 3}
   type: 3
+  inventoryCategory: 4
+  usedItems: 1
+  quickBarUseMode: 1
+  consumableEffect: 1
+  effectAmount: 40
   isStackable: 1
   maxStackSize: 20
+  _minBuyPrice: 0
+  _maxBuyPrice: 0
+  _minSellPrice: 0
+  _maxSellPrice: 0

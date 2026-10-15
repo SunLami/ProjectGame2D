@@ -1,0 +1,95 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 34b63263d0f94fa448c6990a3b59fc72, type: 3}
+  m_Name: PlayerSkillCatalog
+  m_EditorClassIdentifier: ProjectGame2D.Runtime::SkillCatalog
+  _definitions:
+  - id: skill.water.spiral_bolt
+    castKind: 1
+    displayName: Spiral Water Bolt
+    description: Launch a spiraling water projectile.
+    learningCost: 2
+    icon: {fileID: 21300000, guid: a54620b69b818f747a76a2c4e4d3c6b9, type: 3}
+  - id: skill.water.vortex
+    castKind: 2
+    displayName: Water Vortex
+    description: Create a damaging water vortex that slows enemies and pulls them
+      toward its dark center.
+    learningCost: 3
+    icon: {fileID: 21300000, guid: 743e193c960a7a4448a6854c14bbc0c5, type: 3}
+  - id: skill.water.spiral_beam
+    castKind: 3
+    displayName: Spiral Water Beam
+    description: Fire a sustained spiral water beam while rooted in place.
+    learningCost: 4
+    icon: {fileID: 21300000, guid: 151169515e902bd4baa8e8802d4a4691, type: 3}
+  - id: skill.water.threefold_tsunami
+    castKind: 4
+    displayName: Threefold Tsunami
+    description: Unleash three increasingly powerful waves, culminating in a water
+      dragon and final water blast.
+    learningCost: 5
+    icon: {fileID: 21300000, guid: cc17276eb47fbed40b54432d418781da, type: 3}
+  - id: skill.earth.rock_bolt
+    castKind: 5
+    displayName: Rock Bolt
+    description: Launch an angular boulder.
+    learningCost: 2
+    icon: {fileID: 21300000, guid: 1758ad1e33aaf62409665c0bba3716be, type: 3}
+  - id: skill.earth.rock_arena
+    castKind: 6
+    displayName: Rock Arena
+    description: Raise a pillar arena that traps, slows and weakens enemies, with
+      stunning spikes inside.
+    learningCost: 3
+    icon: {fileID: 21300000, guid: bb562697ba26b0d479126ce517df56f5, type: 3}
+  - id: skill.earth.spike_field
+    castKind: 7
+    displayName: Rock Spike Field
+    description: Erupt a forward fan of damaging stone spikes that stun and root
+      enemies.
+    learningCost: 4
+    icon: {fileID: 21300000, guid: 0ceb680e5d7bc044890f2098360867d2, type: 3}
+  - id: skill.earth.meteor_storm
+    castKind: 8
+    displayName: Meteor Storm
+    description: Call down flaming rocky meteors with explosive impacts.
+    learningCost: 5
+    icon: {fileID: 21300000, guid: 63531eb7760e1d64990685ad5e04c92d, type: 3}
+  - id: skill.wind.returning_blade
+    castKind: 9
+    displayName: Returning Wind Blade
+    description: Throw a crescent wind blade that damages enemies on its outward
+      and return paths.
+    learningCost: 2
+    icon: {fileID: 21300000, guid: ac6ab01925de84c4fa8aa8ab5b40355a, type: 3}
+  - id: skill.wind.whirlwind
+    castKind: 10
+    displayName: Whirlwind
+    description: Summon a moving whirlwind that lifts enemies, then drops and stuns
+      them.
+    learningCost: 3
+    icon: {fileID: 21300000, guid: 86813b33478ca644db5e108690f626be, type: 3}
+  - id: skill.wind.gale_fan
+    castKind: 11
+    displayName: Gale Fan
+    description: Release three pushing gusts in a forward fan. Wall collisions deal
+      bonus damage and stun.
+    learningCost: 4
+    icon: {fileID: 21300000, guid: 6e8b5159568c4ab47ad9ddf9d57a998d, type: 3}
+  - id: skill.wind.roc
+    castKind: 12
+    displayName: Wind Roc
+    description: Summon a diving wind roc that carries and throws enemies into a
+      shockwave, leaving a slowing aftermath.
+    learningCost: 5
+    icon: {fileID: 21300000, guid: d01e3f9799d280849a1cffdbcd4d0ff0, type: 3}

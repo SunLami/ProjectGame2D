@@ -72,3 +72,28 @@ Mỗi skill có telegraph đọc được và né được bằng chạy hoặc 
 - **D-105:** cua được gen lại tư thế hai càng giơ lên (đủ chân hai bên) và toàn bộ clip dựng lại từ bản đó (thêm `Slam` cho Sóng Triều và `Resonance` cho gầm đổi phase).
 - **D-106:** cua đuổi theo player giữa các skill; Kìm Kẹp là chuỗi dí-và-chém; Bong Bóng là 3 đợt vòng tròn 360° tăng dần; thủy triều dùng asset bờ nước animate (`TideEdge_Flow`).
 - **D-107:** Xoáy Nước hiện vùng hút + tầm vòi trước khi mở xoáy; vòi là xúc tuộc nước quay tăng tốc rồi đảo chiều, hất player vào tâm, kết thúc bằng vòng nước bùng ra; totem san hô có collider đủ lớn.
+
+## Buff độ khó 2026-10-06 (D-112)
+
+User báo Cua quá dễ né/giết. Đã tăng HP, tốc độ, hệ số sát thương, rút ngắn telegraph/recovery/gap, tăng tần suất ultimate và làm BubbleTrap/SandAmbush/TidalWave/ClawClamp nguy hiểm hơn (số liệu trong DecisionRegister D-112). Cần chơi thử thật để cân lại; có thể dùng `BossCombatAudit` để đo lại.
+
+## 11. Bộ skill v2 (2026-10-06, D-113)
+
+User: skill Cua quá đơn giản ("hiện vùng đỏ rồi né"), yêu cầu làm lại. Bộ 8 skill đã duyệt, mỗi skill nhiều giai đoạn + phản ứng theo người chơi + đòn phạt:
+
+| Skill | Cơ chế mới |
+|---|---|
+| Kìm Kẹp | Mỗi nhát xong Cua **lao tới chỗ người chơi vừa chạy tới**; kết thúc bằng xoay kìm 360° (bán kính 4.2) |
+| Bong Bóng | Vòng bong bóng như cũ + `BubbleBurstField`: 3/4/6 bong bóng đứng yên phình ra rồi nổ (vòng + tia chữ thập, xen kẽ lệch 45°), trúng vòng bị root 0.7 s |
+| Cát Lún | 2 gò giả cùng đuổi, cả ba cùng trồi (gò thật bán kính 3.2 + `ShockRing` bán kính 9) |
+| Sóng Triều | Sóng đi xuống rồi **backwash đi lên** qua khe mới (báo 0.8 s); trúng thì chậm 40% trong 2.5 s |
+| Cua Lăn Giáp (mới) | Lăn 2/3/4 đoạn; đoạn đầu dẫn đầu người chơi, các đoạn sau re-aim; xong thì choáng 2.6 s, nhận ×1.5 sát thương |
+| Tia Chéo Totem (mới) | 4 totem san hô quét tia nước 3.2 s; tia bắt đầu lệch phía sau người chơi và quét ngang qua chỗ họ đứng |
+| Triệu Cua Con (mới) | 3/4/5 cua con (`BossMinionCrab`, 22 HP) đuổi theo rồi nổ sau cầu chì 0.7 s; giết hết trước khi nổ ⇒ Cua nhận ×1.4 trong 4 s ("WEAK!") |
+| Xoáy Nước | Thêm 2/2/3 xoáy nhỏ (bán kính 2.2, hút nhẹ + sát thương nhỏ) trong lúc xoáy chính quay |
+
+Combo: P1 `A Kìm→Bong Bóng`, `B Cát Lún→Sóng`, `C Lăn→Bong Bóng`; P2 `D Kìm→Cát Lún→Bong Bóng`, `E Sóng∥Cua Con→Kìm`, `F Totem∥Lăn→Kìm`, `G Cua Con→Sóng`; P3 `H Bong Bóng∥Lăn→Cát Lún→Kìm`, `I Totem∥Kìm→Kìm→Sóng`, `J Sóng∥Cua Con→Cát Lún→Lăn`. Ultimate Xoáy mỗi 2 combo từ P2.
+
+Audit (người chơi đứng yên, `BossCombatAudit`, kit Water mở rộng): xem `Logs/BossCombatAudit.txt`. Chưa gen art mới (cua lăn/cua con/tia nổ): đang tái dùng clip Whirl/Recovery, sprite thân Cua thu nhỏ và VFX nước/cát có sẵn.
+
+**Kết quả audit v2 (Play Mode, người chơi đứng yên, 0.45 s i-frame):** P1/P3 — Kìm Kẹp 55.7/68.3, Bong Bóng 14.4/26.4, Cát Lún 19.8, Sóng Triều 39.6 (2 đợt), Xoáy 62.8, Cua Lăn 36.0/72.0, Tia Totem 25.1, Cua Con 28.8; không skill nào treo. Tia Totem dài 34 (totem cách người chơi ~24). Chưa kiểm bằng chơi thật: độ đọc của telegraph mới, cảm giác Cua Lăn/Cua Con, cân bằng thời gian choáng.
