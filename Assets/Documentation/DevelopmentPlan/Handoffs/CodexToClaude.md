@@ -1,5 +1,48 @@
 # Codex → Claude Handoff
 
+# Status: `SKILLHUD_SHIELD_ASSETS_ART_READY`
+
+Ngày: 2026-10-14
+Feature: SkillHUD góc phải dưới + Shield chuột phải — bitmap asset handoff only.
+
+## Kết quả / giới hạn
+
+Frame và icon đã xuất. VFX chỉ có **mẫu tĩnh**, CHƯA có animation đạt yêu cầu; status trên không có nghĩa VFX runtime đã sẵn sàng. Owner xác nhận Claude dựng UI/integration, Codex chỉ gen asset. Không sửa code, prefab hoặc scene.
+
+| File (relative to project root) | Canvas thực tế | Bounding box alpha > 0 | Lấp canvas X / Y |
+|---|---|---|---|
+| `Assets/Resources/UI/Gameplay/SkillHUD/skill_hud_frame_v1.png` | 1600×480 | x16 y30, 1568×420 | 98% / 87.5% |
+| `Assets/Resources/UI/Skills/Icons/V1/shield_block.png` | 1254×1254 | x243 y175, 767×903 | 61.16% / 72.01% |
+| `Assets/Resources/UI/Skills/VFX/shield_bubble_reference_v2.png` | 128×128 | x10 y10, 108×108 | 84.375% / 84.375% |
+
+Icon giữ aspect ratio; 72% là chiều dài nhất của motif, không phải cả hai chiều. Cả ba PNG có alpha, không có pixel chạm mép canvas. Frame có 4 diamond/tab nhãn trống + 1 diamond Shield lớn hơn tách riêng, không bake chữ/icon. Đã kiểm tra ảnh xuất trực quan. Export kỹ thuật: bỏ nhiễu alpha < 8, crop vùng nội dung, nearest-neighbor resize và thêm transparent padding; frame fit 1568×420, icon giữ tỉ lệ.
+
+## Prompt và thay đổi art direction do owner
+
+- Frame và icon sử dụng nguyên văn prompt mục 1/2 của entry ClaudeToCodex ngày 2026-10-14. Các lần retry frame giữ nguyên prompt.
+- Prompt VFX mục 3 ban đầu đã thử nhưng kết quả không đạt (bake nhân vật/nền), không đưa vào project.
+- Owner sau đó yêu cầu Shield giống ảnh `C:/Users/havin/AppData/Local/Temp/codex-clipboard-9f4e8889-eba2-4979-a4a1-715a3753cd18.png`: bubble thủy tinh, viền trắng ngọc trai, phản sáng ivory/olive nhẹ, nhìn xuyên được nhân vật. Đây là override cho VFX xanh/hex-grid trong prompt cũ; không thay gameplay Shield.
+- Mẫu tĩnh mới dùng prompt dưới đây; chỉ là nguồn tham khảo để animate, KHÔNG coi là loop hoàn chỉnh:
+
+```text
+Create a production standalone Shield VFX first-frame sprite using the attached screenshot strictly as the visual style reference for the bubble only. ONE empty spherical protective bubble, centered on a square canvas with 15 percent clear safety margins. Match the reference: extremely thin pearl-white rim, faint pale ivory/olive reflection sweeping over the upper-left cap, a smaller cool-white glint on the bottom-right edge. Clear glassy interior, almost fully transparent alpha, so a separately rendered pixel-art player and game world remain visible through it. Restrained low-resolution pixel-game rendering with slightly stepped contours, muted colors and subtle reflections, not a glossy high-resolution vector orb. This is a compositing overlay, not a screenshot: REMOVE the character, scenery, rain, leaves, ground, shadows and all background from the output. No blue energy dome, no hexagonal grid, no runes, no armor shield, no frame, no text, no particles or broad bloom. Genuine transparent background both outside and through the bubble, keep only the thin rim and translucent reflection highlights. Single frame for later real looping animation through PixelLab.
+```
+
+Đã thử PixelLab animate_image với first/last frame cùng mẫu 128×128, frame_count 8, no_background true, job `6ea07158-b05e-481f-9daa-7be4c5cbce7c`. Job completed trả 9 ảnh (gồm input), nhưng các frame động được kiểm tra bị đục giữa thành đĩa sáng, che nhân vật. **REJECTED**, không xuất thành runtime spritesheet, không giả animation bằng dịch/chỉnh màu ảnh tĩnh. Motion prompt đã thử:
+
+```text
+Looping held shield idle hum. Keep the transparent spherical bubble centered and its diameter stable. A faint pearl-white/ivory highlight drifts gently along the upper rim and back; a tiny lower-right edge glint softly shimmers. Very subtle breathing of the thin rim only. Keep the empty center transparent and unobstructed. No character, no scene, no blue color, no hexagonal panels, no new particles, no expansion burst. Return smoothly to the initial bubble for a seamless idle loop. Match the supplied muted pearl/olive transparent bubble reference.
+```
+
+## Claude tiếp nhận
+
+- Dựng SkillHUD và tích hợp asset theo handoff gốc; Codex chưa dựng hoặc chạy Play Mode.
+- VFX cần animation nhiều frame thật qua PixelLab, giữ phần giữa trong suốt và đối chiếu ảnh owner; mẫu tĩnh chưa được owner duyệt lần cuối. Không gắn mẫu này rồi báo animation hoàn tất.
+- Frame/icon có meta Sprite Single, Point, no mipmaps, alpha transparency, no compression. VFX mẫu tĩnh để Claude tự import phù hợp pipeline.
+- Đã đối chiếu hash 660 file được bảo vệ (các `.cs` và file icon V1 có sẵn): không thay đổi. Không đụng 12 icon skill cũ.
+
+---
+
 # Status: `FARM_STORAGE_CAPACITY_MATCHES_INVENTORY_VERIFIED`
 
 Ngày: 2026-09-28

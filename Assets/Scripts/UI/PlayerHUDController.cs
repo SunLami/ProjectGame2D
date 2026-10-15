@@ -6,6 +6,7 @@ public sealed class PlayerHUDController : MonoBehaviour
 {
     [SerializeField] private Image _healthFill;
     [SerializeField] private Image _staminaFill;
+    [SerializeField] private Image _manaFill;
     [SerializeField] private Image _avatarImage;
     [SerializeField] private TMP_Text _levelText;
 
@@ -36,7 +37,10 @@ public sealed class PlayerHUDController : MonoBehaviour
     public void Bind(PlayerStat playerStat)
     {
         if (_playerStat == playerStat)
+        {
+            RefreshFromPlayerStat();
             return;
+        }
 
         UnbindPlayerStat();
         _playerStat = playerStat;
@@ -46,6 +50,7 @@ public sealed class PlayerHUDController : MonoBehaviour
 
         _playerStat.OnHealthChanged += UpdateHealth;
         _playerStat.OnStaminaChanged += UpdateStamina;
+        _playerStat.OnManaChanged += UpdateMana;
         _playerStat.OnLevelUp += UpdateLevel;
         RefreshFromPlayerStat();
     }
@@ -74,6 +79,7 @@ public sealed class PlayerHUDController : MonoBehaviour
 
         _playerStat.OnHealthChanged -= UpdateHealth;
         _playerStat.OnStaminaChanged -= UpdateStamina;
+        _playerStat.OnManaChanged -= UpdateMana;
         _playerStat.OnLevelUp -= UpdateLevel;
         _playerStat = null;
     }
@@ -88,10 +94,12 @@ public sealed class PlayerHUDController : MonoBehaviour
         SetFill(_staminaFill, current, maximum);
     }
 
+    private void UpdateMana(float current, float maximum) => SetFill(_manaFill, current, maximum);
+
     private void UpdateLevel(int level)
     {
         if (_levelText != null)
-            _levelText.text = Mathf.Max(1, level).ToString();
+            _levelText.text = $"LV. {Mathf.Max(1, level)}";
     }
 
     private void RefreshFromPlayerStat()
@@ -101,6 +109,7 @@ public sealed class PlayerHUDController : MonoBehaviour
 
         UpdateHealth(_playerStat.Health, _playerStat.MaxHealth);
         UpdateStamina(_playerStat.Stamina, _playerStat.MaxStamina);
+        UpdateMana(_playerStat.Mana, _playerStat.MaxMana);
         UpdateLevel(_playerStat.Level);
     }
 

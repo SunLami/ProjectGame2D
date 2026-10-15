@@ -22,6 +22,7 @@ public static class PlayerSaveCapture
             level = stat.Level,
             currentExperience = stat.CurrentExperience,
             health = stat.Health,
+            skills = stat.Skills.Capture(),
             location = new PlayerLocationSaveData
             {
                 areaId = areaId,

@@ -15,6 +15,8 @@ public sealed class InventoryCharacterPreviewUI : MonoBehaviour
     private AnimatorUpdateMode _originalUpdateMode;
     private readonly Dictionary<GameObject, int> _originalLayers = new();
     private readonly Dictionary<Camera, int> _originalCameraMasks = new();
+    private readonly Dictionary<SpriteRenderer, Material> _originalMaterials = new();
+    private Material _previewMaterial;
 
     private void OnEnable()
     {
@@ -48,6 +50,20 @@ public sealed class InventoryCharacterPreviewUI : MonoBehaviour
         MoveVisualToPreviewLayer("Head");
         MoveVisualToPreviewLayer("Weapon");
         _previewRenderers = _player.GetComponentsInChildren<SpriteRenderer>(true);
+
+        // The isolated preview layer has no world 2D lights. Use unlit presentation only while
+        // these real Player visuals are hidden from gameplay cameras; restore materials on close.
+        Shader unlit = Shader.Find("Universal Render Pipeline/2D/Sprite-Unlit-Default");
+        if (unlit != null)
+        {
+            _previewMaterial = new Material(unlit) { name = "InventoryPreviewUnlit" };
+            foreach (SpriteRenderer renderer in _previewRenderers)
+            {
+                if (renderer.gameObject.layer != PreviewLayer) continue;
+                _originalMaterials[renderer] = renderer.sharedMaterial;
+                renderer.sharedMaterial = _previewMaterial;
+            }
+        }
 
         // The preview uses the real animated Player. Hide its visual-only layer from
         // gameplay cameras while the inventory is open so it cannot show through the
@@ -83,6 +99,11 @@ public sealed class InventoryCharacterPreviewUI : MonoBehaviour
 
     private void Cleanup()
     {
+        foreach (KeyValuePair<SpriteRenderer, Material> entry in _originalMaterials)
+            if (entry.Key != null) entry.Key.sharedMaterial = entry.Value;
+        _originalMaterials.Clear();
+        if (_previewMaterial != null) Destroy(_previewMaterial);
+        _previewMaterial = null;
         if (_playerAnimator != null) _playerAnimator.updateMode = _originalUpdateMode;
         foreach (KeyValuePair<GameObject, int> entry in _originalLayers)
         {

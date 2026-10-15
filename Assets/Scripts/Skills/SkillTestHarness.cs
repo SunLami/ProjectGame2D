@@ -1,22 +1,26 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
+using System;
+using System.Collections.Generic;
 
-/// <summary>Skill hotbar entry point for DemoScene: Q/E/R/T cast skill slots 1-4 directly (no UI yet
-/// — Nâng cấp/Setting Skill UI is planned for later, per user request 2026-10-01). Also still exposes
-/// CastTestProjectile() for the debug UI button wired earlier. Only Skill 1 (Giọt Nước Xoáy, Q) has
-/// VFX built so far (SkillVfxPipeline.md §8.3); slots 2-4 (E/R/T) log instead of silently doing
-/// nothing until their VFX/mechanic exist. The aim indicator + left-click-to-confirm flow
-/// (Player.BeginAimSkill) is the real mechanic (§8).</summary>
+/// <summary>DemoScene cast bridge: Q/E/R/T resolve learned loadout skills through the catalog.
+/// Existing aim/confirm mechanics and prefab tuning remain unchanged. No element-kit toggle.</summary>
 public class SkillTestHarness : MonoBehaviour
 {
     [SerializeField] private Player _player;
+    [SerializeField] private SkillCatalog _catalog;
+    private Dictionary<SkillCastKind, Action> _castHandlers;
+
+    // Per-loadout-slot cooldown (D-118): keyed by slot index (0=Q..3=T), not by skill id, so
+    // swapping the equipped skill doesn't inherit a stale cooldown from whatever used to sit there.
+    private readonly float[] _cooldownEndTime = new float[4];
     [SerializeField] private SkillProjectile _projectilePrefab;
     [SerializeField] private float _projectileSpeed = 8f;
     [SerializeField] private float _projectileRange = 6f;
     [SerializeField] private float _castHideDuration = 0.4f;
     [SerializeField] private float _spawnHeightOffset = 0.7f;
 
-    [Header("Earth kit (Tab toggles Water/Earth for Q/E/R/T)")]
+    [Header("Earth skill prefabs")]
     [SerializeField] private SkillProjectile _earthProjectilePrefab;
     [SerializeField] private float _earthProjectileSpeed = 6f;
     [SerializeField] private float _earthProjectileRange = 6f;
@@ -41,7 +45,7 @@ public class SkillTestHarness : MonoBehaviour
     [SerializeField] private float _earthMeteorStormFinaleRadius = 2.2f;
     [SerializeField] private float _earthMeteorStormCastHideDuration = 1.5f;
 
-    [Header("Wind kit (Tab cycles Water -> Earth -> Wind)")]
+    [Header("Wind skill prefabs")]
     [SerializeField] private SkillBoomerang _windBladePrefab;
     [SerializeField] private float _windBladeRange = 7f;
     [SerializeField] private float _windBladeCastHideDuration = 1.6f;
@@ -67,9 +71,6 @@ public class SkillTestHarness : MonoBehaviour
     [Tooltip("Radius of the circle drawn at the end of the aim line; keep equal to SkillWindRoc._blastRadius on the prefab (the damage zone).")]
     [SerializeField] private float _windRocBlastRadius = 2.2f;
     [SerializeField] private float _windRocCastHideDuration = 5f;
-
-    private bool _earthActive;
-    private bool _windActive;
 
     [Header("Skill 2 - Ap Luc Nuoc")]
     [SerializeField] private SkillGroundImpact _groundImpactPrefab;
@@ -109,74 +110,70 @@ public class SkillTestHarness : MonoBehaviour
 
     private void Update()
     {
-        if (Keyboard.current == null)
+        if (Keyboard.current == null || !GameStateManager.AllowsGameplayInput)
             return;
-
-        if (Keyboard.current.tabKey.wasPressedThisFrame)
-        {
-            // Water -> Earth -> Wind -> Water
-            if (_windActive)
-            {
-                _windActive = false;
-            }
-            else if (_earthActive)
-            {
-                _earthActive = false;
-                _windActive = true;
-            }
-            else
-            {
-                _earthActive = true;
-            }
-
-            Debug.Log($"SkillTestHarness: active kit = {(_windActive ? "Wind" : _earthActive ? "Earth" : "Water")}");
-            return;
-        }
-
         if (Keyboard.current.qKey.wasPressedThisFrame)
-            CastTestProjectile();
-        else if (_windActive)
-        {
-            if (Keyboard.current.eKey.wasPressedThisFrame)
-                CastWindWhirlwind();
-            else if (Keyboard.current.rKey.wasPressedThisFrame)
-                CastWindGustFan();
-            else if (Keyboard.current.tKey.wasPressedThisFrame)
-                CastWindRoc();
-            return;
-        }
-        else if (_earthActive)
-        {
-            if (Keyboard.current.eKey.wasPressedThisFrame)
-                CastEarthArena();
-            else if (Keyboard.current.rKey.wasPressedThisFrame)
-                CastEarthSpikeCone();
-            else if (Keyboard.current.tKey.wasPressedThisFrame)
-                CastEarthMeteorStorm();
-            return;
-        }
+            TryCastLoadoutSlot(0);
         else if (Keyboard.current.eKey.wasPressedThisFrame)
-            CastGroundTargetSkill();
+            TryCastLoadoutSlot(1);
         else if (Keyboard.current.rKey.wasPressedThisFrame)
-            CastBeamSkill();
+            TryCastLoadoutSlot(2);
         else if (Keyboard.current.tKey.wasPressedThisFrame)
-            CastTsunamiSkill();
+            TryCastLoadoutSlot(3);
     }
 
-    public void CastTestProjectile()
+    public bool TryCastLoadoutSlot(int slot)
     {
-        if (_windActive)
+        var stat = PlayerStat.Instance;
+        if (!GameStateManager.AllowsGameplayInput || stat == null || stat.IsDead || _player == null
+            || _player.IsAimingSkill || _player.IsGroundTargeting || _catalog == null) return false;
+        string id = stat.Skills.Equipped(slot);
+        if (!stat.Skills.IsLearned(id) || !_catalog.TryResolve(id, out var definition)) return false;
+        if (Time.time < _cooldownEndTime[slot]) return false;
+        if (_castHandlers == null)
         {
-            CastWindBlade();
-            return;
+            _castHandlers = new Dictionary<SkillCastKind, Action>
+            {
+                [SkillCastKind.WaterBolt] = CastWaterProjectile,
+                [SkillCastKind.WaterVortex] = CastGroundTargetSkill,
+                [SkillCastKind.WaterBeam] = CastBeamSkill,
+                [SkillCastKind.WaterTsunami] = CastTsunamiSkill,
+                [SkillCastKind.EarthBolt] = CastEarthProjectile,
+                [SkillCastKind.EarthArena] = CastEarthArena,
+                [SkillCastKind.EarthSpikes] = CastEarthSpikeCone,
+                [SkillCastKind.EarthMeteors] = CastEarthMeteorStorm,
+                [SkillCastKind.WindBlade] = CastWindBlade,
+                [SkillCastKind.WindWhirlwind] = CastWindWhirlwind,
+                [SkillCastKind.WindGust] = CastWindGustFan,
+                [SkillCastKind.WindRoc] = CastWindRoc
+            };
         }
+        if (!_castHandlers.TryGetValue(definition.castKind, out var cast)) return false;
+        cast();
+        if (definition.cooldownSeconds > 0f)
+            _cooldownEndTime[slot] = Time.time + definition.cooldownSeconds;
+        return _player.IsAimingSkill || _player.IsGroundTargeting;
+    }
 
-        if (_earthActive)
-        {
-            CastEarthProjectile();
-            return;
-        }
+    // Legacy serialized callback is gated too; it can no longer bypass learning/loadout.
+    public void CastTestProjectile() => TryCastLoadoutSlot(0);
 
+    /// <summary>0 = ready, 1 = just cast. Read by SkillHUD to draw the radial cooldown overlay;
+    /// returns 0 for an empty/unlearned slot or a skill with no cooldown (never locks the icon).</summary>
+    public float GetCooldownFraction01(int slot)
+    {
+        if (slot < 0 || slot >= _cooldownEndTime.Length) return 0f;
+        PlayerStat stat = PlayerStat.Instance;
+        if (stat == null || _catalog == null) return 0f;
+        string id = stat.Skills.Equipped(slot);
+        if (!stat.Skills.IsLearned(id) || !_catalog.TryResolve(id, out var definition) || definition.cooldownSeconds <= 0f)
+            return 0f;
+        float remaining = _cooldownEndTime[slot] - Time.time;
+        return remaining <= 0f ? 0f : Mathf.Clamp01(remaining / definition.cooldownSeconds);
+    }
+
+    private void CastWaterProjectile()
+    {
         if (_player == null || _projectilePrefab == null)
         {
             Debug.LogWarning("SkillTestHarness: missing Player or projectile prefab reference.");
@@ -382,7 +379,7 @@ public class SkillTestHarness : MonoBehaviour
         _player.ExtendSkillCastHide(Mathf.Max(_castHideDuration, travelTime));
     }
 
-    public void CastGroundTargetSkill()
+    private void CastGroundTargetSkill()
     {
         if (_player == null || _groundImpactPrefab == null)
         {
@@ -403,7 +400,7 @@ public class SkillTestHarness : MonoBehaviour
         _player.ExtendSkillCastHide(_groundCastHideDuration);
     }
 
-    public void CastTsunamiSkill()
+    private void CastTsunamiSkill()
     {
         if (_player == null || _tsunamiWavePrefab == null)
         {
@@ -456,7 +453,7 @@ public class SkillTestHarness : MonoBehaviour
     /// <summary>Wait after wave `index` before the next one; grows with each wave.</summary>
     private float WaveGap(int index) => _tsunamiWaveInterval + _tsunamiWaveIntervalGrowth * index;
 
-    public void CastBeamSkill()
+    private void CastBeamSkill()
     {
         if (_player == null || _beamPrefab == null)
         {

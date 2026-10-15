@@ -20,35 +20,8 @@ public static class PlayerHUDBuilder
     [MenuItem("Tools/ProjectGame2D/UI/Build Player Health Stamina HUD")]
     public static void Build()
     {
-        Sprite frameSprite = ImportSprite(FrameTexturePath);
-        Sprite healthFillSprite = ImportSprite(HealthFillTexturePath);
-        Sprite staminaFillSprite = ImportSprite(StaminaFillTexturePath);
-        Sprite avatarSprite = ImportSprite(AvatarTexturePath);
-        Sprite levelBackgroundSprite = AssetDatabase.LoadAssetAtPath<Sprite>(LevelBackgroundTexturePath);
-        GameObject prefabRoot = BuildPrefabSource(frameSprite, healthFillSprite, staminaFillSprite, avatarSprite, levelBackgroundSprite);
-        GameObject prefab = PrefabUtility.SaveAsPrefabAsset(prefabRoot, PrefabPath);
-        UnityEngine.Object.DestroyImmediate(prefabRoot);
-
-        Scene scene = SceneManager.GetActiveScene();
-        if (scene.path != ScenePath)
-            scene = EditorSceneManager.OpenScene(ScenePath, OpenSceneMode.Single);
-        PauseMenuUI pauseMenu = UnityEngine.Object.FindAnyObjectByType<PauseMenuUI>(FindObjectsInactive.Include);
-        Canvas canvas = pauseMenu != null ? pauseMenu.GetComponentInParent<Canvas>(true) : null;
-        if (canvas == null)
-            throw new InvalidOperationException("Gameplay Canvas containing PauseMenuUI was not found.");
-
-        Transform existing = canvas.transform.Find("PlayerHUD");
-        if (existing != null)
-            UnityEngine.Object.DestroyImmediate(existing.gameObject);
-
-        GameObject instance = (GameObject)PrefabUtility.InstantiatePrefab(prefab, scene);
-        instance.name = "PlayerHUD";
-        instance.transform.SetParent(canvas.transform, false);
-        instance.transform.SetAsLastSibling();
-
-        EditorSceneManager.MarkSceneDirty(scene);
-        EditorSceneManager.SaveScene(scene);
-        Debug.Log("PlayerHUD prefab built and integrated into DemoScene gameplay Canvas.");
+        // Preserve the existing menu entry without rebuilding the superseded top-left HUD.
+        PlayerHUDApprovedBuilder.Build();
     }
 
     private static GameObject BuildPrefabSource(Sprite frameSprite, Sprite healthFillSprite, Sprite staminaFillSprite, Sprite avatarSprite, Sprite levelBackgroundSprite)

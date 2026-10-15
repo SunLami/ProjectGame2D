@@ -59,7 +59,9 @@ public sealed class QuickBarSlotUI : MonoBehaviour, IPointerClickHandler, IDropH
         if (quickBarSource != null && quickBarSource != this &&
             quickBarSource.TryGetAssignedItem(out ItemSO quickBarItem) && QuickBarManager.Instance != null)
         {
-            QuickBarManager.Instance.Assign(_slotIndex, quickBarItem);
+            // Inventory and HUD can render the same underlying quick slot.
+            if (quickBarSource._slotIndex == _slotIndex) return;
+            if (!QuickBarManager.Instance.Assign(_slotIndex, quickBarItem)) return;
             QuickBarManager.Instance.Clear(quickBarSource._slotIndex);
             QuickBarManager.Instance.Select(_slotIndex);
             return;
@@ -70,7 +72,11 @@ public sealed class QuickBarSlotUI : MonoBehaviour, IPointerClickHandler, IDropH
             : null;
         if (source?.Item != null && QuickBarManager.Instance != null)
         {
-            QuickBarManager.Instance.Assign(_slotIndex, source.Item);
+            if (!QuickBarManager.Instance.Assign(_slotIndex, source.Item))
+            {
+                source.MarkDropHandled();
+                return;
+            }
             QuickBarManager.Instance.Select(_slotIndex);
             source.MarkDropHandled();
         }

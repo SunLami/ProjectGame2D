@@ -48,14 +48,10 @@ public sealed class UnifiedGameplayHudController : MonoBehaviour
 
         if (Keyboard.current != null && GameStateManager.AllowsGameplayInput)
         {
-            if (Keyboard.current.digit1Key.wasPressedThisFrame) QuickBarManager.Instance?.Select(0);
-            else if (Keyboard.current.digit2Key.wasPressedThisFrame) QuickBarManager.Instance?.Select(1);
-            else if (Keyboard.current.digit3Key.wasPressedThisFrame) QuickBarManager.Instance?.Select(2);
-            else if (Keyboard.current.digit4Key.wasPressedThisFrame) QuickBarManager.Instance?.Select(3);
-            else if (Keyboard.current.digit5Key.wasPressedThisFrame) QuickBarManager.Instance?.Select(4);
-            else if (Keyboard.current.digit6Key.wasPressedThisFrame) QuickBarManager.Instance?.Select(5);
-            else if (Keyboard.current.digit7Key.wasPressedThisFrame) QuickBarManager.Instance?.Select(6);
-            else if (Keyboard.current.digit8Key.wasPressedThisFrame) QuickBarManager.Instance?.Select(7);
+            if (Keyboard.current.digit1Key.wasPressedThisFrame) QuickBarManager.Instance?.ActivateSlot(0);
+            else if (Keyboard.current.digit2Key.wasPressedThisFrame) QuickBarManager.Instance?.ActivateSlot(1);
+            else if (Keyboard.current.digit3Key.wasPressedThisFrame) QuickBarManager.Instance?.ActivateSlot(2);
+            else if (Keyboard.current.digit4Key.wasPressedThisFrame) QuickBarManager.Instance?.ActivateSlot(3);
         }
     }
 

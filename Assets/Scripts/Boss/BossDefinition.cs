@@ -22,6 +22,10 @@ public enum BossSkillId
     GaleWall,
     CrescentBlades,
     SkyStorm,
+    // Water crab kit v2 (D-113)
+    ShellRoll,
+    TotemCrossfire,
+    SummonCrabs,
 }
 
 [Serializable]
@@ -235,6 +239,72 @@ public sealed class BossDefinition : ScriptableObject
     public float waveDamage = 1.2f;
     public float wavePushDistance = 3f;
 
+    [Header("Water kit v2 - Claw Clamp lunge + spin (D-113)")]
+    public float clampLungeSpeed = 14f;
+    public float clampLungeSeconds = 0.22f;
+    public float clampSpinRadius = 4.2f;
+    public float clampSpinDamage = 1.1f;
+
+    [Header("Water kit v2 - Bubble bursts (D-113)")]
+    [Tooltip("Stationary bubbles that pop into a cross of water jets, per phase.")]
+    public int[] burstBubbleCountByPhase = { 3, 4, 6 };
+    public float burstFuseSeconds = 1.8f;
+    public float burstRadius = 2.2f;
+    public float burstJetLength = 7f;
+    public float burstJetWidth = 0.9f;
+    public float burstDamage = 0.9f;
+    public float burstJetDamage = 0.8f;
+    public float burstRootSeconds = 0.7f;
+
+    [Header("Water kit v2 - Sand Ambush decoys + shockwave (D-113)")]
+    public int ambushDecoys = 2;
+    public float ambushDecoyRadius = 2.2f;
+    public float ambushDecoyDamage = 0.5f;
+    public float ambushShockwaveRadius = 9f;
+    public float ambushShockwaveDamage = 0.7f;
+
+    [Header("Water kit v2 - Tidal Wave backwash (D-113)")]
+    public bool waveBackwash = true;
+    public float waveBackwashWarnSeconds = 0.8f;
+    public float waveSlowMultiplier = 0.6f;
+    public float waveSlowSeconds = 2.5f;
+
+    [Header("Water kit v2 - Shell Roll (D-113)")]
+    public int[] rollLegsByPhase = { 2, 3, 4 };
+    public float rollSpeed = 15f;
+    public float rollWindup = 0.7f;
+    public float rollDamage = 1.1f;
+    public float rollHitRadius = 1.7f;
+    public float rollDizzySeconds = 2.6f;
+    public float rollDizzyDamageTaken = 1.5f;
+
+    [Header("Water kit v2 - Totem Crossfire (D-113)")]
+    public float totemBeamWarnSeconds = 1f;
+    public float totemBeamSeconds = 3.2f;
+    public float totemBeamLength = 34f;
+    public float totemBeamWidth = 0.9f;
+    public float totemBeamSpinDegrees = 38f;
+    public float totemBeamDamage = 0.8f;
+
+    [Header("Water kit v2 - Summon Crabs (D-113)")]
+    public int[] crabCountByPhase = { 3, 4, 5 };
+    public float crabSpeed = 4.2f;
+    public float crabHealth = 22f;
+    public float crabFuseSeconds = 0.7f;
+    public float crabBlastRadius = 2.2f;
+    public float crabBlastDamage = 0.9f;
+    public float crabLifeSeconds = 9f;
+    [Tooltip("The mother crab takes this much more damage for `crabWeakSeconds` when every minion was killed before it exploded.")]
+    public float crabWeakMultiplier = 1.4f;
+    public float crabWeakSeconds = 4f;
+
+    [Header("Water kit v2 - Whirlpool mini vortices (D-113)")]
+    public int[] whirlMiniCountByPhase = { 2, 2, 3 };
+    public float whirlMiniRadius = 2.2f;
+    public float whirlMiniSeconds = 3f;
+    public float whirlMiniDamage = 0.35f;
+    public float whirlMiniPull = 3f;
+
     [Header("Water skill 5 - Whirlpool (ultimate)")]
     public float whirlRadius = 9f;
     public float whirlWarnSeconds = 2f;
@@ -403,7 +473,16 @@ public sealed class BossDefinition : ScriptableObject
         definition.name = "WaterCrabBoss";
         definition.bossId = "boss.water_crab";
         definition.displayName = "Tidal Crab";
-        definition.moveSpeed = 2.6f;
+        definition.moveSpeed = 3.4f;
+        definition.maxHealth = 3000f;
+        definition.difficultyDamageScale = 1.3f;
+        definition.clampWindup = 0.7f;
+        definition.bubbleSpeed = 4.5f;
+        definition.bubbleDamage = 1.1f;
+        definition.ambushChaseSeconds = 2.4f;
+        definition.ambushChaseSpeed = 7.5f;
+        definition.waveWarnSeconds = 1.1f;
+        definition.waveSpeed = 16f;
         definition.ultimateSkill = BossSkillId.Whirlpool;
         definition.impactVfx = "Water/WaterRainSplash_Hit";
         definition.phaseVfx = "Water/WaterGatherRing_Swirl";
@@ -411,33 +490,36 @@ public sealed class BossDefinition : ScriptableObject
         {
             new BossPhase
             {
-                name = "Phase 1", startsBelowHealth = 1f, telegraphScale = 1f, telegraphMinSeconds = 0.8f, recoverySeconds = 3f,
-                gapBetweenSkills = 0.6f, ultimateEveryCombos = 0,
+                name = "Phase 1", startsBelowHealth = 1f, telegraphScale = 0.85f, telegraphMinSeconds = 0.65f, recoverySeconds = 2.2f,
+                gapBetweenSkills = 0.35f, ultimateEveryCombos = 0,
                 combos = new[]
                 {
                     Combo("A", new BossComboStep(BossSkillId.ClawClamp), new BossComboStep(BossSkillId.BubbleTrap)),
                     Combo("B", new BossComboStep(BossSkillId.SandAmbush), new BossComboStep(BossSkillId.TidalWave)),
+                    Combo("C", new BossComboStep(BossSkillId.ShellRoll), new BossComboStep(BossSkillId.BubbleTrap)),
                 },
             },
             new BossPhase
             {
-                name = "Phase 2", startsBelowHealth = 0.65f, telegraphScale = 0.9f, telegraphMinSeconds = 0.8f, recoverySeconds = 2.5f,
-                gapBetweenSkills = 0.5f, ultimateEveryCombos = 3,
+                name = "Phase 2", startsBelowHealth = 0.65f, telegraphScale = 0.75f, telegraphMinSeconds = 0.6f, recoverySeconds = 1.8f,
+                gapBetweenSkills = 0.3f, ultimateEveryCombos = 2,
                 combos = new[]
                 {
-                    Combo("C", new BossComboStep(BossSkillId.ClawClamp), new BossComboStep(BossSkillId.SandAmbush), new BossComboStep(BossSkillId.BubbleTrap)),
-                    Combo("D", new BossComboStep(BossSkillId.TidalWave, true), new BossComboStep(BossSkillId.BubbleTrap)),
-                    Combo("E", new BossComboStep(BossSkillId.SandAmbush), new BossComboStep(BossSkillId.SandAmbush), new BossComboStep(BossSkillId.ClawClamp)),
+                    Combo("D", new BossComboStep(BossSkillId.ClawClamp), new BossComboStep(BossSkillId.SandAmbush), new BossComboStep(BossSkillId.BubbleTrap)),
+                    Combo("E", new BossComboStep(BossSkillId.TidalWave, true), new BossComboStep(BossSkillId.SummonCrabs), new BossComboStep(BossSkillId.ClawClamp)),
+                    Combo("F", new BossComboStep(BossSkillId.TotemCrossfire, true), new BossComboStep(BossSkillId.ShellRoll), new BossComboStep(BossSkillId.ClawClamp)),
+                    Combo("G", new BossComboStep(BossSkillId.SummonCrabs), new BossComboStep(BossSkillId.TidalWave)),
                 },
             },
             new BossPhase
             {
-                name = "Phase 3 - Flood", startsBelowHealth = 0.30f, telegraphScale = 0.8f, telegraphMinSeconds = 0.6f, recoverySeconds = 1.8f,
-                gapBetweenSkills = 0.4f, ultimateEveryCombos = 2,
+                name = "Phase 3 - Flood", startsBelowHealth = 0.30f, telegraphScale = 0.65f, telegraphMinSeconds = 0.5f, recoverySeconds = 1.3f,
+                gapBetweenSkills = 0.2f, ultimateEveryCombos = 2,
                 combos = new[]
                 {
-                    Combo("F", new BossComboStep(BossSkillId.BubbleTrap, true), new BossComboStep(BossSkillId.SandAmbush), new BossComboStep(BossSkillId.ClawClamp)),
-                    Combo("G", new BossComboStep(BossSkillId.Whirlpool), new BossComboStep(BossSkillId.ClawClamp), new BossComboStep(BossSkillId.ClawClamp)),
+                    Combo("H", new BossComboStep(BossSkillId.BubbleTrap, true), new BossComboStep(BossSkillId.ShellRoll), new BossComboStep(BossSkillId.SandAmbush), new BossComboStep(BossSkillId.ClawClamp)),
+                    Combo("I", new BossComboStep(BossSkillId.TotemCrossfire, true), new BossComboStep(BossSkillId.ClawClamp), new BossComboStep(BossSkillId.ClawClamp), new BossComboStep(BossSkillId.TidalWave)),
+                    Combo("J", new BossComboStep(BossSkillId.TidalWave, true), new BossComboStep(BossSkillId.SummonCrabs), new BossComboStep(BossSkillId.SandAmbush), new BossComboStep(BossSkillId.ShellRoll)),
                 },
             },
         };

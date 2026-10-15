@@ -128,14 +128,14 @@ public sealed class SaveMigrationTests
     [Test]
     public void V8_PreservesQuickBarWhileAddingEmptyFarming()
     {
-        var quickBar = new QuickBarSaveData { selectedIndex = 4 };
-        quickBar.assignedItemIds[4] = "item.seed.carrot";
+        var quickBar = new QuickBarSaveData { selectedIndex = 3 };
+        quickBar.assignedItemIds[3] = "item.seed.carrot";
         var legacy = new GameSaveData { saveVersion = 8, saveId = "legacy-v8", quickBar = quickBar };
 
         GameSaveData migrated = SaveMigration.Migrate(legacy);
 
         Assert.AreSame(quickBar, migrated.quickBar);
-        Assert.AreEqual("item.seed.carrot", migrated.quickBar.assignedItemIds[4]);
+        Assert.AreEqual("item.seed.carrot", migrated.quickBar.assignedItemIds[3]);
         Assert.IsNotNull(migrated.farming);
     }
 

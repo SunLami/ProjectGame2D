@@ -57,6 +57,7 @@ public sealed class SessionDirtyTracker : MonoBehaviour
         if (_playerStat != null)
         {
             _playerStat.OnLevelUp += HandleLevelUp;
+            _playerStat.Skills.Changed += HandleDirtyingEvent;
             _playerStat.OnExperienceChanged += HandleExperienceChanged;
         }
         if (_tutorialManager != null)
@@ -90,6 +91,7 @@ public sealed class SessionDirtyTracker : MonoBehaviour
         if (_playerStat != null)
         {
             _playerStat.OnLevelUp -= HandleLevelUp;
+            _playerStat.Skills.Changed -= HandleDirtyingEvent;
             _playerStat.OnExperienceChanged -= HandleExperienceChanged;
         }
         if (_tutorialManager != null)

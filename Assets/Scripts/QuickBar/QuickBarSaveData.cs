@@ -4,7 +4,7 @@ using System.Collections.Generic;
 [Serializable]
 public sealed class QuickBarSaveData
 {
-    public const int SlotCount = 8;
+    public const int SlotCount = 4;
 
     public int selectedIndex;
     public List<string> assignedItemIds = CreateEmptyAssignments();

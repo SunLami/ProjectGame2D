@@ -44,6 +44,7 @@ public partial class Player : MonoBehaviour, IDamageable
         CacheCombatReferences();
         CacheVisualReferences();
         CacheSkillFxReferences();
+        CacheShieldFxReferences();
         BindSharedManagers();
     }
 
@@ -77,6 +78,7 @@ public partial class Player : MonoBehaviour, IDamageable
         TickGroundTargetAim();
         TickSkillVisualRestore();
         TickDashInputBinding();
+        TickShieldBlock();
     }
 
     public void TakeDamage(float damageAmount, Vector2 knockbackDirection, float knockbackForce)
@@ -125,6 +127,8 @@ public partial class Player : MonoBehaviour, IDamageable
         _isDead = true;
         _isHit = false;
         _isAttacking = false;
+        if (_isBlocking)
+            StopBlocking();
         DisableAttackHitbox();
         StopMovement();
         SoundFXManager.PlaySfx(SfxIds.CombatPlayerDeath);

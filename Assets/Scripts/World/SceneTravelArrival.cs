@@ -28,6 +28,10 @@ public sealed class SceneTravelArrival : MonoBehaviour
         if (stat != null)
         {
             stat.RestoreProgression(snapshot.Level, snapshot.Experience, snapshot.Health);
+            stat.Skills.Restore(snapshot.Skills, snapshot.Level);
+            // every teleport (to an arena or back to the village) heals the player to full health and stamina
+            stat.Heal(stat.MaxHealth);
+            stat.RestoreStamina(stat.MaxStamina);
             // RestoreProgression is silent (no OnLevelUp), so refresh the HUD's level/health explicitly.
             PlayerHUDController hud = FindAnyObjectByType<PlayerHUDController>(FindObjectsInactive.Include);
             if (hud != null)
