@@ -46,3 +46,9 @@ to remove alpha safety margins. Preserve aspect ratio; tint states share geometr
 Presentation only is delivered. Physical mouse/gamepad full UX, production-scene promotion and Player
 build verification are not claimed. Full learning/drag-to-equip requires the separately documented
 data-driven catalog/progression/save gates first. No false SP values, fabricated learning or unsaved equips.
+
+## Shared icon layout correction — 2026-10-17
+
+Library and loadout now use independent hexagonal backgrounds and transparent motif layers,
+shared with SkillHUD. Existing Icon references and input/learning callbacks preserved.
+See SkillIconSharedPresentation.md for source assets, prompts, verification and pending acceptance.

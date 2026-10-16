@@ -449,3 +449,35 @@ Code foundation nên cung cấp extension point nhưng không tự chọn gamepl
   không phải gen lại outer board.
 - Text, icon trang bị, value động và CloseButton tiếp tục là object runtime; thay đổi chỉ thuộc
   presentation, không đổi `CharacterPopupUI`, `EquipmentManager`, `PlayerStat` hoặc menu lifecycle.
+
+### D-118 presentation correction — 2026-10-16
+
+Owner requested SkillHUD polish after square overlays, illegible icons and misaligned keys.
+Keep the accepted four Q/E/R/T diamonds plus larger Shield and existing shared source prefab.
+Use an explicit diamond sprite for radial cooldown and block highlight, hidden mask graphics to
+clip enlarged icons inside frames, and source-space font sizing consistent with RectTransforms.
+Ready/empty cooldown layers are disabled; Shield tint reduced to preserve icon contrast.
+No gameplay, catalog, save or progression contract changes.
+
+D-118 presentation follow-up (2026-10-16): owner screenshot confirmed prior slot geometry remained
+offset. Correct interior centers and 210/260 source-unit diameters recorded in SkillProgression.md;
+shared prefab rebuilt and isolated Editor render visually verified. Accepted layout/behavior unchanged.
+
+### D-118 / D-116 icon V2 continuation — 2026-10-16
+
+Owner explicitly requested regenerating all twelve skill icons with backgrounds, complete smaller
+art inside HUD diamonds, plus Shield matching the current shader. V2 uses opaque elemental
+backgrounds, superseding V1 transparent-motif presentation for these consumers. V1 remains preserved.
+Shield palette follows actual material ivory rim (1,.98,.9) and olive glass (.6,.6,.47).
+Catalog/panel now reference V2; stable skill IDs, costs, cast kinds, progression/save unchanged.
+HUD separate UI material preserves complete square art in the diamond inscribed square and blends
+its outer margins into an elemental backdrop. See SkillIconV2.md for exact prompts and verification.
+
+### D-116 / D-118 shared icon composition — Accepted 2026-10-17
+
+Owner authorized implementing the reviewed fix for HUD icons too small and square art exposed
+inside SkillPanel hexagons. Preserve V2 visual identity; add transparent motif derivatives and a
+shared presentation-only Sprite/hull catalog. Shape backgrounds and foregrounds are separate UI
+layers; normalized alpha hulls size motifs inside fixed socket axes. Existing catalog identity,
+progression, costs, input and save contracts unchanged. Builders and both source prefabs updated.
+Supersedes the V2 48%-square HUD composition. See SkillIconSharedPresentation.md.

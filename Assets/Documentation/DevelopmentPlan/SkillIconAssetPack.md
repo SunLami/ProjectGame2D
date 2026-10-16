@@ -133,3 +133,9 @@ Original: `C:\Users\havin\.codex\generated_images\01a1161f-2b37-7d51-9d22-fc884c
 Use case: stylized-concept. Production bitmap UI SKILL ICON for a coherent set of twelve skills in a 2D pixel-art RPG. ONE icon per image, square canvas 1024x1024, genuine transparent background. Icon motif alone, NO frame, NO hexagon, NO badge, NO letters, NO numbers, NO UI, NO watermark, NO cast-cost text. Centered isolated subject occupying 72 percent of canvas, generous transparent safety margin on all four sides. Readable at 64-96 pixels. Crisp HARD-EDGED chunky pixel art, as if designed on a 128x128 logical pixel grid then integer nearest-neighbor enlarged. Deliberate stepped pixel contours, bold dark outline, 4-6 flat cel-shaded color bands, high contrast, no smooth gradients, no airbrush, no photographic texture, no diffuse glow. Matches warm walnut/antique gold/sapphire medieval Inventory UI and PlayerHUD by being a vivid elemental motif against their dark sockets, but do not bake the socket or gold border. Dynamic diagonal or three-quarter composition, clear single primary silhouette. WIND SKILL 4 ULTIMATE: Wind Roc. A majestic recognizable EAGLE formed entirely of white and pale mint WIND, hooked beak, fierce eye, broad feathered wings spread in a dynamic forward dive diagonally down-right, talons extended to snatch targets. Sharp layered feather shapes dissolve into curved mint wind trails behind and a few loose wind feathers. One eagle only, no enemy/human, no background. Pure white, pale mint, jade green, dark teal outline. NOT an owl, not a dragon, no blue water, no lightning.
 ```
 
+
+## V2 continuation — 2026-10-16
+
+Owner requested regenerating all twelve icons with backgrounds and a matching Shield. Current
+consumers use V2; this document retains the original transparent V1 asset contract/history.
+See [SkillIconV2.md](SkillIconV2.md) for complete prompts and integration/verification.

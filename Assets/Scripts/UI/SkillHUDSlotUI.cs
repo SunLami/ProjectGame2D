@@ -27,7 +27,10 @@ public sealed class SkillHUDSlotUI : MonoBehaviour
         _icon.sprite = icon;
         _icon.enabled = icon != null;
         if (icon == null && _cooldownOverlay != null)
+        {
             _cooldownOverlay.fillAmount = 0f;
+            _cooldownOverlay.enabled = false;
+        }
     }
 
     /// <summary>0 = ready (overlay hidden), 1 = just cast (overlay fully covers the icon).</summary>
@@ -36,7 +39,9 @@ public sealed class SkillHUDSlotUI : MonoBehaviour
         if (_cooldownOverlay == null)
             return;
 
-        _cooldownOverlay.fillAmount = Mathf.Clamp01(fraction);
+        float value = float.IsNaN(fraction) ? 0f : Mathf.Clamp01(fraction);
+        _cooldownOverlay.fillAmount = value;
+        _cooldownOverlay.enabled = value > 0f && _icon != null && _icon.sprite != null;
     }
 
     public void SetActiveHighlight(bool active)

@@ -91,3 +91,43 @@ Development SceneTravel also carries a copied skill DTO in PlayerTravelSnapshot,
 rewards at arrival so unsaved learned/loadout state is not reset by per-scene PlayerStat recreation.
 Dev panel Level Up uses AddExperience and grants points; Set Level is a silent restore/debug override,
 not an award operation. Lowering a level never refunds/re-grants previously earned points.
+
+## SkillHUD presentation repair — 2026-10-16
+
+Shared GameplayUIRoot prefab rebuilt by SkillHUDBuilder. Slots now use a hidden diamond Mask;
+icons increase from 130 to 250 source units (Shield 170 to 300). Cooldown has a real diamond
+sprite and disables at zero/empty rather than relying on fillAmount on a sprite-less Image.
+Block highlight uses the diamond silhouette with 0.18 alpha. Key font sizes use the same 0.25
+source-to-layout conversion as their rectangles; labels are raised within the baked key plaques.
+Generated slot_diamond.png is reproducible via Build Skill HUD; no manually authored scene copies.
+Verification: Unity compilation and prefab rebuild succeeded, Console error query returned zero.
+Isolated Editor preview rendered populated slots, half cooldown and active Shield without square
+spill. Capture: Captures/SkillHUD/presentation_review.png (enlarged review, not Game View acceptance).
+Play Mode, 1920x1080 gameplay, production scene and Player build acceptance remain owner/manual
+checks; no automated tests or Play Mode transitions performed, per the existing owner workflow.
+
+### Interior alignment follow-up — 2026-10-16
+
+Owner screenshot exposed that the previous repair still positioned icons below the frame center.
+Correct loadout centers in source pixels: (183,230), (457.5,230), (732,230), (1007,230);
+previous y=253.5 was incorrect, as were Q/T x positions. Interior mask/icon diameter is now
+210 source units, Shield 260, superseding the 250/300 sizing above. Key labels follow corrected
+x centers. Isolated preview with Water bolt/vortex/beam, Earth meteor and Shield visually checked:
+icons centered with visible dark inset before ornaments. Capture: Captures/SkillHUD/interior_alignment.png.
+Prefab rebuilt successfully; no Play Mode transition or progression/save mutation. Gameplay acceptance pending.
+
+### V2 art and complete-icon inset — 2026-10-16
+
+Owner requested smaller complete motifs and a regenerated distinctive set with backgrounds, plus
+shader-matched Shield. 12 catalog icons now reference V2; panel source and builder synchronized.
+SkillHUDIcon material fits the entire generated image in 48% of mask diameter, leaving foreground
+inside the inscribed square; dark backdrop continues to the diamond edges. Overlay/mask geometry
+remains independent. V1 retained. See SkillIconV2.md for prompts, imports and verified Editor renders.
+
+### Shared icon layout — 2026-10-17
+
+The 48%-square inset is superseded by independent foreground/background layers shared across
+HUD, library and loadout. Foreground sizing follows alpha hull inside fixed diamond/hexagon axes;
+drag ghost uses the same transparent sprite. Catalog identity/costs/learning/save unchanged.
+Source prefabs and authoring builders synchronized. Isolated Editor render verification and
+remaining owner acceptance: SkillIconSharedPresentation.md.

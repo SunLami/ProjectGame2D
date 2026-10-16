@@ -12,7 +12,7 @@ public static class SkillPanelBuilder
     public const string CatalogPath = "Assets/Resources/Skills/PlayerSkillCatalog.asset";
     private static readonly string[] SkillIds = { "skill.water.spiral_bolt", "skill.water.vortex", "skill.water.spiral_beam", "skill.water.threefold_tsunami", "skill.earth.rock_bolt", "skill.earth.rock_arena", "skill.earth.spike_field", "skill.earth.meteor_storm", "skill.wind.returning_blade", "skill.wind.whirlwind", "skill.wind.gale_fan", "skill.wind.roc" };
     private const string Art = "Assets/Resources/UI/Skills/Panel/V1/";
-    private const string Icons = "Assets/Resources/UI/Skills/Icons/V1/";
+    private const string Icons = "Assets/Resources/UI/Skills/Icons/V2/";
     private static readonly string[] Files = { "water_01_spiral_bolt", "water_02_vortex", "water_03_spiral_beam", "water_04_threefold_tsunami", "earth_01_rock_bolt", "earth_02_rock_arena", "earth_03_spike_field", "earth_04_meteor_storm", "wind_01_returning_blade", "wind_02_whirlwind", "wind_03_gale_fan", "wind_04_wind_roc" };
     private static readonly string[] Names = { "Spiral Water Bolt", "Water Vortex", "Spiral Water Beam", "Threefold Tsunami", "Rock Bolt", "Rock Arena", "Rock Spike Field", "Meteor Storm", "Returning Wind Blade", "Whirlwind", "Gale Fan", "Wind Roc" };
     private static readonly string[] Descriptions = {
@@ -56,7 +56,8 @@ public static class SkillPanelBuilder
                 float x = -475 + i % 6 * 190; float y = 160 - i / 6 * 180;
                 var slot = SpriteImage(content, "Skill_" + Files[i], socket, x, y, 140, 105);
                 buttons[i] = slot.gameObject.AddComponent<Button>(); buttons[i].targetGraphic = slot; slot.raycastTarget = true;
-                var icon = SpriteImage(slot.transform, "Icon", AssetDatabase.LoadAssetAtPath<Sprite>(Icons + Files[i] + ".png"), 0, 3, 92, 76);
+                var icon = SpriteImage(slot.transform, "Icon", AssetDatabase.LoadAssetAtPath<Sprite>(Icons + Files[i] + ".png"), 0, 0, 112, 76);
+                SkillIconPresentationBuilder.Configure(icon, SkillIconView.SocketShape.Hexagon);
                 icon.color = new Color(.68f,.68f,.68f,1);
                 SpriteImage(slot.transform, "CostBadge", badge, 0, -53, 38, 38);
                 Label(slot.transform, "Cost", (i % 4 + 2).ToString(), 0, -53, 30, 28, 20);
@@ -148,14 +149,15 @@ public static class SkillPanelBuilder
                 if(slot.GetComponent<SkillLoadoutDropUI>()==null)slot.gameObject.AddComponent<SkillLoadoutDropUI>();
                 var icon=slot.Find("Icon");
                 if(icon==null)icon=SpriteImage(slot,"Icon",null,0,10,56,40).transform;
-                ((RectTransform)icon).anchoredPosition=new Vector2(0,10);
-                ((RectTransform)icon).sizeDelta=new Vector2(56,40);
+                ((RectTransform)icon).anchoredPosition=new Vector2(0,7);
+                ((RectTransform)icon).sizeDelta=new Vector2(80,50);
                 var keyLabel=slot.Find("SlotLabel").GetComponent<TMP_Text>();
                 keyLabel.text=SkillPanelUI.LoadoutKey(i);keyLabel.fontSize=16;
                 keyLabel.rectTransform.anchoredPosition=new Vector2(0,-26);
                 keyLabel.rectTransform.sizeDelta=new Vector2(80,20);
                 icon.GetComponent<Image>().enabled=false;
                 icons.GetArrayElementAtIndex(i).objectReferenceValue=icon.GetComponent<Image>();
+                SkillIconPresentationBuilder.Configure(icon.GetComponent<Image>(), SkillIconView.SocketShape.Hexagon);
             }
             so.ApplyModifiedPropertiesWithoutUndo();PrefabUtility.SaveAsPrefabAsset(root,PrefabPath);
         }

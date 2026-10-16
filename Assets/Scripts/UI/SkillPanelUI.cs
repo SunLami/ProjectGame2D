@@ -229,6 +229,15 @@ public sealed class SkillPanelUI : MonoBehaviour
         var go = new GameObject("SkillDragGhost", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
         go.transform.SetParent(transform, false);
         _dragGhost = go.GetComponent<Image>(); _dragGhost.sprite = definition.icon;
+        foreach (var entry in _entries)
+        {
+            if (entry.id != id) continue;
+            var view = entry.button.transform.Find("Icon").GetComponent<SkillIconView>();
+            if (view == null) break;
+            view.Refresh();
+            if (view.ForegroundSprite != null) _dragGhost.sprite = view.ForegroundSprite;
+            break;
+        }
         _dragGhost.preserveAspect = true; _dragGhost.raycastTarget = false;
         _dragGhost.rectTransform.sizeDelta = new Vector2(76,76);
         MoveSkillDrag(screenPosition); return true;

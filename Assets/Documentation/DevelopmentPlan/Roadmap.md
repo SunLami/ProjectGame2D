@@ -378,3 +378,19 @@ Phase 0
 
 Phase 5 và thiết kế Quest Definition của Phase 6 có thể nghiên cứu song song sau Phase 3, nhưng không
 merge runtime progression trước khi save schema và domain event contract của Phase 4 ổn định.
+
+2026-10-16: D-118 SkillHUD presentation correction rebuilt shared source prefab (diamond masks,
+explicit overlay sprites, larger icons, corrected key typography). Editor render/compile checked;
+manual gameplay/resolution/build acceptance pending. See SkillProgression.md.
+
+2026-10-16 follow-up: SkillHUD source-space center correction and inset sizing verified with an
+isolated Editor render; supersedes prior oversized 250/300 icon layout. Gameplay acceptance pending.
+
+2026-10-16: owner-requested 12 skill + Shield V2 generation complete; catalog, panel source and
+HUD source updated. Isolated Editor render checked; manual gameplay/build acceptance pending.
+See SkillIconV2.md.
+
+2026-10-17: owner-authorized shared SkillHUD/SkillPanel composition implemented with 13 transparent
+motif derivatives, independent shaped backgrounds and alpha-hull sizing. Source prefabs/builders
+synchronized; isolated Editor renders reviewed. Gameplay/build acceptance pending.
+See SkillIconSharedPresentation.md.

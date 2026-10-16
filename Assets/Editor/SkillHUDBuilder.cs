@@ -11,7 +11,7 @@ using UnityEngine.UI;
 public static class SkillHUDBuilder
 {
     private const string FramePath = "Assets/Resources/UI/Gameplay/SkillHUD/skill_hud_frame_v1.png";
-    private const string ShieldIconPath = "Assets/Resources/UI/Skills/Icons/V1/shield_block.png";
+    private const string ShieldIconPath = "Assets/Resources/UI/Skills/Icons/V2/shield_block.png";
     private const string FontPath = "Assets/Fonts/DigitalDisco SDF v3.asset";
 
     // PlayerHUD lives inside this prefab (GameplayUIRoot.prefab root, sibling of PlayerHUD), not as a
@@ -26,21 +26,23 @@ public static class SkillHUDBuilder
     private const float Scale = 400f / 1600f;
     private const float PresentationScale = 0.72f;
 
-    // Diamond centers measured from skill_hud_frame_v1.png's alpha channel (Python/PIL column-run +
+    // Interior diamond centers corrected against the visible frame (2026-10-16), from skill_hud_frame_v1.png's alpha channel (Python/PIL column-run +
     // pinch-point segmentation of the 4-chain, see handoff entry) -- not guessed. (centerX, centerY,
     // bottomTipY), all in source pixel space, Y measured from the top like the rest of this file.
     private static readonly (float cx, float cy, float bottomY)[] LoadoutDiamonds =
     {
-        (168.0f, 253.5f, 449f), // Q
-        (457.5f, 253.5f, 449f), // E
-        (732.0f, 253.5f, 449f), // R
-        (1022.0f, 253.0f, 448f) // T
+        (183.0f, 230f, 449f), // Q
+        (457.5f, 230f, 449f), // E
+        (732.0f, 230f, 449f), // R
+        (1007.0f, 230f, 448f) // T
     };
     private static readonly string[] LoadoutKeys = { "Q", "E", "R", "T" };
-    private const float LoadoutIconSize = 130f;
+    private const float LoadoutIconSize = 210f;
 
     private static readonly Vector2 ShieldCenter = new(1388.5f, 234.5f);
-    private const float ShieldIconSize = 170f;
+    private const float ShieldIconSize = 260f;
+    private const string DiamondPath = "Assets/Resources/UI/Gameplay/SkillHUD/slot_diamond.png";
+    private static Sprite Diamond;
 
     private static TMP_FontAsset Font => AssetDatabase.LoadAssetAtPath<TMP_FontAsset>(FontPath);
 
@@ -50,6 +52,7 @@ public static class SkillHUDBuilder
         if (EditorApplication.isPlayingOrWillChangePlaymode)
             throw new InvalidOperationException("Build Skill HUD in Edit Mode only.");
 
+        Diamond = BuildDiamond();
         Sprite frameSprite = Import(FramePath);
         Sprite shieldIconSprite = Import(ShieldIconPath);
 
@@ -79,7 +82,7 @@ public static class SkillHUDBuilder
                 loadoutSlots[i] = BuildLoadoutSlot(root.transform, i, cx, cy);
 
                 TMP_Text key = Text(root.transform, "SkillSlot" + (i + 1) + "Key", LoadoutKeys[i],
-                    18f, cx - 45f, bottomY - 34f, 90, 36);
+                    32f, cx - 45f, bottomY - 48f, 90, 36);
                 key.alignment = TextAlignmentOptions.Center;
                 key.color = new Color(1f, .94f, .79f);
             }
@@ -120,16 +123,20 @@ public static class SkillHUDBuilder
         container.transform.SetParent(parent, false);
         Place(container.GetComponent<RectTransform>(), cx - LoadoutIconSize / 2f, cy - LoadoutIconSize / 2f, LoadoutIconSize, LoadoutIconSize);
 
+        AddDiamondMask(container);
+        Stretch(Image(container.transform, "Background", Diamond, new Color(.055f, .075f, .095f, .85f), 0, 0, 1, 1));
         var icon = Stretch(Image(container.transform, "Icon", null, Color.white, 0, 0, LoadoutIconSize, LoadoutIconSize));
         icon.preserveAspect = true;
+        FitIconInsideDiamond(icon);
         icon.enabled = false; // no sprite yet -- an enabled Image with a null sprite draws as a solid block
 
-        var cooldown = Stretch(Image(container.transform, "Cooldown", null, new Color(0f, 0f, 0f, 0.72f), 0, 0, LoadoutIconSize, LoadoutIconSize));
+        var cooldown = Stretch(Image(container.transform, "Cooldown", Diamond, new Color(0f, 0f, 0f, 0.72f), 0, 0, LoadoutIconSize, LoadoutIconSize));
         cooldown.type = UnityEngine.UI.Image.Type.Filled;
         cooldown.fillMethod = UnityEngine.UI.Image.FillMethod.Radial360;
         cooldown.fillOrigin = (int)UnityEngine.UI.Image.Origin360.Top;
         cooldown.fillClockwise = true;
         cooldown.fillAmount = 0f;
+        cooldown.enabled = false;
 
         var slot = container.GetComponent<SkillHUDSlotUI>();
         slot.Configure(icon, cooldown, null);
@@ -142,16 +149,51 @@ public static class SkillHUDBuilder
         container.transform.SetParent(parent, false);
         Place(container.GetComponent<RectTransform>(), ShieldCenter.x - ShieldIconSize / 2f, ShieldCenter.y - ShieldIconSize / 2f, ShieldIconSize, ShieldIconSize);
 
+        AddDiamondMask(container);
+        Stretch(Image(container.transform, "Background", Diamond, new Color(.055f, .075f, .095f, .85f), 0, 0, 1, 1));
         var icon = Stretch(Image(container.transform, "Icon", shieldIcon, Color.white, 0, 0, ShieldIconSize, ShieldIconSize));
         icon.preserveAspect = true;
+        FitIconInsideDiamond(icon);
 
         // Additive highlight while Player.IsBlocking -- sits above the icon, starts disabled.
-        var highlight = Stretch(Image(container.transform, "ActiveHighlight", null, new Color(0.65f, 0.95f, 1f, 0.45f), 0, 0, ShieldIconSize, ShieldIconSize));
+        var highlight = Stretch(Image(container.transform, "ActiveHighlight", Diamond, new Color(1f, .98f, .9f, .18f), 0, 0, ShieldIconSize, ShieldIconSize));
         highlight.enabled = false;
 
         var slot = container.GetComponent<SkillHUDSlotUI>();
         slot.Configure(icon, null, highlight);
         return slot;
+    }
+
+    // Shared silhouette clips large icons without covering the ornamental frame.
+    private static void AddDiamondMask(GameObject container)
+    {
+        var image = container.AddComponent<Image>();
+        image.sprite = Diamond;
+        image.raycastTarget = false;
+        var mask = container.AddComponent<Mask>();
+        mask.showMaskGraphic = false;
+    }
+
+    // The material insets the complete V2 canvas and extends its dark backdrop to the mask.
+    private static void FitIconInsideDiamond(Image icon)
+    {
+        SkillIconPresentationBuilder.Configure(icon, SkillIconView.SocketShape.Diamond);
+    }
+
+    private static Sprite BuildDiamond()
+    {
+        const int size = 128;
+        var texture = new Texture2D(size, size, TextureFormat.RGBA32, false);
+        var pixels = new Color32[size * size];
+        for (int y = 0; y < size; y++)
+            for (int x = 0; x < size; x++)
+                pixels[y * size + x] = new Color32(255, 255, 255,
+                    (byte)(Mathf.Abs(x - 63.5f) + Mathf.Abs(y - 63.5f) <= 63f ? 255 : 0));
+        texture.SetPixels32(pixels);
+        texture.Apply();
+        System.IO.File.WriteAllBytes(DiamondPath, texture.EncodeToPNG());
+        UnityEngine.Object.DestroyImmediate(texture);
+        return Import(DiamondPath);
     }
 
     private static Image Image(Transform parent, string name, Sprite sprite, Color color, float x, float y, float w, float h)
@@ -182,12 +224,12 @@ public static class SkillHUDBuilder
         Place(text.rectTransform, x, y, w, h);
         text.font = Font;
         text.text = value;
-        text.fontSize = size;
+        text.fontSize = size * Scale;
         text.alignment = TextAlignmentOptions.Center;
         text.raycastTarget = false;
         text.enableAutoSizing = true;
-        text.fontSizeMin = size - 2f;
-        text.fontSizeMax = size;
+        text.fontSizeMin = (size - 2f) * Scale;
+        text.fontSizeMax = size * Scale;
         return text;
     }
 
@@ -204,7 +246,8 @@ public static class SkillHUDBuilder
         var importer = (TextureImporter)AssetImporter.GetAtPath(path);
         importer.textureType = TextureImporterType.Sprite;
         importer.spriteImportMode = SpriteImportMode.Single;
-        importer.filterMode = FilterMode.Point;
+        importer.filterMode = path.Contains("/Icons/V2/") ? FilterMode.Bilinear : FilterMode.Point;
+        if (path.Contains("/Icons/V2/")) importer.maxTextureSize = 256;
         importer.textureCompression = TextureImporterCompression.Uncompressed;
         importer.mipmapEnabled = false;
         importer.alphaIsTransparency = true;

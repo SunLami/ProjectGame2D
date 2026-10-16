@@ -164,3 +164,9 @@ cập nhật tài liệu liên quan trước hoặc cùng lúc với code.
 - Procedural quest generation.
 
 Các mục trên có thể thêm sau, nhưng kiến trúc ID/version/event trong bộ tài liệu này phải không chặn chúng.
+
+Skill icon V2 (12 elemental skills + shader-matched Shield, owner requested 2026-10-16):
+[Generation and integration report](SkillIconV2.md).
+
+Current shared SkillHUD/SkillPanel icon layout (2026-10-17):
+[Shared icon presentation](SkillIconSharedPresentation.md).
