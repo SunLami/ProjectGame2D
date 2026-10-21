@@ -91,7 +91,28 @@ public sealed partial class BossController
             if (hit && previousHit)
                 HoldPlayer(_definition.clampRootSeconds);
             previousHit = hit;
-            yield return new WaitForSeconds(0.22f);
+            yield return new WaitForSeconds(0.12f);
+
+            // D-113: after each cut the crab lunges at wherever the player ran to, so one dash is not enough
+            if (i < cuts - 1)
+                yield return LungeToward(PlayerPosition(), _definition.clampLungeSpeed, _definition.clampLungeSeconds);
+        }
+
+        // D-113: finisher, a 360 degree pincer spin that punishes anyone still standing next to the crab
+        if (_state != BossState.Dead)
+        {
+            Vector2 centre = transform.position;
+            float spinRadius = _definition.clampSpinRadius;
+            float spinWindup = Mathf.Max(0.5f, Tele(0.8f) * 0.7f);
+            Track(BossTelegraph.Circle(centre, spinRadius, spinWindup));
+            PlayClip(BossClipId.Whirl, spinWindup);
+            WaterSfx(SfxIds.BosswClawWindup, centre);
+            yield return new WaitForSeconds(spinWindup);
+            ContinueClip();
+            WaterSfx(SfxIds.BosswClawSnap, centre);
+            SkillScreenFX.Shake(0.18f, 0.25f);
+            StrikeCircle(centre, spinRadius, _definition.clampSpinDamage, 6f, new HashSet<Player>());
+            TrackObject(BossVfx.Spawn("Water/ClawSlash_Hit", centre, spinRadius / 2.2f, 16f, false, 0.7f, 9));
         }
 
         yield return new WaitForSeconds(0.3f);
@@ -217,6 +238,7 @@ public sealed partial class BossController
             _definition.bubbleRingWave1ByPhase, _definition.bubbleRingWave2ByPhase, _definition.bubbleRingWave3ByPhase,
         };
         float fallbackAngle = Random.Range(0f, 360f);
+        Coroutine bursts = StartCoroutine(BubbleBurstField()); // D-113: stationary bubbles that pop into jets
         for (int w = 0; w < waves.Length && _state != BossState.Dead; w++)
         {
             int count = Mathf.Max(4, BossDefinition.PerPhase(waves[w], _phaseIndex, 8 + 6 * w));
@@ -251,6 +273,7 @@ public sealed partial class BossController
                 yield return new WaitForSeconds(_definition.bubbleWaveInterval);
         }
 
+        yield return bursts;
         yield return new WaitForSeconds(0.5f);
     }
 
@@ -302,12 +325,32 @@ public sealed partial class BossController
         if (UsesWaterSfx)
             _moundLoop = SoundFXManager.StartLoop(SfxIds.BosswMoundLoop, 0.8f, 1f, 0.2f);
         float splashTimer = 0f;
+
+        // D-113: decoy mounds burrow after the player too; all of them erupt at the end (only the real one is big and sends a shockwave)
+        int decoyCount = Mathf.Max(0, _definition.ambushDecoys);
+        var decoys = new List<GameObject>();
+        var decoyAngles = new List<float>();
+        for (int d = 0; d < decoyCount; d++)
+        {
+            decoys.Add(TrackObject(MakeAnimated("SandMound_Move", transform.position, 0.9f, 10f, 2)));
+            decoyAngles.Add((d % 2 == 0 ? 1f : -1f) * Random.Range(25f, 55f));
+        }
+
         for (float t = 0f; t < _definition.ambushChaseSeconds && _state != BossState.Dead; t += Time.deltaTime)
         {
             Vector2 toPlayer = PlayerPosition() - (Vector2)transform.position;
             Vector2 next = (Vector2)transform.position + toPlayer.normalized * (_definition.ambushChaseSpeed * Time.deltaTime);
             transform.position = ClampInside(next, 1f);
             mound.transform.position = transform.position;
+            for (int d = 0; d < decoys.Count; d++)
+            {
+                if (decoys[d] == null)
+                    continue;
+                Vector2 toDecoyTarget = PlayerPosition() - (Vector2)decoys[d].transform.position;
+                Vector2 heading = Quaternion.Euler(0f, 0f, decoyAngles[d]) * toDecoyTarget.normalized;
+                decoys[d].transform.position = ClampInside((Vector2)decoys[d].transform.position + heading * (_definition.ambushChaseSpeed * 0.85f * Time.deltaTime), 1f);
+            }
+
             TideController tide = TideController.Instance;
             bool wet = tide != null && tide.IsShallow(transform.position);
             moundRenderer.color = wet ? new Color(0.6f, 0.85f, 1f, 0.85f) : Color.white;
@@ -325,7 +368,28 @@ public sealed partial class BossController
         Vector2 spot = transform.position;
         float warn = Tele(_definition.ambushWarnSeconds);
         Track(BossTelegraph.Circle(spot, _definition.ambushRadius, warn));
+        var decoySpots = new List<Vector2>();
+        foreach (GameObject decoy in decoys)
+        {
+            if (decoy == null)
+                continue;
+            decoySpots.Add(decoy.transform.position);
+            Track(BossTelegraph.Circle(decoy.transform.position, _definition.ambushDecoyRadius, warn));
+        }
+
         yield return new WaitForSeconds(warn);
+
+        foreach (GameObject decoy in decoys)
+        {
+            if (decoy != null)
+                Destroy(decoy);
+        }
+
+        foreach (Vector2 decoySpot in decoySpots)
+        {
+            StrikeCircle(decoySpot, _definition.ambushDecoyRadius, _definition.ambushDecoyDamage, 5f, new HashSet<Player>());
+            TrackObject(BossVfx.Spawn("Water/SandBurst_Hit", decoySpot, _definition.ambushDecoyRadius * 2f / 3.67f, 14f, false, 0.9f, 7));
+        }
 
         if (mound != null)
             Destroy(mound);
@@ -339,6 +403,7 @@ public sealed partial class BossController
         TrackObject(BossVfx.Spawn("Water/WaterRainSplash_Hit", spot, _definition.ambushRadius * 0.8f, 14f, false, 1f, 8));
         TrackObject(BossVfx.Spawn("Water/SandBurst_Hit", spot, _definition.ambushRadius * 2f / 3.67f, 14f, false, 0.9f, 7));
         SkillScreenFX.Shake(0.22f, 0.3f);
+        StartCoroutine(ShockRing(spot, _definition.ambushShockwaveRadius, _definition.ambushShockwaveDamage, 0.9f));
         yield return new WaitForSeconds(_definition.ambushStandSeconds);
     }
 
@@ -346,17 +411,28 @@ public sealed partial class BossController
 
     private IEnumerator TidalWaveSkill()
     {
+        // D-113: the wave sweeps south, then the backwash comes straight back north through different gaps
+        yield return TidalWavePass(false, Tele(_definition.waveWarnSeconds));
+        if (_definition.waveBackwash && _state != BossState.Dead)
+        {
+            yield return new WaitForSeconds(0.25f);
+            yield return TidalWavePass(true, Mathf.Max(0.6f, Tele(_definition.waveBackwashWarnSeconds)));
+        }
+    }
+
+    private IEnumerator TidalWavePass(bool northward, float warn)
+    {
         Rect arena = ArenaRect();
-        float yTop = arena.yMax + 4f;
-        float yEnd = arena.yMin - 2f;
-        float height = yTop - yEnd;
-        float warn = Tele(_definition.waveWarnSeconds);
+        float yStart = northward ? arena.yMin - 2f : arena.yMax + 4f;
+        float yFinish = northward ? arena.yMax + 4f : arena.yMin - 2f;
+        float sign = northward ? 1f : -1f;
+        float height = Mathf.Abs(yFinish - yStart);
         int gapCount = BossDefinition.PerPhase(_definition.waveGapCountByPhase, _phaseIndex, 2);
         float gapWidth = BossDefinition.PerPhase(_definition.waveGapWidthByPhase, _phaseIndex, 4.5f);
 
         var segments = BuildWaveSegments(arena, gapCount, gapWidth);
         foreach (Vector2 segment in segments)
-            Track(BossTelegraph.Line(new Vector2((segment.x + segment.y) * 0.5f, yTop), Vector2.down, height, segment.y - segment.x, warn, true));
+            Track(BossTelegraph.Line(new Vector2((segment.x + segment.y) * 0.5f, yStart), northward ? Vector2.up : Vector2.down, height, segment.y - segment.x, warn, true));
 
         WaterSfx(SfxIds.BosswWaveWarning, transform.position);
         PlayClip(BossClipId.Slam, warn);
@@ -370,14 +446,15 @@ public sealed partial class BossController
         {
             // D-103+: an animated wall of generated wave tiles (leading foam edge on the hit line, water trailing behind it)
             GameObject bar = TrackObject(new GameObject("TidalWave"));
-            bar.transform.position = new Vector3(segment.x, yTop, 0f);
+            bar.transform.position = new Vector3(segment.x, yStart, 0f);
+            bar.transform.localScale = new Vector3(1f, northward ? -1f : 1f, 1f);
             float width = segment.y - segment.x;
             const float tile = 3.4f;
             int tiles = Mathf.Max(1, Mathf.CeilToInt(width / tile));
             float step = width / tiles;
             for (int i = 0; i < tiles; i++)
             {
-                GameObject piece = MakeAnimated("TidalWall_Flow", new Vector2(segment.x + step * (i + 0.5f), yTop + 1.5f), step / 3.67f * 1.05f, 9f, -90, bar.transform);
+                GameObject piece = MakeAnimated("TidalWall_Flow", new Vector2(segment.x + step * (i + 0.5f), yStart + 1.5f), step / 3.67f * 1.05f, 9f, -90, bar.transform);
                 piece.transform.localPosition = new Vector3(step * (i + 0.5f), 1.5f, 0f);
             }
 
@@ -385,11 +462,11 @@ public sealed partial class BossController
         }
 
         bool hit = false;
-        float front = yTop;
+        float front = yStart;
         Player player = GetPlayer();
-        while (front > yEnd && _state != BossState.Dead)
+        while ((northward ? front < yFinish : front > yFinish) && _state != BossState.Dead)
         {
-            front -= _definition.waveSpeed * Time.deltaTime;
+            front += sign * _definition.waveSpeed * Time.deltaTime;
             foreach (Transform bar in bars)
             {
                 if (bar != null)
@@ -405,10 +482,11 @@ public sealed partial class BossController
                     {
                         hit = true;
                         WaterSfx(SfxIds.BosswWaveHit, point);
-                        HurtPlayer(player, _definition.waveDamage, new Vector2(point.x, front + 2f), 4f);
+                        HurtPlayer(player, _definition.waveDamage, new Vector2(point.x, front - sign * 2f), 4f);
                         Rigidbody2D body = BodyOf(player);
                         if (body != null)
-                            body.position += Vector2.down * _definition.wavePushDistance;
+                            body.position += Vector2.up * (sign * _definition.wavePushDistance);
+                        player.ApplySlow(_definition.waveSlowMultiplier, _definition.waveSlowSeconds); // soaked: slower for a moment
                         TrackObject(BossVfx.Spawn("Water/WaterRainSplash_Hit", point, 2f, 14f, false, 0.8f, 9));
                         break;
                     }
@@ -575,6 +653,7 @@ public sealed partial class BossController
         }
 
         WaterSfx(SfxIds.BosswWhirlJet, center);
+        Coroutine minis = StartCoroutine(MiniWhirls(center, radius)); // D-113: extra small vortices around the arena
         var bars = new List<Transform>();
         for (int i = 0; i < jets; i++)
         {
@@ -654,6 +733,9 @@ public sealed partial class BossController
             if (bar != null)
                 Destroy(bar.gameObject);
         }
+
+        if (minis != null)
+            yield return minis;
 
         // final burst: a ring of water rolls out of the eye (dash through it or outrun it)
         if (_state != BossState.Dead)

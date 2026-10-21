@@ -1,5 +1,131 @@
 # Architecture and Game-Design Decision Register
 
+## D-118 — SkillHUD, per-skill cooldown, and Shield block (Accepted, owner request 2026-10-14)
+
+Supersedes D-116's "No mana/cooldown or save-schema changes" for cooldown only (mana/save still
+untouched). Adds:
+- **SkillHUD**: bottom-right HUD mirroring PlayerHUD's bottom-left, built into
+  `Assets/Prefabs/UI/GameplayUIRoot.prefab` (sibling of `PlayerHUD`) via
+  `Assets/Editor/SkillHUDBuilder.cs`. Four Q/E/R/T diamond slots show the equipped skill's icon
+  (`PlayerStat.Skills.Equipped(slot)` + `SkillCatalog`) and a radial cooldown overlay; a fifth,
+  larger diamond shows a fixed Shield icon, highlighted while `Player.IsBlocking`. Empty/unlearned
+  slots stay dimmed and do not cast (unchanged from D-116). Key labels/cooldown overlay are runtime
+  UI layers, never baked into `skill_hud_frame_v1.png`.
+- **Per-skill cooldown**: `SkillCatalog.Definition.cooldownSeconds` (default 1s, data-driven, no
+  code change needed to retune per skill). Enforced once, in `SkillTestHarness.TryCastLoadoutSlot`
+  (the same bridge that already gates learned/equipped/catalog-resolved casting) — `GetCooldownFraction01(slot)`
+  exposes the remaining fraction for SkillHUD to read, so UI and the actual cast gate can never
+  disagree. Cooldown is keyed by loadout slot index, not skill id, so swapping the equipped skill
+  doesn't inherit a stale cooldown. No save-schema change (cooldown state is session-only, like
+  dash/attack cooldowns elsewhere).
+- **Shield (hold RMB)**: always available from game start, independent of SkillCatalog/Skill Points
+  (not a learnable skill). `PlayerShieldBlock.cs` (partial `Player`): holding RMB (gated off while
+  aiming/ground-targeting a skill, dead, or attacking) applies `PlayerStat.IsBlocking = true`, which
+  `ReceiveDamage` reduces by a flat `_blockDamageReduction` (default 70%) on top of
+  Defense/DamageReduction; continuously drains stamina (`_shieldStaminaDrainPerSecond`, default
+  20/s) and auto-releases at 0 stamina, on release, or on death.
+- **Shield VFX**: `Assets/Shaders/ShieldBubbleFX.shader` — a hand-written URP shader (not Shader
+  Graph, not a Pixellab sprite animation; see rationale below), procedural fresnel-rim glass bubble.
+  Two quads on Player (`ShieldFXBack`, `ShieldFXFront`, both using the same shader with `_HalfSide`
+  0/1) split the ring so the far half renders behind the character (`sortingOrder -1`, below
+  Body/Head) and the near half renders in front (`sortingOrder 2`), with a fully transparent centre
+  either way. **Critical URP gotcha**: this project's URP uses the 2D Renderer (`Renderer2DData`),
+  which only renders passes tagged `"LightMode" = "Universal2D"` — a pass with no LightMode tag
+  compiles clean but renders nothing, silently. Toggled by `PlayerShieldBlock` alongside the gameplay
+  flag.
+
+### Why a hand-written shader instead of Shader Graph or Pixellab
+
+Owner asked for a Shader Graph bubble shield (referencing a "Unity Shader Graph VFX - Bubble Shield"
+tutorial). Several Pixellab `vfx_workbench` attempts (ring/arc layers, radial "volume" glow splits)
+could not reach a convincing glass-bubble look at this canvas/colour-count — see
+`Assets/Documentation/DevelopmentPlan/Handoffs/CodexToClaude.md` (`SKILLHUD_SHIELD_ASSETS_ART_READY`)
+for the earlier static-reference attempt, also rejected for the same "flat ring, not a bubble"
+reason. A hand-written `.shader` was used instead of authoring an actual `.shadergraph` asset because
+Shader Graph's serialized node-graph format is not reliably hand-authorable/scriptable; the HLSL
+file implements the identical fresnel-rim technique (a faked hemisphere normal from UV
+distance-from-centre, then a real Fresnel term against a fixed top-down view direction) and is fully
+text-reviewable/version-controlled like the rest of the codebase.
+
+## D-117 — Inventory categories and quick-bar eligibility (Accepted, 2026-10-14)
+
+Owner replaces bookmarks with All, Equipment (all equipment), Resources (materials), Consumption
+(Potion/Food/Drink), Others (Orb/Seed/Fishing Bait). ItemSO.usedItems gates quick-bar assignment and
+resolution. quickBarUseMode: Inactive selects for farming/fishing; Active sends ActiveItemUseRequested
+on gameplay keys 1–4 with positive stock. Teammate owns effects and atomic consumption; no handler
+means no effect or quantity change. UI clicks/drag only select. Old ineligible quick-bar IDs remain
+in save snapshots for recovery but resolve hidden/unusable. No Inventory loss or save-schema change.
+Owner handles manual testing; no automated tests or Play Mode changes for this slice.
+
+## D-116 — SkillPanel art and learning costs (Accepted, owner request 2026-10-10)
+
+2026-10-14 owner requests centered SkillPanel and no footer help text. Board and Content now use
+center anchors at (0,0), retaining size; existing Help is inactive and builder no longer creates it.
+Hover tooltip continues to clamp to Canvas edges independently. Manual visual verification is owner-led.
+
+2026-10-14 owner requests hover tooltip beside cursor, replacing click-to-open. Hover library or equipped
+skill icon opens its description to cursor's right, clamped to Canvas edges. Popup follows while over
+the icon and freezes while entering it to click Learn; owner reverted the fixed-on-entry revision.
+A 0.2s unscaled exit grace bridges the pointer gap. Leaving both icon/popup hides it;
+drag, closing or disabling the panel hides it immediately. No learning/save/casting changes. Owner tests.
+
+2026-10-14 owner authorizes DemoScene loadout casting: slots 0–3 map to Q/E/R/T, key labels
+remain visible when equipped. Remove Tab element-kit switching and the direct debug Test Skill button.
+Catalog definition supplies SkillCastKind; bridge dispatches behavior handlers, not hardcoded skill IDs.
+Only learned, equipped, catalog-resolved skills cast while gameplay input is allowed. Empty slots do
+nothing. Existing aiming/click confirmation and per-skill prefab parameters remain unchanged.
+No mana/cooldown or save-schema changes. Owner performs manual testing; do not run tests/Play Mode.
+
+2026-10-13 owner authorizes Skill Points/learning/drag-loadout implementation. PlayerStat owns pure
+SkillProgressionState; immutable SkillCatalog resolves explicit stable IDs. Save V13 adds player.skills
+(points, awardedThroughLevel, learned IDs, four loadout IDs). V12 migration backfills level-1 points
+once, with no learned skills; New Game has zero. Restore never fires/grants level rewards. Missing
+definition IDs are retained in saves and shown unavailable, never silently removed/refunded. Assignment
+requires a learned catalog skill, moves duplicate assignment and replaces target (does not unlearn).
+Drag outside cancels; ghost is non-raycast UI and cleaned on close/disable. Skill casting/mana/cooldown
+integration is separate; this is not Inventory quickbar. Learning and loadout changes dirty the session.
+
+UI assembly authorized by owner: create independent SkillPanel prefab and DemoScene instance,
+append GameplayMenuPage.Skills (preserve existing ordinals). P is a serialized application UI action
+owned/enabled by SkillPanelUI, gated to Playing / its own page; existing coordinator owns Escape.
+This presentation slice includes selectable descriptions and disabled Learn / empty loadout;
+no simulated spending, progression, casting or save data. Numeric SP is unknown (`--`) until a real
+read model is bound. Entry IDs are presentation metadata only, not accepted persistent skill IDs.
+
+Owner approved the SkillPanel mockup; generate accurate icons first, matching Inventory/PlayerHUD.
+Water/Earth/Wind each have four skills, with learning Skill Point costs 2/3/4/5 respectively.
+All UI and tooltip text is English. Transparent motifs are separate from frames, badges and dynamic state.
+This approves visual/content direction, not runtime learning/save implementation. +1 SP per gained level
+and four learned-skill loadout slots require data/save contracts before integration; these are independent
+of Inventory quick slots. Existing gameplay VFX are unchanged. See SkillIconAssetPack.md for mapping,
+English copy, exact prompts and remaining gates.
+
+## D-115 — PlayerHUD consolidation (Accepted, owner request 2026-10-09)
+
+Supersedes the HUD placement/presentation and eight-slot parts of D-028/D-029/D-057/D-114.
+Use the owner-approved no-vitals-text mockup: bottom-left at 1920x1080, four diamond quick slots
+(1 top, 2 left, 3 right, 4 bottom), walnut/antique-gold/sapphire matching Inventory. EXP amber with
+current/required text, level TMP; stamina green, mana blue, health red are fill-only. All dynamic
+content is separate from generated frame. Remove BottomHUD, not UnifiedGameplayHUD's Map/Character/
+Minimap services. Quick bar runtime/save is four slots; V11→V12 keeps assignments 1–4, drops only
+assignments 5–8 (never Inventory items), invalid selected index falls back to 0. Migration is in-memory.
+Mana is a real PlayerStat runtime resource for future skill casts, serialized max default 100;
+no new mana save field, automatic regeneration, skill costs or skill cooldown behavior in this UI slice.
+Future cooldowns are per skill identity, not per quick slot, and require a separate gameplay integration.
+See PlayerHUDRedesign.md for assets, binding and verification gates.
+
+D-115 size revision (owner request 2026-10-09): reduce the overly dominant 816x272px HUD
+uniformly to approximately 588x196px at 1920x1080 (presentation scale 0.72); retain 32px
+bottom/left inset, source aspect, four-slot mapping and Inventory art. No gameplay/save change.
+
+D-115 polish revision (owner request 2026-10-09): place EXP immediately before the current/required
+ratio in one dynamic text; use amber positive fill and dark empty track, with masked fills covering
+the complete frame openings (including slanted ends). No fabricated progress at zero EXP.
+
+D-114 visual revision (Accepted, owner request 2026-10-07): dùng nguyên ảnh khung inventory
+owner cung cấp (`inventory_complete_frame_approved.png`), không ghép các khung trang trí gen riêng.
+Giữ tỷ lệ ảnh gốc; text, icon, Close X và hit/drag targets vẫn độc lập; QA tại 1920x1080.
+
 File này ghi các quyết định ảnh hưởng kiến trúc. `Proposed` là mặc định khuyến nghị để team có thể
 tiếp tục thiết kế; phải đổi thành `Accepted` trước phase implementation liên quan.
 
@@ -47,6 +173,7 @@ tiếp tục thiết kế; phải đổi thành `Accepted` trước phase implem
 | D-039 | Inventory dark reskin, dynamic currency footer và item tooltip | **Accepted từ yêu cầu — 2026-09-23; cập nhật 2026-09-29** | Inventory dùng palette walnut/charcoal/gold/sapphire đồng bộ gameplay HUD; board không bake item data hoặc currency box. `CurrencyRow` chỉ hiện badge cho currency có dữ liệu (hiện tại chỉ Gold), không giữ placeholder rỗng. Hover `InventorySlotUI` mở tooltip prefab-authored với icon, type/equipment slot, stat modifiers, stack và description động; tooltip ưu tiên ngoài mép Inventory, tự clamp trong Canvas và ẩn khi pointer exit/drag hoặc khi slot bị disable do đóng Inventory/Shop/Crafting (không phụ thuộc `PointerExit`). Navigation, drag/drop, equipment, stable item ID và save contract không đổi. | Inventory content production |
 | D-040 | Unified Inventory board và idle character preview | **Accepted từ yêu cầu — 2026-09-24; cập nhật layout v5** | Inventory dùng board landscape liền khối gần ảnh tham chiếu: đúng 7 equipment socket quanh character, stats trái, grid scroll 6x5 và đúng một Gold well phải. Item/equipment dùng chung slot phẳng viền mảnh; slot equipment trống có silhouette loại item runtime và tự ẩn khi equip; stats là TMP runtime 2x3 đọc `PlayerStat`. Character preview render chính Player runtime trong Hierarchy bằng camera phụ/RenderTexture; Animator tạm chạy idle unscaled khi Inventory mở và được trả về update mode cũ khi đóng. Preview/UI không mutate equipment/save. | Inventory presentation |
 | D-041 | Dark Light Fantasy UI System | **Accepted từ yêu cầu — 2026-09-25** | Lấy Inventory v5 làm master visual language cho gameplay UI: charcoal/walnut, viền vàng mảnh, sapphire tiết chế, Digital Disco, slot phẳng và safe spacing 4/8/12/16. `DarkLightFantasyUIStyleGuide.md` là nguồn chuẩn; không duy trì scene Style Guide. Migration từng UI giữ nguyên controller, callback, GameState và data ownership. | UI presentation migration |
+| D-114 | Inventory bookmark filters và Quick Assign 1–4 | **Accepted — 2026-10-07** | Độ lại bố cục `InventoryUIController.prefab`, thêm bookmark `ALL/WEAPON/RESOURCES/FOOD/POTION`, nhưng giữ Style Art Inventory v5 hiện tại làm chuẩn tuyệt đối về palette vàng cổ–nâu ấm, độ sáng, nét viền, sapphire góc, pixel density và material; không chuyển sang một style tối mới. Bốn ô Quick Assign trong Inventory mirror `QuickBarManager` index 0–3, không giảm contract tám slot của D-028 và không đổi save schema. Category dùng metadata definition, không suy từ tên/folder; Seed/Bait vào Resources, Armor vẫn truy cập qua All. | Inventory presentation/content metadata |
 | D-042 | NPC buy/sell quote from ItemSO | **Accepted từ yêu cầu — 2026-09-25** | Mọi ItemSO trong `Resources/Items` author `MinBuyPrice`/`MaxBuyPrice` và `MinSellPrice`/`MaxSellPrice`. Shop chỉ mua item nằm trong stock hoặc là output recipe do cùng NPC cung cấp. Domain roll unit-price trong khoảng inclusive khi item được chọn/thả và giữ quote cố định tới khi xác nhận, đổi item hoặc đổi quantity; UI không tự quyết định giá và giao dịch vẫn atomic. Asset cũ có range 0 fallback về ShopStockEntry để bảo toàn content hiện tại. | Commerce UI/data |
 | D-044 | Per-NPC Buy/Sell ItemSO catalogs | **Accepted từ yêu cầu — 2026-09-25** | Mỗi ShopDefinition có hai danh sách ItemSO độc lập: Buy Items quyết định item hiện trong Buy Tab, Sell Items quyết định item NPC chấp nhận từ Sell Tab. Output recipe của cùng NPC vẫn là sell eligibility bổ sung. Stock itemId/price cũ chỉ là compatibility fallback; content mới thêm bằng cách kéo ItemSO vào danh sách, không sửa manager/UI code. | Commerce content authoring |
 | D-045 | Commerce board/runtime element separation | **Accepted từ yêu cầu — 2026-09-25** | Shop/Crafting board chỉ chứa outer frame và panel cấu trúc. Inventory Commerce dùng runtime `InventorySlotUI`, lấy cùng capacity từ `InventoryUIController/GridSlot`; vùng nhìn 6×5 nằm trong ScrollRect/Viewport và cuộn dọc tới toàn bộ capacity. BUY/SELL tab, BUY/SELL/CRAFT action, quantity controls, close, text và icon là object/sprite riêng, tuyệt đối không bake vào board. Crafting category list là ScrollRect không scrollbar hiển thị và không bake row. Button sprite phải là pixel art point-filtered đồng bộ Inventory, không dùng vector/HD art. | Commerce UI presentation |
@@ -124,7 +251,8 @@ tiếp tục thiết kế; phải đổi thành `Accepted` trước phase implem
 | D-109 | Pathfinding cho enemy thường (2026-10-05, user: "Có cần nghiên cứu kĩ về Pathfinding không để sau này làm cho enemy nữa", chọn khuyến nghị an toàn) | Accepted (thiết kế); chưa implement | Tự viết A* trên grid bake từ Tilemap, tách thành `GridPathfinder` độc lập; `EnemyUniversal` chỉ gọi `FindPath` ở state Chase/Patrol/ReturnHome. Không dùng plugin ngoài ở bản đầu; lõi `FindPath` giữ sau interface để thay bằng plugin nếu quy mô tăng. Boss giữ steering + `BossObstacle` (D-106/D-108). Chi tiết: [EnemyPathfindingPlan.md](EnemyPathfindingPlan.md) | Trước khi implement (cần user duyệt plan) |
 | D-110 | Map Boss Wind "Thiên Đài" (2026-10-05, user: "làm map Boss Wind trước", "thêm đám mây bay bay", "bỏ effect gió thổi qua thấy xấu") | Accepted | Scene `BossArena_Wind` dựng bằng `BossArenaWindBuilder` từ khung Earth: sân chữ thập 60×30 đơn vị trên biển mây cuộn (`SkyScroll`), tượng cú + 4 trụ gió (nghi lễ), đảo đá lơ lửng nhấp nhô (`AmbientBob`), mây trôi trước mặt người chơi + lá/lông (`SkyWeather`; hiệu ứng "gió thổi qua" đã bỏ theo user). Biên người chơi = `EdgeCollider2D` theo chữ thập; boss giữ trong chữ thập qua `ArenaPolygon` + `BossController.SetArenaPolygon`. Chưa có boss: summon không làm gì | Đã xong (boss: D-111) |
 | D-111 | Boss Cú Thần Thiên Phong: art + kế hoạch skill (2026-10-05, user: "Gen cả Boss Cú Mèo, animation, lên kế hoạch bộ skill xịn sò, gen animation cast từng skill") | Accepted (user duyệt 6 skill, va đập mép, gió trôi thật — **sau đó user bỏ phần trôi (2026-10-05): gió chỉ là hiệu ứng mây/lá**, HP 2400/B 14/Bão Táp vỡ hai cánh ngang — 2026-10-05) | 6 skill + gầm đổi phase, cú tư thế cánh dang cắt lớp miễn phí, clip riêng mỗi skill; mép vực = va đập thay vì rơi; xem [WindBossCombatPlan.md](WindBossCombatPlan.md) | Đã code (xem WindBossCombatPlan.md §10) |
-
+| D-112 | Buff Boss Cua + hồi đầy máu sau teleport (2026-10-06, user: "skill Boss Cua dễ quá… sau mỗi lần teleport máu full 100%") | Accepted | Cua: HP 2400→3000, moveSpeed 2.6→3.4, `difficultyDamageScale` 1→1.3, telegraph P1/P2/P3 = 0.85/0.75/0.65 (min 0.65/0.6/0.5), recovery 2.2/1.8/1.3, gap 0.35/0.3/0.2, ultimate mỗi 2 combo từ P2; BubbleTrap nhanh hơn (3→4.5) và đau hơn (0.9→1.1), ClawClamp windup 0.9→0.7, SandAmbush đuổi 2→2.4 s tốc độ 6→7.5, TidalWave báo trước 1.5→1.1 s tốc độ 14→16; combo A = Bubble song song Clamp, D thêm Clamp. Dữ liệu ở `WaterCrabBoss.asset` + `CreateWaterCrabDefaults`. `SceneTravelArrival` hồi đầy máu và stamina sau mọi lần teleport (cả về làng) | Đã code; chờ user chơi thử và chỉnh |
+| D-113 | Thiết kế lại bộ skill Boss Cua (2026-10-06, user: "xem lại skill của boss Water, hoặc làm lại, đơn giản quá" → "Duyệt") | Accepted | 8 skill: Kìm Kẹp (lao theo chỗ né + xoay 360° cuối), Bong Bóng (vòng bong bóng + **bong bóng nổ** thành tia chữ thập, trúng thì root), Cát Lún (gò giả + **sóng xung kích** khi trồi), Sóng Triều **hai chiều** (backwash, làm chậm), **Cua Lăn Giáp** (lăn 2–4 đoạn, re-aim, choáng sau đó = đòn phạt ×1.5), **Tia Chéo Totem** (4 totem quét tia), **Triệu Cua Con** (giết hết trước khi nổ ⇒ Cua lộ yếu điểm ×1.4), Xoáy Nước + **xoáy nhỏ**. Id mới thêm cuối `BossSkillId` (không đổi id cũ); số liệu trong `BossDefinition` (block "Water kit v2"); combo P1 A–C, P2 D–G, P3 H–J. Art mới bằng Pixellab: chưa gen (tạm tái dùng VFX/clip có sẵn) | Đã code, đo audit; chờ user chơi thử |
 ## Quy tắc cập nhật
 
 Mỗi decision khi Accepted cần ghi:
@@ -321,3 +449,35 @@ Code foundation nên cung cấp extension point nhưng không tự chọn gamepl
   không phải gen lại outer board.
 - Text, icon trang bị, value động và CloseButton tiếp tục là object runtime; thay đổi chỉ thuộc
   presentation, không đổi `CharacterPopupUI`, `EquipmentManager`, `PlayerStat` hoặc menu lifecycle.
+
+### D-118 presentation correction — 2026-10-16
+
+Owner requested SkillHUD polish after square overlays, illegible icons and misaligned keys.
+Keep the accepted four Q/E/R/T diamonds plus larger Shield and existing shared source prefab.
+Use an explicit diamond sprite for radial cooldown and block highlight, hidden mask graphics to
+clip enlarged icons inside frames, and source-space font sizing consistent with RectTransforms.
+Ready/empty cooldown layers are disabled; Shield tint reduced to preserve icon contrast.
+No gameplay, catalog, save or progression contract changes.
+
+D-118 presentation follow-up (2026-10-16): owner screenshot confirmed prior slot geometry remained
+offset. Correct interior centers and 210/260 source-unit diameters recorded in SkillProgression.md;
+shared prefab rebuilt and isolated Editor render visually verified. Accepted layout/behavior unchanged.
+
+### D-118 / D-116 icon V2 continuation — 2026-10-16
+
+Owner explicitly requested regenerating all twelve skill icons with backgrounds, complete smaller
+art inside HUD diamonds, plus Shield matching the current shader. V2 uses opaque elemental
+backgrounds, superseding V1 transparent-motif presentation for these consumers. V1 remains preserved.
+Shield palette follows actual material ivory rim (1,.98,.9) and olive glass (.6,.6,.47).
+Catalog/panel now reference V2; stable skill IDs, costs, cast kinds, progression/save unchanged.
+HUD separate UI material preserves complete square art in the diamond inscribed square and blends
+its outer margins into an elemental backdrop. See SkillIconV2.md for exact prompts and verification.
+
+### D-116 / D-118 shared icon composition — Accepted 2026-10-17
+
+Owner authorized implementing the reviewed fix for HUD icons too small and square art exposed
+inside SkillPanel hexagons. Preserve V2 visual identity; add transparent motif derivatives and a
+shared presentation-only Sprite/hull catalog. Shape backgrounds and foregrounds are separate UI
+layers; normalized alpha hulls size motifs inside fixed socket axes. Existing catalog identity,
+progression, costs, input and save contracts unchanged. Builders and both source prefabs updated.
+Supersedes the V2 48%-square HUD composition. See SkillIconSharedPresentation.md.

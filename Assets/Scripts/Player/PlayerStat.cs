@@ -5,6 +5,7 @@ using UnityEngine.Serialization;
 public class PlayerStat : MonoBehaviour
 {
     public static PlayerStat Instance { get; private set; }
+    public SkillProgressionState Skills { get; } = new();
 
     [Header("Level 1 Base Stats")]
     [SerializeField, Min(1f)] private float _maxHealth = 100f;
@@ -16,6 +17,7 @@ public class PlayerStat : MonoBehaviour
     [SerializeField, Min(0f)] private float _moveSpeed = 2f;
     [SerializeField, Min(1f)] private float _sprintMultiplier = 2f;
     [SerializeField, Min(1f)] private float _maxStamina = 100f;
+    [SerializeField, Min(1f)] private float _maxMana = 100f;
     [SerializeField, Min(0f)] private float _staminaDrainPerSecond = 25f;
     [SerializeField, Min(0f)] private float _staminaRegenerationPerSecond = 18f;
     [SerializeField, Min(0f)] private float _attackStaminaCost = 15f;
@@ -24,6 +26,10 @@ public class PlayerStat : MonoBehaviour
     [SerializeField, Range(0f, 0.75f)] private float _damageReduction;
     [SerializeField, Min(0f)] private float _healthRegeneration;
     [SerializeField, Range(0f, 0.5f)] private float _dodgeChance;
+
+    [Header("Shield Block (hold RMB)")]
+    [Tooltip("Extra damage reduction applied on top of Defense/DamageReduction while IsBlocking is true.")]
+    [SerializeField, Range(0f, 1f)] private float _blockDamageReduction = 0.7f;
 
     [Header("Growth Per Level")]
     [SerializeField, Min(0f)] private float _healthPerLevel = 3f;
@@ -38,12 +44,14 @@ public class PlayerStat : MonoBehaviour
     [Header("Runtime")]
     [SerializeField] private float _health;
     [SerializeField] private float _stamina;
+    [SerializeField] private float _mana;
 
     private PlayerStatModifiers _equipmentModifiers;
 
     public event Action OnStatsChanged;
     public event Action<float, float> OnHealthChanged;
     public event Action<float, float> OnStaminaChanged;
+    public event Action<float, float> OnManaChanged;
     public event Action<int> OnLevelUp;
     public event Action<int, int> OnExperienceChanged;
 
@@ -58,6 +66,8 @@ public class PlayerStat : MonoBehaviour
     public float SprintMultiplier => Mathf.Max(1f, _sprintMultiplier + _equipmentModifiers.sprintMultiplier);
     public float Stamina => _stamina;
     public float MaxStamina => Mathf.Max(1f, _maxStamina);
+    public float Mana => _mana;
+    public float MaxMana => Mathf.Max(1f, _maxMana);
     public bool HasStamina => _stamina > 0f;
     public float CriticalChance => Mathf.Clamp(_criticalChance + LevelBonus(_criticalChancePerLevel) + _equipmentModifiers.criticalChance, 0f, 0.75f);
     public float CriticalMultiplier => Mathf.Clamp(_criticalMultiplier + _equipmentModifiers.criticalMultiplier, 1f, 3f);
@@ -69,6 +79,11 @@ public class PlayerStat : MonoBehaviour
     /// <summary>Dev-only invulnerability toggle (God Mode). Not persisted; defaults to false on
     /// every scene load. Set exclusively by DevPanelController.</summary>
     public bool IsInvulnerable { get; set; }
+
+    /// <summary>True while the player is holding the Shield block (RMB). Set exclusively by
+    /// PlayerShieldBlock; not persisted (resets to false on every scene load like IsInvulnerable).
+    /// ReceiveDamage applies _blockDamageReduction on top of Defense/DamageReduction while true.</summary>
+    public bool IsBlocking { get; set; }
 
     // Compatibility with existing code that used the old property names.
     public float BaseAtkDmg => _attackDamage;
@@ -93,6 +108,8 @@ public class PlayerStat : MonoBehaviour
 
         _health = MaxHealth;
         _stamina = MaxStamina;
+        _mana = MaxMana;
+        Skills.Restore(null, _level);
     }
 
     public PlayerDamageResult ReceiveDamage(float rawDamage)
@@ -105,6 +122,8 @@ public class PlayerStat : MonoBehaviour
 
         float afterDefense = Mathf.Max(1f, rawDamage - Defense);
         float finalDamage = afterDefense * (1f - DamageReduction);
+        if (IsBlocking)
+            finalDamage *= 1f - _blockDamageReduction;
         _health = Mathf.Clamp(_health - finalDamage, 0f, MaxHealth);
         OnHealthChanged?.Invoke(_health, MaxHealth);
 
@@ -138,6 +157,24 @@ public class PlayerStat : MonoBehaviour
 
         _stamina = Mathf.Min(_stamina + amount, MaxStamina);
         OnStaminaChanged?.Invoke(_stamina, MaxStamina);
+    }
+
+    // Runtime resource foundation only. Skill costs/cooldowns are integrated separately.
+    public bool TryConsumeMana(float cost)
+    {
+        if (float.IsNaN(cost) || float.IsInfinity(cost) || cost < 0f) return false;
+        if (IsDead || _mana < cost) return false;
+        if (cost == 0f) return true;
+        _mana -= cost;
+        OnManaChanged?.Invoke(_mana, MaxMana);
+        return true;
+    }
+
+    public void RestoreMana(float amount)
+    {
+        if (float.IsNaN(amount) || float.IsInfinity(amount) || amount <= 0f || _mana >= MaxMana) return;
+        _mana = Mathf.Min(_mana + amount, MaxMana);
+        OnManaChanged?.Invoke(_mana, MaxMana);
     }
 
     public void TickRegeneration(float deltaTime)
@@ -197,6 +234,7 @@ public class PlayerStat : MonoBehaviour
             float previousMaxHealth = MaxHealth;
             _currentExperience -= requirement;
             _level++;
+            Skills.AwardLevel(_level);
             _health = Mathf.Min(_health + (MaxHealth - previousMaxHealth), MaxHealth);
             SoundFXManager.PlaySfx(SfxIds.PlayerLevelUp);
             OnLevelUp?.Invoke(_level);
@@ -265,6 +303,7 @@ public class PlayerStat : MonoBehaviour
         _moveSpeed = Mathf.Max(0f, _moveSpeed);
         _sprintMultiplier = Mathf.Max(1f, _sprintMultiplier);
         _maxStamina = Mathf.Max(1f, _maxStamina);
+        _maxMana = Mathf.Max(1f, _maxMana);
         _staminaDrainPerSecond = Mathf.Max(0f, _staminaDrainPerSecond);
         _staminaRegenerationPerSecond = Mathf.Max(0f, _staminaRegenerationPerSecond);
         _attackStaminaCost = Mathf.Max(0f, _attackStaminaCost);

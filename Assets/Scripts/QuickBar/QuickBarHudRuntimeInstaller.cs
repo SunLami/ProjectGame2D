@@ -47,11 +47,18 @@ public sealed class QuickBarHudRuntimeInstaller : MonoBehaviour
         }
 
         _bindingRoutine = null;
-        Debug.LogWarning("Quick bar could not find the authored QuickSlot1Key..QuickSlot8Key HUD anchors.", this);
+        Debug.LogWarning("Quick bar could not find the four authored PlayerHUD slots.", this);
     }
 
     private static bool TryInstall()
     {
+        // New PlayerHUD owns prefab-authored QuickBarSlotUI components. Do not create duplicates.
+        QuickBarSlotUI[] authored = Object.FindObjectsByType<QuickBarSlotUI>(FindObjectsInactive.Include);
+        int hudSlots = 0;
+        foreach (QuickBarSlotUI slot in authored)
+            if (slot.GetComponentInParent<PlayerHUDController>(true) != null) hudSlots++;
+        if (hudSlots >= QuickBarSaveData.SlotCount) return true;
+
         TextMeshProUGUI[] texts = Object.FindObjectsByType<TextMeshProUGUI>(FindObjectsInactive.Include);
         var keys = new TextMeshProUGUI[QuickBarSaveData.SlotCount];
         foreach (TextMeshProUGUI text in texts)

@@ -75,6 +75,23 @@ public sealed class SessionDirtyTrackerPlayModeTests
     }
 
     [Test]
+    public void SkillLearningAndAssignment_MarkDirtyButRestoreIsSuppressed()
+    {
+        var stat = PlayerStat.Instance;
+        var catalog = Resources.Load<SkillCatalog>("Skills/PlayerSkillCatalog");
+        Assert.IsNotNull(catalog);
+        GameSessionManager.Instance.BeginRestore();
+        try { stat.Skills.Restore(SkillProgressionSaveData.ForLevel(5), 5); }
+        finally { GameSessionManager.Instance.EndRestore(); }
+        Assert.IsFalse(GameSessionManager.Instance.IsDirty);
+        Assert.IsTrue(stat.Skills.Learn(catalog, "skill.water.spiral_bolt"));
+        Assert.IsTrue(GameSessionManager.Instance.IsDirty);
+        GameSessionManager.Instance.ClearDirty();
+        Assert.IsTrue(stat.Skills.Equip(catalog, 0, "skill.water.spiral_bolt"));
+        Assert.IsTrue(GameSessionManager.Instance.IsDirty);
+    }
+
+    [Test]
     public void EquipmentChanged_MarksSessionDirty()
     {
         EquipmentManager.Instance.RecalculateStats(); // no-op state, just confirm subscription wiring below

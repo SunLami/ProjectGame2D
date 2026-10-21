@@ -1,5 +1,9 @@
 # Skill VFX Pipeline
 
+2026-10-14 D-116 input override: historical Tab/element-kit key descriptions below are superseded
+in DemoScene by learned Skill Loadout Q/E/R/T. SkillCatalog.castKind selects the existing handler;
+aim/confirm, VFX prefabs and tuning remain unchanged. See SkillProgression.md. Owner tests this slice.
+
 Nguồn chuẩn cho việc thêm skill (projectile + skill định hướng) vào Player, dùng lại animation tấn
 công có sẵn và gen VFX mới gắn vào layer `SkillFX`. Thay thế hướng gen animation nhân vật mới bằng
 Pixellab (Fishing/Farming) đã thử và dừng lại — xem §5 để biết lý do và bài học giữ lại được.

@@ -6,6 +6,7 @@ public sealed class PlayerExperienceBarController : MonoBehaviour
 {
     [SerializeField] private Image _experienceFill;
     [SerializeField] private TMP_Text _experienceText;
+    [SerializeField] private bool _showLabel;
 
     private PlayerStat _playerStat;
 
@@ -77,6 +78,6 @@ public sealed class PlayerExperienceBarController : MonoBehaviour
             _experienceFill.fillAmount = (float)safeCurrent / safeRequired;
 
         if (_experienceText != null)
-            _experienceText.text = $"{safeCurrent} / {safeRequired}";
+            _experienceText.text = (_showLabel ? "EXP  " : "") + $"{safeCurrent} / {safeRequired}";
     }
 }

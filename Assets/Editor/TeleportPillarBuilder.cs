@@ -18,6 +18,7 @@ public static class TeleportPillarBuilder
     private const string ArenaScenePath = "Assets/Scenes/BossArena_Earth.unity";
     private const string WaterArenaScenePath = "Assets/Scenes/BossArena_Water.unity";
     private const string WindArenaScenePath = "Assets/Scenes/BossArena_Wind.unity";
+    private const string OwlIconPath = "Assets/Art/BossArena/Wind/Boss/OwlBase_256.png";
     private const string CrabIconPath = "Assets/Art/BossArena/Water/Boss/CrabCand_D_seed404_256.png";
     private const string PillarRoot = "TeleportPillar";
     private const string UiRoot = "BossTeleportSelectUI";
@@ -31,8 +32,9 @@ public static class TeleportPillarBuilder
         Sprite[] frames = ImportSheet();
         Sprite earthIcon = ImportIcon(EarthIconPath);
         Sprite crabIcon = ImportIcon(CrabIconPath);
+        Sprite owlIcon = ImportIcon(OwlIconPath);
 
-        BuildDemoScene(frames, earthIcon, crabIcon);
+        BuildDemoScene(frames, earthIcon, crabIcon, owlIcon);
         BuildArena(frames, ArenaScenePath);
         if (AssetDatabase.LoadAssetAtPath<SceneAsset>(WaterArenaScenePath) != null)
             BuildArena(frames, WaterArenaScenePath);
@@ -102,7 +104,7 @@ public static class TeleportPillarBuilder
 
     // ------------------------------------------------------------------ scenes
 
-    private static void BuildDemoScene(Sprite[] frames, Sprite earthIcon, Sprite crabIcon)
+    private static void BuildDemoScene(Sprite[] frames, Sprite earthIcon, Sprite crabIcon, Sprite owlIcon)
     {
         Scene scene = EditorSceneManager.OpenScene(DemoScenePath, OpenSceneMode.Single);
         RemoveExisting(scene);
@@ -127,9 +129,9 @@ public static class TeleportPillarBuilder
             {
                 id = "boss.wind", displayName = "Sky Owl", sceneName = windAvailable ? "BossArena_Wind" : "", spawnId = windAvailable ? "arena_entry" : "",
                 description = windAvailable
-                    ? "A cross-shaped terrace floating above a sea of clouds. A wild wind drifts you toward the edge while the sky owl dives, cuts and calls a storm."
+                    ? "A cross-shaped terrace floating above a sea of clouds. The sky owl dives, cuts the air with wind blades and calls a storm that shrinks the safe ground."
                     : "A floating terrace above the clouds where the wind decides who falls.",
-                available = windAvailable, accent = new Color(0.7f, 0.85f, 0.9f, 1f),
+                available = windAvailable, icon = owlIcon, accent = new Color(0.7f, 0.85f, 0.9f, 1f),
             },
         };
 

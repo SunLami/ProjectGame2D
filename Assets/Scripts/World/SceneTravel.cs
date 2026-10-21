@@ -5,15 +5,17 @@ using UnityEngine;
 /// and survives on its own.</summary>
 public readonly struct PlayerTravelSnapshot
 {
-    public PlayerTravelSnapshot(int level, int experience, float health, float stamina)
+    public PlayerTravelSnapshot(int level, int experience, float health, float stamina, SkillProgressionSaveData skills = null)
     {
         Level = level;
         Experience = experience;
+        Skills = skills;
         Health = health;
         Stamina = stamina;
     }
 
     public int Level { get; }
+    public SkillProgressionSaveData Skills { get; }
     public int Experience { get; }
     public float Health { get; }
     public float Stamina { get; }
@@ -76,7 +78,7 @@ public static class SceneTravel
         PlayerStat stat = PlayerStat.Instance;
         if (stat != null)
         {
-            _pendingSnapshot = new PlayerTravelSnapshot(stat.Level, stat.CurrentExperience, stat.Health, stat.Stamina);
+            _pendingSnapshot = new PlayerTravelSnapshot(stat.Level, stat.CurrentExperience, stat.Health, stat.Stamina, stat.Skills.Capture());
             _pendingSpawnId = spawnId;
             _pending = true;
         }

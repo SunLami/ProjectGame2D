@@ -83,6 +83,12 @@ public sealed class PlayerSpawnReadinessSourcePlayModeTests
             {
                 level = 3,
                 currentExperience = 20,
+                skills = new SkillProgressionSaveData
+                {
+                    points = 0, awardedThroughLevel = 3,
+                    learnedIds = new() { "skill.water.spiral_bolt" },
+                    loadout = new[] { "skill.water.spiral_bolt", null, null, null }
+                },
                 health = 5f,
                 location = new PlayerLocationSaveData
                 {
@@ -105,6 +111,9 @@ public sealed class PlayerSpawnReadinessSourcePlayModeTests
         Assert.IsTrue(source.IsReady);
         Assert.AreEqual(3, stat.Level);
         Assert.AreEqual(20, stat.CurrentExperience);
+        Assert.AreEqual(0, stat.Skills.Points, "Continue must not grant level rewards again.");
+        Assert.IsTrue(stat.Skills.IsLearned("skill.water.spiral_bolt"));
+        Assert.AreEqual("skill.water.spiral_bolt", stat.Skills.Equipped(0));
         Assert.AreEqual(42f, playerTransform.position.x, 0.001f);
         Assert.AreEqual(-3f, playerTransform.position.y, 0.001f);
 
@@ -163,6 +172,10 @@ public sealed class PlayerSpawnReadinessSourcePlayModeTests
         var (root, stat, playerTransform, registry) = BuildFixture(spawnPosition);
         root.AddComponent<InventoryManager>();
         root.AddComponent<EquipmentManager>();
+
+        // Bootstrap may own the live singleton even when this fixture creates a duplicate.
+        // Each test starts empty instead of inheriting the prior test's items.
+        InventoryManager.Instance.LoadFromSaveData(new InventorySaveData(), new ResourcesItemResolver());
 
         InventorySeeder seeder = root.AddComponent<InventorySeeder>();
         typeof(InventorySeeder)

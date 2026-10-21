@@ -1,5 +1,10 @@
 # Input System Action Map Inventory
 
+2026-10-14 DemoScene skill bridge: Q/E/R/T resolve learned assignments in loadout slots 0/1/2/3.
+Legacy SkillTestHarness keyboard polling is retained, now gated by GameState.AllowsGameplayInput;
+Tab element-kit toggle and direct Test Skill button are removed. This does not change shared action
+IDs/PlayerInput callbacks, Inventory quick slots 1–4, aim-confirm input, mana or cooldowns.
+
 Ngày kiểm kê: 2026-08-21  
 Cập nhật migration: 2026-08-22  
 Input asset: `Assets/Settings/InputSystem_Actions.inputactions`
@@ -50,6 +55,11 @@ Project asset định nghĩa:
 Không còn scene nào trong build flow dùng package `DefaultInputActions` làm nguồn UI song song.
 
 ## Input đọc ngoài action map
+
+SkillPanel presentation slice: SkillPanelUI owns a serialized `Skills` InputAction (default P),
+enabled independently of actor Gameplay map so P can close its own menu. It opens only from Playing,
+never Dialogue/Loading/other menus. UI/Cancel remains owned by GameInputCoordinator. This action does
+not change the shared project input asset or existing PlayerInput callbacks.
 
 | File | Input trực tiếp | Rủi ro |
 |---|---|---|

@@ -29,7 +29,7 @@ public class InventorySlotUI : MonoBehaviour, IPointerClickHandler, IPointerEnte
         }
 
         _iconImage.sprite = slot.item.icon;
-        _iconImage.enabled = true;
+        _iconImage.enabled = slot.item.icon != null;
         _quantityText.text = slot.quantity > 1 ? slot.quantity.ToString() : string.Empty;
     }
 
@@ -69,6 +69,7 @@ public class InventorySlotUI : MonoBehaviour, IPointerClickHandler, IPointerEnte
 
     public void OnDrop(PointerEventData eventData)
     {
+        if (_slot == null) return;
         if (eventData.pointerDrag == null) return;
 
         InventorySlotUI sourceSlot = eventData.pointerDrag.GetComponent<InventorySlotUI>();
