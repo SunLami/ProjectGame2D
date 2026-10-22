@@ -170,3 +170,5 @@ Skill icon V2 (12 elemental skills + shader-matched Shield, owner requested 2026
 
 Current shared SkillHUD/SkillPanel icon layout (2026-10-17):
 [Shared icon presentation](SkillIconSharedPresentation.md).
+
+Items List expansion (D-119, 2026-10-22): [content contract and verification](SheetContentExpansion.md). Adds percentage potions, refresh-only timed buffs, crops, wildlife and material recipes; definitions use V13 resolver contracts. Production world placement remains gated by the recorded baseline validation issues.

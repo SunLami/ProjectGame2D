@@ -481,3 +481,8 @@ shared presentation-only Sprite/hull catalog. Shape backgrounds and foregrounds 
 layers; normalized alpha hulls size motifs inside fixed socket axes. Existing catalog identity,
 progression, costs, input and save contracts unchanged. Builders and both source prefabs updated.
 Supersedes the V2 48%-square HUD composition. See SkillIconSharedPresentation.md.
+
+
+## D-119 — Items List content expansion (Accepted, owner 2026-10-21)
+
+Owner approved SheetContentExpansion.md: 15%/35% Health/Mana potions with shared 10s cooldown; refresh-only food/drink buffs (special lifecycle policies deferred); 60s crops with single harvest; agent-selected four-produce recipes; stable IDs authorized, unknown economy/station/NPC left unconfigured. Preserve existing legacy mappings and ignore three incomplete fish rows. Non-equipment recipes may be exposed in dedicated Material/Consumable groups alongside the unchanged equipment groups, superseding D-043 restriction for this content expansion. No new save DTO for transient cooldown/buffs. DemoScene-first gates remain required.

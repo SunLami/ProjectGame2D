@@ -118,6 +118,20 @@ public sealed class ShopManagerPlayModeTests
     }
 
     [Test]
+    public void TryPurchase_FishCreatesInstanceAndRejectsUnsupportedBatchWithoutSpending()
+    {
+        var fish=ScriptableObject.CreateInstance<FishDefinitionSO>();fish.itemId="fish.test.shop";fish.isStackable=false;fish.maxStackSize=1;_scratchAssets.Add(fish);
+        var resolver=new FakeItemResolver();resolver.Register(fish);
+        _manager.ConfigureForTests(MakeCatalog(MakeShop("shop.test.fish","npc.test.fish",(fish.itemId,10))),resolver);
+        int before=InventoryManager.Instance.Gold;InventoryManager.Instance.AddGold(100);
+        Assert.IsFalse(_manager.TryPurchase("shop.test.fish",fish.itemId,2,out _));Assert.AreEqual(before+100,InventoryManager.Instance.Gold);
+        Assert.IsTrue(_manager.TryPurchase("shop.test.fish",fish.itemId,1,out _));Assert.AreEqual(before+90,InventoryManager.Instance.Gold);
+        var saved=InventoryManager.Instance.ToSaveData();
+        var slot=saved.slots.Find(v=>v.itemId==fish.itemId);Assert.IsNotNull(slot.fish);Assert.IsNotEmpty(slot.fish.instanceId);
+        Assert.That(slot.fish.weightGrams,Is.InRange(fish.MinimumWeightGrams,fish.MaximumWeightGrams));
+    }
+
+    [Test]
     public void TryPurchase_InsufficientGold_SpendsNothingAndGrantsNothing()
     {
         ItemSO wood = MakeItem("item.material.wood");

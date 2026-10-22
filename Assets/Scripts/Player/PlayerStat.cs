@@ -6,6 +6,7 @@ public class PlayerStat : MonoBehaviour
 {
     public static PlayerStat Instance { get; private set; }
     public SkillProgressionState Skills { get; } = new();
+    public ConsumableBuffState ConsumableBuffs { get; } = new();
 
     [Header("Level 1 Base Stats")]
     [SerializeField, Min(1f)] private float _maxHealth = 100f;
@@ -59,15 +60,15 @@ public class PlayerStat : MonoBehaviour
     public int CurrentExperience => _currentExperience;
     public int ExperienceToNextLevel => CalculateExperienceRequirement(_level);
     public float Health => _health;
-    public float MaxHealth => Mathf.Max(1f, _maxHealth + LevelBonus(_healthPerLevel) + _equipmentModifiers.maxHealth);
+    public float MaxHealth => Mathf.Max(1f, (_maxHealth + LevelBonus(_healthPerLevel) + _equipmentModifiers.maxHealth) * (1f + ConsumableBuffs.HealthCapBonus));
     public float AttackDamage => Mathf.Max(0f, _attackDamage + LevelBonus(_attackPerLevel) + _equipmentModifiers.attackDamage);
     public float Defense => Mathf.Max(0f, _defense + LevelBonus(_defensePerLevel) + _equipmentModifiers.defense);
     public float MoveSpeed => Mathf.Max(0f, _moveSpeed + _equipmentModifiers.moveSpeed);
     public float SprintMultiplier => Mathf.Max(1f, _sprintMultiplier + _equipmentModifiers.sprintMultiplier);
     public float Stamina => _stamina;
-    public float MaxStamina => Mathf.Max(1f, _maxStamina);
+    public float MaxStamina => Mathf.Max(1f, _maxStamina * (1f + ConsumableBuffs.StaminaCapBonus));
     public float Mana => _mana;
-    public float MaxMana => Mathf.Max(1f, _maxMana);
+    public float MaxMana => Mathf.Max(1f, _maxMana * (1f + ConsumableBuffs.ManaCapBonus));
     public bool HasStamina => _stamina > 0f;
     public float CriticalChance => Mathf.Clamp(_criticalChance + LevelBonus(_criticalChancePerLevel) + _equipmentModifiers.criticalChance, 0f, 0.75f);
     public float CriticalMultiplier => Mathf.Clamp(_criticalMultiplier + _equipmentModifiers.criticalMultiplier, 1f, 3f);
@@ -181,6 +182,21 @@ public class PlayerStat : MonoBehaviour
     {
         if (deltaTime > 0f && HealthRegeneration > 0f)
             Heal(HealthRegeneration * deltaTime);
+        if (deltaTime <= 0f) return;
+        Heal(MaxHealth * ConsumableBuffs.HealthRegenerationFraction * Mathf.Min(deltaTime, ConsumableBuffs.HealthRemaining));
+        RestoreMana(MaxMana * ConsumableBuffs.ManaRegenerationFraction * Mathf.Min(deltaTime, ConsumableBuffs.ManaRemaining));
+        if (ConsumableBuffs.Tick(deltaTime)) NotifyConsumableStatsChanged();
+    }
+
+    public void NotifyConsumableStatsChanged()
+    {
+        _health = Mathf.Min(_health, MaxHealth);
+        _mana = Mathf.Min(_mana, MaxMana);
+        _stamina = Mathf.Min(_stamina, MaxStamina);
+        OnStatsChanged?.Invoke();
+        OnHealthChanged?.Invoke(_health, MaxHealth);
+        OnManaChanged?.Invoke(_mana, MaxMana);
+        OnStaminaChanged?.Invoke(_stamina, MaxStamina);
     }
 
     public void TickStamina(bool isSprinting, float deltaTime)
@@ -189,7 +205,7 @@ public class PlayerStat : MonoBehaviour
             return;
 
         float previous = _stamina;
-        float change = isSprinting ? -_staminaDrainPerSecond : _staminaRegenerationPerSecond;
+        float change = isSprinting ? -_staminaDrainPerSecond : _staminaRegenerationPerSecond * (1f + ConsumableBuffs.StaminaRegenerationBonus);
         _stamina = Mathf.Clamp(_stamina + change * deltaTime, 0f, MaxStamina);
 
         if (!Mathf.Approximately(previous, _stamina))
@@ -302,8 +318,8 @@ public class PlayerStat : MonoBehaviour
         _defense = Mathf.Max(0f, _defense);
         _moveSpeed = Mathf.Max(0f, _moveSpeed);
         _sprintMultiplier = Mathf.Max(1f, _sprintMultiplier);
-        _maxStamina = Mathf.Max(1f, _maxStamina);
-        _maxMana = Mathf.Max(1f, _maxMana);
+        _maxStamina = Mathf.Max(1f, _maxStamina * (1f + ConsumableBuffs.StaminaCapBonus));
+        _maxMana = Mathf.Max(1f, _maxMana * (1f + ConsumableBuffs.ManaCapBonus));
         _staminaDrainPerSecond = Mathf.Max(0f, _staminaDrainPerSecond);
         _staminaRegenerationPerSecond = Mathf.Max(0f, _staminaRegenerationPerSecond);
         _attackStaminaCost = Mathf.Max(0f, _attackStaminaCost);

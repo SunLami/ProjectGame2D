@@ -79,3 +79,7 @@ và farm storage rỗng.
 - Harvest: inventory đầy giữ nguyên crop; thành công grant đúng một lần và plot Empty.
 - Click plant/harvest không phát attack animation/event và không hao stamina.
 - Duplicate/empty `plotId`, `cropId`, missing seed/harvest item/stage sprite là validation error.
+
+## Items List expansion — D-119
+
+Carrot/Grape/Cucumber/Chillie/Mushroom/Lemon/Apple use 60-second maturity and exactly three harvest items. Lemon/Apple are single-harvest crops, using the existing Empty-after-harvest flow. Eggplant is retained. Catalog additions are preserved by FarmingAuthoring rebuilds. Seeds are Inactive quick-bar assignments under the current four-slot D-115/D-117 contract. New seed/produce prices remain unset where the sheet provides none. See SheetContentExpansion.md for gates and provisional art.

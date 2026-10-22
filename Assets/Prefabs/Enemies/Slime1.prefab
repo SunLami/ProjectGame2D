@@ -190,6 +190,7 @@ GameObject:
   - component: {fileID: 1254512393058373241}
   - component: {fileID: 674670843969415753}
   - component: {fileID: 8967839321786618117}
+  - component: {fileID: 8314434372042640963}
   m_Layer: 6
   m_Name: Slime1
   m_TagString: Enemy
@@ -444,6 +445,23 @@ MonoBehaviour:
     projectileSpawnOffset: {x: 0, y: 0}
     rotateProjectileOffsetWithDirection: 1
     projectileSpeed: 5
+--- !u!114 &8314434372042640963
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3484443199020588933}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 055fcf02b9a166b408636b65e41eade0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ProjectGame2D.Runtime::ActorLootDrop
+  _loot:
+  - _item: {fileID: 11400000, guid: 89d25bffd6046934fbc54203c0ec8b16, type: 2}
+    _chance: 1
+    _minimumQuantity: 1
+    _maximumQuantity: 3
 --- !u!1 &6408508590867732106
 GameObject:
   m_ObjectHideFlags: 0

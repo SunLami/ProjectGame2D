@@ -394,3 +394,9 @@ See SkillIconV2.md.
 motif derivatives, independent shaped backgrounds and alpha-hull sizing. Source prefabs/builders
 synchronized; isolated Editor renders reviewed. Gameplay/build acceptance pending.
 See SkillIconSharedPresentation.md.
+
+### Items List content expansion — D-119 (2026-10-22, verification in progress)
+
+Percentage Health/Mana potions with shared 10s cooldown, refresh-only runtime buffs, seven sheet crops (60s/three produce), materials/juice recipes and wildlife/node prefabs. Runtime/save schema remains V13. DemoScene integration and focused tests are tracked in SheetContentExpansion.md. Production world placement and release acceptance are not complete while baseline validator failures remain.
+
+D-119 verification checkpoint: 15/15 EditMode and 40/40 PlayMode passed; 9/9 direct live smoke also passed. Global validator remains blocked only by 1089 missing RockTileData references; price drafts are explicit warnings. Windows build unverified after transport loss. New world placement remains DemoScene-only. See SheetContentExpansion.md.

@@ -206,3 +206,7 @@ do content designer quản lý.
 - [ ] Seed có nguồn cấp hợp lệ: New Game, shop, crafting hoặc quest.
 - [ ] Content Validation không có lỗi liên quan.
 - [ ] Plant/growth/harvest/save-load/non-combat acceptance test đều pass.
+
+## Current builder compatibility — D-119
+
+The earlier warning that FarmingAuthoring overwrites the entire crop catalog is superseded: it now merges and preserves existing crop definitions. The explicit Items List builder is Tools/Project Game/Items List/Build Content Assets; DemoScene placement is a separate Install Demo Content action. Current gameplay quick-bar input is 1–4 (D-115), superseding historical 1–8 examples above.
