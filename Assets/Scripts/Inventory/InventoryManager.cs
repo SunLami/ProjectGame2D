@@ -449,6 +449,40 @@ public class InventoryManager : MonoBehaviour
         return true;
     }
 
+    // Shop transaction: publish events only after both gold and every slot have committed.
+    public bool TryPurchaseItem(ItemSO item, int amount, int cost, int fishWeightGrams = 0)
+    {
+        if (cost < 0 || _gold < cost || !HasCapacityFor(item, amount)) return false;
+        FishDefinitionSO fish = item as FishDefinitionSO;
+        if (fish != null && (amount != 1 || fishWeightGrams <= 0)) return false;
+        int remaining = amount;
+        if (fish == null && item.isStackable)
+        {
+            foreach (InventorySlot slot in _slots)
+            {
+                if (slot.IsEmpty || slot.item != item) continue;
+                int add = Mathf.Min(remaining, item.maxStackSize - slot.quantity);
+                slot.quantity += add;
+                remaining -= add;
+                if (remaining == 0) break;
+            }
+        }
+        foreach (InventorySlot slot in _slots)
+        {
+            if (remaining == 0) break;
+            if (!slot.IsEmpty) continue;
+            int add = fish != null || !item.isStackable ? 1 : Mathf.Min(remaining, item.maxStackSize);
+            slot.item = item;
+            slot.quantity = add;
+            slot.fish = fish != null ? FishInstanceData.Create(fish, fishWeightGrams) : null;
+            remaining -= add;
+        }
+        _gold -= cost;
+        OnInventoryChanged?.Invoke();
+        QuestDomainEvents.RaiseInventoryItemAdded(item.itemId, amount);
+        return true;
+    }
+
     public bool HasEmptySlot
     {
         get

@@ -122,6 +122,10 @@ navigation/state.
 
 ### Player Health/Stamina HUD visual direction
 
+**Superseded 2026-10-09 by D-115 / PlayerHUDRedesign.md:** PlayerHUD now consolidates four quick
+slots and EXP at bottom-left; HP/STA/MP are fill-only, BottomHUD removed. Preserve UnifiedGameplayHUD
+Map/Character/Minimap navigation. The older placement/eight-slot details below are historical.
+
 - `PlayerHUD.prefab` là nguồn chuẩn cho HUD gameplay, neo top-left theo Canvas và không phụ thuộc tên
   hierarchy của DemoScene; DemoScene chỉ giữ prefab instance để integration.
 - Theo D-029, `PlayerHUD.prefab` là HUD trạng thái bổ sung và không thay thế unified HUD đáy màn hình.
@@ -210,6 +214,25 @@ Paused
 ```
 
 ### Inventory visual direction
+
+Owner-approved revision 2026-10-07: dùng nguyên background
+`DarkInventoryTabbed/inventory_complete_frame_approved.png` ở tỷ lệ 1672:941,
+board `680x382.70`, root scale `0.8` (khoảng `1306x735` pixel tại 1920x1080).
+Text/icon/category buttons/equipment và quick-slot hit targets là overlay độc lập.
+Thông số modular frame bên dưới được supersede. Bootstrap không giữ geometry override của Inventory.
+EquipmentPanel/CharacterPreview/decorative Images không raycast; các slot background phải nhận
+raycast kể cả lúc rỗng, text/icon con không che target. Grid 6 cột, cell 40x40, spacing 16x2,
+viewport 326x210; 5 hàng nằm trọn trong khung.
+
+Cập nhật D-114 (2026-10-07): Inventory được dựng bằng module rời trong
+`DarkInventoryTabbed/Processed`: outer frame, preview/stats/grid panels, bookmark, item/equipment
+slot, Quick Assign và Close X. Outer frame/panel dùng 9-slice; slot vuông dùng Simple để bảo toàn
+hình học. Source window `680x400`, root scale `0.8`, trên Canvas gameplay reference `800x600`
+scale theo chiều rộng cho diện tích hiển thị khoảng `1306x768` tại Game View `1920x1080`.
+Năm bookmark đọc `ItemSO.inventoryCategory`; All giữ toàn bộ capacity, tab khác bind slot thật theo
+thứ tự Inventory. Cell filler không nhận drop. Mỗi lần mở trở về All. Quick Assign 1–4 mirror
+quick bar index 0–3; 8-slot HUD/save contract giữ nguyên. Style lấy trực tiếp Inventory v5 hiện tại.
+Các thông số layout v5 bên dưới là baseline lịch sử; module mới là nguồn authoring hiện hành.
 
 `DarkLightFantasyUIStyleGuide.md` là nguồn chuẩn art direction gameplay UI theo D-041. Không duy trì
 scene Style Guide riêng; mỗi UI được migration trực tiếp trên prefab nguồn, kiểm tra trong MapNhat ở

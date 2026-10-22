@@ -5,6 +5,15 @@ Save contract tuân theo mô hình Definition/Runtime/Save và stable ID trong
 
 ## Save layout
 
+2026-10-13 D-116: V13 adds `player.skills` (points, award watermark, learned stable IDs, four skill
+loadout IDs). V12→V13 backfills max(0,level-1) points once; capture/restore details: SkillProgression.md.
+Restore grants no level-up rewards and neither migration nor UI writes save files implicitly.
+
+**2026-10-09, D-115:** schema V12 reduces QuickBar assignments to four. V11→V12 retains indices 0–3,
+pads missing entries, removes only assignment references 4–7, and resets invalid selection to 0.
+Inventory/equipment contents are untouched; migration is in-memory until an explicit real save.
+Mana is runtime-only in this UI slice; no mana save field or implicit skill rule is introduced.
+
 Khuyến nghị lưu trong `Application.persistentDataPath/Saves`:
 
 ```text

@@ -30,7 +30,7 @@ public static class FarmingAuthoring
         CropDefinition eggplant = BuildCrop("Eggplant", "crop.eggplant", "item.seed.eggplant", "Eggplant Seeds",
             "item.crop.eggplant", "Eggplant", sprites, new[] { 88, 89, 90, 91 });
         FarmingCatalog catalog = LoadOrCreate<FarmingCatalog>(CatalogPath);
-        SetObjectArray(catalog, "_crops", new UnityEngine.Object[] { carrot, eggplant });
+        SetObjectArray(catalog, "_crops", (catalog.Crops ?? Array.Empty<CropDefinition>()).Cast<UnityEngine.Object>().Concat(new UnityEngine.Object[] { carrot, eggplant }).Distinct().ToArray());
 
         AddSeedsToStartingDatabase(new[]
         {
@@ -57,7 +57,7 @@ public static class FarmingAuthoring
         SerializedObject cropSo = new(crop);
         cropSo.FindProperty("_cropId").stringValue = cropId;
         cropSo.FindProperty("_harvestItem").objectReferenceValue = harvest;
-        cropSo.FindProperty("_minimumHarvestQuantity").intValue = 1;
+        cropSo.FindProperty("_minimumHarvestQuantity").intValue = label == "Carrot" ? 3 : 1;
         cropSo.FindProperty("_maximumHarvestQuantity").intValue = 3;
         SerializedProperty stageArray = cropSo.FindProperty("_stages");
         stageArray.arraySize = stages.Length;

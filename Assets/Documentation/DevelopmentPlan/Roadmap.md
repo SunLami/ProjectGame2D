@@ -1,5 +1,30 @@
 # Development Roadmap
 
+2026-10-14 D-117: Inventory categories and Used Items/Active/Inactive configuration implemented,
+with eligibility checks and active-use event for teammate integration. Effects remain teammate-owned.
+Owner manual verification pending; no new automated or Play Mode test run claimed.
+
+2026-10-14 owner-requested next slice: DemoScene Q/E/R/T cast the learned skills assigned in four
+loadout slots; Tab kit switching/debug Test Skill button removed. Existing aim/confirm mechanics retained.
+Manual verification belongs to owner; no automated test/Play Mode changes for this slice. See SkillProgression.md.
+
+2026-10-13: owner authorized D-116 runtime Skill Points/learning and ghost drag-loadout, with save V13.
+Implementation/verification status: SkillProgression.md. Production promotion and skill casting remain separate.
+
+2026-10-14: Skill Points/learning/drag-loadout verification: EditMode 46/46 (2026-10-13),
+PlayMode capture/restore/dirty 21/21. Owner now handles manual Unity tests; no production/build acceptance claimed.
+
+SkillPanel asset stage (D-116): 12 Water/Earth/Wind icons and English tooltip copy authored in
+SkillIconAssetPack.md; per-element learning costs 2/3/4/5. This historical asset-only milestone is
+superseded by the runtime implementation and verification above; asset completion alone is not feature completion.
+
+2026-10-10 UI asset continuation: six new frame/component PNGs plus reused Inventory Close X,
+documented in SkillPanelUIAssetPack.md. Prefab presentation and 1920x1080 checks are recorded in the implementation report below.
+
+UI presentation assembly now created in SkillPanel.prefab and DemoScene; see
+SkillPanelImplementationReport.md for verification and remaining backend work. No learning/save milestone
+is marked complete by this UI slice.
+
 ## Nguyên tắc triển khai
 
 Mỗi phase tạo ra một lát cắt có thể kiểm chứng. Không xây đồng thời Save, Quest và World persistence
@@ -321,6 +346,22 @@ thêm trước khi sản xuất content quy mô lớn.
 
 ## Trình tự bắt buộc
 
+### PlayerHUD consolidation — 2026-10-09 (in progress)
+
+D-115 supersedes the historical eight-slot HUD contract: four slots shared with Inventory, PlayerHUD
+bottom-left at 1920x1080, EXP label and fill-only vitals including runtime mana. Remove BottomHUD
+without removing Map/Character/Minimap. V11→V12 migration and verification: `PlayerHUDRedesign.md`.
+
+### Inventory presentation slice — 2026-10-07
+
+D-114: năm category bookmarks và Quick Assign 1–4, giữ nguyên tám quick slot/save contract.
+Owner yêu cầu dùng nguyên ảnh khung approved; source prefab giữ overlay text/icon/hit target riêng.
+Audit live DemoScene tại 1920x1080 phát hiện và gỡ 827 Bootstrap geometry overrides thuộc Inventory;
+sửa raycast blocker, empty-slot targets và reset scroll khi mở. Các luồng filter, quick assignment,
+swap, equip/unequip, tooltip, discard/cancel và 20 vòng open/close đã qua kiểm tra live in-memory.
+Trạng thái regression/production smoke mới nhất ghi tại `InventoryTabbedImplementationReport.md`;
+không coi screenshot preview là thay thế cho acceptance trong scene/build.
+
 ```text
 Phase 0
   → Phase 1
@@ -337,3 +378,25 @@ Phase 0
 
 Phase 5 và thiết kế Quest Definition của Phase 6 có thể nghiên cứu song song sau Phase 3, nhưng không
 merge runtime progression trước khi save schema và domain event contract của Phase 4 ổn định.
+
+2026-10-16: D-118 SkillHUD presentation correction rebuilt shared source prefab (diamond masks,
+explicit overlay sprites, larger icons, corrected key typography). Editor render/compile checked;
+manual gameplay/resolution/build acceptance pending. See SkillProgression.md.
+
+2026-10-16 follow-up: SkillHUD source-space center correction and inset sizing verified with an
+isolated Editor render; supersedes prior oversized 250/300 icon layout. Gameplay acceptance pending.
+
+2026-10-16: owner-requested 12 skill + Shield V2 generation complete; catalog, panel source and
+HUD source updated. Isolated Editor render checked; manual gameplay/build acceptance pending.
+See SkillIconV2.md.
+
+2026-10-17: owner-authorized shared SkillHUD/SkillPanel composition implemented with 13 transparent
+motif derivatives, independent shaped backgrounds and alpha-hull sizing. Source prefabs/builders
+synchronized; isolated Editor renders reviewed. Gameplay/build acceptance pending.
+See SkillIconSharedPresentation.md.
+
+### Items List content expansion — D-119 (2026-10-22, verification in progress)
+
+Percentage Health/Mana potions with shared 10s cooldown, refresh-only runtime buffs, seven sheet crops (60s/three produce), materials/juice recipes and wildlife/node prefabs. Runtime/save schema remains V13. DemoScene integration and focused tests are tracked in SheetContentExpansion.md. Production world placement and release acceptance are not complete while baseline validator failures remain.
+
+D-119 verification checkpoint: 15/15 EditMode and 40/40 PlayMode passed; 9/9 direct live smoke also passed. Global validator remains blocked only by 1089 missing RockTileData references; price drafts are explicit warnings. Windows build unverified after transport loss. New world placement remains DemoScene-only. See SheetContentExpansion.md.

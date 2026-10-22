@@ -28,6 +28,9 @@ public sealed partial class BossController
             case BossSkillId.GaleWall: return GaleWallSkill();
             case BossSkillId.CrescentBlades: return CrescentBladesSkill();
             case BossSkillId.SkyStorm: return SkyStormSkill();
+            case BossSkillId.ShellRoll: return ShellRollSkill();
+            case BossSkillId.TotemCrossfire: return TotemCrossfireSkill();
+            case BossSkillId.SummonCrabs: return SummonCrabsSkill();
             default: return null;
         }
     }

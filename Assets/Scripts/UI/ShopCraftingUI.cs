@@ -262,7 +262,7 @@ public sealed class ShopCraftingUI : MonoBehaviour
             group.Add(recipe);
         }
 
-        string[] categoryOrder = { "HEAD", "BODY", "FOOT", "RING", "NECKLACE", "SHIELD", "SWORD" };
+        string[] categoryOrder = { "HEAD", "BODY", "FOOT", "RING", "NECKLACE", "SHIELD", "SWORD", "MATERIAL", "CONSUMABLE", "OTHER" };
         foreach (string category in categoryOrder)
         {
             if (!_recipesByCategory.TryGetValue(category, out List<RecipeDefinition> group))
@@ -306,7 +306,7 @@ public sealed class ShopCraftingUI : MonoBehaviour
             row.transform.Find("Name").GetComponent<TMP_Text>().text = recipe.DisplayName;
             row.transform.Find("Station").GetComponent<TMP_Text>().text = string.IsNullOrEmpty(recipe.RequiredStationTag)
                 ? "ANYWHERE"
-                : "FORGE";
+                : recipe.RequiredStationTag == "station.forge" ? "FORGE" : recipe.RequiredStationTag;
             Image icon = row.transform.Find("Icon")?.GetComponent<Image>();
             if (icon != null && _items.TryResolve(recipe.OutputItemId, out ItemSO blueprintItem))
                 icon.sprite = blueprintItem.icon;
@@ -325,9 +325,7 @@ public sealed class ShopCraftingUI : MonoBehaviour
 
     private string RecipeCategory(RecipeDefinition recipe)
     {
-        if (!_items.TryResolve(recipe.OutputItemId, out ItemSO item) || item is not EquipmentItemSO equipment)
-            return string.Empty;
-        return equipment.slot == EquipSlot.Weapon ? "SWORD" : equipment.slot.ToString().ToUpperInvariant();
+        return CraftingPresentationCategory.ForItem(_items.TryResolve(recipe.OutputItemId, out ItemSO item) ? item : null);
     }
 
     private void SelectBuyItem(string itemId)

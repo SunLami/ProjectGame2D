@@ -16,6 +16,8 @@ public sealed class BossCombatAudit : MonoBehaviour
     private const string LogPath = "Logs/BossCombatAudit.txt";
     private readonly StringBuilder _log = new StringBuilder();
     public bool Done { get; private set; }
+    /// <summary>When >= 0 only that kit (index into <see cref="Kits"/>) is audited.</summary>
+    public int OnlyKit = -1;
 
     public struct Kit
     {
@@ -28,7 +30,7 @@ public sealed class BossCombatAudit : MonoBehaviour
         new Kit { name = "Earth Golem", prefab = "Assets/Bosses/EarthGolem/EarthGolemBoss.prefab", definition = "Assets/Bosses/EarthGolem/EarthGolemBoss.asset",
             skills = new[] { BossSkillId.Slam, BossSkillId.SlamDouble, BossSkillId.StoneRain, BossSkillId.SpikeLanes, BossSkillId.RocketFist, BossSkillId.CoreResonance } },
         new Kit { name = "Water Crab", prefab = "Assets/Bosses/WaterCrab/WaterCrabBoss.prefab", definition = "Assets/Bosses/WaterCrab/WaterCrabBoss.asset",
-            skills = new[] { BossSkillId.ClawClamp, BossSkillId.BubbleTrap, BossSkillId.SandAmbush, BossSkillId.TidalWave, BossSkillId.Whirlpool } },
+            skills = new[] { BossSkillId.ClawClamp, BossSkillId.BubbleTrap, BossSkillId.SandAmbush, BossSkillId.TidalWave, BossSkillId.Whirlpool, BossSkillId.ShellRoll, BossSkillId.TotemCrossfire, BossSkillId.SummonCrabs } },
         new Kit { name = "Wind Owl", prefab = "Assets/Bosses/WindOwl/WindOwlBoss.prefab", definition = "Assets/Bosses/WindOwl/WindOwlBoss.asset",
             skills = new[] { BossSkillId.FeatherVolley, BossSkillId.TalonDive, BossSkillId.Cyclones, BossSkillId.GaleWall, BossSkillId.CrescentBlades, BossSkillId.SkyStorm } },
     };
@@ -51,6 +53,8 @@ public sealed class BossCombatAudit : MonoBehaviour
 
         for (int k = 0; k < Kits.Length; k++)
         {
+            if (OnlyKit >= 0 && k != OnlyKit)
+                continue;
             Kit kit = Kits[k];
             _log.AppendLine();
             _log.AppendLine("=== " + kit.name + " ===");

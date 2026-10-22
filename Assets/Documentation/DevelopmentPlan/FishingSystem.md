@@ -206,3 +206,7 @@ Các ID placeholder cũ `fish.river.Fish1`…`fish.river.Fish10` được giữ 
 - Save/load: `itemId`, `instanceId`, weight round-trip; save V6 migrate lên V7 không mất slot cũ.
 - Thoát/hủy: UI ẩn, coroutine dừng, state trước đó được khôi phục đúng một lần.
 
+
+## Fish shop transaction repair — D-119
+
+Shop purchases now use InventoryManager.TryPurchaseItem. A single fish receives a valid FishInstanceData (stable instance ID and rolled weight); gold and slot data commit before inventory/quest notifications. Multi-fish quantities are rejected without spending because the current quote/capacity contract is one fish instance per purchase. Full inventory or invalid quotes never spend gold. Fishing catch tables, bait tiers and legacy aliases are unchanged.

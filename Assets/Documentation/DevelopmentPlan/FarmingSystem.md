@@ -4,6 +4,13 @@ Tài liệu này là source of truth cho quick bar item assignment và cơ chế
 
 ## Quick bar contract
 
+Current D-115/D-117 contract supersedes historical bullets below: four slots, keys 1–4; only
+ItemSO.usedItems can be assigned. Seeds/bait are Inactive and selected without consumption.
+Potion/Food/Drink are Active. ActivateSlot emits ActiveItemUseRequested(ItemSO) only during gameplay
+with positive quantity. Teammate must subscribe/unsubscribe one effect owner, validate use and own
+atomic effect/Inventory consumption. No handler means no effect or consumption. Select is selection
+only for UI clicks and drag/drop. Legacy ineligible IDs are preserved but cannot resolve as usable.
+
 - Có đúng 8 slot. Assignment lưu stable `itemId`, không lưu index/reference của `InventorySlot`.
 - Kéo một item thường từ Inventory lên quick slot để gán; click hoặc phím số 1–8 để chọn.
 - Kéo item đã gán ra ngoài toàn bộ quick slot để xóa assignment. Kéo sang quick slot khác sẽ chuyển
@@ -72,3 +79,7 @@ và farm storage rỗng.
 - Harvest: inventory đầy giữ nguyên crop; thành công grant đúng một lần và plot Empty.
 - Click plant/harvest không phát attack animation/event và không hao stamina.
 - Duplicate/empty `plotId`, `cropId`, missing seed/harvest item/stage sprite là validation error.
+
+## Items List expansion — D-119
+
+Carrot/Grape/Cucumber/Chillie/Mushroom/Lemon/Apple use 60-second maturity and exactly three harvest items. Lemon/Apple are single-harvest crops, using the existing Empty-after-harvest flow. Eggplant is retained. Catalog additions are preserved by FarmingAuthoring rebuilds. Seeds are Inactive quick-bar assignments under the current four-slot D-115/D-117 contract. New seed/produce prices remain unset where the sheet provides none. See SheetContentExpansion.md for gates and provisional art.

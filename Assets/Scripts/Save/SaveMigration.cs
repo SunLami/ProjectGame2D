@@ -33,6 +33,8 @@ public static class SaveMigration
         new V8ToV9_IntroducesQuickBar(),
         new V9ToV10_IntroducesFarming(),
         new V10ToV11_IntroducesFarmStorage(),
+        new V11ToV12_FourQuickSlots(),
+        new V12ToV13_SkillProgression(),
     };
 
     /// <summary>True if this version can be upgraded to CurrentSaveVersion by Migrate(). Does not
@@ -63,6 +65,18 @@ public static class SaveMigration
     }
 
     // ---- Steps (Phase 3-8 history, see SaveAndWorldPersistence.md) ----
+    private sealed class V12ToV13_SkillProgression : ISaveMigrationStep
+    {
+        public int FromVersion => 12;
+        public int ToVersion => 13;
+        public void Apply(GameSaveData data)
+        {
+            data.player ??= new PlayerSaveData();
+            // V12 never owned this field. Unity may synthesize a default nested object even
+            // when the JSON field is absent, so null-coalescing would miss legacy backfill.
+            data.player.skills = SkillProgressionSaveData.ForLevel(data.player.level);
+        }
+    }
 
     private sealed class V1ToV2_IntroducesPlayer : ISaveMigrationStep
     {
@@ -172,6 +186,24 @@ public static class SaveMigration
         public int ToVersion => 10;
 
         public void Apply(GameSaveData data) => data.farming ??= new FarmingSaveData();
+    }
+
+    private sealed class V11ToV12_FourQuickSlots : ISaveMigrationStep
+    {
+        public int FromVersion => 11;
+        public int ToVersion => 12;
+
+        public void Apply(GameSaveData data)
+        {
+            data.quickBar ??= new QuickBarSaveData();
+            data.quickBar.assignedItemIds ??= QuickBarSaveData.CreateEmptyAssignments();
+            var assignments = data.quickBar.assignedItemIds;
+            if (assignments.Count > QuickBarSaveData.SlotCount)
+                assignments.RemoveRange(QuickBarSaveData.SlotCount, assignments.Count - QuickBarSaveData.SlotCount);
+            while (assignments.Count < QuickBarSaveData.SlotCount) assignments.Add(null);
+            if (data.quickBar.selectedIndex < 0 || data.quickBar.selectedIndex >= QuickBarSaveData.SlotCount)
+                data.quickBar.selectedIndex = 0;
+        }
     }
 
     private sealed class V10ToV11_IntroducesFarmStorage : ISaveMigrationStep

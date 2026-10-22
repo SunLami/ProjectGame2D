@@ -2,6 +2,87 @@
 
 Status: `READY_FOR_CODEX`
 
+Ngày: 2026-10-14
+Feature: SkillHUD (góc phải dưới màn hình, slot Q/E/R/T + Shield chuột phải) — asset production.
+
+## Bối cảnh
+
+Owner muốn 1 HUD kỹ năng luôn hiện ở góc phải dưới màn hình (đối xứng với PlayerHUD/QuickBar hiện có
+ở góc trái dưới), gồm 4 ô diamond cho skill đã gắn loadout Q/E/R/T + 1 ô riêng cho khả năng "Shield"
+(giữ chuột phải = đỡ đòn). Tham khảo hình mockup owner gửi: 1 dãy diamond liền nhau (Q E R T) + 1
+diamond lớn hơn tách riêng bên phải.
+
+Phần gameplay/code đã xong, KHÔNG cần Codex đụng tới:
+- Backend loadout Q/E/R/T (D-116, `SkillTestHarness.cs`) đã cast đúng skill đã học/gắn qua
+  `PlayerStat.Skills.Equipped(slot)` + `SkillCatalog.TryResolve`.
+- `Assets/Scripts/Player/PlayerStat.cs` (field `IsBlocking`, `_blockDamageReduction`) +
+  `Assets/Scripts/Player/PlayerShieldBlock.cs` (mới): giữ chuột phải = block, giảm 70% damage, tốn
+  stamina liên tục, tự tắt khi hết stamina/thả chuột/chết. Luôn có sẵn từ đầu, KHÔNG thuộc hệ thống
+  học kỹ năng/Skill Points.
+- GameObject `ShieldFX` (SpriteRenderer, con của `Player`, cạnh `SkillFX`) đã tạo sẵn trong
+  `DemoScene`, hiện trống/tắt — chờ đúng VFX animation ở mục 3 bên dưới để gắn vào.
+- 12 icon skill Water/Earth/Wind đã có sẵn ở `Assets/Resources/UI/Skills/Icons/V1/`
+  (`SkillIconAssetPack.md`) — KHÔNG cần gen lại, chỉ cần thêm icon Shield mới (mục 2).
+
+**Bài học khoá cứng kích thước áp dụng ngay từ đầu** (rút ra từ Fishing UI D-055, PlayerHUD D-057):
+vì `SkillHUDBuilder.cs` (editor script dựng HUD, Claude sẽ viết SAU khi nhận asset) chưa tồn tại, chưa
+có con số hardcode nào ràng buộc — nhưng để tránh phải gen lại nhiều vòng, Codex xuất đúng theo canvas
+size ở bảng dưới, nội dung lấp ≥85% canvas mỗi chiều (trừ margin an toàn chống crop theo đúng kiểu 12
+icon skill cũ).
+
+## Asset cần gen (3 việc)
+
+| # | Việc | Output path | Canvas | Ghi chú |
+|---|---|---|---|---|
+| 1 | SkillHUD frame (4 diamond Q/E/R/T liền + 1 diamond Shield tách riêng) | `Assets/Resources/UI/Gameplay/SkillHUD/skill_hud_frame_v1.png` | 1600×480 | Ô trống (chưa bake icon/chữ key bên trong), có tab nhãn phím rỗng ở 4 ô Q/E/R/T, KHÔNG có tab ở ô Shield. Nội dung lấp ≥85% canvas, đồng bộ walnut/antique-gold/sapphire với `player_status_frame`/`unified_hud_frame` |
+| 2 | Icon Shield (motif rời) | `Assets/Resources/UI/Skills/Icons/V1/shield_block.png` | 1254×1254 (khớp 12 icon skill cũ) | Motif đơn, không frame/chữ, nội dung lấp 72% canvas giống 12 icon đã duyệt |
+| 3 | VFX Shield khi block (animation nhiều frame) | `Assets/Resources/UI/Skills/VFX/` (Claude đặt tên file cụ thể sau khi nhận) | — | Xem ghi chú "Codex vs Pixellab" bên dưới trước khi làm |
+
+### Prompt gen — mục 1 (SkillHUD frame)
+
+```text
+Use case: production bitmap UI HUD FRAME for a 2D pixel-art RPG, matching the existing bottom-left PlayerHUD and Inventory sockets (dark walnut wood, antique gold trim, sapphire accent). Square-ish wide canvas, genuine transparent background outside the frame shapes. Layout: FOUR diamond-shaped sockets in a connected horizontal chain (touching corner-to-corner like a chain of rhombus/diamond gems), then a small gap, then ONE separate larger diamond socket on the far right, visually distinct/slightly bigger than the four chained ones. Each of the four chained diamonds has a small empty rectangular key-label tab at its bottom point (for a single-letter key glyph to be added later as separate UI) — leave these tabs EMPTY, no letters, no numbers, no icons, no text baked in. The far-right larger diamond has NO key-label tab (it is mouse-activated, not keyboard). All five diamond interiors are empty dark sockets (ready to receive a skill icon image as a separate layer later) — do NOT bake any icon/motif inside them. Crisp HARD-EDGED chunky pixel art, bold dark outline, flat cel-shaded bands, no smooth gradients, no photographic texture, no soft glow. Ornamental antique-gold border trim on every diamond edge, matching the warm walnut/antique-gold/sapphire palette of the existing Inventory and PlayerHUD frames exactly. NO background panel behind the chain — only the diamond shapes themselves are opaque, everything else fully transparent. NO watermark, NO drop shadow outside the gold trim.
+```
+
+### Prompt gen — mục 2 (Shield icon)
+
+```text
+Use case: stylized-concept. Production bitmap UI SKILL ICON for a 2D pixel-art RPG, matching the existing twelve-icon Water/Earth/Wind set (SkillIconAssetPack V1). ONE icon per image, square canvas 1024x1024, genuine transparent background. Icon motif alone, NO frame, NO hexagon, NO diamond, NO badge, NO letters, NO numbers, NO UI, NO watermark, NO cast-cost text. Centered isolated subject occupying 72 percent of canvas, generous transparent safety margin on all four sides. Readable at 64-96 pixels. Crisp HARD-EDGED chunky pixel art, as if designed on a 128x128 logical pixel grid then integer nearest-neighbor enlarged. Deliberate stepped pixel contours, bold dark outline, 4-6 flat cel-shaded color bands, high contrast, no smooth gradients, no airbrush, no photographic texture, no diffuse glow. Matches warm walnut/antique gold/sapphire medieval Inventory UI and PlayerHUD by being a vivid elemental motif against their dark sockets, but do not bake the socket or gold border. SHIELD ABILITY: A SINGLE round medieval kite/heater shield viewed three-quarter angle, polished steel body with a glowing pale-cyan/sapphire magical rim-light tracing its edge, small central emblem (simple cross or gem boss), subtle energy-barrier shimmer lines radiating just outside the rim to read as "active defense magic". Palette: steel gray, silver, sapphire blue, pale cyan glow. NOT a sword, NOT a potion, NOT an armor chestpiece, no spikes, no fire.
+```
+
+### Mục 3 — VFX Shield khi block: Codex vs Pixellab
+
+Đây là hiệu ứng ĐỘNG nhiều frame (bao quanh Player lúc giữ chuột phải), không phải 1 ảnh tĩnh. Toàn bộ
+VFX skill khác trong project (Water/Earth/Wind skill kit) đều gen qua **Pixellab** (`animate_image`/
+Pixen), không phải Codex imagegen — xem `SkillVfxPipeline.md` và memory `feedback_vfx_must_be_animated`
+("mọi hiệu ứng skill cần animation frame thật qua Pixellab, không phải sprite tĩnh"). Nếu Codex làm
+được animation nhiều frame thật sự thì dùng prompt dưới; nếu không, báo lại qua `CodexToClaude.md` để
+Claude tự chạy prompt này qua Pixellab thay (đúng cách đã làm cho Water Skill Kit).
+
+```text
+Use case: production game VFX concept for a 2D pixel-art RPG. A circular magical BARRIER/SHIELD BUBBLE effect that envelops the player character while actively blocking: a thin hexagonal-paneled energy dome, sapphire-blue and pale-cyan, with a bright rim-light outline and faint inward-facing hex-grid shimmer, semi-transparent so the character silhouette stays visible through it. Subtle outward ripple pulse where incoming hits would land. Crisp hard-edged chunky pixel art matching the existing elemental skill VFX style (Water/Earth/Wind skill kit), flat cel-shaded bands, no photographic texture, no soft photographic glow, transparent background. Must be a LOOPING multi-frame animation (idle hum loop while held), not a single static image.
+```
+
+## Việc Codex KHÔNG cần/không nên làm
+
+- Không sửa `PlayerStat.cs`, `PlayerShieldBlock.cs`, `Player.cs`, `SkillTestHarness.cs`, `SkillCatalog.cs`
+  hay bất kỳ script gameplay nào — Claude sở hữu toàn bộ, chỉ cần Codex gen bitmap/VFX.
+- Không đổi 12 icon skill Water/Earth/Wind đã duyệt trong `Assets/Resources/UI/Skills/Icons/V1/`.
+- Không tự quyết định lại cơ chế Shield (đã chốt: giữ chuột phải = block tức thời, giảm damage, tốn
+  stamina liên tục, luôn có sẵn từ đầu — KHÔNG phải skill học qua Skill Points/SkillCatalog).
+- Chưa cần tạo `SkillHUDBuilder.cs` hay gắn asset vào scene/prefab nào — Claude tự dựng HUD sau khi
+  nhận đủ asset, theo đúng pattern `PlayerHUDBuilder.cs`/`SkillPanelBuilder.cs` đã có.
+
+## Báo lại khi xong
+
+Ghi entry mới ở đầu `Assets/Documentation/DevelopmentPlan/Handoffs/CodexToClaude.md` với Status
+`SKILLHUD_SHIELD_ASSETS_ART_READY`, liệt kê đúng 2-3 file đã gen (frame, icon Shield, và VFX nếu làm
+được), kích thước thực tế từng file, % lấp đầy canvas đo được, và nói rõ mục 3 (VFX) có làm được
+animation nhiều frame thật hay chỉ ra được 1 frame tĩnh (để Claude biết có cần chuyển qua Pixellab hay
+không).
+
+---
+
 Ngày: 2026-09-28
 Feature: Farm Storage UI (D-060) Dark Inventory Style asset production — thay flat-color placeholder
 bằng bitmap thật, giống hướng đã làm cho Fishing UI (D-055/D-056).

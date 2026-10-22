@@ -26,7 +26,8 @@ public enum GameplayMenuPage
     Shop,
     QuestLog,
     Map,
-    Settings
+    Settings,
+    Skills
 }
 
 public readonly struct GameStatePolicy

@@ -12,6 +12,8 @@ public sealed class QuickBarManager : MonoBehaviour
     public static QuickBarManager Instance { get; private set; }
     public int SelectedIndex => _selectedIndex;
     public event Action Changed;
+    // Request only. The consuming domain owns validation, effect and atomic inventory consumption.
+    public event Action<ItemSO> ActiveItemUseRequested;
 
     public ItemSO SelectedItem => TryGetAssignedItem(_selectedIndex, out ItemSO item) ? item : null;
 
@@ -34,6 +36,8 @@ public sealed class QuickBarManager : MonoBehaviour
         _resolver = new ResourcesItemResolver();
         if (GetComponent<QuickBarHudRuntimeInstaller>() == null)
             gameObject.AddComponent<QuickBarHudRuntimeInstaller>();
+        if (GetComponent<ConsumableUseHandler>() == null)
+            gameObject.AddComponent<ConsumableUseHandler>();
         DontDestroyOnLoad(gameObject);
     }
 
@@ -43,12 +47,13 @@ public sealed class QuickBarManager : MonoBehaviour
     {
         item = null;
         string itemId = GetAssignedItemId(index);
-        return !string.IsNullOrWhiteSpace(itemId) && _resolver != null && _resolver.TryResolve(itemId, out item);
+        return !string.IsNullOrWhiteSpace(itemId) && _resolver != null && _resolver.TryResolve(itemId, out item)
+            && item != null && item.usedItems;
     }
 
     public bool Assign(int index, ItemSO item)
     {
-        if (!IsValidIndex(index) || item == null || string.IsNullOrWhiteSpace(item.itemId))
+        if (!IsValidIndex(index) || item == null || !item.usedItems || string.IsNullOrWhiteSpace(item.itemId))
             return false;
 
         if (_assignedItemIds[index] == item.itemId)
@@ -79,6 +84,15 @@ public sealed class QuickBarManager : MonoBehaviour
         return true;
     }
 
+    public void ActivateSlot(int index)
+    {
+        if (!GameStateManager.AllowsGameplayInput || !Select(index) ||
+            !TryGetAssignedItem(index, out var item) || item.quickBarUseMode != QuickBarUseMode.Active ||
+            InventoryManager.Instance == null || InventoryManager.Instance.GetTotalQuantity(item.itemId) <= 0)
+            return;
+        ActiveItemUseRequested?.Invoke(item);
+    }
+
     public QuickBarSaveData ToSaveData()
     {
         var data = new QuickBarSaveData { selectedIndex = _selectedIndex };
@@ -91,7 +105,7 @@ public sealed class QuickBarManager : MonoBehaviour
     public void RestoreState(QuickBarSaveData data, List<string> missingItemIds = null)
     {
         Array.Clear(_assignedItemIds, 0, _assignedItemIds.Length);
-        _selectedIndex = Mathf.Clamp(data?.selectedIndex ?? 0, 0, QuickBarSaveData.SlotCount - 1);
+        _selectedIndex = IsValidIndex(data?.selectedIndex ?? 0) ? data?.selectedIndex ?? 0 : 0;
 
         if (data?.assignedItemIds != null)
         {

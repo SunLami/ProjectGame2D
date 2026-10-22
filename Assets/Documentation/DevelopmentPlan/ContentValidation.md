@@ -83,3 +83,7 @@ Mỗi message gồm asset path và context object để có thể chọn asset t
 
 Khi domain mới được thêm, validator của domain đó phải được bổ sung cùng Definition/Catalog, không gom
 mọi rule gameplay vào một reflection framework tổng quát.
+
+## D-119 authoring states
+
+ItemSO.commerceConfigurationPending explicitly identifies owner-approved unfinished economy data. Missing buy/sell ranges on these shop entries produce warnings; transactions still require a real price or legacy stock quote. All other missing prices remain errors. Percentage consumables require valid fractions; timed buffs require finite positive durations. Wildlife IDs and loot reference/quantity contracts are validated. Baseline errors and verification coverage are recorded in SheetContentExpansion.md.

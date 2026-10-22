@@ -68,3 +68,7 @@ Năm gem do Agnes — Hermetist (`npc.town.hermetist`) mua và bán tại `shop.
 - Năm gem dùng icon tham chiếu từ sheet. Ore/bar/leather/coal dùng các sprite phù hợp trong atlas material hiện có; đây là art tạm và có thể thay mà không đổi stable ID.
 - Bốn node Iron/Gold/Tin/Diamond mới chỉ có `ResourceNodeDefinition`; chưa có world sprite, prefab hoặc vị trí scene.
 - Dòng Leather có nội dung mô tả nhắc Hunter's Hut nhưng cột Shop ghi Artificer. Merric là tên hiển thị của Artificer hiện hành nên shop Merric được ưu tiên theo cột dữ liệu có cấu trúc.
+
+## Items List expansion — D-119
+
+New stable IDs: item.material.meat, item.material.bone, item.material.bone_ash, item.material.slime, item.material.health_herb and item.material.mana_herb. Bone refining outputs three Bone Ash per Bone; NPC/station remain empty. Tree drop is exactly three Wood Log; a presentation-only ResourceVisualVariants chooses among existing tree sprites. Health/Mana plants drop three matching herbs. Seven reusable node prefabs and three wildlife prefabs are authored under Assets/Prefabs/SheetContent; placed DemoScene nodes use explicit registry entries and unique persistent IDs. Wildlife is ordinary respawn-on-scene-load content; dropped loot is transient, retained when inventory is full. Unknown commerce prices are explicitly marked pending, not converted into free stock. Legacy ore/bar/gem IDs, Coal/Merric and station.forge decisions are unchanged.
