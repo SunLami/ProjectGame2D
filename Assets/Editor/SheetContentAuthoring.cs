@@ -73,12 +73,21 @@ public static class SheetContentAuthoring
 
     private static void BuildMaterials()
     {
-        foreach (string name in new[]{"Meat", "Bone", "BoneAsh", "Slime", "HealthHerb", "ManaHerb"})
+        foreach (string name in new[]{"Meat", "FishFillet", "Bone", "BoneAsh", "Slime", "HealthHerb", "ManaHerb"})
         {
-            string id = name switch { "BoneAsh" => "bone_ash", "HealthHerb" => "health_herb", "ManaHerb" => "mana_herb", _ => name.ToLowerInvariant() };
+            string id = name switch { "FishFillet" => "fish_fillet", "BoneAsh" => "bone_ash", "HealthHerb" => "health_herb", "ManaHerb" => "mana_herb", _ => name.ToLowerInvariant() };
             Item("Materials/"+name, "item.material."+id, Split(name), ItemType.Material, InventoryCategory.Resources);
         }
         Recipe("BoneAsh", "item.material.bone_ash", 3, "", ("item.material.bone",1));
+        foreach (string guid in AssetDatabase.FindAssets("t:FishDefinitionSO",new[]{"Assets/Resources/Items"}))
+        {
+            var fish=AssetDatabase.LoadAssetAtPath<FishDefinitionSO>(AssetDatabase.GUIDToAssetPath(guid));
+            var recipe=Recipe("Fillet_"+fish.name,"item.material.fish_fillet",2,"npc.town.gastronome",(fish.itemId,1));
+            var data=new SerializedObject(recipe);
+            data.FindProperty("_recipeId").stringValue="recipe.material.fish_fillet."+fish.itemId;
+            data.FindProperty("_displayName").stringValue="Fillet "+fish.itemName;
+            data.ApplyModifiedPropertiesWithoutUndo();EditorUtility.SetDirty(recipe);
+        }
     }
     private static void BuildFarming()
     {
@@ -128,14 +137,14 @@ public static class SheetContentAuthoring
         foreach (string name in new[]{"Lemon","Apple","Carrot","Grape"})
         {
             ItemSO juice=Item("Drinks/"+name+"Juice","item.drink."+name.ToLowerInvariant()+"_juice",name+" Juice",ItemType.Consumable,InventoryCategory.Consumption);
-            Recipe(name+"Juice",juice.itemId,1,"npc.town.mixologist",("item.crop."+name.ToLowerInvariant(),3));
+            Recipe(name+"Juice",juice.itemId,1,"npc.town.mixologist",("item.crop."+name.ToLowerInvariant(),2));
         }
         Buff("HarvestStew","item.food.harvest_stew","Harvest Stew",ConsumableEffectType.HealthFood,0.2f,90f,0.01f,0f,
-            "npc.town.gastronome",("item.crop.carrot",2),("item.crop.mushroom",2),("item.crop.cucumber",1),("item.crop.chillie",1));
+            "npc.town.gastronome",("item.material.meat",2),("item.crop.carrot",2),("item.crop.mushroom",2),("item.crop.chillie",2));
         Buff("OrchardElixir","item.drink.orchard_elixir","Orchard Elixir",ConsumableEffectType.ManaDrink,0.2f,90f,0.01f,0f,
-            "npc.town.mixologist",("item.crop.grape",2),("item.crop.apple",1),("item.crop.lemon",1),("item.crop.cucumber",1));
-        Buff("TrailrunnerTonic","item.drink.trailrunner_tonic","Trailrunner Tonic",ConsumableEffectType.StaminaDrink,0.25f,120f,0f,0.25f,
-            "npc.town.mixologist",("item.crop.apple",2),("item.crop.lemon",1),("item.crop.carrot",1),("item.crop.chillie",1));
+            "npc.town.mixologist",("item.drink.lemon_juice",1),("item.drink.apple_juice",1),("item.drink.carrot_juice",1),("item.drink.grape_juice",1));
+        Buff("TrailrunnerTonic","item.drink.trailrunner_tonic","Trailrunner Fish Broth",ConsumableEffectType.StaminaDrink,0.25f,120f,0f,0.25f,
+            "npc.town.gastronome",("item.material.fish_fillet",2),("item.crop.lemon",2),("item.crop.carrot",2),("item.crop.cucumber",2));
     }
     private static void Buff(string file,string id,string name,ConsumableEffectType effect,float cap,float duration,float regen,float stamina,string npc,params (string,int)[] ingredients)
     {
@@ -143,7 +152,10 @@ public static class SheetContentAuthoring
         item.usedItems=true;item.quickBarUseMode=QuickBarUseMode.Active;item.consumableEffect=effect;item.effectAmount=cap;
         item.buffDurationSeconds=duration;item.buffRegenerationFraction=regen;item.buffStaminaRegenerationBonus=stamina;
         item.description=effect==ConsumableEffectType.StaminaDrink?"+25% maximum stamina and stamina regeneration for 120 seconds. Reuse refreshes duration.":$"+20% maximum {(effect==ConsumableEffectType.HealthFood?"health":"mana")} and 1% of maximum regenerated per second for 90 seconds. Reuse refreshes duration.";
-        EditorUtility.SetDirty(item);Recipe(file,id,1,npc,ingredients);
+        EditorUtility.SetDirty(item);
+        var recipe=Recipe(file,id,1,npc,ingredients);
+        var recipeData=new SerializedObject(recipe);recipeData.FindProperty("_displayName").stringValue=name;
+        recipeData.ApplyModifiedPropertiesWithoutUndo();EditorUtility.SetDirty(recipe);
     }
     private static void BuildNodes()
     {
@@ -247,8 +259,12 @@ public static class SheetContentAuthoring
     private static void WireShops()
     {
         AppendShop("Shop_Leofrun",CreatedItems.Where(i=>i is SeedItemSO),CreatedItems.Where(i=>i.itemId.StartsWith("item.crop.")));
-        AppendShop("Shop_TraderBread",CreatedItems.Where(i=>i.itemId is "item.material.meat" or "item.food.harvest_stew"),CreatedItems.Where(i=>i.itemId is "item.material.meat" or "item.food.harvest_stew"));
-        AppendShop("Shop_TraderDrinks",CreatedItems.Where(i=>i.itemId.StartsWith("item.drink.")),CreatedItems.Where(i=>i.itemId.StartsWith("item.drink.")));
+        var food=CreatedItems.Where(i=>i.itemId is "item.material.meat" or "item.material.fish_fillet" or "item.food.harvest_stew" or "item.drink.trailrunner_tonic");
+        AppendShop("Shop_TraderBread",food,food);
+        AppendShop("Shop_TraderDrinks",CreatedItems.Where(i=>i.itemId.StartsWith("item.drink.")&&i.itemId!="item.drink.trailrunner_tonic"),CreatedItems.Where(i=>i.itemId.StartsWith("item.drink.")&&i.itemId!="item.drink.trailrunner_tonic"));
+        var drinks=AssetDatabase.LoadAssetAtPath<ShopDefinition>("Assets/Shops/Definitions/Shop_TraderDrinks.asset");
+        SetArray(drinks,"_buyItems",drinks.BuyItems.Where(i=>i.itemId!="item.drink.trailrunner_tonic").Cast<UnityEngine.Object>().ToArray());
+        SetArray(drinks,"_sellItems",drinks.SellItems.Where(i=>i.itemId!="item.drink.trailrunner_tonic").Cast<UnityEngine.Object>().ToArray());
     }
     private static void AppendShop(string file,IEnumerable<ItemSO> buy,IEnumerable<ItemSO> sell)
     {

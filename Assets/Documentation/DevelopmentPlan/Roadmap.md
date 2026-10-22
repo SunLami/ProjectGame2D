@@ -1,5 +1,9 @@
 # Development Roadmap
 
+2026-10-22 D-119 fillet/recipe revision: owner authorized Gastronome filleting (one selected fish -> two fillets), shop stock and revised food/juice costs, synchronized live sheet. Implementation and current verification are tracked in SheetContentExpansion.md; no new production release acceptance is implied.
+
+Verification: 16/16 EditMode content checks, final 38/38 PlayMode commerce/inventory/crafting/buff checks, scoped item/shop/recipe validation 0 errors. Live sheet re-export confirms only the eight intended Resource Items rows changed. Unknown prices, physical UI/Player smoke and the existing RockTileData blocker remain open.
+
 2026-10-14 D-117: Inventory categories and Used Items/Active/Inactive configuration implemented,
 with eligibility checks and active-use event for teammate integration. Effects remain teammate-owned.
 Owner manual verification pending; no new automated or Play Mode test run claimed.

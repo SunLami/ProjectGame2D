@@ -46,13 +46,18 @@ public sealed class SheetContentEditModeTests
         Assert.AreEqual(90,health.buffDurationSeconds,"Runtime must not mutate definition.");
     }
     [Test]
-    public void RecipesResolveFourDistinctFarmIngredientsAndBoneAshOutput()
+    public void RecipesResolveFourDistinctIngredientsWithMeatFishAndFruitDrink()
     {
         foreach(string file in new[]{"HarvestStew","OrchardElixir","TrailrunnerTonic"})
         {
             var recipe=AssetDatabase.LoadAssetAtPath<RecipeDefinition>("Assets/Crafting/Recipes/SheetContent/Recipe_"+file+".asset");
             Assert.AreEqual(4,recipe.Ingredients.Count);Assert.AreEqual(4,recipe.Ingredients.Select(i=>i.ItemId).Distinct().Count());
-            foreach(var ingredient in recipe.Ingredients){Assert.That(ingredient.ItemId,Does.StartWith("item.crop."));Assert.IsNotNull(Item(ingredient.ItemId));}
+            foreach(var ingredient in recipe.Ingredients)Assert.IsNotNull(Item(ingredient.ItemId));
+            string protein=file=="HarvestStew"?"item.material.meat":file=="TrailrunnerTonic"?"item.material.fish_fillet":null;
+            if(protein!=null)foreach(var ingredient in recipe.Ingredients)Assert.AreEqual(2,ingredient.Quantity);
+            if(protein!=null)Assert.AreEqual(2,recipe.Ingredients.Single(i=>i.ItemId==protein).Quantity);
+            else foreach(var ingredient in recipe.Ingredients){Assert.That(ingredient.ItemId,Does.StartWith("item.drink."));Assert.AreEqual(1,ingredient.Quantity);}
+            if(file=="TrailrunnerTonic"){Assert.AreEqual("npc.town.gastronome",recipe.NpcId);Assert.IsTrue(recipe.Ingredients.Any(i=>i.ItemId=="item.crop.cucumber"));}
         }
         var ash=AssetDatabase.LoadAssetAtPath<RecipeDefinition>("Assets/Crafting/Recipes/SheetContent/Recipe_BoneAsh.asset");
         Assert.AreEqual(3,ash.OutputQuantity);Assert.AreEqual("item.material.bone",ash.Ingredients[0].ItemId);
@@ -72,11 +77,34 @@ public sealed class SheetContentEditModeTests
         Assert.AreEqual(all.Length,all.Select(i=>i.itemId).Distinct().Count());
         foreach(var item in all)Assert.IsNotEmpty(item.itemId);
         var recipes=AssetDatabase.FindAssets("t:RecipeDefinition",new[]{"Assets/Crafting/Recipes/SheetContent"});
-        Assert.AreEqual(12,recipes.Length);
+        int fishCount=AssetDatabase.FindAssets("t:FishDefinitionSO",new[]{"Assets/Resources/Items"}).Length;
+        Assert.AreEqual(12+fishCount,recipes.Length);
         foreach(var guid in recipes)
         {
             var recipe=AssetDatabase.LoadAssetAtPath<RecipeDefinition>(AssetDatabase.GUIDToAssetPath(guid));
             Assert.IsNotNull(Item(recipe.OutputItemId));foreach(var ingredient in recipe.Ingredients)Assert.IsNotNull(Item(ingredient.ItemId));
         }
+    }
+
+    [Test]
+    public void EveryFishHasAFilletRecipeAndJuicesUseTwoProduce()
+    {
+        var recipes=AssetDatabase.FindAssets("t:RecipeDefinition",new[]{"Assets/Crafting/Recipes/SheetContent"})
+            .Select(g=>AssetDatabase.LoadAssetAtPath<RecipeDefinition>(AssetDatabase.GUIDToAssetPath(g))).ToArray();
+        foreach(var guid in AssetDatabase.FindAssets("t:FishDefinitionSO",new[]{"Assets/Resources/Items"}))
+        {
+            var fish=AssetDatabase.LoadAssetAtPath<FishDefinitionSO>(AssetDatabase.GUIDToAssetPath(guid));
+            var recipe=recipes.Single(r=>r.OutputItemId=="item.material.fish_fillet"&&r.Ingredients.Single().ItemId==fish.itemId);
+            Assert.AreEqual(1,recipe.Ingredients[0].Quantity);Assert.AreEqual(2,recipe.OutputQuantity);
+            Assert.AreEqual("npc.town.gastronome",recipe.NpcId);
+        }
+        foreach(string name in new[]{"Lemon","Apple","Carrot","Grape"})
+        {
+            var recipe=AssetDatabase.LoadAssetAtPath<RecipeDefinition>("Assets/Crafting/Recipes/SheetContent/Recipe_"+name+"Juice.asset");
+            Assert.AreEqual(2,recipe.Ingredients.Single().Quantity);Assert.AreEqual(1,recipe.OutputQuantity);
+        }
+        var shop=AssetDatabase.LoadAssetAtPath<ShopDefinition>("Assets/Shops/Definitions/Shop_TraderBread.asset");
+        Assert.IsTrue(shop.BuyItems.Any(i=>i.itemId=="item.material.fish_fillet"));
+        Assert.IsTrue(Item("item.material.fish_fillet").commerceConfigurationPending);
     }
 }

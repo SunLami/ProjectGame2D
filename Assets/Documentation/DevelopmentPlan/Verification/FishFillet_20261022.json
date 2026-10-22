@@ -1,0 +1,34 @@
+{
+  "date": "2026-10-22",
+  "project": "ProjectGame2D",
+  "editMode": {
+    "jobId": "41320c3fcca64254ab28b556a330256e",
+    "passed": 16,
+    "failed": 0,
+    "skipped": 0
+  },
+  "finalPlayMode": {
+    "jobId": "0754ccc77f7d473da610c874477982fb",
+    "passed": 38,
+    "failed": 0,
+    "skipped": 0,
+    "fixtures": ["CraftingManagerPlayModeTests", "InventoryManagerPlayModeTests", "SheetContentPlayModeTests", "ShopCraftingNpcInteractionServicePlayModeTests", "ShopManagerPlayModeTests"],
+    "filletingCoverage": ["selected instance only", "missing/reused selection rejected", "owning NPC required", "fish metadata and fillets save round-trip", "freed fish slot reused in full inventory", "insufficient capacity preserves fish and sends no inventory notification", "single inventory and quest obtain notification", "crafting reentrancy rejected", "duplicate ingredient entries cannot overdraw"]
+  },
+  "dataValidation": {
+    "scope": "Items, Shops, Recipes",
+    "errors": 0,
+    "warnings": 86,
+    "checkedAssets": 238,
+    "warningCategories": ["accepted legacy item IDs", "intentionally pending commerce prices"]
+  },
+  "liveSheet": {
+    "spreadsheetId": "1TSZFNCcdWZhBqWCcbx3ufcx5VKrFTrnSt7JyCZFBflw",
+    "gid": "1236028827",
+    "updatedRows": [22, 53, 54, 55, 57, 58, 59, 60],
+    "dataRowsBefore": 87,
+    "dataRowsAfter": 87,
+    "verifiedVia": "re-exported CSV compared against pre-edit snapshot; all other rows unchanged"
+  },
+  "limits": ["commerce prices remain unset", "no new physical Player build or UI acceptance", "existing global RockTileData validation blocker unchanged", "provisional fillet icon"]
+}
