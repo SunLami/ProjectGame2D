@@ -170,3 +170,13 @@ Skill icon V2 (12 elemental skills + shader-matched Shield, owner requested 2026
 
 Current shared SkillHUD/SkillPanel icon layout (2026-10-17):
 [Shared icon presentation](SkillIconSharedPresentation.md).
+
+2026-10-22 owner-approved Quest Offer art refresh: three built-in ImageGen pixel sprites, shared prefab/builder synchronized and isolated Editor render reviewed. Details/prompts/remaining gameplay acceptance: [Quest Offer visual refresh](QuestOfferVisualRefresh.md).
+
+2026-10-22 owner-requested twelve-skill MapNhat VFX audit: ground/water terrain renderers promoted
+to Ground1 (all terrain and water) below Default. Ground VFX retain documented negative orders below actors;
+MapNhat terrain must not use Default above these effects. Earth 4 rune rendering verified with an
+isolated Editor sample. Details, affected skills, changed map layers and manual acceptance limits:
+[MapNhat skill sorting audit](SkillMapNhatSortingAudit.md).
+
+2026-10-22 owner request: remove Minimap from Bootstrap shared HUD; QuestTracker moves top-right with no background, separate category/objective icons and generated pixel-art header separator. FullMap (M) retained. Implementation/prompt/acceptance: [QuestTracker refresh](QuestTrackerTopRightRefresh.md).

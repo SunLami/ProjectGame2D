@@ -1,0 +1,106 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &4822932136018884893
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 6231284506793156501}
+  - component: {fileID: 3489074898819156067}
+  m_Layer: 0
+  m_Name: PlayerSkillCasting
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &6231284506793156501
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4822932136018884893}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &3489074898819156067
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4822932136018884893}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: af6bbda5ac9157f4f8c1478a6767165a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ProjectGame2D.Runtime::SkillTestHarness
+  _player: {fileID: 0}
+  _catalog: {fileID: 11400000, guid: bf5da158363fb8f4a8427f430fc8a043, type: 2}
+  _projectilePrefab: {fileID: 6770768237255024550, guid: 0e21e80e1bf9f344f8eef5dd803a4dbf, type: 3}
+  _projectileSpeed: 8
+  _projectileRange: 6
+  _castHideDuration: 0.4
+  _spawnHeightOffset: 0.5
+  _earthProjectilePrefab: {fileID: 6770768237255024550, guid: b4a9defd0dcd4184699cdad4aa7268f3, type: 3}
+  _earthProjectileSpeed: 6
+  _earthProjectileRange: 6
+  _earthArenaPrefab: {fileID: 4524575618123800055, guid: fba790c3b4254e547af222f905acd53e, type: 3}
+  _earthArenaRange: 5
+  _earthArenaRadius: 1.8
+  _earthArenaWallThickness: 0.4
+  _earthArenaCastHideDuration: 0.6
+  _earthSpikeConePrefab: {fileID: 3333333333333333333, guid: 3c5e7a9b1d3f4b6d8a0c2e4f6a8b0d1c, type: 3}
+  _earthSpikeConeRange: 6
+  _earthSpikeConeAngle: 60
+  _earthSpikeConeCastHideDuration: 1.2
+  _earthMeteorStormPrefab: {fileID: 4750077243607158726, guid: e752e28d66ee0104e95903f623c027f3, type: 3}
+  _earthMeteorStormRange: 6
+  _earthMeteorStormRadius: 3.5
+  _earthMeteorStormFinaleRadius: 2.2
+  _earthMeteorStormCastHideDuration: 1.5
+  _windBladePrefab: {fileID: 8825418727345058668, guid: d7351c6852c93554f9bc8e8d1c59850d, type: 3}
+  _windBladeRange: 7
+  _windBladeCastHideDuration: 1.6
+  _windWhirlwindPrefab: {fileID: 2322201435249038581, guid: d8bbe79a174665041a70049a47c45166, type: 3}
+  _windWhirlwindRange: 5
+  _windWhirlwindRadius: 2
+  _windWhirlwindCoreRadius: 0.9
+  _windWhirlwindCastHideDuration: 0.8
+  _windGustFanPrefab: {fileID: 6750393146458430550, guid: 05af6cc6ba7e73b46b8ab4a87d6909ab, type: 3}
+  _windGustFanRange: 6
+  _windGustFanAngle: 35
+  _windGustFanCastHideDuration: 1.6
+  _windRocPrefab: {fileID: 6825229507771143227, guid: 28b6b765d975a8345bebd0293f36bdc7, type: 3}
+  _windRocLength: 8
+  _windRocPathWidth: 2.5
+  _windRocBlastRadius: 2.2
+  _windRocCastHideDuration: 5
+  _groundImpactPrefab: {fileID: 1484196849276014059, guid: b4689d2efc6882249889776b49428291, type: 3}
+  _groundTargetMaxRange: 5
+  _groundTargetRadius: 2
+  _groundTargetInnerRadius: 0.93
+  _groundCastHideDuration: 0.6
+  _beamPrefab: {fileID: 972691534842013457, guid: 4acd54ca798c0df4886c35be619540bd, type: 3}
+  _beamRange: 6
+  _beamCastHideDuration: 2.6
+  _beamIndicatorWidth: 0.5
+  _tsunamiWavePrefab: {fileID: 8688328702714045839, guid: 41ef80fc07b9a2941888393e013487e6, type: 3}
+  _tsunamiRange: 7
+  _tsunamiFanAngle: 50
+  _tsunamiWaveCount: 3
+  _tsunamiWaveInterval: 0.9
+  _tsunamiWaveIntervalGrowth: 0.25
+  _tsunamiDamageGrowthPerWave: 0.35
+  _tsunamiTravelTime: 1.2
+  _tsunamiUltimatePrefab: {fileID: 3900630900618469215, guid: 0d2939f124e4d7e4bb5d77259b00fc36, type: 3}
+  _tsunamiUltimateCastHideDuration: 6

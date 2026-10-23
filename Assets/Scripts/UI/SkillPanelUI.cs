@@ -175,7 +175,9 @@ public sealed class SkillPanelUI : MonoBehaviour
         if (_catalog == null || !_catalog.TryResolve(entry.id, out var definition)) { HideTooltip(); return; }
         _title.text = definition.displayName;
         _description.text = definition.description;
-        _cost.text = "Skill Point Cost: " + definition.learningCost;
+        _cost.rectTransform.sizeDelta = new Vector2(_cost.rectTransform.sizeDelta.x, 60f);
+        _cost.fontSize = 18f;
+        _cost.text = $"Skill Point Cost: {definition.learningCost}\nMana: {definition.manaCost:0.#}  |  Cooldown: {definition.cooldownSeconds:0.#}s";
         _tooltip.SetActive(true);
         RefreshSkills();
     }

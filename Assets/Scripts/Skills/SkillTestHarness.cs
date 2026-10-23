@@ -10,6 +10,8 @@ public class SkillTestHarness : MonoBehaviour
     [SerializeField] private Player _player;
     [SerializeField] private SkillCatalog _catalog;
     private Dictionary<SkillCastKind, Action> _castHandlers;
+    private SkillCatalog.Definition _aimDefinition;
+    private int _aimSlot;
 
     // Per-loadout-slot cooldown (D-118): keyed by slot index (0=Q..3=T), not by skill id, so
     // swapping the equipped skill doesn't inherit a stale cooldown from whatever used to sit there.
@@ -110,26 +112,33 @@ public class SkillTestHarness : MonoBehaviour
 
     private void Update()
     {
-        if (Keyboard.current == null || !GameStateManager.AllowsGameplayInput)
+        if (Keyboard.current == null)
             return;
         if (Keyboard.current.qKey.wasPressedThisFrame)
             TryCastLoadoutSlot(0);
-        else if (Keyboard.current.eKey.wasPressedThisFrame)
+        if (Keyboard.current.eKey.wasPressedThisFrame)
             TryCastLoadoutSlot(1);
-        else if (Keyboard.current.rKey.wasPressedThisFrame)
+        if (Keyboard.current.rKey.wasPressedThisFrame)
             TryCastLoadoutSlot(2);
-        else if (Keyboard.current.tKey.wasPressedThisFrame)
+        if (Keyboard.current.tKey.wasPressedThisFrame)
             TryCastLoadoutSlot(3);
     }
 
     public bool TryCastLoadoutSlot(int slot)
     {
         var stat = PlayerStat.Instance;
-        if (!GameStateManager.AllowsGameplayInput || stat == null || stat.IsDead || _player == null
-            || _player.IsAimingSkill || _player.IsGroundTargeting || _catalog == null) return false;
+        if (slot < 0 || slot >= 4) return false;
+        if (!GameStateManager.AllowsGameplayInput) return RejectCast(slot, "Gameplay input is blocked by the current game state.");
+        if (stat == null || _player == null || _catalog == null) return RejectCast(slot, "Missing player or catalog binding.");
+        if (stat.IsDead) return RejectCast(slot, "Player is dead.");
+        if (_player.IsAimingSkill || _player.IsGroundTargeting) return RejectCast(slot, "Confirm or cancel the current aim first.");
         string id = stat.Skills.Equipped(slot);
-        if (!stat.Skills.IsLearned(id) || !_catalog.TryResolve(id, out var definition)) return false;
-        if (Time.time < _cooldownEndTime[slot]) return false;
+        if (!stat.Skills.IsLearned(id) || !_catalog.TryResolve(id, out var definition))
+            return RejectCast(slot, "No learned skill equipped.");
+        if (Time.time < _cooldownEndTime[slot])
+            return RejectCast(slot, $"Cooldown: {Mathf.CeilToInt(_cooldownEndTime[slot] - Time.time)}s.");
+        if (stat.Mana < definition.manaCost)
+            return RejectCast(slot, $"Not enough mana for {definition.displayName}: {stat.Mana:0.#}/{definition.manaCost:0.#}.");
         if (_castHandlers == null)
         {
             _castHandlers = new Dictionary<SkillCastKind, Action>
@@ -148,11 +157,40 @@ public class SkillTestHarness : MonoBehaviour
                 [SkillCastKind.WindRoc] = CastWindRoc
             };
         }
-        if (!_castHandlers.TryGetValue(definition.castKind, out var cast)) return false;
+        if (!_castHandlers.TryGetValue(definition.castKind, out var cast)) return RejectCast(slot, "Missing cast handler.");
+        _aimDefinition = definition;
+        _aimSlot = slot;
         cast();
-        if (definition.cooldownSeconds > 0f)
-            _cooldownEndTime[slot] = Time.time + definition.cooldownSeconds;
         return _player.IsAimingSkill || _player.IsGroundTargeting;
+    }
+
+    private bool RejectCast(int slot, string reason)
+    {
+        Debug.Log($"Skill {"QERT"[slot]}: {reason}", this);
+        return false;
+    }
+
+    // Capture each aim's identity. Cancel never invokes this callback, so it spends nothing.
+    private Action<Vector2> GuardCast(Action<Vector2> cast)
+    {
+        var definition = _aimDefinition;
+        int slot = _aimSlot;
+        bool committed = false;
+        return target =>
+        {
+            var stat = PlayerStat.Instance;
+            if (committed || !isActiveAndEnabled || !GameStateManager.AllowsGameplayInput
+                || stat == null || stat.IsDead || definition == null
+                || stat.Skills.Equipped(slot) != definition.id || !stat.Skills.IsLearned(definition.id)
+                || Time.time < _cooldownEndTime[slot] || !stat.TryConsumeMana(definition.manaCost))
+            {
+                _player.EndSkillCast();
+                return;
+            }
+            committed = true;
+            _cooldownEndTime[slot] = Time.time + definition.cooldownSeconds;
+            cast(target);
+        };
     }
 
     // Legacy serialized callback is gated too; it can no longer bypass learning/loadout.
@@ -168,8 +206,19 @@ public class SkillTestHarness : MonoBehaviour
         string id = stat.Skills.Equipped(slot);
         if (!stat.Skills.IsLearned(id) || !_catalog.TryResolve(id, out var definition) || definition.cooldownSeconds <= 0f)
             return 0f;
-        float remaining = _cooldownEndTime[slot] - Time.time;
+        float remaining = GetCooldownRemainingSeconds(slot);
         return remaining <= 0f ? 0f : Mathf.Clamp01(remaining / definition.cooldownSeconds);
+    }
+
+    public float GetCooldownRemainingSeconds(int slot)
+    {
+        if (slot < 0 || slot >= 4) return 0f;
+        var stat = PlayerStat.Instance;
+        if (stat == null || _catalog == null) return 0f;
+        var id = stat.Skills.Equipped(slot);
+        if (!stat.Skills.IsLearned(id) || !_catalog.TryResolve(id, out var definition)
+            || definition.cooldownSeconds <= 0f) return 0f;
+        return Mathf.Max(0f, _cooldownEndTime[slot] - Time.time);
     }
 
     private void CastWaterProjectile()
@@ -186,7 +235,7 @@ public class SkillTestHarness : MonoBehaviour
         if (_player.IsAimingSkill)
             return;
 
-        _player.BeginAimSkill(_projectileRange, OnAimConfirmed);
+        _player.BeginAimSkill(_projectileRange, GuardCast(OnAimConfirmed));
     }
 
     private void OnAimConfirmed(Vector2 direction)
@@ -217,7 +266,7 @@ public class SkillTestHarness : MonoBehaviour
         if (_player.IsAimingSkill)
             return;
 
-        _player.BeginAimSkill(_earthProjectileRange, OnEarthAimConfirmed);
+        _player.BeginAimSkill(_earthProjectileRange, GuardCast(OnEarthAimConfirmed));
     }
 
     private void CastEarthArena()
@@ -233,7 +282,7 @@ public class SkillTestHarness : MonoBehaviour
 
         // Indicator shows the wall band: outer edge and inner edge of the ring.
         float half = _earthArenaWallThickness * 0.5f;
-        _player.BeginGroundTargetSkill(_earthArenaRange, _earthArenaRadius + half, _earthArenaRadius - half, OnEarthArenaConfirmed);
+        _player.BeginGroundTargetSkill(_earthArenaRange, _earthArenaRadius + half, _earthArenaRadius - half, GuardCast(OnEarthArenaConfirmed));
     }
 
     private void CastWindBlade()
@@ -247,7 +296,7 @@ public class SkillTestHarness : MonoBehaviour
         if (_player.IsAimingSkill)
             return;
 
-        _player.BeginAimSkill(_windBladeRange, OnWindBladeAimConfirmed);
+        _player.BeginAimSkill(_windBladeRange, GuardCast(OnWindBladeAimConfirmed));
     }
 
     private void CastWindRoc()
@@ -261,7 +310,7 @@ public class SkillTestHarness : MonoBehaviour
         if (_player.IsAimingSkill)
             return;
 
-        _player.BeginAimSkill(_windRocLength, OnWindRocAimConfirmed, _windRocPathWidth, 0f, _windRocBlastRadius);
+        _player.BeginAimSkill(_windRocLength, GuardCast(OnWindRocAimConfirmed), _windRocPathWidth, 0f, _windRocBlastRadius);
     }
 
     private void OnWindRocAimConfirmed(Vector2 direction)
@@ -282,7 +331,7 @@ public class SkillTestHarness : MonoBehaviour
         if (_player.IsAimingSkill)
             return;
 
-        _player.BeginAimSkill(_windGustFanRange, OnWindGustFanAimConfirmed, 0.15f, _windGustFanAngle);
+        _player.BeginAimSkill(_windGustFanRange, GuardCast(OnWindGustFanAimConfirmed), 0.15f, _windGustFanAngle);
     }
 
     private void OnWindGustFanAimConfirmed(Vector2 direction)
@@ -303,7 +352,7 @@ public class SkillTestHarness : MonoBehaviour
         if (_player.IsGroundTargeting)
             return;
 
-        _player.BeginGroundTargetSkill(_windWhirlwindRange, _windWhirlwindRadius, _windWhirlwindCoreRadius, OnWindWhirlwindConfirmed);
+        _player.BeginGroundTargetSkill(_windWhirlwindRange, _windWhirlwindRadius, _windWhirlwindCoreRadius, GuardCast(OnWindWhirlwindConfirmed));
     }
 
     private void OnWindWhirlwindConfirmed(Vector2 position)
@@ -330,7 +379,7 @@ public class SkillTestHarness : MonoBehaviour
         if (_player.IsGroundTargeting)
             return;
 
-        _player.BeginGroundTargetSkill(_earthMeteorStormRange, _earthMeteorStormRadius, _earthMeteorStormFinaleRadius, OnEarthMeteorStormConfirmed);
+        _player.BeginGroundTargetSkill(_earthMeteorStormRange, _earthMeteorStormRadius, _earthMeteorStormFinaleRadius, GuardCast(OnEarthMeteorStormConfirmed));
     }
 
     private void OnEarthMeteorStormConfirmed(Vector2 position)
@@ -351,7 +400,7 @@ public class SkillTestHarness : MonoBehaviour
         if (_player.IsAimingSkill)
             return;
 
-        _player.BeginAimSkill(_earthSpikeConeRange, OnEarthSpikeConeAimConfirmed, 0.15f, _earthSpikeConeAngle);
+        _player.BeginAimSkill(_earthSpikeConeRange, GuardCast(OnEarthSpikeConeAimConfirmed), 0.15f, _earthSpikeConeAngle);
     }
 
     private void OnEarthSpikeConeAimConfirmed(Vector2 direction)
@@ -390,7 +439,7 @@ public class SkillTestHarness : MonoBehaviour
         if (_player.IsGroundTargeting)
             return;
 
-        _player.BeginGroundTargetSkill(_groundTargetMaxRange, _groundTargetRadius, _groundTargetInnerRadius, OnGroundTargetConfirmed);
+        _player.BeginGroundTargetSkill(_groundTargetMaxRange, _groundTargetRadius, _groundTargetInnerRadius, GuardCast(OnGroundTargetConfirmed));
     }
 
     private void OnGroundTargetConfirmed(Vector2 position)
@@ -411,7 +460,7 @@ public class SkillTestHarness : MonoBehaviour
         if (_player.IsAimingSkill)
             return;
 
-        _player.BeginAimSkill(_tsunamiRange, OnTsunamiAimConfirmed, 0.15f, _tsunamiFanAngle);
+        _player.BeginAimSkill(_tsunamiRange, GuardCast(OnTsunamiAimConfirmed), 0.15f, _tsunamiFanAngle);
     }
 
     private void OnTsunamiAimConfirmed(Vector2 direction)
@@ -464,7 +513,7 @@ public class SkillTestHarness : MonoBehaviour
         if (_player.IsAimingSkill)
             return;
 
-        _player.BeginAimSkill(_beamRange, OnBeamAimConfirmed, _beamIndicatorWidth);
+        _player.BeginAimSkill(_beamRange, GuardCast(OnBeamAimConfirmed), _beamIndicatorWidth);
     }
 
     private void OnBeamAimConfirmed(Vector2 direction)

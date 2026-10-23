@@ -303,3 +303,29 @@ chưa đủ, cần physical acceptance" đã áp dụng cho mọi phase trước
 - `Assets/Documentation/DevelopmentPlan/UIAndInteractionFlows.md`
 - `Assets/Documentation/DevelopmentPlan/DecisionRegister.md` (D-019)
 - `Assets/Scenes/DemoScene.unity`, `Assets/Scenes/MapNhat.unity`
+
+## MapNhat skill UI/casting and dash promotion — owner approved 2026-10-22
+
+Owner accepted DemoScene presentation and requested production promotion (D-085/D-116/D-118).
+Bootstrap owns the connected SkillPanel prefab; MapNhat contains one PlayerSkillCasting prefab instance,
+with explicit local Frawand Player binding and shared SkillCatalog. New reusable casting prefab
+Assets/Prefabs/Skills/PlayerSkillCasting.prefab carries all twelve behavior prefab configurations
+from DemoScene, with no demo controls or scene Player reference baked into the source.
+Shared SkillHUD already comes from Bootstrap's GameplayUIRoot prefab, including Shield radial/text
+cooldowns; no duplicate HUD is added to MapNhat. SkillFX child promoted to local Player and
+SkillFX/Shield renderers bound. Existing shared Player Animator and PlayerInput supply dash.
+MapNhat Player dash allow-list and new-component default include DemoScene/MapNhat; tuning remains
+3.2 units / 0.2s, 0.8s cooldown, 20 stamina and 0.12s initial invulnerability.
+Learning, mana, shield, cooldown and save V13 use existing shared runtime contracts, no regrant/reset.
+Editor validation: one Bootstrap panel, one MapNhat bridge, local Player/catalog and every skill prefab resolved, Dash action
+exists, shared HUD count one. MapNhat stays active, source DemoScene read additively then closed
+without saving it. Owner manual New Game/Continue, P, Q/E/R/T, Shield and Space/gamepad smoke
+acceptance and Player build remain pending; no automated tests or Play Mode transitions performed.
+
+### UI ownership correction — owner clarified 2026-10-22
+
+SkillPanel and SkillHUD belong to persistent Bootstrap. SkillPanel prefab is instantiated once
+in Bootstrap; MapNhat and DemoScene local copies are removed to avoid duplicate P input handlers.
+MapNhat retains PlayerSkillCasting, local Player/FX binding and dash configuration. SkillPanel
+already rebinds PlayerStat.Instance as sessions change and gates P to Playing/Skills state;
+scene unloading does not own the shared UI lifetime. No save/gameplay tuning changes.

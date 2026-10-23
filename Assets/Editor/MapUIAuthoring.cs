@@ -22,7 +22,7 @@ public static class MapUIAuthoring
     private const string MarkerPath = ArtRoot + "player_marker_v1.png";
     private const string TagPath = ArtRoot + "minimap_tag_v1.png";
 
-    [MenuItem("Tools/ProjectGame2D/UI/Rebuild Map UI (Minimap + FullMap)")]
+    [MenuItem("Tools/ProjectGame2D/UI/Rebuild Full Map UI")]
     public static void Rebuild()
     {
         Sprite snapshot = AssetDatabase.LoadAssetAtPath<Sprite>(SnapshotPath);
@@ -30,26 +30,24 @@ public static class MapUIAuthoring
             throw new InvalidOperationException(
                 $"Map snapshot not found at {SnapshotPath}. Run Tools/ProjectGame2D/UI/Bake Map Snapshot first.");
 
-        Sprite frameSprite = LoadSprite(FramePath);
-        Sprite maskSprite = LoadSprite(MaskPath);
         Sprite closeSprite = LoadSprite(CloseButtonPath);
         Sprite markerSprite = LoadSprite(MarkerPath);
-        Sprite tagSprite = LoadSprite(TagPath);
 
         GameObject root = PrefabUtility.LoadPrefabContents(PrefabPath);
         try
         {
-            BuildMinimap(root, snapshot, frameSprite, maskSprite, markerSprite, tagSprite);
+            Transform minimap = root.transform.Find("Minimap");
+            if (minimap != null) UnityEngine.Object.DestroyImmediate(minimap.gameObject);
             BuildFullMap(root, snapshot, closeSprite, markerSprite);
 
             UnifiedGameplayHudController hud = root.GetComponent<UnifiedGameplayHudController>();
             SerializedObject hudSo = new SerializedObject(hud);
-            hudSo.FindProperty("_minimap").objectReferenceValue = root.transform.Find("Minimap").gameObject;
+            hudSo.FindProperty("_minimap").objectReferenceValue = null;
             hudSo.ApplyModifiedPropertiesWithoutUndo();
 
             PrefabUtility.SaveAsPrefabAsset(root, PrefabPath);
             AssetDatabase.SaveAssets();
-            Debug.Log("Map UI (Minimap + FullMap) rebuilt.");
+            Debug.Log("Full Map UI rebuilt; Minimap removed by owner request.");
         }
         finally
         {

@@ -5,7 +5,8 @@ public enum PlayerDamageOutcome
     Ignored,
     Dodged,
     Damaged,
-    Killed
+    Killed,
+    Blocked
 }
 
 public readonly struct PlayerDamageResult

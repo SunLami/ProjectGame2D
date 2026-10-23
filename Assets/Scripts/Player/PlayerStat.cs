@@ -6,6 +6,7 @@ public class PlayerStat : MonoBehaviour
 {
     public static PlayerStat Instance { get; private set; }
     public SkillProgressionState Skills { get; } = new();
+    [SerializeField] private SkillCatalog _skillCatalog;
 
     [Header("Level 1 Base Stats")]
     [SerializeField, Min(1f)] private float _maxHealth = 100f;
@@ -28,8 +29,13 @@ public class PlayerStat : MonoBehaviour
     [SerializeField, Range(0f, 0.5f)] private float _dodgeChance;
 
     [Header("Shield Block (hold RMB)")]
-    [Tooltip("Extra damage reduction applied on top of Defense/DamageReduction while IsBlocking is true.")]
-    [SerializeField, Range(0f, 1f)] private float _blockDamageReduction = 0.7f;
+    [SerializeField, Min(0f)] private float _manaRegenerationPerSecond = 3f;
+    [SerializeField, Min(0f)] private float _manaRegenerationDelay = 2f;
+    private float _manaRegenerateAfter;
+    private float _shieldReadyAt;
+    public const float ShieldCooldownSeconds = 5f;
+    public float ShieldCooldownRemaining => Mathf.Max(0f, _shieldReadyAt - Time.time);
+    public bool CanStartShield => !IsDead && ShieldCooldownRemaining <= 0f;
 
     [Header("Growth Per Level")]
     [SerializeField, Min(0f)] private float _healthPerLevel = 3f;
@@ -82,7 +88,7 @@ public class PlayerStat : MonoBehaviour
 
     /// <summary>True while the player is holding the Shield block (RMB). Set exclusively by
     /// PlayerShieldBlock; not persisted (resets to false on every scene load like IsInvulnerable).
-    /// ReceiveDamage applies _blockDamageReduction on top of Defense/DamageReduction while true.</summary>
+    /// Blocks one hit for free, then breaks with a five-second lockout.</summary>
     public bool IsBlocking { get; set; }
 
     // Compatibility with existing code that used the old property names.
@@ -109,6 +115,8 @@ public class PlayerStat : MonoBehaviour
         _health = MaxHealth;
         _stamina = MaxStamina;
         _mana = MaxMana;
+        // Resolve content once at the player composition boundary, independently of UI lifetime.
+        Skills.ConfigureCatalog(_skillCatalog != null ? _skillCatalog : Resources.Load<SkillCatalog>("Skills/PlayerSkillCatalog"));
         Skills.Restore(null, _level);
     }
 
@@ -117,13 +125,19 @@ public class PlayerStat : MonoBehaviour
         if (IsDead || rawDamage <= 0f || IsInvulnerable)
             return new PlayerDamageResult(PlayerDamageOutcome.Ignored, 0f);
 
+        if (IsBlocking && ShieldCooldownRemaining <= 0f)
+        {
+            IsBlocking = false;
+            _shieldReadyAt = Time.time + ShieldCooldownSeconds;
+            return new PlayerDamageResult(PlayerDamageOutcome.Blocked, 0f);
+        }
+
         if (UnityEngine.Random.value < DodgeChance)
             return new PlayerDamageResult(PlayerDamageOutcome.Dodged, 0f);
 
         float afterDefense = Mathf.Max(1f, rawDamage - Defense);
         float finalDamage = afterDefense * (1f - DamageReduction);
-        if (IsBlocking)
-            finalDamage *= 1f - _blockDamageReduction;
+
         _health = Mathf.Clamp(_health - finalDamage, 0f, MaxHealth);
         OnHealthChanged?.Invoke(_health, MaxHealth);
 
@@ -159,13 +173,14 @@ public class PlayerStat : MonoBehaviour
         OnStaminaChanged?.Invoke(_stamina, MaxStamina);
     }
 
-    // Runtime resource foundation only. Skill costs/cooldowns are integrated separately.
+    // Confirmed skill casts consume mana; recovery waits after each positive spend.
     public bool TryConsumeMana(float cost)
     {
         if (float.IsNaN(cost) || float.IsInfinity(cost) || cost < 0f) return false;
         if (IsDead || _mana < cost) return false;
         if (cost == 0f) return true;
         _mana -= cost;
+        _manaRegenerateAfter = Time.time + _manaRegenerationDelay;
         OnManaChanged?.Invoke(_mana, MaxMana);
         return true;
     }
@@ -179,13 +194,16 @@ public class PlayerStat : MonoBehaviour
 
     public void TickRegeneration(float deltaTime)
     {
-        if (deltaTime > 0f && HealthRegeneration > 0f)
+        if (IsDead || deltaTime <= 0f || !GameStateManager.AllowsGameplayInput) return;
+        if (Time.time >= _manaRegenerateAfter)
+            RestoreMana(_manaRegenerationPerSecond * deltaTime);
+        if (HealthRegeneration > 0f)
             Heal(HealthRegeneration * deltaTime);
     }
 
     public void TickStamina(bool isSprinting, float deltaTime)
     {
-        if (deltaTime <= 0f)
+        if (deltaTime <= 0f || IsDead)
             return;
 
         float previous = _stamina;

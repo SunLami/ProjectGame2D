@@ -4,8 +4,6 @@ using UnityEngine.InputSystem;
 public partial class Player
 {
     [Header("Shield Block (hold RMB)")]
-    [Tooltip("Stamina drained per second while holding the block. Releases automatically at 0 stamina.")]
-    [SerializeField, Min(0f)] private float _shieldStaminaDrainPerSecond = 20f;
     // Two quads sharing ShieldBubbleFX.shader (_HalfSide 0/1): the fresnel rim's centre is fully
     // transparent, but the character must still read as "standing inside" it, so the top half
     // renders behind the character (ShieldFXBack, sortingOrder below Body/Head) and the bottom
@@ -22,17 +20,12 @@ public partial class Player
 
     private void TickShieldBlock()
     {
-        if (Mouse.current == null)
-            return;
-
-        bool wantsToBlock = Mouse.current.rightButton.isPressed
+        bool wantsToBlock = Mouse.current != null && Mouse.current.rightButton.isPressed
             && GameStateManager.AllowsGameplayInput
-            && !_isDead && !_isAttacking && !IsAimingSkill && !IsGroundTargeting;
+            && !_isDead && !_isHit && !_isAttacking && !IsAimingSkill && !IsGroundTargeting;
 
-        if (wantsToBlock && !_isBlocking)
-            StartBlocking();
-        else if (_isBlocking && (!wantsToBlock || !_stats.TryConsumeStamina(_shieldStaminaDrainPerSecond * Time.deltaTime)))
-            StopBlocking();
+        if (_isBlocking && (!wantsToBlock || !_stats.IsBlocking)) StopBlocking();
+        if (wantsToBlock && !_isBlocking && _stats.CanStartShield) StartBlocking();
     }
 
     private void StartBlocking()

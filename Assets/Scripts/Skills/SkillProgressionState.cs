@@ -15,6 +15,15 @@ public sealed class SkillProgressionSaveData
 /// <summary>Player-owned runtime state. Definitions and snapshots are never mutated.</summary>
 public sealed class SkillProgressionState
 {
+    private SkillCatalog _catalog;
+    public SkillProgressionState(SkillCatalog catalog = null) { _catalog = catalog; }
+    public void ConfigureCatalog(SkillCatalog catalog)
+    {
+        _catalog = catalog;
+        Points = Math.Min(Points, RemainingPointBudget);
+        Changed?.Invoke();
+    }
+    private int RemainingPointBudget => _catalog == null ? 0 : _catalog.RemainingLearningCost(IsLearned);
     private int _awardedThroughLevel = 1;
     private readonly HashSet<string> _learned = new(StringComparer.Ordinal);
     private readonly string[] _loadout = new string[4];
@@ -25,7 +34,7 @@ public sealed class SkillProgressionState
     public void AwardLevel(int level)
     {
         if (level <= _awardedThroughLevel) return;
-        Points = (int)Math.Min(int.MaxValue, (long)Points + level - _awardedThroughLevel);
+        Points = (int)Math.Min(RemainingPointBudget, (long)Points + level - _awardedThroughLevel);
         _awardedThroughLevel = level;
         Changed?.Invoke();
     }
@@ -51,6 +60,7 @@ public sealed class SkillProgressionState
         _learned.Clear();
         if (data.learnedIds != null) foreach (var id in data.learnedIds)
             if (!string.IsNullOrWhiteSpace(id)) _learned.Add(id);
+        Points = Math.Min(Points, RemainingPointBudget);
         var equipped = new HashSet<string>(StringComparer.Ordinal);
         for (int i = 0; i < 4; i++)
         {

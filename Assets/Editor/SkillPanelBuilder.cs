@@ -74,7 +74,7 @@ public static class SkillPanelBuilder
             var title = Label(tooltip, "SkillTitle", Names[0], 0, 220, 270, 80, 26);
             var description = Label(tooltip, "Description", Descriptions[0], 0, 65, 270, 180, 20);
             description.alignment = TextAlignmentOptions.TopLeft;
-            var cost = Label(tooltip, "LearningCost", "Skill Point Cost: 2", 0, -80, 270, 40, 20);
+            var cost = Label(tooltip, "LearningCost", "Skill Point Cost: 2", 0, -80, 270, 60, 18);
             var learn = Picture(tooltip, "Learn", "skill_learn_button_v1", 0, -145, 255, 58).gameObject.AddComponent<Button>();
             learn.targetGraphic = learn.GetComponent<Image>(); learn.interactable = false;
             Label(learn.transform, "Label", "Learn", 0, 0, 200, 35, 22);
@@ -118,6 +118,8 @@ public static class SkillPanelBuilder
                 d.FindPropertyRelative("description").stringValue=Descriptions[i];
                 d.FindPropertyRelative("learningCost").intValue=i%4+2;
                 d.FindPropertyRelative("castKind").intValue=i+1;
+                d.FindPropertyRelative("manaCost").floatValue=new float[] {8f,16f,24f,35f}[i%4];
+                d.FindPropertyRelative("cooldownSeconds").floatValue=new float[] {2f,6f,10f,18f}[i%4];
                 d.FindPropertyRelative("icon").objectReferenceValue=AssetDatabase.LoadAssetAtPath<Sprite>(Icons+Files[i]+".png");
             }
             data.ApplyModifiedPropertiesWithoutUndo(); EditorUtility.SetDirty(catalog);

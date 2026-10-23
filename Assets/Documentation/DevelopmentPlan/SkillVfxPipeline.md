@@ -561,3 +561,9 @@ và xác nhận:
 - Chưa gen VFX nào bằng Pixellab cho skill cụ thể — chờ chốt §3 mục 4 (danh sách skill) trước.
 - Chưa đưa `SkillFX` từ DemoScene sang `MapNhat` — theo đúng `DemoSceneWorkflow.md`, chỉ promote sau
   khi test đầy đủ trong DemoScene.
+
+2026-10-22 owner-requested twelve-skill MapNhat VFX audit: ground/water terrain renderers promoted
+to Ground1 (all terrain and water) below Default. Ground VFX retain documented negative orders below actors;
+MapNhat terrain must not use Default above these effects. Earth 4 rune rendering verified with an
+isolated Editor sample. Details, affected skills, changed map layers and manual acceptance limits:
+[MapNhat skill sorting audit](SkillMapNhatSortingAudit.md).

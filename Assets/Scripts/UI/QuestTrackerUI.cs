@@ -36,6 +36,8 @@ public sealed class QuestTrackerUI : MonoBehaviour
         if (legacyBanner != null) legacyBanner.gameObject.SetActive(false);
 
         RectTransform root = (RectTransform)transform;
+        root.anchorMin = root.anchorMax = root.pivot = Vector2.one;
+        root.anchoredPosition = new Vector2(-16f, -16f);
         root.sizeDelta = new Vector2(155f, 190f); // 372x456 physical pixels at 1920x1080.
         Image rootImage = GetComponent<Image>() ?? gameObject.AddComponent<Image>();
         rootImage.sprite = null;
@@ -111,10 +113,11 @@ public sealed class QuestTrackerUI : MonoBehaviour
         RectTransform lineRect = line.GetComponent<RectTransform>();
         lineRect.anchorMin = lineRect.anchorMax = new Vector2(0f, 1f);
         lineRect.pivot = new Vector2(0f, 0.5f);
-        lineRect.anchoredPosition = new Vector2(82f, -10f);
-        lineRect.sizeDelta = new Vector2(68f, 1f);
+        lineRect.anchoredPosition = new Vector2(1f, -22f);
+        lineRect.sizeDelta = new Vector2(150f, 9f);
         Image lineImage = line.GetComponent<Image>();
-        lineImage.color = Gold;
+        lineImage.sprite = LoadSprite("quest_tracker_divider_pixel_v2");
+        lineImage.color = Color.white;
         lineImage.raycastTarget = false;
 
         Button button = header.GetComponent<Button>();
@@ -142,7 +145,7 @@ public sealed class QuestTrackerUI : MonoBehaviour
         _viewport.anchorMin = Vector2.zero;
         _viewport.anchorMax = Vector2.one;
         _viewport.offsetMin = Vector2.zero;
-        _viewport.offsetMax = new Vector2(0f, -22f);
+        _viewport.offsetMax = new Vector2(0f, -34f);
         if (_viewport.GetComponent<RectMask2D>() == null) _viewport.gameObject.AddComponent<RectMask2D>();
         Image viewportImage = _viewport.GetComponent<Image>() ?? _viewport.gameObject.AddComponent<Image>();
         viewportImage.sprite = null;

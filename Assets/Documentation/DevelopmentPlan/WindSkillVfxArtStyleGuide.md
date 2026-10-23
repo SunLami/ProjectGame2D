@@ -51,3 +51,9 @@ Unity MCP (`execute_code`), cắt `SpriteImportMode.Multiple`.
 - **Bài học (Pixen vòng/ring):** prompt "hollow ring / empty center" vẫn cho Pixen tô đĩa xám ở giữa. Cách xử lý không tốn gen: lọc màu xám trung tính (độ bão hòa < 0.16, value 0.22-0.62) thành trong suốt ở mọi frame — vệt gió trắng-mint (value cao) và viền đen (value thấp) được giữ lại. Kiểm tra bằng alpha ở tâm = 0.
 - **Quy tắc luồng cast ultimate:** nhân vật/vật triệu hồi phải có cảnh vào (bay vào từ ngoài khung hình, mờ dần) thay vì xuất hiện đột ngột; hướng sprite phải theo hướng đi; bỏ mọi effect không có nghĩa vật lý/ý đồ; mọi effect chính (nhất là cú kết) phải nằm trong khung camera.
 
+
+2026-10-22 owner-requested twelve-skill MapNhat VFX audit: ground/water terrain renderers promoted
+to Ground1 (all terrain and water) below Default. Ground VFX retain documented negative orders below actors;
+MapNhat terrain must not use Default above these effects. Earth 4 rune rendering verified with an
+isolated Editor sample. Details, affected skills, changed map layers and manual acceptance limits:
+[MapNhat skill sorting audit](SkillMapNhatSortingAudit.md).
