@@ -14,6 +14,7 @@ public sealed class CraftingManager : MonoBehaviour
     [SerializeField] private RecipeCatalog _catalog;
 
     private IItemResolver _itemResolver;
+    private bool _crafting;
 
     public IRecipeResolver Catalog => _catalog;
 
@@ -49,7 +50,19 @@ public sealed class CraftingManager : MonoBehaviour
 
     /// <summary>Crafts recipeId at the given stationTag (null/empty = no station). Validates every
     /// ingredient is possessed in full and the output fits before consuming/granting anything.</summary>
-    public bool TryCraft(string recipeId, string stationTag, out CraftingTransactionResult result)
+    public bool TryCraft(string recipeId, string stationTag, out CraftingTransactionResult result, string fishInstanceId = null)
+    {
+        if (_crafting)
+        {
+            result = CraftingTransactionResult.GameplayNotAllowed;
+            return false;
+        }
+        _crafting = true;
+        try { return TryCraftCore(recipeId, stationTag, out result, fishInstanceId); }
+        finally { _crafting = false; }
+    }
+
+    private bool TryCraftCore(string recipeId, string stationTag, out CraftingTransactionResult result, string fishInstanceId)
     {
         if (!GameStateManager.AllowsGameplayInput)
         {
@@ -90,6 +103,7 @@ public sealed class CraftingManager : MonoBehaviour
         }
 
         var resolvedIngredients = new ItemSO[recipe.Ingredients.Count];
+        var quantities = new int[recipe.Ingredients.Count];
         for (int i = 0; i < recipe.Ingredients.Count; i++)
         {
             RecipeIngredientEntry ingredient = recipe.Ingredients[i];
@@ -100,17 +114,30 @@ public sealed class CraftingManager : MonoBehaviour
                 return false;
             }
             resolvedIngredients[i] = item;
+            quantities[i] = ingredient.Quantity;
+            if (item is FishDefinitionSO && string.IsNullOrEmpty(fishInstanceId))
+            {
+                result = CraftingTransactionResult.InsufficientIngredients;
+                return false;
+            }
         }
 
-        if (!InventoryManager.Instance.HasCapacityFor(outputItem, recipe.OutputQuantity))
+        if (!string.IsNullOrEmpty(fishInstanceId))
+        {
+            bool selected = false;
+            foreach (var slot in InventoryManager.Instance.Slots)
+                if (slot.fish != null && slot.fish.instanceId == fishInstanceId)
+                    foreach (var item in resolvedIngredients)
+                        if (item is FishDefinitionSO && slot.item == item) selected = true;
+            if (!selected) { result = CraftingTransactionResult.InsufficientIngredients; return false; }
+        }
+
+        if (!InventoryManager.Instance.TryExchangeItems(resolvedIngredients, quantities, outputItem,
+            recipe.OutputQuantity, fishInstanceId))
         {
             result = CraftingTransactionResult.InsufficientOutputCapacity;
             return false;
         }
-
-        for (int i = 0; i < recipe.Ingredients.Count; i++)
-            InventoryManager.Instance.RemoveItem(resolvedIngredients[i], recipe.Ingredients[i].Quantity);
-        InventoryManager.Instance.AddItem(outputItem, recipe.OutputQuantity);
 
         result = CraftingTransactionResult.Success;
         SoundFXManager.PlaySfx(SfxIds.CraftComplete);

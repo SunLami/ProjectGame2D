@@ -1,5 +1,7 @@
 # Fishing System
 
+2026-10-22 D-119: Gastronome offers per-species filleting recipes for all existing fish definitions. Select an individual fish (weight shown) in crafting: one instance yields two Fish Fillet regardless of weight. Only its instance ID is consumed; remaining fish keep identity and weight through save/load. Inventory exchange evaluates output capacity after consumption and publishes once after the whole transaction. No new fish DTO or save migration. See SheetContentExpansion.md.
+
 Tài liệu này là source of truth cho cơ chế câu cá đầu tiên trong `MapNhat`.
 
 ## Quyết định gameplay

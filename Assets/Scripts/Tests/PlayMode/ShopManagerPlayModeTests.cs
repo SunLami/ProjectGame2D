@@ -6,7 +6,7 @@ using UnityEngine;
 public sealed class ShopManagerPlayModeTests
 {
     private GameObject _root;
-    private GameObject _inventoryRoot;
+    private InventoryTestScope _inventoryScope;
     private ShopManager _manager;
     private readonly List<Object> _scratchAssets = new();
 
@@ -17,8 +17,7 @@ public sealed class ShopManagerPlayModeTests
         // GameStateManager.AllowsGameplayInput, and the singleton can carry state between tests.
         GameStateManager.Instance.ResetToPlaying();
 
-        _inventoryRoot = new GameObject("InventoryManagerFixture");
-        _inventoryRoot.AddComponent<InventoryManager>();
+        _inventoryScope = new InventoryTestScope();
 
         _root = new GameObject("ShopManagerFixture");
         _manager = _root.AddComponent<ShopManager>();
@@ -28,7 +27,7 @@ public sealed class ShopManagerPlayModeTests
     public void TearDown()
     {
         Object.DestroyImmediate(_root);
-        Object.DestroyImmediate(_inventoryRoot);
+        _inventoryScope.Dispose();
         foreach (Object asset in _scratchAssets)
             Object.DestroyImmediate(asset);
         _scratchAssets.Clear();

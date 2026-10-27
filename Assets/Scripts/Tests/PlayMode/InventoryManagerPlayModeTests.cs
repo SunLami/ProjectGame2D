@@ -4,15 +4,14 @@ using UnityEngine;
 
 public sealed class InventoryManagerPlayModeTests
 {
-    private GameObject _root;
+    private InventoryTestScope _inventoryScope;
     private ItemSO _stackable;
     private ItemSO _nonStackable;
 
     [SetUp]
     public void SetUp()
     {
-        _root = new GameObject("InventoryManagerFixture");
-        _root.AddComponent<InventoryManager>();
+        _inventoryScope = new InventoryTestScope();
 
         _stackable = ScriptableObject.CreateInstance<ItemSO>();
         _stackable.itemId = "test.stackable";
@@ -28,7 +27,7 @@ public sealed class InventoryManagerPlayModeTests
     [TearDown]
     public void TearDown()
     {
-        Object.DestroyImmediate(_root);
+        _inventoryScope.Dispose();
         Object.DestroyImmediate(_stackable);
         Object.DestroyImmediate(_nonStackable);
     }

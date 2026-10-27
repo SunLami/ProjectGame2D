@@ -13,17 +13,17 @@ MonoBehaviour:
   m_Name: Recipe_TrailrunnerTonic
   m_EditorClassIdentifier: ProjectGame2D.Runtime::RecipeDefinition
   _recipeId: recipe.drink.trailrunner_tonic
-  _displayName: Trailrunner Tonic
+  _displayName: Trailrunner Fish Broth
   _ingredients:
-  - _itemId: item.crop.apple
+  - _itemId: item.material.fish_fillet
     _quantity: 2
   - _itemId: item.crop.lemon
-    _quantity: 1
+    _quantity: 2
   - _itemId: item.crop.carrot
-    _quantity: 1
-  - _itemId: item.crop.chillie
-    _quantity: 1
+    _quantity: 2
+  - _itemId: item.crop.cucumber
+    _quantity: 2
   _outputItemId: item.drink.trailrunner_tonic
   _outputQuantity: 1
   _requiredStationTag: 
-  _npcId: npc.town.mixologist
+  _npcId: npc.town.gastronome

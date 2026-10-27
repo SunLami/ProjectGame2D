@@ -14,6 +14,68 @@ public class InventoryManager : MonoBehaviour
     public int Gold => _gold;
     public event Action OnInventoryChanged;
 
+    /// <summary>Plans consumption and output together. Publishes only the completed exchange;
+    /// freed ingredient slots count toward capacity. Fish selection uses its persistent instance ID.</summary>
+    public bool TryExchangeItems(IReadOnlyList<ItemSO> ingredients, IReadOnlyList<int> quantities,
+        ItemSO output, int outputQuantity, string fishInstanceId = null)
+    {
+        if (ingredients == null || quantities == null || ingredients.Count != quantities.Count
+            || ingredients.Count == 0 || output == null || output is FishDefinitionSO || outputQuantity <= 0
+            || (output.isStackable && output.maxStackSize <= 0)) return false;
+
+        var planned = new List<InventorySlot>(_slots.Count);
+        foreach (var slot in _slots)
+            planned.Add(new InventorySlot { item = slot.item, quantity = slot.quantity, fish = slot.fish });
+        bool selectedFishConsumed = string.IsNullOrEmpty(fishInstanceId);
+        for (int i = 0; i < ingredients.Count; i++)
+        {
+            var item = ingredients[i];
+            int remaining = quantities[i];
+            if (item == null || remaining <= 0) return false;
+            foreach (var slot in planned)
+            {
+                if (slot.item != item) continue;
+                if (item is FishDefinitionSO && !string.IsNullOrEmpty(fishInstanceId)
+                    && (slot.fish == null || slot.fish.instanceId != fishInstanceId)) continue;
+                if (item is FishDefinitionSO && (slot.quantity != 1 || slot.fish == null
+                    || string.IsNullOrEmpty(slot.fish.instanceId) || slot.fish.weightGrams <= 0)) continue;
+                int take = Mathf.Min(remaining, slot.quantity);
+                slot.quantity -= take; remaining -= take;
+                if (item is FishDefinitionSO && take > 0) selectedFishConsumed = true;
+                if (slot.quantity <= 0) slot.Clear();
+                if (remaining == 0) break;
+            }
+            if (remaining != 0) return false;
+        }
+        if (!selectedFishConsumed) return false;
+        int toGrant = outputQuantity;
+        if (output.isStackable)
+            foreach (var slot in planned)
+            {
+                if (slot.item != output) continue;
+                int add = Mathf.Min(toGrant, Mathf.Max(0, output.maxStackSize - slot.quantity));
+                slot.quantity += add; toGrant -= add;
+                if (toGrant == 0) break;
+            }
+        foreach (var slot in planned)
+        {
+            if (toGrant == 0) break;
+            if (!slot.IsEmpty) continue;
+            int add = output.isStackable ? Mathf.Min(toGrant, output.maxStackSize) : 1;
+            slot.item = output; slot.quantity = add; slot.fish = null; toGrant -= add;
+        }
+        if (toGrant != 0) return false;
+        for (int i = 0; i < planned.Count; i++)
+        {
+            _slots[i].item = planned[i].item;
+            _slots[i].quantity = planned[i].quantity;
+            _slots[i].fish = planned[i].fish;
+        }
+        OnInventoryChanged?.Invoke();
+        QuestDomainEvents.RaiseInventoryItemAdded(output.itemId, outputQuantity);
+        return true;
+    }
+
     private void Awake()
     {
         if (Instance == null)
