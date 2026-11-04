@@ -774,3 +774,27 @@ Separately found and fixed in this session (unrelated to quest/tutorial logic, s
 edited and saved" category of bug): the Dev Debug toggle button (`DevPanel.prefab`'s
 `DevToggleButton`) had its `anchoredPosition` overridden to `(523, -700)` in `Bootstrap.unity`,
 placing it off-screen; restored to the prefab's authored `(-18, -142)` (just below the Minimap).
+
+
+## D-119 — Items List content expansion (Accepted, owner 2026-10-21)
+
+Latest owner-approved revision 2026-10-22 supersedes the preceding recipes: Fish Fillet (`item.material.fish_fillet`) is a stackable material sold by Gastronome; one selected fish instance of any existing species produces two fillets regardless of weight, via Gastronome crafting. Each species has a data-driven recipe; UI selects the individual instance by ID and displays weight. Harvest Stew = 2 Meat + 2 Carrot + 2 Mushroom + 2 Chillie. Trailrunner Fish Broth = 2 Fish Fillet + 2 Lemon + 2 Carrot + 2 Cucumber, offered/sold by Gastronome instead of Mixologist. Orchard Elixir = one each Lemon/Apple/Carrot/Grape Juice; each juice costs two matching produce for one juice. Existing output IDs/effects unchanged; no save schema change. Unknown prices/stations stay unset. Inventory exchange validates post-consumption capacity and commits once before notifications, with crafting reentrancy rejection. Owner authorized updating the live Resource Items sheet to match.
+
+Owner revision 2026-10-22: keep Orchard Elixir unchanged; Harvest Stew uses 2 Meat + 2 Carrot + 1 Mushroom + 1 Chillie; Trailrunner Tonic display name becomes Trailrunner Fish Broth with 1 Sunscale Carp + 1 Lemon + 1 Carrot + 1 Chillie. This supersedes the four-produce-only ingredient choice below. Retain four ingredient types, existing stable IDs, output effects, NPC association and unset station/economy data. A carp ingredient means one fish instance, regardless of weight.
+
+Owner approved SheetContentExpansion.md: 15%/35% Health/Mana potions with shared 10s cooldown; refresh-only food/drink buffs (special lifecycle policies deferred); 60s crops with single harvest; agent-selected four-produce recipes; stable IDs authorized, unknown economy/station/NPC left unconfigured. Preserve existing legacy mappings and ignore three incomplete fish rows. Non-equipment recipes may be exposed in dedicated Material/Consumable groups alongside the unchanged equipment groups, superseding D-043 restriction for this content expansion. No new save DTO for transient cooldown/buffs. DemoScene-first gates remain required.
+
+## Branch integration — owner approved 2026-11-04
+
+Merge upstream/main (556503653, including Duy PR #145) into SuperaAI (41cafd599).
+Owner explicitly selected main's overlapping content configuration, retaining SuperaAI quest/skill
+behavior. D-119 content is canonical for Grape/Lemon crops, seeds, produce, Meat and Carrot/Grape
+Juice: use main's asset GUIDs, icons, yield, categories, use flags and pending economy settings.
+Stable itemId/cropId values and save V13 remain unchanged. The earlier Act I placeholder variants
+of those same assets are superseded; Act I quest IDs, dialogue and progression remain intact.
+FarmingCatalog and Cuthbert stock retain main's complete lists. PlayerStat combines SuperaAI
+skill catalog/mana/shield behavior with main's transient consumable buffs; regeneration keeps
+SuperaAI's existing living-gameplay guard. DemoScene retains both branches' additions; MapDuy
+is byte-identical to upstream/main. No new production placement or feature acceptance is implied.
+
+Verification and limitations: see [Branch merge verification](BranchMergeVerification.md).

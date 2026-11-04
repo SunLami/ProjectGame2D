@@ -60,6 +60,7 @@ public sealed class ShopCraftingUI : MonoBehaviour
     private ShopDefinition _shop;
     private string _selectedBuyItemId;
     private RecipeDefinition _selectedRecipe;
+    private string _selectedFishInstanceId;
     private string _npcId;
     private string _stationTag;
     private int _quantity = 1;
@@ -250,6 +251,7 @@ public sealed class ShopCraftingUI : MonoBehaviour
         _craftingTitle.text = "CRAFTING";
         _craftingFeedback.text = string.Empty;
         _selectedRecipe = null;
+        _selectedFishInstanceId = null;
         IReadOnlyList<RecipeDefinition> recipes = _craftingService.GetOfferedRecipes(_npcId);
         foreach (RecipeDefinition recipe in recipes)
         {
@@ -262,14 +264,25 @@ public sealed class ShopCraftingUI : MonoBehaviour
             group.Add(recipe);
         }
 
-        string[] categoryOrder = { "HEAD", "BODY", "FOOT", "RING", "NECKLACE", "SHIELD", "SWORD" };
+        string[] categoryOrder = { "HEAD", "BODY", "FOOT", "RING", "NECKLACE", "SHIELD", "SWORD", "MATERIAL", "CONSUMABLE", "OTHER" };
         foreach (string category in categoryOrder)
         {
             if (!_recipesByCategory.TryGetValue(category, out List<RecipeDefinition> group))
                 continue;
             CreateCategoryRow(category, group);
             if (!_expandedRecipeCategories.Contains(category)) continue;
-            foreach (RecipeDefinition recipe in group) CreateBlueprintRow(recipe);
+            foreach (RecipeDefinition recipe in group)
+            {
+                bool fishRecipe = recipe.Ingredients.Count == 1
+                    && _items.TryResolve(recipe.Ingredients[0].ItemId, out var ingredient)
+                    && ingredient is FishDefinitionSO;
+                bool added = false;
+                if (fishRecipe && InventoryManager.Instance != null)
+                    foreach (var slot in InventoryManager.Instance.Slots)
+                        if (slot.fish != null && slot.item != null && slot.item.itemId == recipe.Ingredients[0].ItemId)
+                        { CreateBlueprintRow(recipe, slot); added = true; }
+                if (!added) CreateBlueprintRow(recipe);
+            }
         }
         RefreshRecipeDetails();
         SelectDefault(_recipeRows, _craftingCloseButton);
@@ -298,20 +311,22 @@ public sealed class ShopCraftingUI : MonoBehaviour
         _recipeRows.Add(row);
     }
 
-    private void CreateBlueprintRow(RecipeDefinition recipe)
+    private void CreateBlueprintRow(RecipeDefinition recipe, InventorySlot fishSlot = null)
     {
             GameObject row = Instantiate(_recipeRowTemplate, _recipeListContent);
-            row.name = $"RecipeRow_{recipe.RecipeId}";
+            row.name = $"RecipeRow_{recipe.RecipeId}" + (fishSlot != null ? "_" + fishSlot.fish.instanceId : "");
             row.SetActive(true);
-            row.transform.Find("Name").GetComponent<TMP_Text>().text = recipe.DisplayName;
+            row.transform.Find("Name").GetComponent<TMP_Text>().text = fishSlot != null
+                ? $"{recipe.DisplayName} ({fishSlot.fish.weightGrams / 1000f:0.###} kg) x{recipe.OutputQuantity}" : recipe.DisplayName;
             row.transform.Find("Station").GetComponent<TMP_Text>().text = string.IsNullOrEmpty(recipe.RequiredStationTag)
                 ? "ANYWHERE"
-                : "FORGE";
+                : recipe.RequiredStationTag == "station.forge" ? "FORGE" : recipe.RequiredStationTag;
             Image icon = row.transform.Find("Icon")?.GetComponent<Image>();
             if (icon != null && _items.TryResolve(recipe.OutputItemId, out ItemSO blueprintItem))
                 icon.sprite = blueprintItem.icon;
             RecipeDefinition selected = recipe;
-            row.GetComponent<Button>().onClick.AddListener(() => SelectRecipe(selected));
+            string fishId = fishSlot?.fish?.instanceId;
+            row.GetComponent<Button>().onClick.AddListener(() => SelectRecipe(selected, fishId));
             _recipeRows.Add(row);
     }
 
@@ -325,9 +340,7 @@ public sealed class ShopCraftingUI : MonoBehaviour
 
     private string RecipeCategory(RecipeDefinition recipe)
     {
-        if (!_items.TryResolve(recipe.OutputItemId, out ItemSO item) || item is not EquipmentItemSO equipment)
-            return string.Empty;
-        return equipment.slot == EquipSlot.Weapon ? "SWORD" : equipment.slot.ToString().ToUpperInvariant();
+        return CraftingPresentationCategory.ForItem(_items.TryResolve(recipe.OutputItemId, out ItemSO item) ? item : null);
     }
 
     private void SelectBuyItem(string itemId)
@@ -338,9 +351,10 @@ public sealed class ShopCraftingUI : MonoBehaviour
         RefreshShopDetails();
     }
 
-    private void SelectRecipe(RecipeDefinition recipe)
+    private void SelectRecipe(RecipeDefinition recipe, string fishInstanceId = null)
     {
         _selectedRecipe = recipe;
+        _selectedFishInstanceId = fishInstanceId;
         RefreshRecipeDetails();
     }
 
@@ -384,8 +398,9 @@ public sealed class ShopCraftingUI : MonoBehaviour
     {
         if (_selectedRecipe == null)
             return;
-        bool success = _craftingService.TryCraft(_npcId, _selectedRecipe.RecipeId, _stationTag, out CraftingTransactionResult result);
-        _craftingFeedback.text = success ? $"Crafted {_selectedRecipe.DisplayName}." : FormatCraftingFailure(result);
+        var recipe = _selectedRecipe;
+        bool success = _craftingService.TryCraft(_npcId, recipe.RecipeId, _stationTag, out CraftingTransactionResult result, _selectedFishInstanceId);
+        _craftingFeedback.text = success ? $"Crafted {recipe.DisplayName}." : FormatCraftingFailure(result);
         RefreshRecipeDetails();
     }
 
@@ -394,7 +409,7 @@ public sealed class ShopCraftingUI : MonoBehaviour
         if (_shopWindow.activeSelf)
             RefreshShopDetails();
         if (_craftingWindow.activeSelf)
-            RefreshRecipeDetails();
+            RebuildRecipes();
     }
 
     private void RefreshShopDetails()
@@ -519,6 +534,11 @@ public sealed class ShopCraftingUI : MonoBehaviour
         text.Append("<align=\"left\"><size=17><color=#C9A34A><b>OUTPUT</b></color>  ")
             .Append(ItemName(_selectedRecipe.OutputItemId)).Append("  ×")
             .Append(_selectedRecipe.OutputQuantity).Append("</size>\n");
+        if (!string.IsNullOrEmpty(_selectedFishInstanceId) && InventoryManager.Instance != null)
+            foreach (var slot in InventoryManager.Instance.Slots)
+                if (slot.fish != null && slot.fish.instanceId == _selectedFishInstanceId)
+                    text.Append("<size=17>Selected fish: ").Append(slot.item.itemName)
+                        .Append($" ({slot.fish.weightGrams / 1000f:0.###} kg)</size>\n");
         if (_items.TryResolve(_selectedRecipe.OutputItemId, out ItemSO output)
             && output is EquipmentItemSO equipment)
         {

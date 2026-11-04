@@ -30,6 +30,7 @@ public static class ContentValidationRunner
         ValidateRecipeDefinitions(report, knownItemIds);
         ValidatePersistentWorldObjects(report);
         ValidateFarmPlots(report);
+        ValidateConsumableAndWildlifeContent(report);
 
         string summary = $"Content validation finished: {report.ErrorCount} error(s), "
             + $"{report.WarningCount} warning(s), {report.CheckedAssetCount} asset(s) checked.";
@@ -40,6 +41,33 @@ public static class ContentValidationRunner
             Debug.LogWarning(summary);
         else
             Debug.Log(summary);
+    }
+
+    private static void ValidateConsumableAndWildlifeContent(ValidationReport report)
+    {
+        foreach (ItemSO item in LoadAssets<ItemSO>())
+        {
+            if (item.consumableEffect == ConsumableEffectType.None) continue;
+            string path=AssetDatabase.GetAssetPath(item);
+            if (float.IsNaN(item.effectAmount) || float.IsInfinity(item.effectAmount) || item.effectAmount <= 0f)
+                report.Error(path,"Consumable effectAmount must be positive and finite.",item);
+            if (item.consumableEffect is ConsumableEffectType.HealPercent or ConsumableEffectType.RestoreManaPercent)
+                if (item.effectAmount > 1f) report.Error(path,"Potion percentage must be in (0, 1].",item);
+            if (item.consumableEffect is ConsumableEffectType.HealthFood or ConsumableEffectType.ManaDrink or ConsumableEffectType.StaminaDrink)
+                if (float.IsNaN(item.buffDurationSeconds) || float.IsInfinity(item.buffDurationSeconds) || item.buffDurationSeconds <= 0f)
+                    report.Error(path,"Timed buff duration must be positive and finite.",item);
+        }
+        var ids=new HashSet<string>(StringComparer.Ordinal);
+        foreach (WildlifeDefinition animal in LoadAssets<WildlifeDefinition>())
+        {
+            string path=AssetDatabase.GetAssetPath(animal); report.Check(animal);
+            if (string.IsNullOrWhiteSpace(animal.AnimalId) || !StableIdPattern.IsMatch(animal.AnimalId) || !ids.Add(animal.AnimalId))
+                report.Error(path,"Wildlife requires a unique stable animal ID.",animal);
+            if (animal.Loot == null || animal.Loot.Length == 0) report.Error(path,"Wildlife loot is empty.",animal);
+            else foreach (ResourceLootEntry entry in animal.Loot)
+                if (entry == null || entry.Item == null || entry.MinimumQuantity < 1 || entry.MaximumQuantity < entry.MinimumQuantity)
+                    report.Error(path,"Wildlife loot has an invalid item/quantity range.",animal);
+        }
     }
 
     private static HashSet<string> ValidateItems(IReadOnlyList<ItemSO> items, ValidationReport report)
@@ -652,9 +680,17 @@ public static class ContentValidationRunner
             if (!seen.Add(item))
                 report.Error(path, $"{label} contains duplicate item '{item.name}'.", shop);
             if (requireBuyPrice && item.MaxBuyPrice <= 0 && !HasLegacyStockPrice(shop, item.itemId))
-                report.Error(path, $"Buy item '{item.name}' has no Buy Min/Max price and no legacy stock price.", shop);
+            {
+                string message=$"Buy item '{item.name}' has no Buy Min/Max price and no legacy stock price.";
+                if(item.commerceConfigurationPending)report.Warning(path,message+" Intentionally unavailable pending economy authoring (D-119).",shop);
+                else report.Error(path,message,shop);
+            }
             if (!requireBuyPrice && item.MaxSellPrice <= 0 && !HasLegacyStockPrice(shop, item.itemId))
-                report.Error(path, $"Sell item '{item.name}' has no Sell Min/Max price and no legacy stock fallback.", shop);
+            {
+                string message=$"Sell item '{item.name}' has no Sell Min/Max price and no legacy stock fallback.";
+                if(item.commerceConfigurationPending)report.Warning(path,message+" Intentionally unavailable pending economy authoring (D-119).",shop);
+                else report.Error(path,message,shop);
+            }
         }
     }
 

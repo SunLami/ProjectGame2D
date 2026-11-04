@@ -131,7 +131,13 @@ public sealed class ShopManager : MonoBehaviour
             result = ShopTransactionResult.ItemNotInStock;
             return false;
         }
-        totalCost = unitPrice * quantity;
+        long quotedCost = (long)unitPrice * quantity;
+        if (unitPrice < 0 || quotedCost > int.MaxValue || (item is FishDefinitionSO && quantity != 1))
+        {
+            result = ShopTransactionResult.ItemNotInStock;
+            return false;
+        }
+        totalCost = (int)quotedCost;
         if (InventoryManager.Instance == null || InventoryManager.Instance.Gold < totalCost)
         {
             result = ShopTransactionResult.InsufficientGold;
@@ -142,8 +148,13 @@ public sealed class ShopManager : MonoBehaviour
             result = ShopTransactionResult.InsufficientInventoryCapacity;
             return false;
         }
-        InventoryManager.Instance.SpendGold(totalCost);
-        InventoryManager.Instance.AddItem(item, quantity);
+        InventoryManager inventory = InventoryManager.Instance;
+        int weight = item is FishDefinitionSO fish ? fish.RollWeightGrams() : 0;
+        if (!inventory.TryPurchaseItem(item, quantity, totalCost, weight))
+        {
+            result = ShopTransactionResult.InsufficientInventoryCapacity;
+            return false;
+        }
         result = ShopTransactionResult.Success;
         SoundFXManager.PlaySfx(SfxIds.ShopBuy);
         QuestDomainEvents.RaiseItemPurchased(itemId, quantity, shopId);

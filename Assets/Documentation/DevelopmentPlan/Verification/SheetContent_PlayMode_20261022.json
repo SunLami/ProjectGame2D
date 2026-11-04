@@ -1,0 +1,50 @@
+{
+    "method": "Live PlayMode reflection smoke",
+    "checks": [
+        {
+            "name": "PercentHealthAndManaShareCooldown(0.15)",
+            "passed": true,
+            "error": ""
+        },
+        {
+            "name": "PercentHealthAndManaShareCooldown(0.35)",
+            "passed": true,
+            "error": ""
+        },
+        {
+            "name": "FullResourceMissingStockAndDeadPlayerNeverConsumeOrStartCooldown()",
+            "passed": true,
+            "error": ""
+        },
+        {
+            "name": "BuffRefreshAndExpiryChangeCapsWithoutInstantHealing()",
+            "passed": true,
+            "error": ""
+        },
+        {
+            "name": "ManaAndStaminaBuffsApplyTheirOwnCapsAndRegeneration()",
+            "passed": true,
+            "error": ""
+        },
+        {
+            "name": "WildlifeDeathDropsOnceAndRetainsLootUntilCapacityIsAvailable()",
+            "passed": true,
+            "error": ""
+        },
+        {
+            "name": "ConsumptionIsNotReenteredThroughInventoryCallbacks()",
+            "passed": true,
+            "error": ""
+        },
+        {
+            "name": "FishPurchaseCommitsGoldAndInstanceBeforeNotificationAndRoundTrips()",
+            "passed": true,
+            "error": ""
+        },
+        {
+            "name": "FullInventoryPurchaseDoesNotSpendOrGrant()",
+            "passed": true,
+            "error": ""
+        }
+    ]
+}

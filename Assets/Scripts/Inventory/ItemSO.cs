@@ -28,6 +28,11 @@ public enum ConsumableEffectType
     Heal = 1,
     RestoreStamina = 2,
     RestoreMana = 3,
+    HealPercent = 4,
+    RestoreManaPercent = 5,
+    HealthFood = 6,
+    ManaDrink = 7,
+    StaminaDrink = 8,
 }
 
 [CreateAssetMenu(fileName = "NewItem", menuName = "Scriptable Objects/Item")]
@@ -48,8 +53,14 @@ public class ItemSO : ScriptableObject
     public ConsumableEffectType consumableEffect;
     [Tooltip("Magnitude for the effect above (health/stamina/mana restored). Unused when effect is None.")]
     public float effectAmount;
+    [Min(0f)] public float buffDurationSeconds;
+    [Range(0f, 1f)] public float buffRegenerationFraction;
+    [Range(0f, 1f)] public float buffStaminaRegenerationBonus;
     public bool isStackable = true;
     public int maxStackSize = 99;
+
+    [Tooltip("Economy authoring is intentionally pending. Unset prices stay unavailable in shops.")]
+    public bool commerceConfigurationPending;
 
     [Header("NPC Price Range")]
     [SerializeField, Min(0)] private int _minBuyPrice;

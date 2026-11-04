@@ -1,5 +1,9 @@
 # Development Roadmap
 
+2026-10-22 D-119 fillet/recipe revision: owner authorized Gastronome filleting (one selected fish -> two fillets), shop stock and revised food/juice costs, synchronized live sheet. Implementation and current verification are tracked in SheetContentExpansion.md; no new production release acceptance is implied.
+
+Verification: 16/16 EditMode content checks, final 38/38 PlayMode commerce/inventory/crafting/buff checks, scoped item/shop/recipe validation 0 errors. Live sheet re-export confirms only the eight intended Resource Items rows changed. Unknown prices, physical UI/Player smoke and the existing RockTileData blocker remain open.
+
 2026-10-14 D-117: Inventory categories and Used Items/Active/Inactive configuration implemented,
 with eligibility checks and active-use event for teammate integration. Effects remain teammate-owned.
 Owner manual verification pending; no new automated or Play Mode test run claimed.
@@ -529,3 +533,15 @@ orders -6/-5/-4/-1 retained. This restores the original terrain/water interleavi
 all ground below Default negative-order VFX. Trees/buildings/actors untouched.
 Full-map Editor render verified: Captures/Skills/mapnhat_water_restored_editor.png.
 No Play Mode transition or runtime cast acceptance claimed.
+
+### Items List content expansion — D-119 (2026-10-22, verification in progress)
+
+Percentage Health/Mana potions with shared 10s cooldown, refresh-only runtime buffs, seven sheet crops (60s/three produce), materials/juice recipes and wildlife/node prefabs. Runtime/save schema remains V13. DemoScene integration and focused tests are tracked in SheetContentExpansion.md. Production world placement and release acceptance are not complete while baseline validator failures remain.
+
+D-119 verification checkpoint: 15/15 EditMode and 40/40 PlayMode passed; 9/9 direct live smoke also passed. Global validator remains blocked only by 1089 missing RockTileData references; price drafts are explicit warnings. Windows build unverified after transport loss. New world placement remains DemoScene-only. See SheetContentExpansion.md.
+
+### Branch synchronization — 2026-11-04
+
+Merged Duy/main content into SuperaAI, preserving its Act I and skill work. Owner selected main
+configuration for overlapping items/crops; no feature milestone status is advanced by this merge.
+Validation and remaining Editor/runtime gates: [Branch merge verification](BranchMergeVerification.md).

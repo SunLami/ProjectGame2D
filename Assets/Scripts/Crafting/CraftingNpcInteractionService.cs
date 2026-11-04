@@ -31,12 +31,12 @@ public sealed class CraftingNpcInteractionService
 
     /// <summary>Crafts recipeId only if npcId actually offers it -- rejects a recipe this npcId
     /// does not provide as a capability.</summary>
-    public bool TryCraft(string npcId, string recipeId, string stationTag, out CraftingTransactionResult result)
+    public bool TryCraft(string npcId, string recipeId, string stationTag, out CraftingTransactionResult result, string fishInstanceId = null)
     {
         foreach (RecipeDefinition candidate in GetOfferedRecipes(npcId))
         {
             if (candidate.RecipeId == recipeId)
-                return _craftingManager.TryCraft(recipeId, stationTag, out result);
+                return _craftingManager.TryCraft(recipeId, stationTag, out result, fishInstanceId);
         }
 
         result = CraftingTransactionResult.RecipeNotFound;

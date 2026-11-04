@@ -6,7 +6,7 @@ using UnityEngine;
 public sealed class ShopManagerPlayModeTests
 {
     private GameObject _root;
-    private GameObject _inventoryRoot;
+    private InventoryTestScope _inventoryScope;
     private ShopManager _manager;
     private readonly List<Object> _scratchAssets = new();
 
@@ -17,8 +17,7 @@ public sealed class ShopManagerPlayModeTests
         // GameStateManager.AllowsGameplayInput, and the singleton can carry state between tests.
         GameStateManager.Instance.ResetToPlaying();
 
-        _inventoryRoot = new GameObject("InventoryManagerFixture");
-        _inventoryRoot.AddComponent<InventoryManager>();
+        _inventoryScope = new InventoryTestScope();
 
         _root = new GameObject("ShopManagerFixture");
         _manager = _root.AddComponent<ShopManager>();
@@ -28,7 +27,7 @@ public sealed class ShopManagerPlayModeTests
     public void TearDown()
     {
         Object.DestroyImmediate(_root);
-        Object.DestroyImmediate(_inventoryRoot);
+        _inventoryScope.Dispose();
         foreach (Object asset in _scratchAssets)
             Object.DestroyImmediate(asset);
         _scratchAssets.Clear();
@@ -115,6 +114,20 @@ public sealed class ShopManagerPlayModeTests
         {
             QuestDomainEvents.ItemPurchased -= OnItemPurchased;
         }
+    }
+
+    [Test]
+    public void TryPurchase_FishCreatesInstanceAndRejectsUnsupportedBatchWithoutSpending()
+    {
+        var fish=ScriptableObject.CreateInstance<FishDefinitionSO>();fish.itemId="fish.test.shop";fish.isStackable=false;fish.maxStackSize=1;_scratchAssets.Add(fish);
+        var resolver=new FakeItemResolver();resolver.Register(fish);
+        _manager.ConfigureForTests(MakeCatalog(MakeShop("shop.test.fish","npc.test.fish",(fish.itemId,10))),resolver);
+        int before=InventoryManager.Instance.Gold;InventoryManager.Instance.AddGold(100);
+        Assert.IsFalse(_manager.TryPurchase("shop.test.fish",fish.itemId,2,out _));Assert.AreEqual(before+100,InventoryManager.Instance.Gold);
+        Assert.IsTrue(_manager.TryPurchase("shop.test.fish",fish.itemId,1,out _));Assert.AreEqual(before+90,InventoryManager.Instance.Gold);
+        var saved=InventoryManager.Instance.ToSaveData();
+        var slot=saved.slots.Find(v=>v.itemId==fish.itemId);Assert.IsNotNull(slot.fish);Assert.IsNotEmpty(slot.fish.instanceId);
+        Assert.That(slot.fish.weightGrams,Is.InRange(fish.MinimumWeightGrams,fish.MaximumWeightGrams));
     }
 
     [Test]

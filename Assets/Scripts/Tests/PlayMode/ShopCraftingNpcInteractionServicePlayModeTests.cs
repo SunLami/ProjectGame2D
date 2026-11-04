@@ -7,7 +7,7 @@ public sealed class ShopCraftingNpcInteractionServicePlayModeTests
 {
     private GameObject _shopRoot;
     private GameObject _craftingRoot;
-    private GameObject _inventoryRoot;
+    private InventoryTestScope _inventoryScope;
     private ShopManager _shopManager;
     private CraftingManager _craftingManager;
     private readonly List<Object> _scratchAssets = new();
@@ -16,8 +16,7 @@ public sealed class ShopCraftingNpcInteractionServicePlayModeTests
     public void SetUp()
     {
         GameStateManager.Instance.ResetToPlaying();
-        _inventoryRoot = new GameObject("InventoryManagerFixture");
-        _inventoryRoot.AddComponent<InventoryManager>();
+        _inventoryScope = new InventoryTestScope();
         _shopRoot = new GameObject("ShopManagerFixture");
         _shopManager = _shopRoot.AddComponent<ShopManager>();
         _craftingRoot = new GameObject("CraftingManagerFixture");
@@ -29,7 +28,7 @@ public sealed class ShopCraftingNpcInteractionServicePlayModeTests
     {
         Object.DestroyImmediate(_shopRoot);
         Object.DestroyImmediate(_craftingRoot);
-        Object.DestroyImmediate(_inventoryRoot);
+        _inventoryScope.Dispose();
         foreach (Object asset in _scratchAssets)
             Object.DestroyImmediate(asset);
         _scratchAssets.Clear();

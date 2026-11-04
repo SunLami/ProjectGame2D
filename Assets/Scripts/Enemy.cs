@@ -5,6 +5,8 @@ using UnityEngine.Serialization;
 [RequireComponent(typeof(Rigidbody2D))]
 public class Enemy : MonoBehaviour, IDamageable, ISlowable, IPullable, IVulnerable, IStunnable, IAirborne
 {
+    public event System.Action Died;
+
     public enum EnemyState
     {
         Hit,
@@ -247,6 +249,7 @@ public class Enemy : MonoBehaviour, IDamageable, ISlowable, IPullable, IVulnerab
         _health = Mathf.Clamp(_health - damage, 0f, _maxHealth);
         if (_health <= 0f)
         {
+            Died?.Invoke();
             EnemySfx.Death(this);
             EnterState(EnemyState.Dead);
             return;

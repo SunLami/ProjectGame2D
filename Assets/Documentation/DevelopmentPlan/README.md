@@ -180,3 +180,7 @@ isolated Editor sample. Details, affected skills, changed map layers and manual 
 [MapNhat skill sorting audit](SkillMapNhatSortingAudit.md).
 
 2026-10-22 owner request: remove Minimap from Bootstrap shared HUD; QuestTracker moves top-right with no background, separate category/objective icons and generated pixel-art header separator. FullMap (M) retained. Implementation/prompt/acceptance: [QuestTracker refresh](QuestTrackerTopRightRefresh.md).
+
+Items List expansion (D-119, 2026-10-22): [content contract and verification](SheetContentExpansion.md). Adds percentage potions, refresh-only timed buffs, crops, wildlife and material recipes; definitions use V13 resolver contracts. Production world placement remains gated by the recorded baseline validation issues.
+
+2026-11-04 branch integration: [merge choices and verification](BranchMergeVerification.md).
