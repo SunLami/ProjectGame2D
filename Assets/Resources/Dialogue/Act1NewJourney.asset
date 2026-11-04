@@ -1,0 +1,34 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 14c148da086a4444f9dc223cd131312a, type: 3}
+  m_Name: Act1NewJourney
+  m_EditorClassIdentifier: ProjectGame2D.Runtime::DialogueDefinition
+  _dialogueId: dialogue.act1.new_journey
+  _initialNodeId: greeting
+  _nodes:
+  - _nodeId: greeting
+    _speakerName: Wigheard
+    _portrait: {fileID: 0}
+    _text: So, a new face in Heorte. Every journey starts the same way -- grip your
+      blade, swing true. Train with me a moment, lad.
+    _nextNodeId: trained
+    _outcomeId:
+    _choices: []
+  - _nodeId: trained
+    _speakerName: Wigheard
+    _portrait: {fileID: 0}
+    _text: Not bad for a first swing. Take this Training Sword -- you've earned
+      it. Now go on, Cuthbert's drink stall is just across the square. Tell him
+      Wigheard sent you.
+    _nextNodeId:
+    _outcomeId: trained
+    _choices: []

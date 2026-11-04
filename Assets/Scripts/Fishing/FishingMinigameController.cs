@@ -238,6 +238,9 @@ public sealed class FishingMinigameController : MonoBehaviour
 
         int value = _selectedFish.GetValueForWeight(weightGrams);
         SoundFXManager.PlaySfx(SfxIds.FishingCatch);
+        // Bridges Fishing to the Quest Fish objective (TutorialAndQuestProgression.md Quest 3
+        // "Take a Breather, Cast a Line") -- fishing had no domain event producer before this.
+        QuestDomainEvents.RaiseFishCaught(_selectedFish.itemId);
         BeginResult(
             $"Caught {_selectedFish.itemName}\n{weightGrams / 1000f:0.00} kg  -  {value} gold",
             _selectedFish.icon);

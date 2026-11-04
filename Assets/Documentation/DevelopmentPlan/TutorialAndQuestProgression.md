@@ -88,6 +88,8 @@ public enum QuestStatus
 | Purchase | `ItemPurchased` | Shop transaction thành công |
 | Gather | `ResourceGathered` | Đúng resource/area nếu quest yêu cầu |
 | Kill | `EnemyKilled` | Đúng enemy type/area/credit owner |
+| Replant | `CropReplanted` | Đúng cropId/area nếu quest yêu cầu (plant lại sau harvest, không phân biệt lần trồng đầu) |
+| Fish | `FishCaught` | Không phân biệt loài cá; `TargetId` chỉ là sentinel bắt buộc khác rỗng cho validation |
 
 Mỗi objective phải định nghĩa semantics rõ. Ví dụ Obtain có hai lựa chọn:
 
@@ -128,16 +130,89 @@ During chain: dialogue/progress/turn-in
 After chain completed: offer Main Quest
 ```
 
-Production content in `MapNhat` follows this concrete order:
+Production content in `MapNhat` ("Heorte" in-fiction) is Act I - "A Stop in Heorte", and follows
+this concrete order (replaces the previous Wigheard/Cenhelm tutorial+main chain entirely; see
+DecisionRegister.md 2026-11-01):
 
 ```text
-Wigheard training chain (`quest.trainer_greeting` → `quest.equip_weapon` → `quest.trainer_killquest`)
-→ Cenhelm Tutorial Quest (`quest.tutorial.crafting.001`)
-→ Cenhelm Main Quest (`quest.main.001`)
+Wigheard (npc.town.guildmaster)
+  quest.act1.new_journey        Talk/train Wigheard           -> reward: Training Sword (sword_lvl1)
+Cuthbert (npc.town.mixologist)
+  quest.act1.drink_before_road  Talk + buy 5 Carrot/Grape Juice (autoTurnIn)
+Oswin (npc.town.gastronome)
+  quest.act1.stocking_up_oswin  Talk Oswin (2-1a, autoTurnIn)
+Eadric (npc.town.chapman)
+  quest.act1.stocking_up_eadric Talk Eadric (2-1b, autoTurnIn)
+(no giver -- auto-accepted by TrainingAreaQuestFlow on stocking_up_eadric turn-in)
+  quest.act1.back_to_fields     Harvest 15 + Replant 5 each of Carrot/Grape/Lemon (2-2, autoTurnIn)
+Eadric (npc.town.chapman)
+  quest.act1.back_to_eadric     Talk Eadric (2-3a) -> reward: 5 Carrot, 10 Meat (autoTurnIn)
+(no giver -- auto-accepted by TrainingAreaQuestFlow on back_to_eadric turn-in)
+Oswin (npc.town.gastronome)
+  quest.act1.back_to_oswin      Talk Oswin (2-3b) -> reward: food/Bread (autoTurnIn)
+  quest.act1.cast_a_line        Fish x5 -> return to Oswin -> reward: food/Bread (manual turn-in)
+Merric (npc.town.artificer)
+  quest.act1.ring_of_forge      Visit (Talk) Merric -> reward: 5 Gold Bar; IsSmithingStationUnlocked
+Agnes (npc.town.hermetist)
+  quest.act1.far_from_your_kind Visit (Talk) Agnes; IsBlackArtsStationUnlocked
 ```
 
-The direction indicator must therefore not treat Cenhelm as an actionable quest giver until
-`quest.trainer_killquest` is Completed.
+No quest in this Act carries `isMainQuest`/`isTutorialQuest`; the Main Quest gate stays locked
+until Act 2 defines its own Tutorial Quest chain. "Visit the smithing station" / "visit the
+suspicious merchant" are authored as `Talk` against the NPC, not a new `VisitStation` type -- no
+physical station GameObject exists yet. `QuestManager.IsSmithingStationUnlocked` /
+`IsBlackArtsStationUnlocked` expose completion of Quest 4/5 for whatever station interactable is
+built later.
+
+Every quest in this chain -- except `quest.act1.back_to_fields`, which has no giver NPC -- is
+accepted and turned in purely through that NPC's own dialogue (`QuestNpcInteractionUI`): talking to
+its giver while the quest is `Available` opens that quest's `_questDialogues` entry, which closes
+into a `QuestAcceptPopupUI` accept/decline card; accepting immediately reports the conversation,
+which can satisfy a same-visit Talk objective (status becomes `ReadyToTurnIn` right there). All 8 of
+these quests have `AutoTurnIn` off, and `QuestNpcInteractionUI` deliberately never turns in during
+the same interaction that just accepted the quest (see its `offered == null` guard in
+`CompleteDialogueInteraction`/`HandleQuestDecision`) -- turning in always needs a separate, later
+visit to the giver, even one whose only objective is talking to that same NPC: the reward and
+`Completed` status only land on that second conversation. `quest.act1.cast_a_line` is the same
+pattern for a different reason (fishing happens away from Oswin, so a return visit is unavoidable
+regardless). Only `quest.act1.back_to_fields` auto-completes itself with no NPC visit at all, since
+it has no giver to return to. A giver NPC shows a "!" over its head while it has something
+`Available` to offer and a "?" while a tracked quest is `ReadyToTurnIn` there
+(`QuestNpcInteractionUI`'s marker, driven by `QuestNpcInteractionService`) -- this, plus the forced
+second visit, is how the player is led NPC-to-NPC through the chain with a real "hand it in" beat
+each time, not narration or a UI arrow. Do not auto-accept a quest that still has a giver (via
+`TrainingAreaQuestFlow`, `TutorialManager`'s `WaitForQuest` step, or similar glue): doing so skips
+the `Available` state the marker and dialogue resolution both depend on, so the giver falls back to
+its generic greeting instead of that quest's line, and a same-NPC two-objective quest (e.g. "Talk A,
+then talk B") cannot resolve the second NPC's dialogue at all, since `QuestNpcInteractionUI` only
+resolves a quest it is the giver/turnIn for -- never a quest it is merely a Talk objective's
+mid-quest target. For a quest whose narrative needs the player to visit two NPCs in order, split it
+into two single-NPC quests chained by prerequisite instead (e.g. `quest.act1.stocking_up_oswin` ->
+`quest.act1.stocking_up_eadric`, `quest.act1.back_to_eadric` -> `quest.act1.back_to_oswin`), each
+resolving its own giver's dialogue on its own.
+
+### Input Tutorial hand-off for "equip the sword" / "attack a dummy"
+
+`quest.act1.new_journey`'s reward (the Training Sword) is not itself gated on equipping or
+attacking anything -- per owner decision, that guidance lives entirely in the separate, non-gating
+Input Tutorial layer (`TutorialManager` + `Tutorial_TutorialArea.asset`, see "Input tutorial"
+above), never as quest objectives, so a player who ignores the banner can still go straight to
+Cuthbert. The authored chain is Move -> Sprint -> WaitForTrainer (`WaitForQuest`, target
+`quest.act1.new_journey`) -> OpenInventory -> EquipItem -> AttackDummy (new `Attack`-type step). The
+WaitForTrainer step waits for Wigheard's quest to actually `Completed` through the real dialogue
+flow above (no auto-accept -- see the anti-pattern note just above); `TutorialManager.Advance()`
+skips a `WaitForQuest` step immediately if its target is already `Completed` by the time the chain
+reaches it, since `QuestManager.QuestTurnedIn` only fires forward and the moment could otherwise
+already be missed (e.g. the player never sprints before reaching Wigheard). AttackDummy only needs
+`Player.PlayerAttacked` (a generic swing, no hit required) and has no quest/Kill-objective hook of
+its own; the existing `Manequin_Training_1/2/3` dummies under `Forest_MainMap/TrainingArea` (near
+Wigheard) are purely a visual target for it, nothing more is authored for them.
+
+NPCs that also run a shop (Merric, Agnes, Eadric, Oswin, Cuthbert) use `QuestNpcInteractionUI` for
+this, not `TraderNpcInteractionUI` -- `QuestNpcInteractionUI` now also opens Shop/Crafting/Storage
+when a dialogue choice resolves to that commerce outcome (merged from `TraderNpcInteractionUI`), so
+one NPC interaction component covers both quest and shop capability instead of two competing for
+the same trigger/click.
 
 ## Reward transaction
 

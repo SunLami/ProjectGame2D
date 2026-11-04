@@ -126,12 +126,26 @@ public sealed class TutorialManager : MonoBehaviour
         {
             TutorialStepDefinition step = CurrentStep;
             // A WaitForQuest step hands off to real Quest content (Quest Tracker UI, not this
-            // banner -- see TutorialOverlayUI), so it needs that quest to actually be Active the
-            // instant this step starts, not left sitting Available with nothing tracking it until
-            // an NPC visit accepts it. Auto-accept is a no-op (false, silently) if the quest isn't
-            // actually Available yet (e.g. content authored out of order) -- never throws.
-            if (step != null && step.Type == TutorialStepType.WaitForQuest)
-                QuestManager.Instance?.TryAcceptQuest(step.TargetQuestId);
+            // banner -- see TutorialOverlayUI) and must NOT auto-accept its target quest: every
+            // Act1 quest with a giver NPC (see TutorialAndQuestProgression.md) is accepted only
+            // through that NPC's own dialogue, which is also what shows its "!" marker -- silently
+            // accepting here would skip straight to Active and leave the giver showing no marker
+            // at all, the same anti-pattern TrainingAreaQuestFlow.cs documents for quest glue. This
+            // step simply waits for QuestTurnedIn once the player finds and completes that quest
+            // themselves.
+            //
+            // But QuestTurnedIn only fires going forward -- if the player already finished that
+            // quest before an earlier step (e.g. Sprint, which nothing forces before reaching the
+            // giver) caught up to this one, the event already happened and will never fire again,
+            // stalling every step after this one forever. Skip straight past a WaitForQuest step
+            // whose target is already Completed instead of waiting on a signal that already came.
+            if (step != null && step.Type == TutorialStepType.WaitForQuest
+                && QuestManager.Instance != null
+                && QuestManager.Instance.GetStatus(step.TargetQuestId) == QuestStatus.Completed)
+            {
+                Advance();
+                return;
+            }
 
             OnStepChanged?.Invoke(step);
         }

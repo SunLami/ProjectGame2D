@@ -10,23 +10,24 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 2a7a75faac2e50c44ac9f79fb2dfa85e, type: 3}
-  m_Name: Quest_TrainerKillquest
+  m_Name: Quest_Act1NewJourney
   m_EditorClassIdentifier: ProjectGame2D.Runtime::QuestDefinition
-  _questId: quest.trainer_killquest
-  _displayName: Training Dummy Challenge
-  _prerequisiteQuestIds:
-  - quest.equip_weapon
+  _questId: quest.act1.new_journey
+  _displayName: A New Journey
+  _prerequisiteQuestIds: []
   _objectives:
-  - _type: 5
-    _targetId: enemy.manequin.training
-    _targetAreaId: area.training
-    _targetCount: 3
+  - _type: 0
+    _targetId: npc.town.guildmaster
+    _targetAreaId:
+    _targetCount: 1
     _obtainMode: 0
-    _description: Defeat 3 training dummies
+    _description: Talk and train with Wigheard.
   _rewards:
-    _items: []
-    _gold: 10
-    _experience: 20
+    _items:
+    - _itemId: sword_lvl1
+      _quantity: 1
+    _gold: 0
+    _experience: 0
   _isTutorialQuest: 0
   _isMainQuest: 0
   _isDailyQuest: 0

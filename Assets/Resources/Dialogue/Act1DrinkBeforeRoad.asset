@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 14c148da086a4444f9dc223cd131312a, type: 3}
+  m_Name: Act1DrinkBeforeRoad
+  m_EditorClassIdentifier: ProjectGame2D.Runtime::DialogueDefinition
+  _dialogueId: dialogue.act1.drink_before_road
+  _initialNodeId: greeting
+  _nodes:
+  - _nodeId: greeting
+    _speakerName: Cuthbert
+    _portrait: {fileID: 0}
+    _text: Wigheard's new pupil, eh? Can't send you off on an empty stomach. Grab
+      5 Carrot Juice and 5 Grape Juice from my stock -- my treat for the road.
+    _nextNodeId:
+    _outcomeId: chat
+    _choices: []

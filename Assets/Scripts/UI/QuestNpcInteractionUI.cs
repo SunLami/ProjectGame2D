@@ -4,7 +4,11 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
 
-/// <summary>Minimal scene NPC capability that routes quest actions through QuestNpcInteractionService.</summary>
+/// <summary>Scene NPC capability that routes quest actions through QuestNpcInteractionService, and
+/// also opens Shop/Crafting/Storage when a dialogue choice resolves to one of those outcomes (same
+/// outcome ids as TraderNpcInteractionUI) -- so an NPC that both gives/turns in quests and runs a
+/// shop (e.g. Cuthbert the Mixologist selling the drinks a quest asks for) needs only this one
+/// interaction component instead of two competing for the same click/trigger.</summary>
 public sealed class QuestNpcInteractionUI : MonoBehaviour
 {
     private const string AvailableMarkerResource = "UI/Quest/Markers/quest_available_marker";
@@ -14,6 +18,11 @@ public sealed class QuestNpcInteractionUI : MonoBehaviour
     private static readonly Vector2 MarkerSize = new(96f, 96f);
 
     [SerializeField] private string _npcId;
+
+    [Tooltip("Required station tag for the Crafting commerce outcome (CraftingOutcomeId); unused "
+        + "for NPCs whose dialogue never branches into crafting.")]
+    [SerializeField] private string _stationTag;
+
     [SerializeField] private TMP_Text _markerText;
     [SerializeField] private GameObject _promptRoot;
     [SerializeField] private TMP_Text _promptText;
@@ -40,6 +49,7 @@ public sealed class QuestNpcInteractionUI : MonoBehaviour
     public string NpcId => _npcId;
 
     private readonly HashSet<Collider2D> _playerColliders = new();
+    private PlayerInput _playerInput;
     private QuestManager _questManager;
     private QuestNpcInteractionService _service;
     private Image _markerImage;
@@ -76,6 +86,7 @@ public sealed class QuestNpcInteractionUI : MonoBehaviour
             return;
 
         _playerColliders.Add(other);
+        _playerInput = playerInput;
         Refresh();
     }
 
@@ -84,6 +95,8 @@ public sealed class QuestNpcInteractionUI : MonoBehaviour
         if (!_playerColliders.Remove(other))
             return;
 
+        if (_playerColliders.Count == 0)
+            _playerInput = null;
         Refresh();
     }
 
@@ -165,6 +178,12 @@ public sealed class QuestNpcInteractionUI : MonoBehaviour
 
     private void CompleteDialogueInteraction(string outcomeId, QuestDefinition offered)
     {
+        if (TryHandleCommerceOutcome(outcomeId))
+        {
+            Refresh();
+            return;
+        }
+
         if (offered != null && QuestAcceptPopupUI.Instance != null
             && QuestAcceptPopupUI.Instance.Open(offered, accepted => HandleQuestDecision(offered, accepted, outcomeId)))
         {
@@ -177,12 +196,27 @@ public sealed class QuestNpcInteractionUI : MonoBehaviour
             TryPerformAccept(offered);
 
         _service?.ReportConversation(_npcId, outcomeId);
-        TryPerformTurnIn();
+
+        // Turning in is deliberately NOT chained onto the same interaction that just accepted
+        // offered -- every giver quest must have its own "come back and hand it in" visit, even
+        // one whose only objective is talking to this same NPC (e.g. new_journey): accepting can
+        // still satisfy that Talk objective in this conversation (ReadyToTurnIn), but the reward
+        // only grants on a later, separate TryInteract call where offered is null. Quests with no
+        // giver (e.g. back_to_fields) are unaffected -- they rely on QuestManager's own AutoTurnIn
+        // completion instead of ever reaching this method.
+        if (offered == null)
+            TryPerformTurnIn();
         Refresh();
     }
 
     private void HandleQuestDecision(QuestDefinition offered, bool accepted, string outcomeId)
     {
+        if (TryHandleCommerceOutcome(outcomeId))
+        {
+            Refresh();
+            return;
+        }
+
         // Accept before reporting the conversation, not after: a fresh single-Talk-objective quest
         // (e.g. "talk to the trainer") needs to already be Active for this same conversation to
         // satisfy it, so its greeting dialogue completes the quest in one visit instead of needing
@@ -191,8 +225,31 @@ public sealed class QuestNpcInteractionUI : MonoBehaviour
             TryPerformAccept(offered);
 
         _service?.ReportConversation(_npcId, outcomeId);
-        TryPerformTurnIn();
+
+        // See the matching comment in CompleteDialogueInteraction: skip turn-in here so accepting
+        // and turning in are always two distinct NPC interactions, never one.
+        if (offered == null)
+            TryPerformTurnIn();
         Refresh();
+    }
+
+    // Mirrors TraderNpcInteractionUI.HandleOutcome -- a dialogue choice can route to Shop/Crafting/
+    // Storage instead of (never both) a quest conversation outcome.
+    private bool TryHandleCommerceOutcome(string outcomeId)
+    {
+        if (_playerInput == null)
+            return false;
+
+        if (outcomeId == TraderNpcInteractionUI.ShopOutcomeId)
+            ShopCraftingUI.Instance?.OpenShop(_npcId, _playerInput);
+        else if (outcomeId == TraderNpcInteractionUI.CraftingOutcomeId)
+            ShopCraftingUI.Instance?.OpenCrafting(_npcId, _stationTag, _playerInput);
+        else if (outcomeId == TraderNpcInteractionUI.StorageOutcomeId)
+            FarmStorageUI.Instance?.Open(_playerInput);
+        else
+            return false;
+
+        return true;
     }
 
     private bool TryPerformTurnIn()

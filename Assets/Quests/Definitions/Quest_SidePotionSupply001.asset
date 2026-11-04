@@ -14,7 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: ProjectGame2D.Runtime::QuestDefinition
   _questId: quest.side.potion_supply.001
   _displayName: Potion Supply Run
-  _prerequisiteQuestIds: []
+  _prerequisiteQuestIds:
+  - quest.act1.far_from_your_kind
   _objectives:
   - _type: 3
     _targetId: item.consumable.health_potion

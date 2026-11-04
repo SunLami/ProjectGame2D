@@ -616,3 +616,161 @@ orders -6/-5/-4/-1 retained. This restores the original terrain/water interleavi
 all ground below Default negative-order VFX. Trees/buildings/actors untouched.
 Full-map Editor render verified: Captures/Skills/mapnhat_water_restored_editor.png.
 No Play Mode transition or runtime cast acceptance claimed.
+
+### Act I "A Stop in Heorte" quest flow replaces the Wigheard/Cenhelm tutorial chain — 2026-11-01
+
+Owner-authored Heorte intro quest flow (9 quests: `quest.act1.new_journey` through
+`quest.act1.far_from_your_kind`) replaces the entire previous MapNhat tutorial/main chain
+(`quest.trainer_greeting`, `quest.equip_weapon`, `quest.trainer_killquest`,
+`quest.tutorial.crafting.001`, `quest.main.001`) rather than running alongside it. "Heorte" is the
+in-fiction name for the village the `MapNhat` scene represents; the scene/file name is unchanged.
+`quest.side.potion_supply.001` and the three `quest.debug.*` quests are untouched. No quest in this
+Act is marked `isMainQuest`/`isTutorialQuest`; `QuestManager.MainQuestUnlocked` stays permanently
+unreachable until Act 2 defines its own Tutorial Quest chain — this is accepted, not a bug.
+
+New `QuestObjectiveType` values `Replant` and `Fish` (appended after `Equip`, never inserted, since
+`_type` serializes by enum index). "Visit smithing station" / "Visit suspicious merchant" (Quest
+4/5) deliberately reuse `Talk` against `npc.town.artificer` / `npc.town.hermetist` instead of a new
+`VisitStation` type, because no physical station GameObject exists yet; `QuestManager` exposes
+`IsSmithingStationUnlocked` / `IsBlackArtsStationUnlocked` (derived from quest completion, no new
+persisted state) for whatever station interactable is built later to read.
+
+Quest 2-3 ("Back to Eadric") is authored as two chained quests, `quest.act1.back_to_eadric` then
+`quest.act1.back_to_oswin`, because `QuestDefinition` supports only one `giverNpcId`/`turnInNpcId`
+per quest. `TrainingAreaQuestFlow.cs` (name kept to avoid a scene GUID/class-identifier change) now
+glues `quest.act1.stocking_up` → `quest.act1.back_to_fields` and `quest.act1.back_to_eadric` →
+`quest.act1.back_to_oswin`, the two links with no NPC giver.
+
+New content added: items `item.crop.grape`, `item.crop.lemon`, `item.material.meat`,
+`item.drink.carrot_juice`, `item.drink.grape_juice`; crops `crop.grape`/`crop.lemon` in
+`FarmingCatalog` (growth-stage sprites and icons borrowed from the existing Carrot sprite sheet as
+an explicit placeholder, owner-approved, pending real art). "Training Sword" needed no new item --
+`sword_lvl1` was already named exactly that. The two Oswin "food" rewards reuse the existing
+`item.food.bread` as a placeholder dish. Carrot/Grape Juice added to `Shop_TraderDrinks` (Cuthbert).
+
+Two production bridges were missing and are added as part of this change, not scoped to Act I
+specifically: `FarmPlot` harvest now also raises `QuestDomainEvents.ResourceGathered` (Gather
+objectives were previously unreachable from real farming), and `FishingMinigameController` now
+raises the new `FishCaught` on a successful catch. `FarmPlot` planting raises `CropReplanted`.
+
+Known side effect, not fixed in this pass: `MannequinAttackIndicator.cs` still hard-codes
+`quest.trainer_killquest`, which no longer exists in any `QuestCatalog`; its attack-arrow nudge is
+now permanently inert. Nothing in Act I's content re-introduces a "kill training dummies" objective
+to redirect it to, so it is left as dead code pending a decision on whether that mannequin
+tutorial beat still belongs anywhere.
+
+Full flow detail, objective tables and content list: see "Production content in `MapNhat`" in
+[Tutorial and Quest Progression](TutorialAndQuestProgression.md).
+
+#### Follow-up — real NPC dialogue wiring, not just QuestManager plumbing — 2026-11-01
+
+Owner feedback: quests must be accepted via dialogue with the actual giver NPC, and that NPC must
+show a "!"/"?" marker while it has something to offer/turn in. Testing this against real
+`QuestNpcInteractionUI` interactions (not just raw `QuestDomainEvents.Raise*` calls, which the
+first Play Mode pass used) surfaced that this was not actually wired:
+
+- Oswin, Eadric, Merric, Agnes and Cuthbert had only `TraderNpcInteractionUI` (dialogue -> Shop/
+  Crafting only) -- no component on them ever called `QuestNpcInteractionService`. None of their
+  Act I quest stages could be accepted or turned in by an actual player; the first Play Mode pass
+  only looked correct because it drove `QuestManager`/`QuestDomainEvents` directly. Fixed by merging
+  commerce-outcome handling (Shop/Crafting/Storage) into `QuestNpcInteractionUI` and swapping all 5
+  NPCs from `TraderNpcInteractionUI` to it, duplicating Wigheard's `QuestMarker`/`Feedback` UI
+  children onto each so the "!"/"?" marker has somewhere to render. Their existing shops/dialogues
+  are unaffected.
+- `quest.act1.stocking_up` ("Talk Oswin, then talk Eadric" as one quest) could never resolve
+  Eadric's dialogue: `QuestNpcInteractionUI` only resolves a quest it is the giver/turnIn for, never
+  one it is merely the current mid-quest Talk objective's target. Split into
+  `quest.act1.stocking_up_oswin` -> `quest.act1.stocking_up_eadric`, each single-NPC, matching the
+  working `back_to_eadric`/`back_to_oswin` pattern.
+- Two `TrainingAreaQuestFlow` glue links were wrong and removed (auto-accepting
+  `quest.act1.stocking_up_eadric` after `stocking_up_oswin`, and `quest.act1.back_to_oswin` after
+  `back_to_eadric`): both quests have a real giver, so auto-accepting jumped them straight to
+  Active, skipping the `Available` state the marker/dialogue resolution needs -- the giver fell back
+  to its generic greeting dialogue instead. Glue now only covers `quest.act1.back_to_fields`, the
+  one quest with no giver NPC at all.
+
+Verified end-to-end in Play Mode via reflection-driven `OnTriggerEnter2D` + `QuestNpcInteractionUI.
+TryInteract()` + `DialogueUI.Continue()` + `QuestAcceptPopupUI` accept, i.e. the real pipeline a
+click would drive, not a shortcut: all 9 quests show their own authored dialogue line at the right
+NPC, the "!" marker correctly moves from Wigheard -> Cuthbert -> Oswin -> Eadric as each completes,
+and both station-unlock flags end `true`. Nine `DialogueDefinition` assets authored under
+`Assets/Resources/Dialogue/Act1*.asset` for this (one per quest-NPC pairing); `quest.side.
+potion_supply.001` (Village Elder) confirmed still `Locked` throughout and `Available` only once
+`quest.act1.far_from_your_kind` completes.
+
+#### Follow-up correction — single uninterrupted chain — 2026-11-01
+
+Owner feedback: `quest.side.potion_supply.001` (Village Elder / Cenhelm, `npc.town.elder`) had no
+prerequisite, so it was `Available` from game start alongside `quest.act1.new_journey`, breaking
+the intended single NPC-to-NPC chain for the whole Act. Fixed by adding
+`quest.act1.far_from_your_kind` as its prerequisite, so it only unlocks after Act I finishes.
+Verified in Play Mode: only Wigheard's quest is `Available` at start; the Elder's quest stays
+`Locked` through the entire chain and flips to `Available` only once
+`quest.act1.far_from_your_kind` is `Completed`. No other quest in the catalog has both an empty
+prerequisite list and a `giverNpcId` besides `quest.act1.new_journey`, so nothing else can
+interrupt the chain.
+
+#### Follow-up — explicit turn-in visit + Input Tutorial repair — 2026-11-02
+
+Owner feedback: (1) every quest with a giver completed itself the instant its last objective fired
+(sometimes mid-conversation with the very NPC that gave it), with no deliberate "hand it in"
+moment, and the next NPC's "!" marker appeared immediately -- felt like skipping ahead rather than
+finishing a quest; (2) the first quest (the Training Sword) never guided the player to equip it or
+practice on a dummy.
+
+Root causes and fixes:
+
+- `QuestManager.ProgressMatching` auto-completes a quest the instant its objectives finish *only*
+  when `AutoTurnIn` is set, and `QuestNpcInteractionUI.CompleteDialogueInteraction`/
+  `HandleQuestDecision` additionally called `TryPerformTurnIn()` unconditionally at the end of
+  *every* interaction -- including the one that had just accepted the quest. For any quest whose
+  giver is also its own Talk objective target (`new_journey`, `ring_of_forge`,
+  `far_from_your_kind`, `back_to_eadric`, `back_to_oswin`, `stocking_up_oswin`,
+  `stocking_up_eadric`), this collapsed accept + complete + reward into one click. Fixed by (a)
+  setting `_autoTurnIn: 0` on all 8 Act I quests with a real `giverNpcId`/`turnInNpcId`, and (b)
+  guarding both UI methods' `TryPerformTurnIn()` call behind `offered == null`, so turning in never
+  happens in the same interaction that just accepted the quest -- it always needs a separate later
+  visit, even to the same NPC standing in front of the player. `quest.act1.back_to_fields` (no
+  giver NPC) and `quest.act1.cast_a_line` (already `autoTurnIn: 0`, fishing happens away from
+  Oswin) are unaffected and keep completing exactly as before. Verified in Play Mode via the real
+  `QuestNpcInteractionUI.TryInteract()` pipeline: after accepting `new_journey`, status is
+  `ReadyToTurnIn` (marker shows "?", no sword, Cuthbert still `Locked`) until a second, separate
+  interaction turns it in (status `Completed`, sword granted, Cuthbert's "!" marker appears).
+- The Input Tutorial chain (`Tutorial_TutorialArea.asset`: Move -> Sprint -> WaitForTrainer ->
+  OpenInventory -> EquipItem) -- the system meant to guide exactly this "equip the sword" beat --
+  was silently dead on two counts: `Step_WaitForTrainer` still targeted `quest.trainer_greeting`,
+  deleted during the Act I content replacement above, so `TutorialManager` could never advance past
+  it (`QuestManager.QuestTurnedIn` for that id can never fire again); and the live
+  `TutorialOverlayRoot` instance in `Bootstrap.unity` carried a manually-saved `m_IsActive: 0`
+  override against the prefab's own `1` default, hiding the banner entirely regardless of
+  progress. Fixed both: retargeted `Step_WaitForTrainer` to `quest.act1.new_journey` (Wigheard is
+  now the "Trainer" NPC) and re-enabled `TutorialOverlayRoot`.
+- Retargeting also exposed a design bug in `TutorialManager.Advance()`: on reaching a `WaitForQuest`
+  step it used to call `QuestManager.TryAcceptQuest(target)`, auto-accepting a quest that has a real
+  giver -- the exact anti-pattern already documented above for `TrainingAreaQuestFlow`, which would
+  have left Wigheard showing no "!" marker at all. Removed that auto-accept call; the step now only
+  waits for the player to go through the NPC's own dialogue themselves. That in turn meant the step
+  could stall forever if the player happened to finish `new_journey` before an earlier, unrelated
+  step (Sprint has no reason to happen before the player reaches Wigheard) caught up to
+  `WaitForTrainer` -- `QuestTurnedIn` only fires forward and the moment would already be missed.
+  Added a guard in `Advance()`: entering a `WaitForQuest` step whose target is already `Completed`
+  skips straight past it instead of waiting on a signal that already happened. Verified by
+  completing `new_journey` first, then firing Sprint -- the tutorial jumps straight from Sprint to
+  `OpenInventory`, not stuck on `WaitForTrainer`.
+- Added `Step_AttackDummy` (new `TutorialStepType.Attack` step, `tutorial.controls.attack_dummy`)
+  after `Step_EquipItem` in `Tutorial_TutorialArea.asset`, per the owner's choice to keep this
+  guidance in the non-gating Input Tutorial layer rather than as real quest objectives -- it never
+  blocks or delays leaving for Cuthbert. No new scene content was needed: `Manequin_Training_1/2/3`
+  already exist, active, under `Forest_MainMap/TrainingArea` near Wigheard (this step only needs
+  `Player.PlayerAttacked`, a generic swing event, not an actual hit). Verified the full chain Move
+  -> Sprint -> (skip, quest already done) -> OpenInventory -> EquipItem -> AttackDummy ->
+  `IsCompleted: true` in one Play Mode pass, zero console errors.
+
+Content Validation after all of the above: baseline count unchanged, no new errors (this validator
+does not inspect `TutorialDefinition`/`TutorialStepDefinition` assets at all, which is why the
+dangling `quest.trainer_greeting` reference above went uncaught).
+
+Separately found and fixed in this session (unrelated to quest/tutorial logic, same "manually
+edited and saved" category of bug): the Dev Debug toggle button (`DevPanel.prefab`'s
+`DevToggleButton`) had its `anchoredPosition` overridden to `(523, -700)` in `Bootstrap.unity`,
+placing it off-screen; restored to the prefab's authored `(-18, -142)` (just below the Minimap).

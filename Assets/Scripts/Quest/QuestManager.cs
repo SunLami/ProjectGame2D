@@ -38,6 +38,12 @@ public sealed class QuestManager : MonoBehaviour
     public bool IsMainQuestUnlocked => _mainQuestUnlocked;
     public string TrackedQuestId => _trackedQuestId;
 
+    // Act 1 (Heorte) station gates: no physical Smithing/Black Arts station exists yet, so future
+    // station interactables read these instead of duplicating their own completion check
+    // (TutorialAndQuestProgression.md Act I -- Heorte Intro Quest Flow, Quest 4/5).
+    public bool IsSmithingStationUnlocked => GetStatus("quest.act1.ring_of_forge") == QuestStatus.Completed;
+    public bool IsBlackArtsStationUnlocked => GetStatus("quest.act1.far_from_your_kind") == QuestStatus.Completed;
+
     private IItemResolver ItemResolver => _itemResolver ??= new ResourcesItemResolver();
 
     internal void ConfigureForTests(QuestCatalog catalog, IItemResolver itemResolver = null)
@@ -84,6 +90,8 @@ public sealed class QuestManager : MonoBehaviour
         QuestDomainEvents.ResourceGathered += HandleGather;
         QuestDomainEvents.EnemyKilled += HandleKill;
         QuestDomainEvents.ItemEquipped += HandleEquip;
+        QuestDomainEvents.CropReplanted += HandleReplant;
+        QuestDomainEvents.FishCaught += HandleFish;
         _subscribed = true;
     }
 
@@ -99,6 +107,8 @@ public sealed class QuestManager : MonoBehaviour
         QuestDomainEvents.ResourceGathered -= HandleGather;
         QuestDomainEvents.EnemyKilled -= HandleKill;
         QuestDomainEvents.ItemEquipped -= HandleEquip;
+        QuestDomainEvents.CropReplanted -= HandleReplant;
+        QuestDomainEvents.FishCaught -= HandleFish;
         _subscribed = false;
     }
 
@@ -119,6 +129,12 @@ public sealed class QuestManager : MonoBehaviour
 
     private void HandleEquip(string itemId) =>
         ProgressMatching(o => QuestObjectiveMatchers.MatchesEquip(o, itemId), 1);
+
+    private void HandleReplant(string cropId, string areaId) =>
+        ProgressMatching(o => QuestObjectiveMatchers.MatchesReplant(o, cropId, areaId), 1);
+
+    private void HandleFish(string fishId) =>
+        ProgressMatching(o => QuestObjectiveMatchers.MatchesFish(o, fishId), 1);
 
     // Obtain needs its own handler: RequirePossession is a boolean gate re-checked against live
     // inventory, not an incrementing counter (ObtainObjectiveMode / D-014).
