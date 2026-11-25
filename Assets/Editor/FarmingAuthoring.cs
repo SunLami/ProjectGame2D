@@ -27,15 +27,15 @@ public static class FarmingAuthoring
 
         CropDefinition carrot = BuildCrop("Carrot", "crop.carrot", "item.seed.carrot", "Carrot Seeds",
             "item.crop.carrot", "Carrot", sprites, new[] { 80, 81, 82, 83 });
-        CropDefinition eggplant = BuildCrop("Eggplant", "crop.eggplant", "item.seed.eggplant", "Eggplant Seeds",
-            "item.crop.eggplant", "Eggplant", sprites, new[] { 88, 89, 90, 91 });
+        // Eggplant (crop.eggplant / item.seed.eggplant / item.crop.eggplant) was retired 2026-11-25
+        // (DecisionRegister "Retire 13 out-of-sheet ItemSO"); save migration V13->V14 maps it to
+        // Carrot. Do not re-add it here or this builder would recreate the deleted assets.
         FarmingCatalog catalog = LoadOrCreate<FarmingCatalog>(CatalogPath);
-        SetObjectArray(catalog, "_crops", (catalog.Crops ?? Array.Empty<CropDefinition>()).Cast<UnityEngine.Object>().Concat(new UnityEngine.Object[] { carrot, eggplant }).Distinct().ToArray());
+        SetObjectArray(catalog, "_crops", (catalog.Crops ?? Array.Empty<CropDefinition>()).Cast<UnityEngine.Object>().Concat(new UnityEngine.Object[] { carrot }).Distinct().ToArray());
 
         AddSeedsToStartingDatabase(new[]
         {
-            AssetDatabase.LoadAssetAtPath<SeedItemSO>($"{ItemRoot}/Seed.Carrot.asset"),
-            AssetDatabase.LoadAssetAtPath<SeedItemSO>($"{ItemRoot}/Seed.Eggplant.asset")
+            AssetDatabase.LoadAssetAtPath<SeedItemSO>($"{ItemRoot}/Seed.Carrot.asset")
         });
         BuildPlotPrefab();
         InstallScene("Assets/Scenes/DemoScene.unity", catalog, false);
@@ -84,7 +84,8 @@ public static class FarmingAuthoring
         item.itemId = itemId;
         item.itemName = itemName;
         item.description = item is SeedItemSO ? $"Plant to grow {itemName.Replace(" Seeds", string.Empty)}." : "Fresh farm produce.";
-        item.icon = icon;
+        if (item.icon == null)
+            item.icon = icon;
         item.type = ItemType.Material;
         item.isStackable = true;
         item.maxStackSize = 99;

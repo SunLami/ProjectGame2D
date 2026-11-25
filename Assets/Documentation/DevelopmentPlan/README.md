@@ -171,4 +171,24 @@ Skill icon V2 (12 elemental skills + shader-matched Shield, owner requested 2026
 Current shared SkillHUD/SkillPanel icon layout (2026-10-17):
 [Shared icon presentation](SkillIconSharedPresentation.md).
 
+2026-10-22 owner-approved Quest Offer art refresh: three built-in ImageGen pixel sprites, shared prefab/builder synchronized and isolated Editor render reviewed. Details/prompts/remaining gameplay acceptance: [Quest Offer visual refresh](QuestOfferVisualRefresh.md).
+
+2026-10-22 owner-requested twelve-skill MapNhat VFX audit: ground/water terrain renderers promoted
+to Ground1 (all terrain and water) below Default. Ground VFX retain documented negative orders below actors;
+MapNhat terrain must not use Default above these effects. Earth 4 rune rendering verified with an
+isolated Editor sample. Details, affected skills, changed map layers and manual acceptance limits:
+[MapNhat skill sorting audit](SkillMapNhatSortingAudit.md).
+
+2026-10-22 owner request: remove Minimap from Bootstrap shared HUD; QuestTracker moves top-right with no background, separate category/objective icons and generated pixel-art header separator. FullMap (M) retained. Implementation/prompt/acceptance: [QuestTracker refresh](QuestTrackerTopRightRefresh.md).
+
 Items List expansion (D-119, 2026-10-22): [content contract and verification](SheetContentExpansion.md). Adds percentage potions, refresh-only timed buffs, crops, wildlife and material recipes; definitions use V13 resolver contracts. Production world placement remains gated by the recorded baseline validation issues.
+
+2026-11-04 branch integration: [merge choices and verification](BranchMergeVerification.md).
+
+2026-11-25 D-120: 13 out-of-sheet ItemSO retired and replaced by sheet items; save V14 migrates old IDs. Mapping, impact and verification: [Decision Register](DecisionRegister.md) D-120, [Save](SaveAndWorldPersistence.md).
+
+2026-11-25 Act I "A Stop in Heorte" completion pass: [Tutorial and Quest Progression](TutorialAndQuestProgression.md) "Act I guidance and completion pass".
+
+2026-11-25 item icon refresh — 123 dedicated inventory sprites, with visually equipped gear
+derived from its idle sprites. See [equipment icon sources](EquipmentContent.md#inventory-icon-refresh--2026-11-25)
+and [item icon coverage](SheetContentExpansion.md#inventory-icon-refresh--2026-11-25).

@@ -68,3 +68,9 @@ Mọi asset gen MỚI cho nguyên tố này (và nguyên tố khác) phải dùn
 `create_1_direction_object` + `animate_object` (≈24 gen/asset). Quy trình đầy đủ: `SkillVfxPipeline.md` §4. Các công thức prompt/style
 trong tài liệu này vẫn đúng, chỉ đổi công cụ gen.
 
+
+2026-10-22 owner-requested twelve-skill MapNhat VFX audit: ground/water terrain renderers promoted
+to Ground1 (all terrain and water) below Default. Ground VFX retain documented negative orders below actors;
+MapNhat terrain must not use Default above these effects. Earth 4 rune rendering verified with an
+isolated Editor sample. Details, affected skills, changed map layers and manual acceptance limits:
+[MapNhat skill sorting audit](SkillMapNhatSortingAudit.md).

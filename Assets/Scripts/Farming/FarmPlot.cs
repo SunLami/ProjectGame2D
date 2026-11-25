@@ -84,6 +84,10 @@ public sealed class FarmPlot : MonoBehaviour
         SetHighlighted(false);
         ApplyVisual();
         FarmingDomainEvents.RaiseCropPlanted(_plotId, _crop.CropId);
+        // Every planting counts toward a Replant objective -- there is no separate "first plant"
+        // vs "replant" distinction at the farming-domain level (TutorialAndQuestProgression.md
+        // Quest 2-2 "Back to the Fields").
+        QuestDomainEvents.RaiseCropReplanted(_crop.CropId, _areaId);
         return true;
     }
 
@@ -125,6 +129,9 @@ public sealed class FarmPlot : MonoBehaviour
         SetHighlighted(false);
         ApplyVisual();
         FarmingDomainEvents.RaiseCropHarvested(_plotId, harvestedCropId, quantity);
+        // Bridges Farming to the Quest Gather objective (TutorialAndQuestProgression.md Quest 2-2
+        // "Back to the Fields") -- previously nothing connected harvest to ResourceGathered.
+        QuestDomainEvents.RaiseResourceGathered(harvestedCropId, quantity, _areaId);
     }
 
     public FarmPlotSaveData CaptureState() => new()

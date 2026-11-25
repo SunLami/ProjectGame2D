@@ -16,7 +16,7 @@ public sealed class SceneTravelArrival : MonoBehaviour
 
     private IEnumerator Start()
     {
-        if (!SceneTravel.TryConsume(out string spawnId, out PlayerTravelSnapshot snapshot))
+        if (SceneTravel.IsWorldGateArrival || !SceneTravel.TryConsume(out string spawnId, out PlayerTravelSnapshot snapshot))
             yield break;
 
         // The Player and its PlayerStat are created by the scene itself; wait a frame so both have run
@@ -24,14 +24,28 @@ public sealed class SceneTravelArrival : MonoBehaviour
         yield return null;
 
         Player player = FindAnyObjectByType<Player>();
+        ApplyArrival(player, spawnId, snapshot, heal: true);
+    }
+
+    internal bool ApplyWorldGateArrival(Player player)
+    {
+        if (!SceneTravel.IsWorldGateArrival || !SceneTravel.TryConsume(out string spawnId, out PlayerTravelSnapshot snapshot))
+            return false;
+
+        ApplyArrival(player, spawnId, snapshot, heal: false);
+        return true;
+    }
+
+    private void ApplyArrival(Player player, string spawnId, PlayerTravelSnapshot snapshot, bool heal)
+    {
         PlayerStat stat = PlayerStat.Instance;
         if (stat != null)
         {
             stat.RestoreProgression(snapshot.Level, snapshot.Experience, snapshot.Health);
             stat.Skills.Restore(snapshot.Skills, snapshot.Level);
-            // every teleport (to an arena or back to the village) heals the player to full health and stamina
-            stat.Heal(stat.MaxHealth);
-            stat.RestoreStamina(stat.MaxStamina);
+            if (heal)
+                stat.Heal(stat.MaxHealth);
+            stat.RestoreStamina(heal ? stat.MaxStamina : snapshot.Stamina);
             // RestoreProgression is silent (no OnLevelUp), so refresh the HUD's level/health explicitly.
             PlayerHUDController hud = FindAnyObjectByType<PlayerHUDController>(FindObjectsInactive.Include);
             if (hud != null)
@@ -39,13 +53,13 @@ public sealed class SceneTravelArrival : MonoBehaviour
         }
 
         if (player == null || _spawnRegistry == null)
-            yield break;
+            return;
 
         if (!_spawnRegistry.TryGetSpawn(spawnId, out Vector3 position)
             && !_spawnRegistry.TryGetSpawn(_defaultSpawnId, out position))
         {
             Debug.LogWarning($"SceneTravelArrival: spawn '{spawnId}' not found in {gameObject.scene.name}.", this);
-            yield break;
+            return;
         }
 
         player.WarpTo(new Vector3(position.x, position.y, player.transform.position.z));

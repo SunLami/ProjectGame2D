@@ -1,0 +1,31 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 14c148da086a4444f9dc223cd131312a, type: 3}
+  m_Name: Act1BlackArtsLocked
+  m_EditorClassIdentifier: ProjectGame2D.Runtime::DialogueDefinition
+  _dialogueId: dialogue.act1.black_arts_locked
+  _initialNodeId: greeting
+  _nodes:
+  - _nodeId: greeting
+    _speakerName: 'Agnes'
+    _portrait: {fileID: 0}
+    _text: 'Not yet. My station answers only to those I have welcomed.'
+    _nextNodeId: notice
+    _outcomeId:
+    _choices: []
+  - _nodeId: notice
+    _speakerName: 'Black Arts Station'
+    _portrait: {fileID: 0}
+    _text: 'Locked. Complete "5: Far From Your Kind..." with Agnes to unlock it.'
+    _nextNodeId:
+    _outcomeId:
+    _choices: []

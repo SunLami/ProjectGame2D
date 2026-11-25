@@ -64,7 +64,8 @@ public sealed class ShopCraftingUI : MonoBehaviour
     private string _npcId;
     private string _stationTag;
     private int _quantity = 1;
-    private int _buyUnitPrice;
+    private readonly Dictionary<string, int> _buyQuotes = new();
+    private int? _displayedBuyQuote;
     private int _sellUnitPrice;
     private InventorySlot _stagedSellSlot;
     private PlayerInput _playerInput;
@@ -197,6 +198,7 @@ public sealed class ShopCraftingUI : MonoBehaviour
     private void RebuildShop()
     {
         ClearRows(_shopRows);
+        _buyQuotes.Clear();
         _shopTitle.text = _shop.DisplayName;
         _shopFeedback.text = string.Empty;
         _selectedBuyItemId = null;
@@ -204,12 +206,12 @@ public sealed class ShopCraftingUI : MonoBehaviour
         if (_shop.UsesExplicitBuyItems)
         {
             foreach (ItemSO item in _shop.BuyItems)
-                if (item != null) CreateShopRow(item.itemId, FormatBuyRange(item));
+                if (item != null) CreateShopRow(item.itemId, FormatBuyPrice(item.itemId));
         }
         else
         {
             foreach (ShopStockEntry stock in _shop.Stock)
-                CreateShopRow(stock.ItemId, $"{stock.Price} G");
+                CreateShopRow(stock.ItemId, FormatBuyPrice(stock.ItemId));
         }
         if (_shopRows.Count > 0)
             SelectBuyItem(_shopRows[0].name.Substring("ShopRow_".Length));
@@ -234,14 +236,32 @@ public sealed class ShopCraftingUI : MonoBehaviour
         _shopRows.Add(row);
     }
 
-    private string FormatBuyRange(ItemSO item)
+    private string FormatBuyPrice(string itemId)
     {
-        if (item.MaxBuyPrice > 0)
-            return item.MinBuyPrice == item.MaxBuyPrice ? $"{item.MinBuyPrice} G" : $"{item.MinBuyPrice}-{item.MaxBuyPrice} G";
-        foreach (ShopStockEntry stock in _shop.Stock)
-            if (stock != null && stock.ItemId == item.itemId)
-                return $"{stock.Price} G";
-        return "PRICE NOT SET";
+        ShopManager manager = ShopManager.Instance;
+        bool questLine = manager != null && manager.IsQuestAllowanceLine(_shop.ShopId, itemId);
+        int remaining = questLine ? manager.GetRemainingAllowance(_shop.ShopId, itemId) : 0;
+        if (remaining > 0)
+            return $"FREE x{remaining}";
+
+        int? quote = GetBuyQuote(itemId);
+        return quote.HasValue ? $"{quote.Value} G" : questLine ? "QUEST ONLY" : "PRICE NOT SET";
+    }
+
+    private int? GetBuyQuote(string itemId)
+    {
+        ShopManager manager = ShopManager.Instance;
+        bool allowanceActive = manager != null && manager.IsQuestAllowanceLine(_shop.ShopId, itemId)
+            && manager.GetRemainingAllowance(_shop.ShopId, itemId) > 0;
+        if (!allowanceActive && _buyQuotes.TryGetValue(itemId, out int cached))
+            return cached;
+
+        if (!_shopService.TryCreateBuyQuote(_npcId, _shop.ShopId, itemId, 1, out int price, out _))
+            return null;
+
+        if (!allowanceActive)
+            _buyQuotes.Add(itemId, price);
+        return price;
     }
 
     private void RebuildRecipes()
@@ -347,7 +367,6 @@ public sealed class ShopCraftingUI : MonoBehaviour
     {
         _selectedBuyItemId = itemId;
         _quantity = 1;
-        CreateBuyQuote();
         RefreshShopDetails();
     }
 
@@ -367,21 +386,57 @@ public sealed class ShopCraftingUI : MonoBehaviour
 
     private void IncreaseQuantity()
     {
-        _quantity = Mathf.Min(99, _quantity + 1);
+        _quantity = Mathf.Min(MaxBuyQuantity(), _quantity + 1);
         RefreshActiveQuote();
         RefreshShopDetails();
+    }
+
+    // Sell-tab staging and normal stock stay capped at 99; a quest allowance line additionally
+    // caps at what the quest still needs, so +/- can never stage an over-allowance purchase.
+    private int MaxBuyQuantity()
+    {
+        if (_sellPanel != null && _sellPanel.activeSelf)
+            return 99;
+        if (string.IsNullOrEmpty(_selectedBuyItemId) || ShopManager.Instance == null || _shop == null)
+            return 99;
+        int remaining = ShopManager.Instance.GetRemainingAllowance(_shop.ShopId, _selectedBuyItemId);
+        return remaining == int.MaxValue ? 99 : Mathf.Clamp(remaining, 1, 99);
     }
 
     private void Buy()
     {
         if (string.IsNullOrEmpty(_selectedBuyItemId))
             return;
-        bool success = _shopService.TryPurchaseQuoted(_npcId, _shop.ShopId, _selectedBuyItemId, _quantity, _buyUnitPrice, out _, out ShopTransactionResult result);
+        int? quote = GetBuyQuote(_selectedBuyItemId);
+        if (!quote.HasValue || quote != _displayedBuyQuote)
+        {
+            RefreshShopRowPrices();
+            RefreshShopDetails();
+            return;
+        }
+        bool success = _shopService.TryPurchaseQuoted(_npcId, _shop.ShopId, _selectedBuyItemId, _quantity,
+            quote.Value, out _, out ShopTransactionResult result);
         _shopFeedback.text = success ? $"Purchased {ItemName(_selectedBuyItemId)} x{_quantity}." : FormatShopFailure(result);
         if (success)
+        {
             foreach (CommerceInventoryPanelUI panel in _shopWindow.GetComponentsInChildren<CommerceInventoryPanelUI>(true))
                 panel.Refresh();
+            _quantity = Mathf.Clamp(_quantity, 1, MaxBuyQuantity());
+        }
+        RefreshShopRowPrices();
         RefreshShopDetails();
+    }
+
+    private void RefreshShopRowPrices()
+    {
+        foreach (GameObject row in _shopRows)
+        {
+            if (row == null) continue;
+            string itemId = row.name.Substring("ShopRow_".Length);
+            TMP_Text price = row.transform.Find("Price")?.GetComponent<TMP_Text>();
+            if (price != null)
+                price.text = FormatBuyPrice(itemId);
+        }
     }
 
     private void Sell()
@@ -418,9 +473,14 @@ public sealed class ShopCraftingUI : MonoBehaviour
         _quantityText.text = _quantity.ToString();
         if (string.IsNullOrEmpty(_selectedBuyItemId))
         {
+            _displayedBuyQuote = null;
+            if (_buyButton != null) _buyButton.interactable = false;
             _shopDetails.text = "Select an item.";
             return;
         }
+        int? quote = GetBuyQuote(_selectedBuyItemId);
+        _displayedBuyQuote = quote;
+        if (_buyButton != null) _buyButton.interactable = quote.HasValue;
         int owned = OwnedCount(_selectedBuyItemId);
         var text = new StringBuilder();
         text.Append("<align=\"center\"><size=18><b>").Append(ItemName(_selectedBuyItemId))
@@ -428,7 +488,8 @@ public sealed class ShopCraftingUI : MonoBehaviour
             .Append("<align=\"left\"><size=12>").Append(ItemDescription(_selectedBuyItemId)).Append("</size>\n")
             .Append("<size=13><color=#C9A34A><b>OWNED</b></color>  ").Append(owned)
             .Append("     <color=#C9A34A><b>TOTAL</b></color>  <b>")
-            .Append(_buyUnitPrice * _quantity).Append(" G</b></size></align>");
+            .Append(quote.HasValue ? $"{(long)quote.Value * _quantity} G" : FormatBuyPrice(_selectedBuyItemId))
+            .Append("</b></size></align>");
         _shopDetails.text = text.ToString();
     }
 
@@ -450,7 +511,6 @@ public sealed class ShopCraftingUI : MonoBehaviour
         SetTabVisual(_buyTabButton, true);
         SetTabVisual(_sellTabButton, false);
         if (_shopTitle != null) _shopTitle.text = _shop?.DisplayName ?? "SHOP";
-        CreateBuyQuote();
         RefreshShopDetails();
     }
 
@@ -478,12 +538,6 @@ public sealed class ShopCraftingUI : MonoBehaviour
         if (label != null) label.color = selected ? new Color(1f, 0.88f, 0.35f, 1f) : new Color(0.82f, 0.74f, 0.58f, 1f);
     }
 
-    private void CreateBuyQuote()
-    {
-        if (string.IsNullOrEmpty(_selectedBuyItemId) || _shopService == null) return;
-        _shopService.TryCreateBuyQuote(_npcId, _shop.ShopId, _selectedBuyItemId, _quantity, out _buyUnitPrice, out _);
-    }
-
     private void RefreshSellQuote()
     {
         if (_stagedSellSlot == null || _stagedSellSlot.IsEmpty) { RefreshSellStage(); return; }
@@ -498,7 +552,6 @@ public sealed class ShopCraftingUI : MonoBehaviour
     private void RefreshActiveQuote()
     {
         if (_sellPanel != null && _sellPanel.activeSelf) RefreshSellQuote();
-        else CreateBuyQuote();
     }
 
     private void RefreshSellStage()
@@ -616,6 +669,8 @@ public sealed class ShopCraftingUI : MonoBehaviour
         ShopTransactionResult.InsufficientInventoryCapacity => "Not enough inventory space.",
         ShopTransactionResult.InsufficientItemQuantity => "You do not own enough of this item.",
         ShopTransactionResult.GameplayNotAllowed => "Trading is unavailable right now.",
+        ShopTransactionResult.QuestAllowanceUnavailable => "Only offered for your current quest step.",
+        ShopTransactionResult.QuestAllowanceExceeded => "That is more than your quest needs.",
         _ => "Unable to complete transaction."
     };
 

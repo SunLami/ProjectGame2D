@@ -19,7 +19,8 @@ MonoBehaviour:
     learningCost: 2
     icon: {fileID: 21300000, guid: 53a4f2583e94846be95ecac74d8ee407, type: 3}
     castKind: 1
-    cooldownSeconds: 1
+    cooldownSeconds: 2
+    manaCost: 8
   - id: skill.water.vortex
     displayName: Water Vortex
     description: Create a damaging water vortex that slows enemies and pulls them
@@ -27,14 +28,16 @@ MonoBehaviour:
     learningCost: 3
     icon: {fileID: 21300000, guid: a7828c74cc94c4e7bbf37e9a104eab93, type: 3}
     castKind: 2
-    cooldownSeconds: 1
+    cooldownSeconds: 6
+    manaCost: 16
   - id: skill.water.spiral_beam
     displayName: Spiral Water Beam
     description: Fire a sustained spiral water beam while rooted in place.
     learningCost: 4
     icon: {fileID: 21300000, guid: b99e0426c35344d9eb2f8648784c32b1, type: 3}
     castKind: 3
-    cooldownSeconds: 1
+    cooldownSeconds: 10
+    manaCost: 24
   - id: skill.water.threefold_tsunami
     displayName: Threefold Tsunami
     description: Unleash three increasingly powerful waves, culminating in a water
@@ -42,14 +45,16 @@ MonoBehaviour:
     learningCost: 5
     icon: {fileID: 21300000, guid: 0d809b836a81e440fb4cb3947381c201, type: 3}
     castKind: 4
-    cooldownSeconds: 1
+    cooldownSeconds: 18
+    manaCost: 35
   - id: skill.earth.rock_bolt
     displayName: Rock Bolt
     description: Launch an angular boulder.
     learningCost: 2
     icon: {fileID: 21300000, guid: 9bd7ce54f258747929af0143b5ac6f73, type: 3}
     castKind: 5
-    cooldownSeconds: 1
+    cooldownSeconds: 2
+    manaCost: 8
   - id: skill.earth.rock_arena
     displayName: Rock Arena
     description: Raise a pillar arena that traps, slows and weakens enemies, with
@@ -57,7 +62,8 @@ MonoBehaviour:
     learningCost: 3
     icon: {fileID: 21300000, guid: e1c82a29ce9f14235ba9634fefc0e720, type: 3}
     castKind: 6
-    cooldownSeconds: 1
+    cooldownSeconds: 6
+    manaCost: 16
   - id: skill.earth.spike_field
     displayName: Rock Spike Field
     description: Erupt a forward fan of damaging stone spikes that stun and root
@@ -65,14 +71,16 @@ MonoBehaviour:
     learningCost: 4
     icon: {fileID: 21300000, guid: 86299ec7375874094a4e9ae104e56a5a, type: 3}
     castKind: 7
-    cooldownSeconds: 1
+    cooldownSeconds: 10
+    manaCost: 24
   - id: skill.earth.meteor_storm
     displayName: Meteor Storm
     description: Call down flaming rocky meteors with explosive impacts.
     learningCost: 5
     icon: {fileID: 21300000, guid: 9d8921d6e267a4360a8c7a2df3c66224, type: 3}
     castKind: 8
-    cooldownSeconds: 1
+    cooldownSeconds: 18
+    manaCost: 35
   - id: skill.wind.returning_blade
     displayName: Returning Wind Blade
     description: Throw a crescent wind blade that damages enemies on its outward
@@ -80,7 +88,8 @@ MonoBehaviour:
     learningCost: 2
     icon: {fileID: 21300000, guid: fc75f65b85ef8454c81f4ca8634927dd, type: 3}
     castKind: 9
-    cooldownSeconds: 1
+    cooldownSeconds: 2
+    manaCost: 8
   - id: skill.wind.whirlwind
     displayName: Whirlwind
     description: Summon a moving whirlwind that lifts enemies, then drops and stuns
@@ -88,7 +97,8 @@ MonoBehaviour:
     learningCost: 3
     icon: {fileID: 21300000, guid: 1018b12bd0c2f4c4ea5af5e9f460b627, type: 3}
     castKind: 10
-    cooldownSeconds: 1
+    cooldownSeconds: 6
+    manaCost: 16
   - id: skill.wind.gale_fan
     displayName: Gale Fan
     description: Release three pushing gusts in a forward fan. Wall collisions deal
@@ -96,7 +106,8 @@ MonoBehaviour:
     learningCost: 4
     icon: {fileID: 21300000, guid: d3276f4033ed841249c1989a75108d78, type: 3}
     castKind: 11
-    cooldownSeconds: 1
+    cooldownSeconds: 10
+    manaCost: 24
   - id: skill.wind.roc
     displayName: Wind Roc
     description: Summon a diving wind roc that carries and throws enemies into a
@@ -104,4 +115,5 @@ MonoBehaviour:
     learningCost: 5
     icon: {fileID: 21300000, guid: 942553bf3581d4c7fa30aa455626f0a8, type: 3}
     castKind: 12
-    cooldownSeconds: 1
+    cooldownSeconds: 18
+    manaCost: 35

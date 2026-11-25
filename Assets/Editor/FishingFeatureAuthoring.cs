@@ -80,10 +80,11 @@ public static class FishingFeatureAuthoring
         fish.itemId = id;
         fish.itemName = displayName;
         fish.description = description;
-        fish.icon = AssetDatabase.LoadAllAssetsAtPath(spritePath)
-            .OfType<Sprite>()
-            .FirstOrDefault(sprite => sprite.name == spriteName)
-            ?? AssetDatabase.LoadAllAssetsAtPath(spritePath).OfType<Sprite>().FirstOrDefault();
+        if (fish.icon == null)
+        {
+            Sprite[] sprites = AssetDatabase.LoadAllAssetsAtPath(spritePath).OfType<Sprite>().ToArray();
+            fish.icon = sprites.FirstOrDefault(sprite => sprite.name == spriteName) ?? sprites.FirstOrDefault();
+        }
         fish.type = ItemType.Material;
         fish.isStackable = false;
         fish.maxStackSize = 1;

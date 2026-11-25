@@ -35,7 +35,42 @@ public static class SaveMigration
         new V10ToV11_IntroducesFarmStorage(),
         new V11ToV12_FourQuickSlots(),
         new V12ToV13_SkillProgression(),
+        new V13ToV14_RetireOutOfSheetItems(),
+        new V14ToV15_FundPendingActOneDrinks(),
     };
+
+    /// <summary>Stable item IDs retired 2026-11-25 (owner-approved: the 13 ItemSO not in the Items
+    /// List sheet) and the sheet item each one becomes. Several old IDs may share one target; the
+    /// remap is per slot, so quantities and slot positions are kept and nothing merges or splits
+    /// (every target's maxStackSize is 99, >= every retired item's 1/20/99). Kept public and
+    /// read-only for tests and tooling; never extend it to rename IDs that still exist.</summary>
+    public static readonly IReadOnlyDictionary<string, string> RetiredItemReplacements =
+        new Dictionary<string, string>(StringComparer.Ordinal)
+        {
+            ["item.drink.water"] = "item.drink.lemon_juice",
+            ["item.drink.ale"] = "item.drink.apple_juice",
+            ["item.material.medicinal_leaf"] = "item.material.health_herb",
+            ["item.material.plank"] = "item.material.wood_log",
+            ["item.consumable.health_potion"] = "item.consumable.small_health_potion",
+            ["item.unique.ancient_relic"] = "item.material.tanzanite",
+            ["item.quest.tutorial_badge"] = "item.material.gold_bar",
+            ["item.food.bread"] = "item.food.harvest_stew",
+            ["item.food.cheese"] = "item.food.harvest_stew",
+            ["item.seed.eggplant"] = "item.seed.carrot",
+            ["item.crop.eggplant"] = "item.crop.carrot",
+            ["item.consumable.potion_buff_defense"] = "item.consumable.small_health_potion",
+            ["item.consumable.potion_buff_attack"] = "item.consumable.small_mana_potion",
+        };
+
+    /// <summary>Retired crop IDs (planted plots) and their replacement crop.</summary>
+    public static readonly IReadOnlyDictionary<string, string> RetiredCropReplacements =
+        new Dictionary<string, string>(StringComparer.Ordinal)
+        {
+            ["crop.eggplant"] = "crop.carrot",
+        };
+
+    private static string RemapItem(string itemId) =>
+        itemId != null && RetiredItemReplacements.TryGetValue(itemId, out string replacement) ? replacement : itemId;
 
     /// <summary>True if this version can be upgraded to CurrentSaveVersion by Migrate(). Does not
     /// mean the save is otherwise valid (still needs to parse/have a saveId, checked separately).</summary>
@@ -65,6 +100,76 @@ public static class SaveMigration
     }
 
     // ---- Steps (Phase 3-8 history, see SaveAndWorldPersistence.md) ----
+    /// <summary>Rewrites every persisted item/crop ID that was retired with the 13 out-of-sheet
+    /// ItemSO (DecisionRegister 2026-11-25). Touches only ID strings in place: inventory slots,
+    /// equipment slots, quick bar assignments, farm storage slots and planted crops (plot ID and
+    /// plantedAtUtcTicks kept). Quantities, slot order, gold, quest state/counters and world
+    /// records (persistentId + flag only, no item IDs) are left untouched, so e.g. the DemoScene
+    /// Ancient Relic pickup stays collected under its unchanged persistentId.</summary>
+    private sealed class V13ToV14_RetireOutOfSheetItems : ISaveMigrationStep
+    {
+        public int FromVersion => 13;
+        public int ToVersion => 14;
+
+        public void Apply(GameSaveData data)
+        {
+            if (data.inventory?.slots != null)
+                foreach (InventorySaveData.SlotData slot in data.inventory.slots)
+                    if (slot != null) slot.itemId = RemapItem(slot.itemId);
+
+            if (data.equipment?.slots != null)
+                foreach (EquipmentSaveData.SlotData slot in data.equipment.slots)
+                    if (slot != null) slot.itemId = RemapItem(slot.itemId);
+
+            if (data.quickBar?.assignedItemIds != null)
+                for (int i = 0; i < data.quickBar.assignedItemIds.Count; i++)
+                    data.quickBar.assignedItemIds[i] = RemapItem(data.quickBar.assignedItemIds[i]);
+
+            if (data.farmStorage?.slots != null)
+                foreach (FarmStorageSaveData.SlotData slot in data.farmStorage.slots)
+                    if (slot != null) slot.itemId = RemapItem(slot.itemId);
+
+            if (data.farming?.plots != null)
+                foreach (FarmPlotSaveData plot in data.farming.plots)
+                    if (plot?.cropId != null && RetiredCropReplacements.TryGetValue(plot.cropId, out string crop))
+                        plot.cropId = crop;
+        }
+    }
+
+    // The formerly free tutorial purchase now costs gold. Only top up the outstanding
+    // purchase budget for saves that have already passed Wigheard's new gold reward.
+    private sealed class V14ToV15_FundPendingActOneDrinks : ISaveMigrationStep
+    {
+        public int FromVersion => 14;
+        public int ToVersion => 15;
+
+        public void Apply(GameSaveData data)
+        {
+            var quests = data.quests?.quests;
+            if (quests == null || !quests.Exists(quest => quest?.questId == "quest.act1.new_journey"
+                && quest.status == QuestStatus.Completed))
+                return;
+
+            var drinks = quests.Find(quest => quest?.questId == "quest.act1.drink_before_road");
+            if (drinks?.status is QuestStatus.ReadyToTurnIn or QuestStatus.Completed)
+                return;
+
+            // Counters [1] and [2] are the existing sequential Carrot and Grape purchases.
+            // Freeze the initial maximum prices here so later balancing cannot alter migration.
+            int[] counters = drinks?.objectiveCounters;
+            int carrot = Remaining(counters, 1);
+            int grape = Remaining(counters, 2);
+            int budget = carrot * 12 + grape * 16;
+            data.inventory ??= new InventorySaveData();
+            data.inventory.gold = Math.Max(data.inventory.gold, budget);
+        }
+
+        private static int Remaining(int[] counters, int index) =>
+            5 - (counters != null && index < counters.Length
+                ? Math.Max(0, Math.Min(5, counters[index]))
+                : 0);
+    }
+
     private sealed class V12ToV13_SkillProgression : ISaveMigrationStep
     {
         public int FromVersion => 12;

@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 /// <summary>What the Player (a per-scene object, re-created on every scene load) carries across a map
 /// switch. Everything else the player owns (inventory, equipment, quests...) lives in Bootstrap managers
@@ -26,16 +27,19 @@ public readonly struct PlayerTravelSnapshot
 /// <see cref="SceneFlowService"/> to load the destination scene and remembers where the player should
 /// appear; <see cref="SceneTravelArrival"/> in the destination applies it. Nothing is written to disk.
 ///
-/// Scope guard: only sessions WITHOUT a save payload (Development) may travel for now. A session that
-/// carries a GameSaveData would have PlayerSpawnReadinessSource re-apply the snapshot on arrival (resetting
-/// unsaved progress, farm plots and position), so those sessions are refused with a message until the
-/// save/travel rules are decided.
+/// Boss pillars keep their Development-only policy. The MapNhat–MapDuy world gates also
+/// support save-backed sessions, using live managers and capturing scene-owned state in memory.
 /// </summary>
 public static class SceneTravel
 {
     public const string RefusedSaveSessionMessage = "Travel is unavailable in a saved game yet.";
 
     private static bool _pending;
+    public static bool IsWorldGateArrival { get; private set; }
+
+    public static string ResolveSavedScene(GameSaveData save, string fallback) =>
+        save?.player?.location?.sceneId == "MapDuy" && Application.CanStreamedLevelBeLoaded("MapDuy")
+            ? "MapDuy" : fallback;
     private static string _pendingSpawnId;
     private static PlayerTravelSnapshot _pendingSnapshot;
 
@@ -47,7 +51,9 @@ public static class SceneTravel
     private static void ResetState() => Clear();
 
     /// <summary>Returns null when travel can start, otherwise a short reason for the player.</summary>
-    public static string CheckCanTravel()
+    public static string CheckCanTravel() => CheckCanTravel(false);
+
+    private static string CheckCanTravel(bool worldGate)
     {
         if (SceneFlowService.Instance == null || SceneFlowService.Instance.IsTransitioning)
             return "Travel is not available right now.";
@@ -56,7 +62,7 @@ public static class SceneTravel
         if (sessions == null || !sessions.HasActiveSession)
             return "No active game session.";
 
-        if (sessions.Current.SaveData != null)
+        if (!worldGate && sessions.Current.SaveData != null)
             return RefusedSaveSessionMessage;
 
         if (PlayerStat.Instance == null || PlayerStat.Instance.IsDead)
@@ -69,12 +75,48 @@ public static class SceneTravel
     }
 
     /// <summary>Starts a travel to `sceneName`, placing the player at spawn `spawnId` on arrival.</summary>
-    public static bool TryTravel(string sceneName, string spawnId, out string failureReason)
+    public static bool TryTravel(string sceneName, string spawnId, out string failureReason) =>
+        TryTravel(sceneName, spawnId, default, false, out failureReason);
+
+    internal static bool TryTravelThroughWorldGate(Scene source, string sceneName, string spawnId,
+        out string failureReason)
     {
-        failureReason = CheckCanTravel();
+        bool validRoute = (source.name == "MapNhat" && sceneName == "MapDuy")
+            || (source.name == "MapDuy" && sceneName == "MapNhat");
+        return TryTravel(sceneName, spawnId, source, validRoute, out failureReason);
+    }
+
+    private static bool TryTravel(string sceneName, string spawnId, Scene source, bool worldGate,
+        out string failureReason)
+    {
+        failureReason = CheckCanTravel(worldGate);
         if (failureReason != null)
             return false;
 
+        if (worldGate)
+        {
+            if (!Application.CanStreamedLevelBeLoaded(sceneName) || string.IsNullOrEmpty(spawnId))
+            {
+                failureReason = "The destination could not be loaded.";
+                return false;
+            }
+
+            GameSaveData save = GameSessionManager.Instance.Current.SaveData;
+            if (save != null)
+            {
+                foreach (GameObject root in source.GetRootGameObjects())
+                {
+                    var world = root.GetComponent<WorldObjectRegistry>();
+                    if (world != null)
+                        save.world = world.ToSaveData();
+                    var farm = root.GetComponent<FarmingManager>();
+                    if (farm != null)
+                        save.farming = farm.ToSaveData();
+                }
+            }
+        }
+
+        IsWorldGateArrival = worldGate;
         PlayerStat stat = PlayerStat.Instance;
         if (stat != null)
         {
@@ -104,8 +146,9 @@ public static class SceneTravel
         return had;
     }
 
-    private static void Clear()
+    internal static void Clear()
     {
+        IsWorldGateArrival = false;
         _pending = false;
         _pendingSpawnId = null;
         _pendingSnapshot = default;

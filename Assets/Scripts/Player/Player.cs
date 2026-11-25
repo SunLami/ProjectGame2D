@@ -87,6 +87,11 @@ public partial class Player : MonoBehaviour, IDamageable
             return;
 
         PlayerDamageResult result = _stats.ReceiveDamage(damageAmount);
+        if (result.Outcome == PlayerDamageOutcome.Blocked)
+        {
+            if (!_stats.IsBlocking) StopBlocking();
+            return; // No hurt animation, knockback, hurt sound or hurt invulnerability on a blocked hit.
+        }
         if (result.Outcome == PlayerDamageOutcome.Dodged)
             SoundFXManager.PlaySfx(SfxIds.CombatPlayerDodge);
         if (result.Outcome is PlayerDamageOutcome.Ignored or PlayerDamageOutcome.Dodged)

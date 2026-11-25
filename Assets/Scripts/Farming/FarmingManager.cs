@@ -9,6 +9,30 @@ public sealed class FarmingManager : MonoBehaviour
 
     public static FarmingManager Instance { get; private set; }
     public FarmingCatalog Catalog => _catalog;
+    public IReadOnlyCollection<FarmPlot> Plots => _byId.Values;
+
+    public bool TryGetPlot(string plotId, out FarmPlot plot) =>
+        _byId.TryGetValue(plotId ?? string.Empty, out plot) && plot != null;
+
+    /// <summary>Authoring/system placement of an already-ripe crop into an EMPTY plot (quest supply,
+    /// see QuestFarmSupply). Never overwrites a player's crop and never raises CropPlanted/
+    /// CropReplanted -- this is not a player planting and must not count toward a Replant objective.
+    /// Raises FarmStateChanged so the session is marked dirty and the plot persists on save.</summary>
+    public bool TryPlaceMatureCrop(string plotId, CropDefinition crop)
+    {
+        if (crop == null || !TryGetPlot(plotId, out FarmPlot plot) || plot.HasCrop || plot.IsResolving)
+            return false;
+        if (_catalog == null || !_catalog.TryResolve(crop.CropId, out _))
+            return false;
+
+        plot.RestoreCrop(crop, MatureTimestampTicks);
+        FarmingDomainEvents.RaiseFarmStateChanged();
+        return true;
+    }
+
+    // Any timestamp older than every crop's total growth time renders the mature stage
+    // (CropDefinition.GetStageIndex is elapsed-time based); 1 tick = year 0001 UTC.
+    private const long MatureTimestampTicks = 1L;
 
     private void Awake()
     {

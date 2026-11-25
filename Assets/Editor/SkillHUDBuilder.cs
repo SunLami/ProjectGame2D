@@ -139,8 +139,64 @@ public static class SkillHUDBuilder
         cooldown.enabled = false;
 
         var slot = container.GetComponent<SkillHUDSlotUI>();
-        slot.Configure(icon, cooldown, null);
+        slot.Configure(icon, cooldown, null, BuildCooldownText(container.transform));
         return slot;
+    }
+
+    private static TMP_Text BuildCooldownText(Transform parent)
+    {
+        var text = Text(parent, "CooldownText", "", 80f, 0, 0, 210, 210);
+        text.rectTransform.anchorMin = Vector2.zero;
+        text.rectTransform.anchorMax = Vector2.one;
+        text.rectTransform.offsetMin = text.rectTransform.offsetMax = Vector2.zero;
+        text.color = Color.white;
+        text.fontStyle = FontStyles.Bold;
+        text.outlineColor = Color.black;
+        text.outlineWidth = .2f;
+        text.enabled = false;
+        return text;
+    }
+
+    [MenuItem("Tools/ProjectGame2D/UI/Add Skill HUD Cooldown Text")]
+    public static void UpgradeCooldownText()
+    {
+        if (EditorApplication.isPlayingOrWillChangePlaymode)
+            throw new InvalidOperationException("Upgrade Skill HUD in Edit Mode only.");
+        var root = PrefabUtility.LoadPrefabContents(GameplayUIRootPrefabPath);
+        try
+        {
+            foreach (var slot in root.transform.Find("SkillHUD").GetComponentsInChildren<SkillHUDSlotUI>(true))
+            {
+                if (slot.transform.Find("Cooldown") == null && slot.name != "ShieldSlot") continue;
+                var existing = slot.transform.Find("CooldownText");
+                var text = existing != null ? existing.GetComponent<TMP_Text>() : BuildCooldownText(slot.transform);
+                var data = new SerializedObject(slot);
+                data.FindProperty("_cooldownText").objectReferenceValue = text;
+                if (slot.name == "ShieldSlot")
+                {
+                    var overlayTransform = slot.transform.Find("Cooldown");
+                    var overlay = overlayTransform != null ? overlayTransform.GetComponent<Image>() : BuildShieldCooldown(slot.transform);
+                    data.FindProperty("_cooldownOverlay").objectReferenceValue = overlay;
+                    text.transform.SetAsLastSibling();
+                }
+                data.ApplyModifiedPropertiesWithoutUndo();
+            }
+            PrefabUtility.SaveAsPrefabAsset(root, GameplayUIRootPrefabPath);
+        }
+        finally { PrefabUtility.UnloadPrefabContents(root); }
+    }
+
+    private static Image BuildShieldCooldown(Transform parent)
+    {
+        var diamond = AssetDatabase.LoadAssetAtPath<Sprite>(DiamondPath);
+        var overlay = Stretch(Image(parent, "Cooldown", diamond, new Color(0f, 0f, 0f, .72f), 0, 0, ShieldIconSize, ShieldIconSize));
+        overlay.type = UnityEngine.UI.Image.Type.Filled;
+        overlay.fillMethod = UnityEngine.UI.Image.FillMethod.Radial360;
+        overlay.fillOrigin = (int)UnityEngine.UI.Image.Origin360.Top;
+        overlay.fillClockwise = true;
+        overlay.fillAmount = 0f;
+        overlay.enabled = false;
+        return overlay;
     }
 
     private static SkillHUDSlotUI BuildShieldSlot(Transform parent, Sprite shieldIcon)
@@ -160,7 +216,7 @@ public static class SkillHUDBuilder
         highlight.enabled = false;
 
         var slot = container.GetComponent<SkillHUDSlotUI>();
-        slot.Configure(icon, null, highlight);
+        slot.Configure(icon, BuildShieldCooldown(container.transform), highlight, BuildCooldownText(container.transform));
         return slot;
     }
 

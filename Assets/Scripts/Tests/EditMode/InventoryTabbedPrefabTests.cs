@@ -42,8 +42,8 @@ public sealed class InventoryTabbedPrefabTests
         Assert.That(QuickBarSaveData.SlotCount,Is.EqualTo(4));
     }
 
-    [TestCase("Assets/Resources/Items/Food/Bread.asset",InventoryCategory.Consumption)]
-    [TestCase("Assets/Resources/Items/Shop/HealthPotion.asset",InventoryCategory.Consumption)]
+    [TestCase("Assets/Resources/Items/Consumables/HarvestStew.asset",InventoryCategory.Consumption)]
+    [TestCase("Assets/Resources/Items/Consumables/SmallHealthPotion.asset",InventoryCategory.Consumption)]
     [TestCase("Assets/Resources/Items/Farming/Seed.Carrot.asset",InventoryCategory.Others)]
     [TestCase("Assets/Resources/Items/Fishing/WormBait.asset",InventoryCategory.Others)]
     [TestCase("Assets/Resources/Items/Weapon/SwordLv1.asset",InventoryCategory.Equipment)]

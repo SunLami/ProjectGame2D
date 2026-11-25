@@ -530,17 +530,14 @@ scene Style Guide riêng; mỗi UI được migration trực tiếp trên prefab
 
 Popup xác nhận là UI navigation con, không tạo global `GameState` mới.
 
-### Placeholder world exit
+### MapNhat–MapDuy world gates
 
-- `MapNhat/NorthExitToMapDuy` là trigger ở mép trên của lối đi phía bắc. Destination được author là
-  `MapDuy`, nhưng trong lúc scene đích chưa content-ready, trigger không được load scene.
-- Player đi hết lối lên và chạm trigger sẽ bị khóa input bằng `GameState.Cutscene`, phát animation
-  `walk_down` và tự đi xuống tới safe point được tính động từ cạnh đáy collider (giữ nguyên X lúc
-  bước vào, thấp hơn trigger 1 world-unit), rồi mới mở modal message `Comming Soon`. Modal dùng
-  `GameState.Dialogue` để khóa gameplay input và trả đúng về `Playing` khi đóng; không tự chỉnh
-  `Time.timeScale` hoặc ghi save.
-- Khi `MapDuy` hoàn tất, thay placeholder branch bằng `SceneFlowService` và spawn ID hợp lệ; giữ nguyên
-  scene destination authored trên gate, không gọi `SceneManager` trực tiếp từ presentation UI.
+- Walking through MapNhat's north gate loads MapDuy at `spawn.mapduy.south_entry`
+  on the dirt road at (12.50, -17.50).
+- Walking south past that spawn loads the village at `spawn.mapnhat.north_return`
+  at (52.96, 21.45), clear of its outbound trigger.
+- Both gates route through SceneTravel and SceneFlowService, including New Game and
+  Continue. The existing placeholder remains available for unconfigured exits.
 
 ## Save slot presentation
 
@@ -671,3 +668,27 @@ Hai UI có thể dùng cùng prefab visual, nhưng lifecycle/navigation controll
 - MainMenu Settings không làm GameState thành GameplayMenu.
 - Double-click Load chỉ tạo một operation.
 - Error Save/Load không để `Time.timeScale = 0` sai state.
+
+## Act I guidance surfaces (2026-11-25)
+
+Three surfaces, one job each (details: TutorialAndQuestProgression.md "Act I guidance and completion pass"):
+
+| Surface | Shows | Hidden when |
+|---|---|---|
+| `TutorialOverlayRoot` | Input Tutorial step; otherwise the tracked quest's current objective `ControlHint` (≤ 115 chars, 3 lines of the 205×38 banner — guarded by `QuestGuidanceTextTests`) | not `GameState.Playing` (dialogue, menus, fishing); Shop/Crafting/Farm Storage open; quest untracked |
+| `QuestTracker` | stage title (`2-2: …`), NPC/place + action, counter; `READY` + who to hand in to; between quests the next giver with `NEW` | Quest Log open; dialogue (whole `GameplayUIRoot`) |
+| `QuestLogWindow (J)` | all objectives with counters (done dimmed, current marked), `TURN IN:` line, reward names, Track/Untrack, Abandon | — |
+
+Tracker, Quest Log and overlay re-read their state on every `GameState` change, because save restore
+raises no quest/tutorial events (previously a Continue showed the New Game tracker/tutorial step).
+
+### NPC shop unit prices
+
+The shared Buy panel shows one gold amount per priced item. The selected quantity multiplies
+that unit price and the purchase uses the same quote. Opening the shop again takes fresh quotes.
+Quest-only stock keeps its allowance indicator and unconfigured stock keeps PRICE NOT SET.
+
+MapDuy keeps camera bounds inside the painted southern terrain at Y = -18.2. A solid
+edge at Y = -19 stops traversal off the bottom. The road return trigger is centered on
+(12.50, -18.55), above the solid edge and below the arrival point. Both maps use Frawand
+scale (1, 1, 1), body collider (0.70, 0.25), and Cinemachine orthographic size 8.

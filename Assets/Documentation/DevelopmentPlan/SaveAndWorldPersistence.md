@@ -5,6 +5,15 @@ Save contract tuân theo mô hình Definition/Runtime/Save và stable ID trong
 
 ## Save layout
 
+2026-11-25 D-120: **V14** retires 13 out-of-sheet item IDs. `V13ToV14_RetireOutOfSheetItems`
+rewrites item IDs in inventory/equipment/quick bar/farm storage and `crop.eggplant` plots in place
+(map: `SaveMigration.RetiredItemReplacements`); nothing else changes. Verified 2026-11-25 in Unity with
+a V13 fixture in test Slot3 holding all 13 IDs (inventory, quick bar, storage, Eggplant plot, active
+Potion Supply, relic world record): Continue showed the replacements in the same slots/quantities,
+plot ID + timestamp kept, file hash unchanged after load; re-save wrote V14 with no old ID; Continue of
+the V14 file matched. Tests: `RetiredItemMigrationTests`. Known limit: saving from MapNhat drops world
+records of objects that only exist in DemoScene (pre-existing scene-scoped registry behaviour).
+
 2026-10-13 D-116: V13 adds `player.skills` (points, award watermark, learned stable IDs, four skill
 loadout IDs). V12→V13 backfills max(0,level-1) points once; capture/restore details: SkillProgression.md.
 Restore grants no level-up rewards and neither migration nor UI writes save files implicitly.
@@ -314,3 +323,21 @@ không ghi đè manual backup mà không có policy riêng.
 `ISaveSlotRepository.WriteSave`), không có "hệ thống save thứ hai". Dirty-session tracking
 (`GameSessionManager.IsDirty`, xem D-024) quyết định khi nào Return/Quit cần hỏi xác nhận; save
 thành công luôn `ClearDirty()`. Chi tiết đầy đủ: [Phase9ImplementationReport.md](Phase9ImplementationReport.md).
+
+### V14 → V15 paid Act I drinks
+
+On Continue, saves that completed A New Journey but still owe purchases in A Drink Before
+the Road receive a one-time wallet floor equal to their remaining maximum purchase cost
+(12 G per outstanding Carrot Juice and 16 G per outstanding Grape Juice). A higher balance
+is preserved. Ready-to-turn-in and completed drinks quests need no funds. The migration
+preserves quest counters and only writes to disk on the next normal save. Fresh games earn
+the 140 G travel budget by turning in A New Journey.
+
+### MapNhat–MapDuy travel
+
+North and south world gates keep the active Bootstrap managers. Capture the outgoing
+scene's world objects and planted plots into the in-memory session before travelling.
+Restore only scene-owned data on entry, then apply the player handoff at the registered
+spawn. Saving in MapDuy uses the existing player location sceneId and preserves the village
+world/farm data. Continue routes MapDuy saves to MapDuy, while older saves retain their
+configured fallback. No save schema change is required.

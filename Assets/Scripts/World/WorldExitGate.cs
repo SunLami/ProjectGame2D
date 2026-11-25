@@ -9,6 +9,7 @@ using UnityEngine;
 public sealed class WorldExitGate : MonoBehaviour
 {
     [SerializeField] private string _destinationSceneName = "MapDuy";
+    [SerializeField] private string _destinationSpawnId;
     [SerializeField] private string _unavailableMessage = "Comming Soon";
     [SerializeField, Min(0.1f)] private float _returnClearance = 1f;
     [SerializeField, Min(0.1f)] private float _walkSpeed = 2f;
@@ -28,12 +29,32 @@ public sealed class WorldExitGate : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        Player player = other.GetComponentInParent<Player>();
+        // Only the body collider can cross the seam. Combat hitboxes on child objects
+        // can extend past the return threshold even while the player stands at the spawn.
+        Player player = other.GetComponent<Player>();
         if (player == null || _isReturningPlayer || GameStateManager.Instance == null
             || GameStateManager.Instance.CurrentState != GameState.Playing)
             return;
 
-        StartCoroutine(WalkPlayerBack(player));
+        if (string.IsNullOrEmpty(_destinationSpawnId))
+            StartCoroutine(WalkPlayerBack(player));
+        else
+            StartCoroutine(TravelAfterPhysics());
+    }
+
+    private IEnumerator TravelAfterPhysics()
+    {
+        // SceneFlow replaces the outgoing Player immediately. Unity forbids that inside a
+        // physics callback, so start the scene transition on the next frame.
+        _isReturningPlayer = true;
+        yield return null;
+
+        if (GameStateManager.Instance?.CurrentState == GameState.Playing
+            && !SceneTravel.TryTravelThroughWorldGate(gameObject.scene, _destinationSceneName,
+                _destinationSpawnId, out string reason))
+            WorldMessagePopupUI.Show(reason);
+
+        _isReturningPlayer = false;
     }
 
     private IEnumerator WalkPlayerBack(Player player)

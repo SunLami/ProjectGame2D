@@ -35,8 +35,11 @@ public static class QuestUILightFantasySkinBuilder
         if (trackerBackground == null) trackerBackground = tracker.gameObject.AddComponent<Image>();
         trackerBackground.sprite = null;
         trackerBackground.color = Color.clear;
-        trackerBackground.raycastTarget = true;
-        tracker.GetComponent<RectTransform>().sizeDelta = new Vector2(190f, 230f);
+        trackerBackground.raycastTarget = false;
+        var trackerRect = tracker.GetComponent<RectTransform>();
+        trackerRect.anchorMin = trackerRect.anchorMax = trackerRect.pivot = Vector2.one;
+        trackerRect.anchoredPosition = new Vector2(-16f, -16f);
+        trackerRect.sizeDelta = new Vector2(155f, 190f);
         TMP_Text trackerTitle = RequireChild(tracker, "Title").GetComponent<TMP_Text>();
         trackerTitle.enabled = false;
         Transform trackerBanner = tracker.Find("SkinTrackerQuestBanner");

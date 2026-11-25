@@ -23,6 +23,7 @@ public sealed class SkillCatalog : ScriptableObject
         public SkillCastKind castKind;
         [Tooltip("Seconds this skill's loadout slot is locked out after casting (D-118). 0 = no cooldown.")]
         [Min(0)] public float cooldownSeconds = 1f;
+        [Min(0)] public float manaCost;
     }
     [SerializeField] private Definition[] _definitions = Array.Empty<Definition>();
     public bool TryResolve(string id, out Definition definition)
@@ -30,11 +31,23 @@ public sealed class SkillCatalog : ScriptableObject
         definition = Array.Find(_definitions, d => d != null && d.id == id);
         return !string.IsNullOrEmpty(id) && definition != null;
     }
+    public int RemainingLearningCost(Func<string, bool> isLearned)
+    {
+        long total = 0;
+        var ids = new HashSet<string>(StringComparer.Ordinal);
+        foreach (var d in _definitions)
+            if (d != null && !string.IsNullOrWhiteSpace(d.id) && ids.Add(d.id)
+                && d.learningCost > 0 && !isLearned(d.id)) total += d.learningCost;
+        return (int)Math.Min(int.MaxValue, total);
+    }
+
     public void Validate()
     {
         var ids = new HashSet<string>(StringComparer.Ordinal);
         foreach (var d in _definitions)
             if (d == null || string.IsNullOrWhiteSpace(d.id) || !ids.Add(d.id) || d.learningCost < 1 || d.icon == null
+                || float.IsNaN(d.manaCost) || float.IsInfinity(d.manaCost) || d.manaCost < 0f
+                || float.IsNaN(d.cooldownSeconds) || float.IsInfinity(d.cooldownSeconds) || d.cooldownSeconds < 0f
                 || d.castKind == SkillCastKind.None || !Enum.IsDefined(typeof(SkillCastKind), d.castKind))
                 throw new InvalidOperationException(name + ": invalid/duplicate skill definition or missing icon.");
     }

@@ -14,8 +14,8 @@ public partial class Player
     private static readonly int IsDashingHash = Animator.StringToHash("isDashing");
 
     [Header("Dash")]
-    [Tooltip("Scenes that enable dash while loaded (empty = every scene). Dash is DemoScene-first; add scene names here after the feature is finalized.")]
-    [SerializeField] private string[] _dashScenes = { "DemoScene" };
+    [Tooltip("Scenes that enable dash while loaded (empty = every scene). DemoScene and MapNhat are approved; add other scenes after feature validation.")]
+    [SerializeField] private string[] _dashScenes = { "DemoScene", "MapNhat" };
     [SerializeField, Min(0.1f)] private float _dashDistance = 3.2f;
     [SerializeField, Min(0.05f)] private float _dashDuration = 0.2f;
     [SerializeField, Min(0f)] private float _dashCooldown = 0.8f;
@@ -58,6 +58,7 @@ public partial class Player
     {
         UnbindDashInput();
         CancelDash();
+        if (_stats != null) StopBlocking();
     }
 
     // PlayerInput owns its own copy of the Gameplay action map and creates it in its own OnEnable,

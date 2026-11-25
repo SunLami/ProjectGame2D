@@ -87,3 +87,10 @@ mọi rule gameplay vào một reflection framework tổng quát.
 ## D-119 authoring states
 
 ItemSO.commerceConfigurationPending explicitly identifies owner-approved unfinished economy data. Missing buy/sell ranges on these shop entries produce warnings; transactions still require a real price or legacy stock quote. All other missing prices remain errors. Percentage consumables require valid fractions; timed buffs require finite positive durations. Wildlife IDs and loot reference/quantity contracts are validated. Baseline errors and verification coverage are recorded in SheetContentExpansion.md.
+
+## D-120 retirement run — 2026-11-25
+
+After deleting the 13 out-of-sheet ItemSO, 8 recipes and the Eggplant crop: **1089 errors / 82 warnings /
+271 assets checked**. Errors are only the unchanged RockTileData baseline; assets checked dropped by the
+22 deleted assets; no new warning. A repository scan found no remaining GUID of any deleted asset
+(outside `_Recovery`); retired IDs remain only in `SaveMigration`, migration/fixture tests and docs.

@@ -2,6 +2,39 @@ using NUnit.Framework;
 
 public sealed class SaveMigrationTests
 {
+    [TestCase(false, QuestStatus.Active, 0, 0, 0, 0)]
+    [TestCase(true, QuestStatus.Active, 0, 0, 0, 140)]
+    [TestCase(true, QuestStatus.Active, 5, 2, 10, 48)]
+    [TestCase(true, QuestStatus.Active, 5, 2, 80, 80)]
+    [TestCase(true, QuestStatus.ReadyToTurnIn, 5, 5, 0, 0)]
+    [TestCase(true, QuestStatus.Completed, 5, 5, 0, 0)]
+    public void V14_PaidDrinksMigration_FundsOnlyOutstandingPurchases(
+        bool completedTraining, QuestStatus drinksStatus, int carrot, int grape, int gold, int expected)
+    {
+        var save = NewGameFactory.CreateDefault();
+        save.saveVersion = 14;
+        save.inventory.gold = gold;
+        if (completedTraining)
+            save.quests.quests.Add(new QuestProgressSaveData
+                { questId = "quest.act1.new_journey", status = QuestStatus.Completed });
+        var drinks = new QuestProgressSaveData
+        {
+            questId = "quest.act1.drink_before_road",
+            status = drinksStatus,
+            objectiveCounters = new[] { 1, carrot, grape }
+        };
+        save.quests.quests.Add(drinks);
+
+        SaveMigration.Migrate(save);
+
+        Assert.AreEqual(expected, save.inventory.gold);
+        Assert.AreEqual(drinksStatus, drinks.status);
+        CollectionAssert.AreEqual(new[] { 1, carrot, grape }, drinks.objectiveCounters);
+        save.inventory.gold = 0;
+        SaveMigration.Migrate(save);
+        Assert.AreEqual(0, save.inventory.gold);
+    }
+
     [Test]
     public void V1_MigratesToCurrent_WithNewGameEquivalentDefaults()
     {

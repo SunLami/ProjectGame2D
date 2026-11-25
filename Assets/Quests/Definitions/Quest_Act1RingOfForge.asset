@@ -1,0 +1,40 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2a7a75faac2e50c44ac9f79fb2dfa85e, type: 3}
+  m_Name: Quest_Act1RingOfForge
+  m_EditorClassIdentifier: ProjectGame2D.Runtime::QuestDefinition
+  _questId: quest.act1.ring_of_forge
+  _displayName: "4: The Ring of the Forge"
+  _prerequisiteQuestIds:
+  - quest.act1.cast_a_line
+  _objectives:
+  - _type: 0
+    _targetId: npc.town.artificer
+    _targetAreaId:
+    _targetCount: 1
+    _obtainMode: 0
+    _description: "Visit Merric at the smithy."
+  _rewards:
+    _items:
+    - _itemId: item.material.gold_bar
+      _quantity: 5
+    _gold: 25
+    _experience: 0
+  _isTutorialQuest: 0
+  _isMainQuest: 0
+  _isDailyQuest: 0
+  _isDebugQuest: 0
+  _giverNpcId: npc.town.artificer
+  _turnInNpcId: npc.town.artificer
+  _autoTurnIn: 0
+  _offerDirections: "Meet Merric at the smithy."
+  _turnInDirections: "Speak to Merric again to unlock smithing."

@@ -63,11 +63,17 @@ public sealed class SkillHUDController : MonoBehaviour
                     RefreshIcon(i);
 
                 _loadoutSlots[i].SetCooldownFraction01(_castBridge.GetCooldownFraction01(i));
+                _loadoutSlots[i].SetCooldownSeconds(_castBridge.GetCooldownRemainingSeconds(i));
             }
         }
 
-        if (_shieldSlot != null && _player != null)
-            _shieldSlot.SetActiveHighlight(_player.IsBlocking);
+        if (_shieldSlot != null)
+        {
+            _shieldSlot.SetActiveHighlight(_player != null && _player.IsBlocking);
+            float remaining = _playerStat.ShieldCooldownRemaining;
+            _shieldSlot.SetCooldownFraction01(remaining / PlayerStat.ShieldCooldownSeconds);
+            _shieldSlot.SetCooldownSeconds(remaining);
+        }
     }
 
     private void TryBindPlayerStat()

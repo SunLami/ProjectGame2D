@@ -169,7 +169,11 @@ public sealed class QuestLogUI : MonoBehaviour
     private void HandleGameStateChanged(GameStateChange change)
     {
         ResolveQuestLogAction();
-        RefreshVisibility();
+        // QuestManager.RestoreState (Continue/load) deliberately raises no quest events, and this
+        // UI lives in Bootstrap and bound before the save was restored -- without this the tracker
+        // and list kept showing the pre-restore (empty / New Game) presentation until the next
+        // quest event. Every state transition (Loading -> Playing, menu open/close) re-reads it.
+        BindQuestManager();
         if (IsQuestLogOpen())
             SelectDefault();
     }
@@ -247,7 +251,9 @@ public sealed class QuestLogUI : MonoBehaviour
             _trackedQuests.Add(new TrackedQuestView(
                 quest.QuestId,
                 quest.DisplayName,
-                objective != null ? objective.Description : "Return to the quest giver",
+                status == QuestStatus.ReadyToTurnIn
+                    ? TurnInDirections(quest)
+                    : objective?.Description,
                 CategoryOf(quest),
                 objective != null ? objective.Type : QuestObjectiveType.Talk,
                 currentCount,
@@ -255,8 +261,49 @@ public sealed class QuestLogUI : MonoBehaviour
                 status == QuestStatus.ReadyToTurnIn));
         }
 
+        // Between quests (nothing Active/Ready anywhere, not merely untracked) point at the next
+        // giver. This is a read-only hint: the quest is still accepted only through that NPC's
+        // dialogue + accept popup, and a player who untracks an in-progress quest keeps an empty
+        // tracker instead of being nudged elsewhere.
+        if (_trackedQuests.Count == 0 && !HasQuestInProgress())
+        {
+            foreach (QuestDefinition quest in _questManager.Catalog.AllQuests)
+            {
+                if (string.IsNullOrEmpty(quest.OfferDirections)
+                    || _questManager.GetStatus(quest.QuestId) != QuestStatus.Available)
+                    continue;
+
+                _trackedQuests.Add(new TrackedQuestView(quest.QuestId, quest.DisplayName,
+                    quest.OfferDirections, CategoryOf(quest), isOffer: true));
+                break;
+            }
+        }
+
         _trackedQuests.Sort(QuestTrackerOrdering.Compare);
         _tracker?.SetQuests(_trackedQuests);
+    }
+
+    private bool HasQuestInProgress()
+    {
+        foreach (QuestDefinition quest in _questManager.Catalog.AllQuests)
+        {
+            if (quest.IsDebugQuest)
+                continue;
+            QuestStatus status = _questManager.GetStatus(quest.QuestId);
+            if (status == QuestStatus.Active || status == QuestStatus.ReadyToTurnIn)
+                return true;
+        }
+        return false;
+    }
+
+    private static string TurnInDirections(QuestDefinition quest) =>
+        string.IsNullOrEmpty(quest.TurnInDirections) ? "Return to the quest giver" : quest.TurnInDirections;
+
+    private static string HandInLine(QuestDefinition quest)
+    {
+        if (string.IsNullOrEmpty(quest.TurnInNpcId))
+            return quest.AutoTurnIn ? "Completes on its own once every step is done." : string.Empty;
+        return TurnInDirections(quest);
     }
 
     private static QuestCategory CategoryOf(QuestDefinition quest)
@@ -414,7 +461,7 @@ public sealed class QuestLogUI : MonoBehaviour
             categoryLabel.text = CategoryOf(quest).ToString().ToUpperInvariant() + " QUEST";
         TMP_Text rewards = detail.Find("Rewards/RewardSummary")?.GetComponent<TMP_Text>();
         if (rewards != null)
-            rewards.text = FormatRewards(quest.Rewards);
+            rewards.text = FormatRewards(quest.Rewards, _itemResolver ??= new ResourcesItemResolver());
         Image objectiveIcon = detail.Find("ObjectiveIcon")?.GetComponent<Image>();
         if (objectiveIcon != null && quest.Objectives.Count > 0)
         {
@@ -429,7 +476,9 @@ public sealed class QuestLogUI : MonoBehaviour
             _trackButtonLabel.text = _questManager.IsTracked(quest.QuestId) ? "UNTRACK QUEST" : "TRACK QUEST";
     }
 
-    private static string FormatRewards(QuestRewardDefinition rewards)
+    private IItemResolver _itemResolver;
+
+    private static string FormatRewards(QuestRewardDefinition rewards, IItemResolver items)
     {
         if (rewards == null) return "No rewards";
 
@@ -437,7 +486,13 @@ public sealed class QuestLogUI : MonoBehaviour
         if (rewards.Gold > 0) parts.Add($"{rewards.Gold} GOLD");
         if (rewards.Experience > 0) parts.Add($"{rewards.Experience} EXP");
         foreach (QuestRewardItemEntry item in rewards.Items)
-            parts.Add($"{item.Quantity}x {item.ItemId}");
+        {
+            if (string.IsNullOrEmpty(item.ItemId)) continue;
+            string name = items != null && items.TryResolve(item.ItemId, out ItemSO resolved) && !string.IsNullOrEmpty(resolved.itemName)
+                ? resolved.itemName
+                : item.ItemId;
+            parts.Add($"{item.Quantity}x {name}");
+        }
         return parts.Count > 0 ? string.Join("     ", parts) : "No rewards";
     }
 
@@ -530,18 +585,37 @@ public sealed class QuestLogUI : MonoBehaviour
             return builder.ToString();
         }
 
+        // Full log: every step with its counter; finished steps dimmed, the current one marked, so
+        // a multi-step quest (2-2 Back to the Fields) reads as an ordered checklist. Ends with who
+        // receives the turn-in, highlighted once the quest is READY.
         for (int i = 0; i < quest.Objectives.Count; i++)
         {
             if (builder.Length > 0)
                 builder.AppendLine();
 
+            bool done = hasProgress && (snapshot.Status == QuestStatus.ReadyToTurnIn
+                || snapshot.Status == QuestStatus.Completed || i < currentIndex);
+            bool current = hasProgress && snapshot.Status == QuestStatus.Active && i == currentIndex;
+            builder.Append(done ? "<color=#8F8A7A>" : current ? "<color=#FFE08A>> " : "  ");
             AppendObjective(
                 builder,
                 quest,
                 snapshot,
                 i,
-                showCounter: hasProgress && i == currentIndex,
+                showCounter: hasProgress,
                 showBullet: false);
+            if (done || current)
+                builder.Append("</color>");
+        }
+
+        string handIn = HandInLine(quest);
+        if (!string.IsNullOrEmpty(handIn))
+        {
+            bool ready = hasProgress && snapshot.Status == QuestStatus.ReadyToTurnIn;
+            builder.AppendLine().AppendLine()
+                .Append(ready ? "<color=#F5B033>TURN IN NOW: " : "<color=#C9A34A>TURN IN: </color>")
+                .Append(handIn);
+            if (ready) builder.Append("</color>");
         }
         return builder.ToString();
     }

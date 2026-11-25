@@ -80,3 +80,5 @@ GameState hoặc gameplay service hiện có.
 6. PlayerHUD, UnifiedGameplayHUD và QuestTracker.
 
 HUD thường trực làm sau cùng vì cần kiểm tra mật độ thông tin và vùng gameplay không bị che.
+
+2026-10-22 owner request: remove Minimap from Bootstrap shared HUD; QuestTracker moves top-right with no background, separate category/objective icons and generated pixel-art header separator. FullMap (M) retained. Implementation/prompt/acceptance: [QuestTracker refresh](QuestTrackerTopRightRefresh.md).

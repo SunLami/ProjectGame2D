@@ -8,5 +8,9 @@ public enum QuestObjectiveType
     Purchase,
     Gather,
     Kill,
-    Equip
+    Equip,
+    // Appended, not inserted: existing QuestDefinition assets serialize _type by enum index, so
+    // new values must always go at the end.
+    Replant,
+    Fish
 }

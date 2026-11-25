@@ -134,6 +134,7 @@ public sealed class SceneFlowService : MonoBehaviour
         if (IsTransitioning || GameStateManager.Instance.CurrentState != GameState.Loading)
             return;
 
+        SceneTravel.Clear();
         string message = $"Gameplay restore failed: {reason}";
         Debug.LogError(message, this);
         TransitionFailed?.Invoke(message);
@@ -365,6 +366,7 @@ public sealed class SceneFlowService : MonoBehaviour
     private void FailTransition(string sceneName, string reason)
     {
         IsTransitioning = false;
+        SceneTravel.Clear();
         GameSessionManager.Instance.ClearSession();
         GameStateManager.Instance.ResetToMainMenu();
 

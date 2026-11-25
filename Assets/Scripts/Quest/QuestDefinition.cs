@@ -33,6 +33,14 @@ public sealed class QuestDefinition : ScriptableObject
         + "as opposed to one meant to be handed in face-to-face.")]
     [SerializeField] private bool _autoTurnIn;
 
+    [Tooltip("QuestTracker line while this quest is Available and nothing is in progress: who to "
+        + "meet and where. Presentation only -- the quest is still accepted through the giver's dialogue.")]
+    [SerializeField, TextArea] private string _offerDirections;
+    [Tooltip("QuestTracker/QuestLog line naming who receives the turn-in and where (shown at READY).")]
+    [SerializeField, TextArea] private string _turnInDirections;
+
+    public string OfferDirections => _offerDirections;
+    public string TurnInDirections => _turnInDirections;
     public string QuestId => _questId;
     public string DisplayName => _displayName;
     public IReadOnlyList<string> PrerequisiteQuestIds => _prerequisiteQuestIds ?? Array.Empty<string>();

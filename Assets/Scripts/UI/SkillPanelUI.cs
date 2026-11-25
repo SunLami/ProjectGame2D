@@ -40,8 +40,7 @@ public sealed class SkillPanelUI : MonoBehaviour
     private RectTransform _tooltipRect;
     private float _tooltipLastHovered;
     private const float TooltipExitGrace = .2f;
-    // Application/UI action: remains available while gameplay input is suspended by GameState.
-    [SerializeField] private InputAction _toggle = new InputAction("Skills", InputActionType.Button, "<Keyboard>/p");
+    public const string TrainingOutcomeId = "skills.training";
     private GameStateManager _state;
     public bool IsOpen => _state != null && _state.CurrentState == GameState.GameplayMenu
         && _state.CurrentMenuPage == GameplayMenuPage.Skills;
@@ -72,8 +71,6 @@ public sealed class SkillPanelUI : MonoBehaviour
     {
         _state = GameStateManager.Instance;
         if (_state != null) _state.StateChanged += OnStateChanged;
-        _toggle.performed += OnToggle;
-        _toggle.Enable();
         Refresh();
         BindPlayer();
     }
@@ -85,11 +82,8 @@ public sealed class SkillPanelUI : MonoBehaviour
         if (_player != null) _player.Skills.Changed -= RefreshSkills;
         _player = null;
         if (_state != null) _state.StateChanged -= OnStateChanged;
-        _toggle.performed -= OnToggle;
-        _toggle.Disable();
     }
 
-    private void OnDestroy() => _toggle.Dispose();
     private void Update()
     {
         if (_player != PlayerStat.Instance) BindPlayer();
@@ -152,14 +146,13 @@ public sealed class SkillPanelUI : MonoBehaviour
         if (_player != null) _player.Skills.Changed += RefreshSkills;
         RefreshSkills();
     }
-    private void OnToggle(InputAction.CallbackContext context) => Toggle();
     private void OnStateChanged(GameStateChange change) => Refresh();
 
-    public void Toggle()
+    public static void OpenFromTrainer()
     {
-        if (_state == null) return;
-        if (IsOpen) Close();
-        else if (_state.CurrentState == GameState.Playing) _state.OpenMenu(GameplayMenuPage.Skills);
+        GameStateManager state = GameStateManager.Instance;
+        if (state != null && state.CurrentState == GameState.Playing)
+            state.OpenMenu(GameplayMenuPage.Skills);
     }
 
     public void Close()
@@ -175,7 +168,9 @@ public sealed class SkillPanelUI : MonoBehaviour
         if (_catalog == null || !_catalog.TryResolve(entry.id, out var definition)) { HideTooltip(); return; }
         _title.text = definition.displayName;
         _description.text = definition.description;
-        _cost.text = "Skill Point Cost: " + definition.learningCost;
+        _cost.rectTransform.sizeDelta = new Vector2(_cost.rectTransform.sizeDelta.x, 60f);
+        _cost.fontSize = 18f;
+        _cost.text = $"Skill Point Cost: {definition.learningCost}\nMana: {definition.manaCost:0.#}  |  Cooldown: {definition.cooldownSeconds:0.#}s";
         _tooltip.SetActive(true);
         RefreshSkills();
     }

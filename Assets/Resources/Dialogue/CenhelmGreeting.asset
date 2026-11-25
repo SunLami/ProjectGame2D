@@ -26,6 +26,8 @@ MonoBehaviour:
       _nextNodeId: peaceful_leaf
     - _text: Tell me about this place.
       _nextNodeId: about_leaf
+    - _text: Show me your goods.
+      _nextNodeId: shop_leaf
     - _text: Just passing by.
       _nextNodeId: leave_leaf
   - _nodeId: peaceful_leaf
@@ -49,4 +51,11 @@ MonoBehaviour:
     _text: Safe travels, then.
     _nextNodeId:
     _outcomeId:
+    _choices: []
+  - _nodeId: shop_leaf
+    _speakerName: Cenhelm
+    _portrait: {fileID: 0}
+    _text: The general store is open. Take what you need.
+    _nextNodeId:
+    _outcomeId: commerce.shop
     _choices: []

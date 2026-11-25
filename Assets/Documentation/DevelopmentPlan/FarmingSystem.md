@@ -82,4 +82,40 @@ và farm storage rỗng.
 
 ## Items List expansion — D-119
 
-Carrot/Grape/Cucumber/Chillie/Mushroom/Lemon/Apple use 60-second maturity and exactly three harvest items. Lemon/Apple are single-harvest crops, using the existing Empty-after-harvest flow. Eggplant is retained. Catalog additions are preserved by FarmingAuthoring rebuilds. Seeds are Inactive quick-bar assignments under the current four-slot D-115/D-117 contract. New seed/produce prices remain unset where the sheet provides none. See SheetContentExpansion.md for gates and provisional art.
+Carrot/Grape/Cucumber/Chillie/Mushroom/Lemon/Apple use 60-second maturity and exactly three harvest items. Lemon/Apple are single-harvest crops, using the existing Empty-after-harvest flow. Eggplant was removed by D-120 (2026-11-25); saves map `crop.eggplant` plots and Eggplant seeds/produce to Carrot. Catalog additions are preserved by FarmingAuthoring rebuilds. Seeds are Inactive quick-bar assignments under the current four-slot D-115/D-117 contract. New seed/produce prices remain unset where the sheet provides none. See SheetContentExpansion.md for gates and provisional art.
+
+## Quest farm supply (Act I 2-2) — 2026-11-25
+
+- MapNhat `FarmingFeature/FarmingManager._catalog` is wired to `Assets/Game/Farming/Definitions/FarmingCatalog.asset`
+  (it was null: restore reported every saved crop as unresolved and harvest items were not treated as
+  farming items by Farm Storage).
+- `QuestFarmSupply` on the same object serves `quest.act1.back_to_fields`. Starter layout (ripe on
+  quest accept): Carrot `plot.006–010`, Grape `plot.016–020`, Lemon `plot.002–005, 012`; the other six
+  plots stay empty for replanting. Replant seeds (5 each) go to Farm Storage (Leofrun → "I'd like to
+  store some things").
+- Rule (`QuestFarmSupplyPlanner`): per crop, remaining harvest need ÷ yield vs plots already growing
+  that crop; on quest start missing plots become ripe plots; later (and on restore) held seeds
+  (storage + inventory) count first and only the shortfall is added as seeds. Never overwrites a
+  player crop, never raises `CropPlanted`/`CropReplanted`, raises `FarmStateChanged` for dirty/save.
+- No new save data. The previous WIP fields `_newGameCrops/_newGameSeeds` were removed.
+
+### Farm shop assortment
+
+Leofrun sells seeds for Carrot, Grape, Cucumber, Chillie, Mushroom, Lemon and Apple. Eadric
+offers the seven corresponding harvest items, with no seeds in his Buy tab. Sell-tab produce
+lists use those same harvest items. Prices are authored on the ItemSO. The seed and produce Buy prices and the per-produce
+payout when the player sells are listed below, in gold.
+
+| Crop | Seed price | Produce price | Produce payout |
+|---|---:|---:|---:|
+| Carrot | 4–6 | 4 | 2 |
+| Cucumber | 4–6 | 4–5 | 2 |
+| Chillie | 6–8 | 5–6 | 3 |
+| Mushroom | 6–8 | 5–6 | 3 |
+| Grape | 6–8 | 6–7 | 3 |
+| Lemon | 8–10 | 7–8 | 4 |
+| Apple | 8–10 | 7–8 | 4 |
+
+One seed yields three produce after maturity. Selling all three yields a net 0–2 G,
+1–3 G or 2–4 G by seed-price tier. Each produce payout is below its cheapest Buy quote.
+Seed sell values are 1–2, 2–3 or 3–4 G by tier for any shop that accepts seeds.

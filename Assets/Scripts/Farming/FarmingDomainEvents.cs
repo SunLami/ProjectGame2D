@@ -12,6 +12,10 @@ public static class FarmingDomainEvents
         FarmStateChanged?.Invoke();
     }
 
+    /// <summary>Farm/storage state changed without a player plant/harvest (e.g. quest supply).
+    /// Only marks the session dirty; never counts toward quest objectives.</summary>
+    public static void RaiseFarmStateChanged() => FarmStateChanged?.Invoke();
+
     public static void RaiseCropHarvested(string plotId, string cropId, int quantity)
     {
         CropHarvested?.Invoke(plotId, cropId, quantity);

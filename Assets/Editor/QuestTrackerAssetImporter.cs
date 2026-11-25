@@ -11,11 +11,12 @@ public sealed class QuestTrackerAssetImporter : AssetPostprocessor
 
         TextureImporter importer = (TextureImporter)assetImporter;
         importer.textureType = TextureImporterType.Sprite;
-        importer.spriteImportMode = SpriteImportMode.Single;
+        bool divider = assetPath.EndsWith("quest_tracker_divider_pixel_v2.png", System.StringComparison.Ordinal);
+        importer.spriteImportMode = divider ? SpriteImportMode.Multiple : SpriteImportMode.Single;
         importer.alphaIsTransparency = true;
         importer.mipmapEnabled = false;
-        importer.filterMode = UnityEngine.FilterMode.Bilinear;
+        importer.filterMode = divider ? UnityEngine.FilterMode.Point : UnityEngine.FilterMode.Bilinear;
         importer.textureCompression = TextureImporterCompression.Uncompressed;
-        importer.maxTextureSize = 512;
+        importer.maxTextureSize = divider ? 4096 : 512;
     }
 }

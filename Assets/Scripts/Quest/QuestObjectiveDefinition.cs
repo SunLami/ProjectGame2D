@@ -16,6 +16,18 @@ public sealed class QuestObjectiveDefinition
     [SerializeField] private ObtainObjectiveMode _obtainMode = ObtainObjectiveMode.CountAcquired;
     [SerializeField, TextArea] private string _description;
 
+    [Tooltip("Optional how-to line shown by TutorialOverlayUI while this is the tracked quest's "
+        + "current objective (presentation only, never progression).")]
+    [SerializeField, TextArea] private string _controlHint;
+    [Tooltip("Optional AreaTriggerZone areaId the direction indicator points at for this objective.")]
+    [SerializeField] private string _navigationAreaId;
+    [Tooltip("Optional npcId the direction indicator points at for a non-Talk objective performed "
+        + "at an NPC (e.g. Purchase at a shop keeper).")]
+    [SerializeField] private string _navigationNpcId;
+
+    public string ControlHint => _controlHint;
+    public string NavigationAreaId => _navigationAreaId;
+    public string NavigationNpcId => _navigationNpcId;
     public QuestObjectiveType Type => _type;
     public string TargetId => _targetId;
 

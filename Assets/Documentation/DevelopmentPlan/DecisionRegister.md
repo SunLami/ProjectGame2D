@@ -482,6 +482,340 @@ layers; normalized alpha hulls size motifs inside fixed socket axes. Existing ca
 progression, costs, input and save contracts unchanged. Builders and both source prefabs updated.
 Supersedes the V2 48%-square HUD composition. See SkillIconSharedPresentation.md.
 
+## Skill Point budget — owner request 2026-10-22 (D-116 continuation)
+
+Owner replaces unlimited level awards with a catalog-derived learning budget: current twelve skills
+cost 3 × (2 + 3 + 4 + 5) = 42 points total. Keep +1 per gained level, but available points never
+exceed the total cost of known unlearned skills. Spending does not reopen award capacity beyond
+that remaining cost. At all skills learned, points remain zero even on subsequent level-ups.
+PlayerStat binds the serialized catalog (or the existing Resources catalog once at composition);
+missing catalog fails closed with zero award budget. UI continues reading player-owned state.
+Restore clamps legacy surplus in runtime only, preserves learned/unknown IDs and loadout, never
+grants points and never writes the source DTO/file. Save V13 fields and migration remain unchanged;
+normal explicit saves capture the normalized balance. No automatic test runs or Play Mode transitions
+per existing owner workflow. Regression source added for cap, spending, legacy surplus and all learned;
+manual gameplay/build acceptance pending.
+
+## D-118 mana and cooldown continuation — Accepted, owner request 2026-10-22
+
+Supersedes the earlier no-mana scope and aim-start cooldown timing. All twelve skills use catalog
+manaCost and cooldownSeconds. Initial tier 1/2/3/4 tuning for Water/Earth/Wind: mana 8/16/24/35,
+cooldown 2/6/10/18 seconds. Builder defaults and live catalog match; tooltip displays both values.
+Aim entry checks mana and cooldown. Confirmation rechecks gameplay/alive/learned/equipped state,
+consumes mana through PlayerStat.TryConsumeMana once and starts cooldown before spawning effects.
+Cancel or missing prefab (no aim started) spends nothing; mana lost during aim prevents effects.
+Existing slot-keyed cooldown and scaled gameplay clock retained per D-118; HUD reads same gate.
+No new regen policy, save field, schema change or Shield change. Mana remains the existing runtime
+resource; cooldown remains transient. Automatic tests/Play Mode remain owner-controlled.
+Manual acceptance pending: each of twelve casts, insufficient mana, exact cost, cancel, pause,
+missing prefab, loadout changes during aim, HUD overlay and PlayerHUD mana refresh.
+
+### SkillHUD countdown text — owner request 2026-10-22, D-118 continuation
+
+Four Q/E/R/T icons show centered white Digital Disco cooldown seconds, rounded up (18…1),
+above the radial overlay with dark outline. Ready/empty slots hide numbers. Remaining time comes
+from the same SkillTestHarness deadline as the cast gate and radial overlay, using scaled time.
+Shared GameplayUIRoot prefab receives a targeted text-only upgrade; full builder also creates texts.
+Shield, cooldown tuning and save remain unchanged. Prefab wiring statically checked; Unity MCP stopped answering after refresh, so compile/editor verification remains pending. Owner manual
+gameplay and visual acceptance pending; no automatic tests or Play Mode transitions.
+
+### Mana recovery and Shield guard — owner request 2026-10-22, D-118 continuation
+
+Mana still spends only on confirmed casts. PlayerStat now regenerates 3 mana/second after
+a 2-second delay from positive spending, only during living gameplay. T remains loadout slot 3;
+key polling is independent and failed learned/mana/cooldown gates log a readable reason.
+DemoScene ultimate prefab references are present; exact owner T failure still requires reproduction.
+Shield supersedes the old 70% mitigation: full block, no HP loss/hurt animation/knockback/hurt sound
+or hurt invulnerability on blocked hits. Holding drains existing 20 stamina/sec without passive
+stamina regeneration; each blocked hit additionally drains 15 stamina. Last exhausting hit is blocked
+in full, clamps stamina to zero and breaks guard; subsequent hits damage normally. Exhaustion locks
+reactivation for 1 scaled second, including while RMB remains held; stamina can recover during lockout.
+All resource/break rules live in PlayerStat; Player owns input, VFX and hurt routing. No save changes.
+Initial tuning is serialized on PlayerStat. Owner manual acceptance remains pending; no automated
+test run or Play Mode transition. Compile checks recorded separately after implementation.
+
+Verification for mana/shield continuation: Unity compile completed with zero Console errors.
+Read-only Editor inspection resolves Player, SkillCatalog and all three ultimate prefab references
+on the active DemoScene bridge. No missing T ultimate reference found. All cast rejection gates now
+log their reason when the key is pressed. No live T reproduction or gameplay acceptance is claimed.
+Shield state/VFX are cleared when Player disables; cooldown deadline remains in PlayerStat.
+
+### Shield single-hit break — owner request 2026-10-22 (supersedes stamina guard above)
+
+Shield costs no stamina to activate, hold or absorb a hit, and can activate at zero stamina.
+A blocked hit deals zero HP damage, immediately clears guard and starts a 5-second scaled
+cooldown in PlayerStat; Player hides VFX immediately through the Blocked result path.
+No hurt/knockback on that hit; following hits use normal damage. Holding RMB cannot bypass
+the lockout; after expiry it may raise the shield again. Manual release has no hit cooldown.
+Passive stamina recovery continues while holding. No save or schema changes.
+
+HP investigation (read-only Editor inspection): active DemoScene Slime1/Slime2/Goblin/ForestGuardianBoss
+attack profiles each author 20 raw damage. Player base HP 100, Defense 2, growth +3 HP/+0.15 Defense
+per level. At level 101 without equipment this gives 400 max HP, 17 Defense, and 3 damage per hit
+(0.75% HP). HUD fill correctly uses current/max HP. Equipment Defense/DamageReduction may lower
+this further; 0.45-second hurt invulnerability can also suppress overlapping hits. No live high-level
+loadout/HP measurement was performed. Damage formula/tuning unchanged; balance revision requires
+a separate owner choice. Owner manual single-hit shield/gameplay/build acceptance pending.
+
+### Shield HUD countdown — owner request 2026-10-22
+
+ShieldSlot now includes the same centered white outlined Digital Disco countdown as Q/E/R/T.
+SkillHUDController reads PlayerStat.ShieldCooldownRemaining directly (5…1, hidden at ready);
+shared prefab and builder/targeted upgrade include the Shield text. No guard/resource/save changes.
+Owner manual visual/gameplay acceptance pending; no automated tests or Play Mode transitions.
+
+### Shield radial overlay — owner request 2026-10-22
+
+Shield now mirrors the skill slots' 72%-black diamond Radial360 cooldown overlay. Controller uses
+remaining / PlayerStat.ShieldCooldownSeconds from the same five-second guard deadline; countdown
+text is last sibling above overlay for readability. Builder and targeted prefab upgrade synchronized.
+No gameplay timing/save changes. Owner manual visual acceptance pending, no Play Mode/test run.
+
+## MapNhat skill UI/casting and dash promotion — owner approved 2026-10-22
+
+Owner accepted DemoScene presentation and requested production promotion (D-085/D-116/D-118).
+Bootstrap owns the connected SkillPanel prefab; MapNhat contains one PlayerSkillCasting prefab instance,
+with explicit local Frawand Player binding and shared SkillCatalog. New reusable casting prefab
+Assets/Prefabs/Skills/PlayerSkillCasting.prefab carries all twelve behavior prefab configurations
+from DemoScene, with no demo controls or scene Player reference baked into the source.
+Shared SkillHUD already comes from Bootstrap's GameplayUIRoot prefab, including Shield radial/text
+cooldowns; no duplicate HUD is added to MapNhat. SkillFX child promoted to local Player and
+SkillFX/Shield renderers bound. Existing shared Player Animator and PlayerInput supply dash.
+MapNhat Player dash allow-list and new-component default include DemoScene/MapNhat; tuning remains
+3.2 units / 0.2s, 0.8s cooldown, 20 stamina and 0.12s initial invulnerability.
+Learning, mana, shield, cooldown and save V13 use existing shared runtime contracts, no regrant/reset.
+Editor validation: one Bootstrap panel, one MapNhat bridge, local Player/catalog and every skill prefab resolved, Dash action
+exists, shared HUD count one. MapNhat stays active, source DemoScene read additively then closed
+without saving it. Owner manual New Game/Continue, P, Q/E/R/T, Shield and Space/gamepad smoke
+acceptance and Player build remain pending; no automated tests or Play Mode transitions performed.
+
+### UI ownership correction — owner clarified 2026-10-22
+
+SkillPanel and SkillHUD belong to persistent Bootstrap. SkillPanel prefab is instantiated once
+in Bootstrap; MapNhat and DemoScene local copies are removed to avoid duplicate P input handlers.
+MapNhat retains PlayerSkillCasting, local Player/FX binding and dash configuration. SkillPanel
+already rebinds PlayerStat.Instance as sessions change and gates P to Playing/Skills state;
+scene unloading does not own the shared UI lifetime. No save/gameplay tuning changes.
+
+2026-10-22 owner-approved Quest Offer art refresh: three built-in ImageGen pixel sprites, shared prefab/builder synchronized and isolated Editor render reviewed. Details/prompts/remaining gameplay acceptance: [Quest Offer visual refresh](QuestOfferVisualRefresh.md).
+
+2026-10-22 owner-requested twelve-skill MapNhat VFX audit: ground/water terrain renderers promoted
+to Ground1 (all terrain and water) below Default. Ground VFX retain documented negative orders below actors;
+MapNhat terrain must not use Default above these effects. Earth 4 rune rendering verified with an
+isolated Editor sample. Details, affected skills, changed map layers and manual acceptance limits:
+[MapNhat skill sorting audit](SkillMapNhatSortingAudit.md).
+
+2026-10-22 owner request: remove Minimap from Bootstrap shared HUD; QuestTracker moves top-right with no background, separate category/objective icons and generated pixel-art header separator. FullMap (M) retained. Implementation/prompt/acceptance: [QuestTracker refresh](QuestTrackerTopRightRefresh.md).
+
+### Water regression correction — 2026-10-22
+
+The initial split of water into Ground0 was incorrect: it forced all water below all grass,
+regardless of the existing per-renderer orders. Owner screenshot exposed hidden lake/river regions.
+All four water renderers now share Ground1 with the other migrated terrain renderers; original
+orders -6/-5/-4/-1 retained. This restores the original terrain/water interleaving while keeping
+all ground below Default negative-order VFX. Trees/buildings/actors untouched.
+Full-map Editor render verified: Captures/Skills/mapnhat_water_restored_editor.png.
+No Play Mode transition or runtime cast acceptance claimed.
+
+### Act I "A Stop in Heorte" quest flow replaces the Wigheard/Cenhelm tutorial chain — 2026-11-01
+
+Owner-authored Heorte intro quest flow (9 quests: `quest.act1.new_journey` through
+`quest.act1.far_from_your_kind`) replaces the entire previous MapNhat tutorial/main chain
+(`quest.trainer_greeting`, `quest.equip_weapon`, `quest.trainer_killquest`,
+`quest.tutorial.crafting.001`, `quest.main.001`) rather than running alongside it. "Heorte" is the
+in-fiction name for the village the `MapNhat` scene represents; the scene/file name is unchanged.
+`quest.side.potion_supply.001` and the three `quest.debug.*` quests are untouched. No quest in this
+Act is marked `isMainQuest`/`isTutorialQuest`; `QuestManager.MainQuestUnlocked` stays permanently
+unreachable until Act 2 defines its own Tutorial Quest chain — this is accepted, not a bug.
+
+New `QuestObjectiveType` values `Replant` and `Fish` (appended after `Equip`, never inserted, since
+`_type` serializes by enum index). "Visit smithing station" / "Visit suspicious merchant" (Quest
+4/5) deliberately reuse `Talk` against `npc.town.artificer` / `npc.town.hermetist` instead of a new
+`VisitStation` type, because no physical station GameObject exists yet; `QuestManager` exposes
+`IsSmithingStationUnlocked` / `IsBlackArtsStationUnlocked` (derived from quest completion, no new
+persisted state) for whatever station interactable is built later to read.
+
+Quest 2-3 ("Back to Eadric") is authored as two chained quests, `quest.act1.back_to_eadric` then
+`quest.act1.back_to_oswin`, because `QuestDefinition` supports only one `giverNpcId`/`turnInNpcId`
+per quest. `TrainingAreaQuestFlow.cs` (name kept to avoid a scene GUID/class-identifier change) now
+glues `quest.act1.stocking_up` → `quest.act1.back_to_fields` and `quest.act1.back_to_eadric` →
+`quest.act1.back_to_oswin`, the two links with no NPC giver.
+
+New content added: items `item.crop.grape`, `item.crop.lemon`, `item.material.meat`,
+`item.drink.carrot_juice`, `item.drink.grape_juice`; crops `crop.grape`/`crop.lemon` in
+`FarmingCatalog` (growth-stage sprites and icons borrowed from the existing Carrot sprite sheet as
+an explicit placeholder, owner-approved, pending real art). "Training Sword" needed no new item --
+`sword_lvl1` was already named exactly that. The two Oswin "food" rewards reuse the existing
+`item.food.bread` as a placeholder dish. Carrot/Grape Juice added to `Shop_TraderDrinks` (Cuthbert).
+
+Two production bridges were missing and are added as part of this change, not scoped to Act I
+specifically: `FarmPlot` harvest now also raises `QuestDomainEvents.ResourceGathered` (Gather
+objectives were previously unreachable from real farming), and `FishingMinigameController` now
+raises the new `FishCaught` on a successful catch. `FarmPlot` planting raises `CropReplanted`.
+
+Known side effect, not fixed in this pass: `MannequinAttackIndicator.cs` still hard-codes
+`quest.trainer_killquest`, which no longer exists in any `QuestCatalog`; its attack-arrow nudge is
+now permanently inert. Nothing in Act I's content re-introduces a "kill training dummies" objective
+to redirect it to, so it is left as dead code pending a decision on whether that mannequin
+tutorial beat still belongs anywhere.
+
+Full flow detail, objective tables and content list: see "Production content in `MapNhat`" in
+[Tutorial and Quest Progression](TutorialAndQuestProgression.md).
+
+#### Follow-up — real NPC dialogue wiring, not just QuestManager plumbing — 2026-11-01
+
+Owner feedback: quests must be accepted via dialogue with the actual giver NPC, and that NPC must
+show a "!"/"?" marker while it has something to offer/turn in. Testing this against real
+`QuestNpcInteractionUI` interactions (not just raw `QuestDomainEvents.Raise*` calls, which the
+first Play Mode pass used) surfaced that this was not actually wired:
+
+- Oswin, Eadric, Merric, Agnes and Cuthbert had only `TraderNpcInteractionUI` (dialogue -> Shop/
+  Crafting only) -- no component on them ever called `QuestNpcInteractionService`. None of their
+  Act I quest stages could be accepted or turned in by an actual player; the first Play Mode pass
+  only looked correct because it drove `QuestManager`/`QuestDomainEvents` directly. Fixed by merging
+  commerce-outcome handling (Shop/Crafting/Storage) into `QuestNpcInteractionUI` and swapping all 5
+  NPCs from `TraderNpcInteractionUI` to it, duplicating Wigheard's `QuestMarker`/`Feedback` UI
+  children onto each so the "!"/"?" marker has somewhere to render. Their existing shops/dialogues
+  are unaffected.
+- `quest.act1.stocking_up` ("Talk Oswin, then talk Eadric" as one quest) could never resolve
+  Eadric's dialogue: `QuestNpcInteractionUI` only resolves a quest it is the giver/turnIn for, never
+  one it is merely the current mid-quest Talk objective's target. Split into
+  `quest.act1.stocking_up_oswin` -> `quest.act1.stocking_up_eadric`, each single-NPC, matching the
+  working `back_to_eadric`/`back_to_oswin` pattern.
+- Two `TrainingAreaQuestFlow` glue links were wrong and removed (auto-accepting
+  `quest.act1.stocking_up_eadric` after `stocking_up_oswin`, and `quest.act1.back_to_oswin` after
+  `back_to_eadric`): both quests have a real giver, so auto-accepting jumped them straight to
+  Active, skipping the `Available` state the marker/dialogue resolution needs -- the giver fell back
+  to its generic greeting dialogue instead. Glue now only covers `quest.act1.back_to_fields`, the
+  one quest with no giver NPC at all.
+
+Verified end-to-end in Play Mode via reflection-driven `OnTriggerEnter2D` + `QuestNpcInteractionUI.
+TryInteract()` + `DialogueUI.Continue()` + `QuestAcceptPopupUI` accept, i.e. the real pipeline a
+click would drive, not a shortcut: all 9 quests show their own authored dialogue line at the right
+NPC, the "!" marker correctly moves from Wigheard -> Cuthbert -> Oswin -> Eadric as each completes,
+and both station-unlock flags end `true`. Nine `DialogueDefinition` assets authored under
+`Assets/Resources/Dialogue/Act1*.asset` for this (one per quest-NPC pairing); `quest.side.
+potion_supply.001` (Village Elder) confirmed still `Locked` throughout and `Available` only once
+`quest.act1.far_from_your_kind` completes.
+
+#### Follow-up correction — single uninterrupted chain — 2026-11-01
+
+Owner feedback: `quest.side.potion_supply.001` (Village Elder / Cenhelm, `npc.town.elder`) had no
+prerequisite, so it was `Available` from game start alongside `quest.act1.new_journey`, breaking
+the intended single NPC-to-NPC chain for the whole Act. Fixed by adding
+`quest.act1.far_from_your_kind` as its prerequisite, so it only unlocks after Act I finishes.
+Verified in Play Mode: only Wigheard's quest is `Available` at start; the Elder's quest stays
+`Locked` through the entire chain and flips to `Available` only once
+`quest.act1.far_from_your_kind` is `Completed`. No other quest in the catalog has both an empty
+prerequisite list and a `giverNpcId` besides `quest.act1.new_journey`, so nothing else can
+interrupt the chain.
+
+#### Follow-up — explicit turn-in visit + Input Tutorial repair — 2026-11-02
+
+Owner feedback: (1) every quest with a giver completed itself the instant its last objective fired
+(sometimes mid-conversation with the very NPC that gave it), with no deliberate "hand it in"
+moment, and the next NPC's "!" marker appeared immediately -- felt like skipping ahead rather than
+finishing a quest; (2) the first quest (the Training Sword) never guided the player to equip it or
+practice on a dummy.
+
+Root causes and fixes:
+
+- `QuestManager.ProgressMatching` auto-completes a quest the instant its objectives finish *only*
+  when `AutoTurnIn` is set, and `QuestNpcInteractionUI.CompleteDialogueInteraction`/
+  `HandleQuestDecision` additionally called `TryPerformTurnIn()` unconditionally at the end of
+  *every* interaction -- including the one that had just accepted the quest. For any quest whose
+  giver is also its own Talk objective target (`new_journey`, `ring_of_forge`,
+  `far_from_your_kind`, `back_to_eadric`, `back_to_oswin`, `stocking_up_oswin`,
+  `stocking_up_eadric`), this collapsed accept + complete + reward into one click. Fixed by (a)
+  setting `_autoTurnIn: 0` on all 8 Act I quests with a real `giverNpcId`/`turnInNpcId`, and (b)
+  guarding both UI methods' `TryPerformTurnIn()` call behind `offered == null`, so turning in never
+  happens in the same interaction that just accepted the quest -- it always needs a separate later
+  visit, even to the same NPC standing in front of the player. `quest.act1.back_to_fields` (no
+  giver NPC) and `quest.act1.cast_a_line` (already `autoTurnIn: 0`, fishing happens away from
+  Oswin) are unaffected and keep completing exactly as before. Verified in Play Mode via the real
+  `QuestNpcInteractionUI.TryInteract()` pipeline: after accepting `new_journey`, status is
+  `ReadyToTurnIn` (marker shows "?", no sword, Cuthbert still `Locked`) until a second, separate
+  interaction turns it in (status `Completed`, sword granted, Cuthbert's "!" marker appears).
+- The Input Tutorial chain (`Tutorial_TutorialArea.asset`: Move -> Sprint -> WaitForTrainer ->
+  OpenInventory -> EquipItem) -- the system meant to guide exactly this "equip the sword" beat --
+  was silently dead on two counts: `Step_WaitForTrainer` still targeted `quest.trainer_greeting`,
+  deleted during the Act I content replacement above, so `TutorialManager` could never advance past
+  it (`QuestManager.QuestTurnedIn` for that id can never fire again); and the live
+  `TutorialOverlayRoot` instance in `Bootstrap.unity` carried a manually-saved `m_IsActive: 0`
+  override against the prefab's own `1` default, hiding the banner entirely regardless of
+  progress. Fixed both: retargeted `Step_WaitForTrainer` to `quest.act1.new_journey` (Wigheard is
+  now the "Trainer" NPC) and re-enabled `TutorialOverlayRoot`.
+- Retargeting also exposed a design bug in `TutorialManager.Advance()`: on reaching a `WaitForQuest`
+  step it used to call `QuestManager.TryAcceptQuest(target)`, auto-accepting a quest that has a real
+  giver -- the exact anti-pattern already documented above for `TrainingAreaQuestFlow`, which would
+  have left Wigheard showing no "!" marker at all. Removed that auto-accept call; the step now only
+  waits for the player to go through the NPC's own dialogue themselves. That in turn meant the step
+  could stall forever if the player happened to finish `new_journey` before an earlier, unrelated
+  step (Sprint has no reason to happen before the player reaches Wigheard) caught up to
+  `WaitForTrainer` -- `QuestTurnedIn` only fires forward and the moment would already be missed.
+  Added a guard in `Advance()`: entering a `WaitForQuest` step whose target is already `Completed`
+  skips straight past it instead of waiting on a signal that already happened. Verified by
+  completing `new_journey` first, then firing Sprint -- the tutorial jumps straight from Sprint to
+  `OpenInventory`, not stuck on `WaitForTrainer`.
+- Added `Step_AttackDummy` (new `TutorialStepType.Attack` step, `tutorial.controls.attack_dummy`)
+  after `Step_EquipItem` in `Tutorial_TutorialArea.asset`, per the owner's choice to keep this
+  guidance in the non-gating Input Tutorial layer rather than as real quest objectives -- it never
+  blocks or delays leaving for Cuthbert. No new scene content was needed: `Manequin_Training_1/2/3`
+  already exist, active, under `Forest_MainMap/TrainingArea` near Wigheard (this step only needs
+  `Player.PlayerAttacked`, a generic swing event, not an actual hit). Verified the full chain Move
+  -> Sprint -> (skip, quest already done) -> OpenInventory -> EquipItem -> AttackDummy ->
+  `IsCompleted: true` in one Play Mode pass, zero console errors.
+
+Content Validation after all of the above: baseline count unchanged, no new errors (this validator
+does not inspect `TutorialDefinition`/`TutorialStepDefinition` assets at all, which is why the
+dangling `quest.trainer_greeting` reference above went uncaught).
+
+Separately found and fixed in this session (unrelated to quest/tutorial logic, same "manually
+edited and saved" category of bug): the Dev Debug toggle button (`DevPanel.prefab`'s
+`DevToggleButton`) had its `anchoredPosition` overridden to `(523, -700)` in `Bootstrap.unity`,
+placing it off-screen; restored to the prefab's authored `(-18, -142)` (just below the Minimap).
+
+
+#### Follow-up — Act I guidance/completion pass — 2026-11-25
+
+Owner request: finish Act I so a new player can go Quest 1 → 5 through real interaction, with the
+Codex WIP (offer/turn-in directions, tracker/log/hint overlay, 0 G juice, New-Game farm config,
+crafting unlock) reviewed and completed. Decisions taken inside existing contracts (no stable ID,
+quest ID or save schema change — save stays V13):
+
+- Quest-scoped shop allowance (`ShopStockEntry._questAllowanceId`) for Cuthbert's "my treat"
+  juices: free, Purchase-event-producing, capped to the current Purchase objective's remaining
+  count, never a sell-back price. Replaces the WIP's unconditional 0 G lines (an unlimited free
+  item source).
+- `QuestFarmSupply` replaces the WIP New-Game farm seeding: ripe starter crops + replant seeds when
+  `quest.act1.back_to_fields` is accepted, seed-only top-up afterwards (wrong-order harvest, legacy
+  save with an empty farm), always capped by the remaining objective need. FarmingCatalog reference
+  on MapNhat `FarmingFeature` (was null: Continue dropped every saved crop) is now assigned.
+- `QuestManager.TryTurnIn` clears tracking before completion events so a chained auto-accept is
+  tracked.
+- Smithing/Black Arts crafting gated by `quest.act1.ring_of_forge` / `quest.act1.far_from_your_kind`
+  — explicit exception to the "tutorial chain does not gate crafting" principle, from the owner's
+  Act I design ("Station is unlocked").
+- Separate turn-in dialogues; offer lines no longer pre-narrate rewards.
+- Tracker/QuestLog/TutorialOverlay refresh on GameState change (restore raises no events).
+
+**Open — owner must decide before change (not implemented):**
+
+1. *Fishing bait for Quest 3.* D-059 requires selected bait; New Game has 0 gold and no bait
+   (InventorySeeder gives equipment + Carrot seeds only; Eggplant retired by D-120). Today the player must sell
+   produce (e.g. to Eadric) and buy Worm Bait from Dunstan — the hint says so. Options: Oswin gives
+   N Worm Bait on accepting Quest 3 (changes items the player holds), or keep the economy path.
+2. *Delivering produce in 2-3.* Still a Talk; switching to consuming 15/15/15 items needs quantity,
+   failure/recovery rules if the player ate or sold them.
+3. *Ordered harvest.* Objectives stay strictly ordered (save contract); an "any order" flag would
+   be friendlier but changes `QuestRuntimeState` semantics.
+4. *Dev seeding on New Game.* `InventorySeeder._seedingEnabled = 1` in Bootstrap grants 2 extra
+   Training Swords and 24 Carrot seeds before Quest 1 rewards — fine for QA, misleading for a real
+   first play-through.
+5. *Juice economy.* Resolved by the owner direction under Remaining NPC shop prices.
+
+Verification and remaining limits: [TutorialAndQuestProgression.md](TutorialAndQuestProgression.md)
+"Act I guidance and completion pass".
 
 ## D-119 — Items List content expansion (Accepted, owner 2026-10-21)
 
@@ -490,3 +824,110 @@ Latest owner-approved revision 2026-10-22 supersedes the preceding recipes: Fish
 Owner revision 2026-10-22: keep Orchard Elixir unchanged; Harvest Stew uses 2 Meat + 2 Carrot + 1 Mushroom + 1 Chillie; Trailrunner Tonic display name becomes Trailrunner Fish Broth with 1 Sunscale Carp + 1 Lemon + 1 Carrot + 1 Chillie. This supersedes the four-produce-only ingredient choice below. Retain four ingredient types, existing stable IDs, output effects, NPC association and unset station/economy data. A carp ingredient means one fish instance, regardless of weight.
 
 Owner approved SheetContentExpansion.md: 15%/35% Health/Mana potions with shared 10s cooldown; refresh-only food/drink buffs (special lifecycle policies deferred); 60s crops with single harvest; agent-selected four-produce recipes; stable IDs authorized, unknown economy/station/NPC left unconfigured. Preserve existing legacy mappings and ignore three incomplete fish rows. Non-equipment recipes may be exposed in dedicated Material/Consumable groups alongside the unchanged equipment groups, superseding D-043 restriction for this content expansion. No new save DTO for transient cooldown/buffs. DemoScene-first gates remain required.
+
+## Branch integration — owner approved 2026-11-04
+
+Merge upstream/main (556503653, including Duy PR #145) into SuperaAI (41cafd599).
+Owner explicitly selected main's overlapping content configuration, retaining SuperaAI quest/skill
+behavior. D-119 content is canonical for Grape/Lemon crops, seeds, produce, Meat and Carrot/Grape
+Juice: use main's asset GUIDs, icons, yield, categories, use flags and pending economy settings.
+Stable itemId/cropId values and save V13 remain unchanged. The earlier Act I placeholder variants
+of those same assets are superseded; Act I quest IDs, dialogue and progression remain intact.
+FarmingCatalog and Cuthbert stock retain main's complete lists. PlayerStat combines SuperaAI
+skill catalog/mana/shield behavior with main's transient consumable buffs; regeneration keeps
+SuperaAI's existing living-gameplay guard. DemoScene retains both branches' additions; MapDuy
+is byte-identical to upstream/main. No new production placement or feature acceptance is implied.
+
+Verification and limitations: see [Branch merge verification](BranchMergeVerification.md).
+
+## D-120 — Retire 13 out-of-sheet ItemSO (Accepted, owner 2026-11-25)
+
+Owner-approved: delete the 13 ItemSO that are not in the Items List sheet and replace every use with a
+sheet item. **Supersedes the D-119 choice "Preserve Eggplant and its existing IDs"**: Eggplant seed,
+produce and `crop.eggplant` are removed (owner decision).
+
+| Retired stable ID | Replacement | Content change |
+|---|---|---|
+| `item.drink.water` | `item.drink.lemon_juice` | Removed from Cuthbert; Lemon Juice line/recipe (`Recipe_LemonJuice`) reused |
+| `item.drink.ale` | `item.drink.apple_juice` | Removed from Cuthbert; Apple Juice line/recipe reused |
+| `item.material.medicinal_leaf` | `item.material.health_herb` | `MedicinalHerb` resource node now drops Health Herb (node/prefab/IDs kept) |
+| `item.material.plank` | `item.material.wood_log` | Cenhelm Plank recipe removed (owner chose the sheet/production Wood Log, not `item.material.wood`) |
+| `item.consumable.health_potion` | `item.consumable.small_health_potion` | Cenhelm stock line re-pointed (20 G legacy line reused, owner-approved, Cenhelm only); Potion Supply objective/dialogue; Cenhelm recipe removed |
+| `item.unique.ancient_relic` | `item.material.tanzanite` | DemoScene pickup `world.pickup.tutorial.relic.01` grants Tanzanite x1; persistentId kept |
+| `item.quest.tutorial_badge` | `item.material.gold_bar` | Save-only (no live gameplay reference existed) |
+| `item.food.bread` | `item.food.harvest_stew` | Oswin stock/recipe removed; Back to Oswin rewards Harvest Stew, Cast a Line rewards Trailrunner Fish Broth |
+| `item.food.cheese` | `item.food.harvest_stew` | Oswin stock/recipe removed (Harvest Stew line reused, no duplicate) |
+| `item.seed.eggplant` | `item.seed.carrot` | Eadric/Leofrun lines removed; New Game/Demo seed lists merged into Carrot Seeds |
+| `item.crop.eggplant` | `item.crop.carrot` | Eadric lines removed; `crop.eggplant` → `crop.carrot` for planted plots |
+| `item.consumable.potion_buff_defense` | `item.consumable.small_health_potion` | Agnes stock/recipe removed |
+| `item.consumable.potion_buff_attack` | `item.consumable.small_mana_potion` | Agnes stock/recipe removed |
+
+Deleted: the 13 ItemSO + metas; 8 recipes that produced them (`Recipe_Water/Ale/WoodPlank/HealthPotion/
+Bread/Cheese/BuffPotionAttack/BuffPotionDefense`, also removed from `RecipeCatalog`); `Crop.Eggplant`
+CropDefinition (removed from `FarmingCatalog`). Art/sprites/prefabs kept. Retained assets keep their
+Unity IDs. Authoring stops recreating them: `FarmingAuthoring` (no Eggplant), `DemoResourceNodeAuthoring`
+(loads Health Herb instead of creating Medicinal Leaf), `InventoryTabbedPrefabBuilder` (new paths).
+
+**Save:** V13 → V14 (`SaveMigration.V13ToV14_RetireOutOfSheetItems`, map in
+`SaveMigration.RetiredItemReplacements`/`RetiredCropReplacements`). In-place, per-slot ID rewrite of
+inventory, equipment, quick bar, farm storage and planted crops; quantities, slot positions, gold,
+plot IDs, planting timestamps, quest state/counters and world records unchanged; no merge/split (all
+targets stack to 99 ≥ any retired item). Loading never writes the file; the next real save stores V14.
+
+**Open for owner (not changed):** two "Wood Log" assets exist (`item.material.wood_log` production/sheet,
+`item.material.wood` Phase-6 quest material used by Cenhelm stock, Potion Supply reward and the
+remaining Cheese-less recipes); Cuthbert and Oswin now have no priced item outside quests (Lemon/Apple
+Juice, Harvest Stew etc. still D-119 pending); a full inventory silently refuses quest turn-in rewards;
+world records of DemoScene objects are dropped when saving from MapNhat (scene-scoped registry);
+New Game seeding runs twice (Carrot Seeds 48). Verification: SaveAndWorldPersistence.md "V14".
+
+### Farm shop assortment — owner direction
+
+Leofrun's Buy tab offers the seven active crop seeds. Eadric's Buy tab offers the seven
+harvest items from those crops. This supersedes the old Eadric Carrot/Carrot Seeds assortment.
+Leofrun's existing produce buyback and Farm Storage dialogue remain available through their
+existing configuration. Owner authorized setting the remaining farm shop prices, using the
+existing Carrot and Carrot Seeds prices as anchors. The 14 seed and harvest ItemSOs now use
+the approved-scope farm economy ranges in FarmingSystem.md. D-119 pending pricing continues
+to apply to other unpriced content.
+
+### NPC shop Buy price presentation — owner direction
+
+The Buy list shows one concrete domain-generated unit quote per item for the open shop
+session. Selection, quantity changes and confirmation use that quote. The next shop opening
+may roll fresh prices from the authored ranges. This supersedes the Buy re-roll timing in D-042
+for the shared shop UI. Quest allowance labels and server-side-equivalent domain validation
+continue to apply, including a refreshed confirmation if the displayed quote goes stale.
+
+### Remaining NPC shop prices — owner direction
+
+The remaining standard Buy rows at Cuthbert and Oswin now have normal ItemSO prices.
+Lemon Juice, Apple Juice and Orchard Elixir are priced alongside Meat, Fish Fillet,
+Harvest Stew and Trailrunner Fish Broth. The owner also requested normal purchase prices for Act I Carrot/Grape Juice. This
+supersedes their free quest allowance. Purchase objectives and counters retain their existing
+IDs and order. Wigheard awards 140 G at A New Journey turn-in to cover the maximum gold cost
+of five units of each juice. Prior completions do not replay the reward.
+
+### Production quest gold — owner direction
+
+Every production quest awards gold on completion. The Act I budget covers its mandatory
+paid drinks and gives room for fishing retries. Editor-only debug quests keep their fixtures.
+Save V15 adds a one-time wallet floor for older saves that had already passed Wigheard while
+still depending on the free drink line. See TutorialAndQuestProgression and
+SaveAndWorldPersistence for the reward schedule and migration.
+
+### Agnes opens SkillPanel — owner direction
+
+Agnes offers “Teach me a skill.” in her normal dialogue. The training outcome opens
+GameplayMenuPage.Skills after the dialogue returns to Playing. This replaces the P
+binding from D-116. Existing quest-specific dialogue and crafting gates keep their
+own rules. Skill costs, loadout inputs and save data use the existing contracts.
+
+### MapNhat–MapDuy world gates — owner approved
+
+NorthExitToMapDuy loads MapDuy at the marked southern dirt road. The south exit returns
+to the village just below its north exit. This activates D-064 and extends D-089 only for
+these two world gates, including New Game and Continue. Travel preserves live persistent
+managers and snapshots scene-owned world and farming state in memory before unloading.
+Regular saves in MapDuy record its scene name for Continue. Travel does not write a slot.
+Boss pillar policy is independent.

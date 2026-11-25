@@ -22,9 +22,9 @@ public static class QuestTrackerPrefabBuilder
             RemoveIfPresent(root.transform, "Viewport");
 
             RectTransform rootRect = root.GetComponent<RectTransform>();
-            rootRect.anchorMin = rootRect.anchorMax = new Vector2(0f, 0.5f);
-            rootRect.pivot = new Vector2(0f, 0.5f);
-            rootRect.anchoredPosition = new Vector2(16f, 0f);
+            rootRect.anchorMin = rootRect.anchorMax = new Vector2(1f, 1f);
+            rootRect.pivot = new Vector2(1f, 1f);
+            rootRect.anchoredPosition = new Vector2(-16f, -16f);
             rootRect.sizeDelta = new Vector2(155f, 190f);
             Image rootImage = root.GetComponent<Image>() ?? root.AddComponent<Image>();
             rootImage.sprite = null;
@@ -58,8 +58,9 @@ public static class QuestTrackerPrefabBuilder
         title.fontStyle = FontStyles.Bold;
 
         GameObject divider = UI("GoldDivider", header.transform, typeof(Image));
-        Rect(divider, new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(0f, 0.5f), new Vector2(82f, -10f), new Vector2(68f, 1f));
-        divider.GetComponent<Image>().color = new Color(0.96f, 0.69f, 0.2f, 1f);
+        Rect(divider, new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(0f, 0.5f), new Vector2(1f, -22f), new Vector2(150f, 9f));
+        divider.GetComponent<Image>().sprite = Sprite("quest_tracker_divider_pixel_v2");
+        divider.GetComponent<Image>().color = Color.white;
         divider.GetComponent<Image>().raycastTarget = false;
 
         Button button = header.GetComponent<Button>();
@@ -71,7 +72,7 @@ public static class QuestTrackerPrefabBuilder
     private static void BuildViewport(Transform parent, TMP_Text titleStyle, TMP_Text objectiveStyle)
     {
         GameObject viewport = UI("Viewport", parent, typeof(Image), typeof(RectMask2D));
-        Rect(viewport, Vector2.zero, Vector2.one, new Vector2(0.5f, 0.5f), new Vector2(0f, -11f), new Vector2(0f, -22f));
+        Rect(viewport, Vector2.zero, Vector2.one, new Vector2(0.5f, 0.5f), new Vector2(0f, -17f), new Vector2(0f, -34f));
         Image viewportImage = viewport.GetComponent<Image>();
         viewportImage.color = new Color(0f, 0f, 0f, 0.001f);
         viewportImage.raycastTarget = true;

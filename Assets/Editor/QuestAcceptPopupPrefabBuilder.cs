@@ -7,9 +7,9 @@ using UnityEngine.UI;
 public static class QuestAcceptPopupPrefabBuilder
 {
     private const string PrefabPath = "Assets/Prefabs/UI/QuestAcceptPopup.prefab";
-    private const string BoardPath = "Assets/Resources/UI/Quest/QuestAccept1920/quest_accept_board_dynamic_rewards_v3.png";
-    private const string AcceptButtonPath = "Assets/Resources/UI/Quest/QuestAccept1920/quest_accept_button_accept_v1.png";
-    private const string DeclineButtonPath = "Assets/Resources/UI/Quest/QuestAccept1920/quest_accept_button_decline_v1.png";
+    private const string BoardPath = "Assets/Resources/UI/Quest/QuestAccept1920/quest_offer_board_pixel_v4.png";
+    private const string AcceptButtonPath = "Assets/Resources/UI/Quest/QuestAccept1920/quest_offer_accept_pixel_v2.png";
+    private const string DeclineButtonPath = "Assets/Resources/UI/Quest/QuestAccept1920/quest_offer_decline_pixel_v2.png";
     private const string RewardSlotPath = "Assets/Resources/UI/Inventory/LightFantasy/inventory_slot_hd.png";
     private static readonly Color Cream = new(0.96f, 0.91f, 0.76f, 1f);
     private static readonly Color Gold = new(0.83f, 0.60f, 0.24f, 1f);
@@ -63,7 +63,7 @@ public static class QuestAcceptPopupPrefabBuilder
             TMP_Text objectivesTitle = ChildText(card, "ObjectivesTitle", font);
             Style(objectivesTitle, 9.5f, Gold, TextAlignmentOptions.Left);
             objectivesTitle.text = "OBJECTIVES";
-            Rect(objectivesTitle.rectTransform, new Vector2(130f, 18f), new Vector2(38f, -105f));
+            Rect(objectivesTitle.rectTransform, new Vector2(130f, 18f), new Vector2(38f, -124f));
 
             ConfigureObjectives(card, font);
             ConfigureRewards(card, font);
@@ -81,7 +81,7 @@ public static class QuestAcceptPopupPrefabBuilder
     private static void ConfigureObjectives(Transform card, TMP_FontAsset font)
     {
         Transform container = Require(card, "ObjectivesContainer");
-        Rect(container.GetComponent<RectTransform>(), new Vector2(244f, 112f), new Vector2(38f, -94f));
+        Rect(container.GetComponent<RectTransform>(), new Vector2(244f, 80f), new Vector2(38f, -145f));
         VerticalLayoutGroup vertical = container.GetComponent<VerticalLayoutGroup>();
         vertical.padding = new RectOffset(0, 0, 0, 0);
         vertical.spacing = 5f;

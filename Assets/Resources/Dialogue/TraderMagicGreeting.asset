@@ -24,10 +24,12 @@ MonoBehaviour:
     _choices:
     - _text: Show me your goods.
       _nextNodeId: shop_leaf
-    - _text: Just looking, thanks.
-      _nextNodeId: leave_leaf
     - _text: I would like to craft something.
       _nextNodeId: craft_leaf
+    - _text: Teach me a skill.
+      _nextNodeId: skill_leaf
+    - _text: Just looking, thanks.
+      _nextNodeId: leave_leaf
   - _nodeId: shop_leaf
     _speakerName: Agnes
     _portrait: {fileID: 0}
@@ -48,4 +50,11 @@ MonoBehaviour:
     _text: Bring me the reagents and I'll brew the potion at the altar.
     _nextNodeId: 
     _outcomeId: commerce.crafting
+    _choices: []
+  - _nodeId: skill_leaf
+    _speakerName: Agnes
+    _portrait: {fileID: 0}
+    _text: Let me show you the elemental arts. Choose a skill to learn.
+    _nextNodeId:
+    _outcomeId: skills.training
     _choices: []

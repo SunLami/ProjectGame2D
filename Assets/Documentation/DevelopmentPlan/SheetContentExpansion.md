@@ -11,7 +11,7 @@ Owner-approved continuation after merge 0183b80a7. Source: Items List Google She
 - Orchard Elixir: 1 Lemon Juice + 1 Apple Juice + 1 Carrot Juice + 1 Grape Juice. Each matching juice recipe uses two produce to make one juice.
 - Trailrunner Fish Broth: 2 Fish Fillet + 2 Lemon + 2 Carrot + 2 Cucumber. Existing `item.drink.trailrunner_tonic`, recipe ID, asset paths and stamina effect remain; NPC/shop moves to Gastronome.
 - Fish Fillet (`item.material.fish_fillet`): one selected inventory fish instance of any existing species produces two stackable fillets at Gastronome, independent of weight. Recipes use existing fish IDs; UI lists each owned fish with weight and selects its instance ID. The transaction consumes only that instance, checks capacity after consumption, commits before one inventory notification, and rejects reentrant crafting. Gastronome sells fillets; unknown prices remain pending. No save DTO/migration change.
-- Seven sheet crops mature after 60 seconds and yield exactly 3 produce. Apple/Lemon harvest once, then plot becomes empty. Preserve Eggplant and its existing IDs.
+- Seven sheet crops mature after 60 seconds and yield exactly 3 produce. Apple/Lemon harvest once, then plot becomes empty. Preserve Eggplant and its existing IDs. **Superseded 2026-11-25 by D-120: Eggplant removed (save maps it to Carrot).**
 - Owner explicitly permits new stable IDs using item.*, crop.*, recipe.*, resource.* convention. Unknown price/NPC/station stays unconfigured; zero price is unset, never an invented free stock entry. NPCs explicitly in sheet use existing stable identities.
 - Keep legacy IDs, Clockmaker -> Copper Helm, metal -> Bar, Coal at Merric; ignore three incomplete joke fish rows.
 - New world content is authored/tested in DemoScene first. Existing production layout is not a source of safe new spawn positions: promotion uses explicit reusable assets after gates pass.
@@ -81,3 +81,28 @@ Initial full validator: 1141 errors / 55 warnings. Of these, 29 are intentionall
 6. Buff special lifecycle behavior for pause/death/teleport/save-load remains explicitly deferred. Runtime follows normal scaled updates, no buff/cooldown save DTO. No extra death or teleport rule was introduced.
 
 No commit or push was made. This report distinguishes implemented prototype/data work from remaining production/release acceptance.
+
+## Inventory icon refresh — 2026-11-25
+
+Unity Editor resolved 123 active ItemSO assets and 123 unique 64×64 transparent sprite references
+in `Assets/Art/ItemIcons`. This includes 55 equipment, 48 general items, 7 seeds, 10 fish and
+3 baits. Stable IDs continue to resolve through existing item definitions. Fishing results and
+loot display consume the same item sprite. Farm crop stage art is separately authored in
+CropDefinition and the seven mature stages still use the documented shared placeholder.
+
+Built-in ImageGen produced two transparent pixel-art atlases. Unity cropped and centered the
+individual entries. The other 82 icons use their equipped sprite or prior item art, recropped and
+padded to match the new canvas. The source prompts specified centered objects and clear space at
+24 px readability, crisp pixel edges and transparent backgrounds with no frame, labels or scenery.
+
+- 5×5 atlas, row order from top left — cut logs, iron ore, four red/blue potion variants, four
+  fruit juices, Harvest Stew, Orchard Elixir, Trailrunner Fish Broth, seven produce items, and
+  apple, chilli, cucumber, grape and lemon seed pouches in the order they appear in the atlas.
+- 4×4 atlas, row order from top left — charoite, citrine, emerald, opal, tanzanite, carrot seed
+  pouch, mushroom seed pouch, fish fillet, bundled logs, copper ore, diamond ore, gold ore,
+  tin ore, meat, Health Herb and Mana Herb.
+
+The icon contact sheet was reviewed before assignment. Editor verification checked unique sprite
+paths, dimensions, transparency import and point filtering. Full Content Validation reported
+1089 errors in RockTileData null tile entries and 82 warnings. Play Mode inventory, equipment,
+fishing and world loot were outside this verification pass.

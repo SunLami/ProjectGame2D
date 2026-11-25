@@ -258,7 +258,15 @@ public static class SheetContentAuthoring
     }
     private static void WireShops()
     {
-        AppendShop("Shop_Leofrun",CreatedItems.Where(i=>i is SeedItemSO),CreatedItems.Where(i=>i.itemId.StartsWith("item.crop.")));
+        var seeds = CreatedItems.OfType<SeedItemSO>().Cast<UnityEngine.Object>().ToArray();
+        var produce = CreatedItems.OfType<SeedItemSO>().Select(seed => seed.Crop.HarvestItem)
+            .Distinct().Cast<UnityEngine.Object>().ToArray();
+        var leofrun = AssetDatabase.LoadAssetAtPath<ShopDefinition>("Assets/Shops/Definitions/Shop_Leofrun.asset");
+        var eadric = AssetDatabase.LoadAssetAtPath<ShopDefinition>("Assets/Shops/Definitions/Shop_TraderFruits.asset");
+        SetArray(leofrun, "_buyItems", seeds);
+        SetArray(leofrun, "_sellItems", produce);
+        SetArray(eadric, "_buyItems", produce);
+        SetArray(eadric, "_sellItems", produce);
         var food=CreatedItems.Where(i=>i.itemId is "item.material.meat" or "item.material.fish_fillet" or "item.food.harvest_stew" or "item.drink.trailrunner_tonic");
         AppendShop("Shop_TraderBread",food,food);
         AppendShop("Shop_TraderDrinks",CreatedItems.Where(i=>i.itemId.StartsWith("item.drink.")&&i.itemId!="item.drink.trailrunner_tonic"),CreatedItems.Where(i=>i.itemId.StartsWith("item.drink.")&&i.itemId!="item.drink.trailrunner_tonic"));

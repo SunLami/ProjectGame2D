@@ -44,6 +44,18 @@ public static class QuestObjectiveMatchers
         && objective.Type == QuestObjectiveType.Equip
         && HasSameId(objective.TargetId, itemId);
 
+    public static bool MatchesReplant(QuestObjectiveDefinition objective, string cropId, string areaId) =>
+        objective != null
+        && objective.Type == QuestObjectiveType.Replant
+        && HasSameId(objective.TargetId, cropId)
+        && MatchesArea(objective.TargetAreaId, areaId);
+
+    // TargetId is a presentation-only sentinel ("fish.any") for this type -- ContentValidationRunner
+    // rejects an empty target ID for every objective type, but "Fish 5 times" (Quest 3) does not
+    // care which species, so species is never compared.
+    public static bool MatchesFish(QuestObjectiveDefinition objective, string fishId) =>
+        objective != null && objective.Type == QuestObjectiveType.Fish;
+
     private static bool HasSameId(string targetId, string actualId) =>
         !string.IsNullOrEmpty(targetId) && string.Equals(targetId, actualId, StringComparison.Ordinal);
 

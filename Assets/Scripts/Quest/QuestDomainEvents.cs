@@ -18,6 +18,8 @@ public static class QuestDomainEvents
     public static event Action<string, int, string> ResourceGathered;
     public static event Action<string, string> EnemyKilled;
     public static event Action<string> ItemEquipped;
+    public static event Action<string, string> CropReplanted;
+    public static event Action<string> FishCaught;
 
     public static void RaiseNpcConversationCompleted(string npcId, string outcomeId) =>
         NpcConversationCompleted?.Invoke(npcId, outcomeId);
@@ -39,4 +41,10 @@ public static class QuestDomainEvents
 
     public static void RaiseItemEquipped(string itemId) =>
         ItemEquipped?.Invoke(itemId);
+
+    public static void RaiseCropReplanted(string cropId, string areaId = null) =>
+        CropReplanted?.Invoke(cropId, areaId);
+
+    public static void RaiseFishCaught(string fishId) =>
+        FishCaught?.Invoke(fishId);
 }
