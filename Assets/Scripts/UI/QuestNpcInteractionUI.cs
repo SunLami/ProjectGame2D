@@ -23,6 +23,13 @@ public sealed class QuestNpcInteractionUI : MonoBehaviour
         + "for NPCs whose dialogue never branches into crafting.")]
     [SerializeField] private string _stationTag;
 
+    [Tooltip("Optional questId that must be Completed before the Crafting outcome opens this NPC's "
+        + "station (Act I: Merric/Smithing after quest.act1.ring_of_forge, Agnes/Black Arts after "
+        + "quest.act1.far_from_your_kind). Empty = always open.")]
+    [SerializeField] private string _craftingUnlockQuestId;
+    [Tooltip("Shown instead of the crafting window while _craftingUnlockQuestId is not Completed.")]
+    [SerializeField] private DialogueDefinition _lockedCraftingDialogue;
+
     [SerializeField] private TMP_Text _markerText;
     [SerializeField] private GameObject _promptRoot;
     [SerializeField] private TMP_Text _promptText;
@@ -37,7 +44,10 @@ public sealed class QuestNpcInteractionUI : MonoBehaviour
     private struct QuestDialogueEntry
     {
         public string questId;
+        [Tooltip("Shown while the quest is Available here (the offer).")]
         public DialogueDefinition dialogue;
+        [Tooltip("Optional: shown while the quest is ReadyToTurnIn here. Falls back to dialogue.")]
+        public DialogueDefinition turnInDialogue;
     }
 
     [Tooltip("Per-quest dialogue override: an NPC met across several quest stages (e.g. first "
@@ -145,7 +155,7 @@ public sealed class QuestNpcInteractionUI : MonoBehaviour
         bool canOffer = !canTurnIn && _service.TryGetOfferedQuest(_npcId, out offered);
 
         string contextQuestId = canTurnIn ? turnIn.QuestId : canOffer ? offered.QuestId : null;
-        DialogueDefinition dialogue = ResolveDialogueFor(contextQuestId);
+        DialogueDefinition dialogue = ResolveDialogueFor(contextQuestId, canTurnIn);
 
         // Neither an offered quest's acceptance nor a ready quest's turn-in happens until the
         // dialogue actually closes (CompleteDialogueInteraction) -- an offer then hands off to
@@ -163,22 +173,31 @@ public sealed class QuestNpcInteractionUI : MonoBehaviour
         Refresh();
     }
 
-    private DialogueDefinition ResolveDialogueFor(string questId)
+    private DialogueDefinition ResolveDialogueFor(string questId, bool turnIn)
     {
         if (!string.IsNullOrEmpty(questId) && _questDialogues != null)
         {
             foreach (QuestDialogueEntry entry in _questDialogues)
             {
-                if (entry.dialogue != null && string.Equals(entry.questId, questId, System.StringComparison.Ordinal))
+                if (!string.Equals(entry.questId, questId, System.StringComparison.Ordinal))
+                    continue;
+                if (turnIn && entry.turnInDialogue != null)
+                    return entry.turnInDialogue;
+                if (entry.dialogue != null)
                     return entry.dialogue;
             }
         }
         return _dialogue;
     }
 
+    /// <summary>True when the Crafting outcome would currently open this NPC's station.</summary>
+    public bool IsCraftingUnlocked =>
+        string.IsNullOrEmpty(_craftingUnlockQuestId)
+        || (_questManager != null && _questManager.GetStatus(_craftingUnlockQuestId) == QuestStatus.Completed);
+
     private void CompleteDialogueInteraction(string outcomeId, QuestDefinition offered)
     {
-        if (TryHandleCommerceOutcome(outcomeId))
+        if (TryHandleServiceOutcome(outcomeId))
         {
             Refresh();
             return;
@@ -211,7 +230,7 @@ public sealed class QuestNpcInteractionUI : MonoBehaviour
 
     private void HandleQuestDecision(QuestDefinition offered, bool accepted, string outcomeId)
     {
-        if (TryHandleCommerceOutcome(outcomeId))
+        if (TryHandleServiceOutcome(outcomeId))
         {
             Refresh();
             return;
@@ -233,9 +252,8 @@ public sealed class QuestNpcInteractionUI : MonoBehaviour
         Refresh();
     }
 
-    // Mirrors TraderNpcInteractionUI.HandleOutcome -- a dialogue choice can route to Shop/Crafting/
-    // Storage instead of (never both) a quest conversation outcome.
-    private bool TryHandleCommerceOutcome(string outcomeId)
+    // Mirrors TraderNpcInteractionUI.HandleOutcome -- a dialogue choice can open a service UI instead of reporting quest talk.
+    private bool TryHandleServiceOutcome(string outcomeId)
     {
         if (_playerInput == null)
             return false;
@@ -243,9 +261,20 @@ public sealed class QuestNpcInteractionUI : MonoBehaviour
         if (outcomeId == TraderNpcInteractionUI.ShopOutcomeId)
             ShopCraftingUI.Instance?.OpenShop(_npcId, _playerInput);
         else if (outcomeId == TraderNpcInteractionUI.CraftingOutcomeId)
-            ShopCraftingUI.Instance?.OpenCrafting(_npcId, _stationTag, _playerInput);
+        {
+            // A locked station must never fall through silently: show the authored locked line, or
+            // if none is wired, the NPC feedback text, so an early attempt always gets a reason.
+            if (IsCraftingUnlocked)
+                ShopCraftingUI.Instance?.OpenCrafting(_npcId, _stationTag, _playerInput);
+            else if (_lockedCraftingDialogue == null || DialogueUI.Instance == null
+                     || !DialogueUI.Instance.Open(_lockedCraftingDialogue, _ => Refresh()))
+                Debug.LogWarning($"{name}: crafting is locked until '{_craftingUnlockQuestId}' is completed, "
+                    + "but no locked-crafting dialogue could be shown.", this);
+        }
         else if (outcomeId == TraderNpcInteractionUI.StorageOutcomeId)
             FarmStorageUI.Instance?.Open(_playerInput);
+        else if (outcomeId == SkillPanelUI.TrainingOutcomeId)
+            SkillPanelUI.OpenFromTrainer();
         else
             return false;
 

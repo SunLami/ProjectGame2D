@@ -77,6 +77,8 @@ public sealed class TraderNpcInteractionUI : MonoBehaviour
                 ShopCraftingUI.Instance?.OpenCrafting(_npcId, _stationTag, _playerInput);
             else if (outcomeId == StorageOutcomeId)
                 FarmStorageUI.Instance?.Open(_playerInput);
+            else if (outcomeId == SkillPanelUI.TrainingOutcomeId)
+                SkillPanelUI.OpenFromTrainer();
         }
         Refresh();
     }

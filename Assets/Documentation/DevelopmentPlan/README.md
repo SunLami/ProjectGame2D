@@ -184,3 +184,11 @@ isolated Editor sample. Details, affected skills, changed map layers and manual 
 Items List expansion (D-119, 2026-10-22): [content contract and verification](SheetContentExpansion.md). Adds percentage potions, refresh-only timed buffs, crops, wildlife and material recipes; definitions use V13 resolver contracts. Production world placement remains gated by the recorded baseline validation issues.
 
 2026-11-04 branch integration: [merge choices and verification](BranchMergeVerification.md).
+
+2026-11-25 D-120: 13 out-of-sheet ItemSO retired and replaced by sheet items; save V14 migrates old IDs. Mapping, impact and verification: [Decision Register](DecisionRegister.md) D-120, [Save](SaveAndWorldPersistence.md).
+
+2026-11-25 Act I "A Stop in Heorte" completion pass: [Tutorial and Quest Progression](TutorialAndQuestProgression.md) "Act I guidance and completion pass".
+
+2026-11-25 item icon refresh — 123 dedicated inventory sprites, with visually equipped gear
+derived from its idle sprites. See [equipment icon sources](EquipmentContent.md#inventory-icon-refresh--2026-11-25)
+and [item icon coverage](SheetContentExpansion.md#inventory-icon-refresh--2026-11-25).

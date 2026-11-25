@@ -138,19 +138,18 @@ DecisionRegister.md 2026-11-01):
 Wigheard (npc.town.guildmaster)
   quest.act1.new_journey        Talk/train Wigheard           -> reward: Training Sword (sword_lvl1)
 Cuthbert (npc.town.mixologist)
-  quest.act1.drink_before_road  Talk + buy 5 Carrot/Grape Juice (autoTurnIn)
+  quest.act1.drink_before_road  Talk + buy 5 Carrot then 5 Grape Juice (manual turn-in)
 Oswin (npc.town.gastronome)
-  quest.act1.stocking_up_oswin  Talk Oswin (2-1a, autoTurnIn)
+  quest.act1.stocking_up_oswin  Talk Oswin (2-1a, manual turn-in)
 Eadric (npc.town.chapman)
-  quest.act1.stocking_up_eadric Talk Eadric (2-1b, autoTurnIn)
+  quest.act1.stocking_up_eadric Talk Eadric (2-1b, manual turn-in)
 (no giver -- auto-accepted by TrainingAreaQuestFlow on stocking_up_eadric turn-in)
   quest.act1.back_to_fields     Harvest 15 + Replant 5 each of Carrot/Grape/Lemon (2-2, autoTurnIn)
 Eadric (npc.town.chapman)
-  quest.act1.back_to_eadric     Talk Eadric (2-3a) -> reward: 5 Carrot, 10 Meat (autoTurnIn)
-(no giver -- auto-accepted by TrainingAreaQuestFlow on back_to_eadric turn-in)
+  quest.act1.back_to_eadric     Talk Eadric (2-3a) -> reward: 5 Carrot, 10 Meat (manual turn-in)
 Oswin (npc.town.gastronome)
-  quest.act1.back_to_oswin      Talk Oswin (2-3b) -> reward: food/Bread (autoTurnIn)
-  quest.act1.cast_a_line        Fish x5 -> return to Oswin -> reward: food/Bread (manual turn-in)
+  quest.act1.back_to_oswin      Talk Oswin (2-3b) -> reward: Harvest Stew (manual turn-in; D-120)
+  quest.act1.cast_a_line        Fish x5 -> return to Oswin -> reward: Trailrunner Fish Broth (manual turn-in; D-120)
 Merric (npc.town.artificer)
   quest.act1.ring_of_forge      Visit (Talk) Merric -> reward: 5 Gold Bar; IsSmithingStationUnlocked
 Agnes (npc.town.hermetist)
@@ -207,6 +206,60 @@ already be missed (e.g. the player never sprints before reaching Wigheard). Atta
 `Player.PlayerAttacked` (a generic swing, no hit required) and has no quest/Kill-objective hook of
 its own; the existing `Manequin_Training_1/2/3` dummies under `Forest_MainMap/TrainingArea` (near
 Wigheard) are purely a visual target for it, nothing more is authored for them.
+
+### Act I guidance and completion pass — 2026-11-25
+
+Owner request: a new player must be able to finish Quest 1 → Quest 5 through real interaction and
+always know whom to meet, where to go, what to do and whom to hand in to. Implemented on top of the
+flow above (stable quest IDs, save V13 and NPC dialogue → accept popup → second-visit turn-in kept):
+
+- **Offer vs turn-in dialogue.** `QuestNpcInteractionUI._questDialogues` entries gained an optional
+  `turnInDialogue`; all nine giver quests now have a separate `Act1*TurnIn` line, and the offer lines
+  no longer narrate the reward before it is granted. Missing `turnInDialogue` falls back to the offer
+  line, so existing scene data stays valid.
+- **Trigger "Frawand enters the village".** Equivalent to the current behaviour: New Game starts at
+  the bridge into Heorte (Intro Timeline Scene 01), and `quest.act1.new_journey` is Available from
+  the first playable frame; no extra trigger is authored.
+- **Cuthbert (Quest 1b).** Buy five Carrot Juice at 10–12 G each, then five Grape
+  Juice at 14–16 G each. Standard paid purchases continue to emit ItemPurchased.
+  Wigheard awards 140 G at Quest 1a turn-in, covering the maximum cost. The objective
+  order and purchase counters are unchanged. Saved completions do not replay rewards.
+- **Quest 2-2 farm supply.** `QuestFarmSupply` (MapNhat `FarmingFeature`) fills 15 authored starter
+  plots with ripe Carrot/Grape/Lemon (5 plots each × yield 3 = 15) when `back_to_fields` is accepted
+  and deposits the seeds the Replant objectives need into Farm Storage (Leofrun). It re-checks after
+  every harvest/plant/storage change and after loading a save, topping up only *seeds* for whatever
+  the remaining objectives still need (`QuestFarmSupplyPlanner`). Harvesting the wrong crop (which the
+  ordered runtime does not count) or loading a save whose farm is empty therefore never soft-locks the
+  quest, and the supply is capped by quest need so it is not a free farming source. No save field was
+  added. It replaces Codex's unfinished New-Game farm seeding, which put ripe crops on the farm from
+  minute one (harvestable — and wasted — before the quest) and re-seeded on every scene reload of a
+  New Game session.
+- **Tracking at chained auto-accept.** `QuestManager.TryTurnIn` now clears tracking before raising
+  `QuestCompleted`/`QuestTurnedIn`; `back_to_fields`, auto-accepted inside Eadric's turn-in, is
+  tracked immediately instead of leaving the tracker empty.
+- **Stations (Quest 4/5).** Merric's / Agnes's Crafting outcome is gated by
+  `_craftingUnlockQuestId` (`quest.act1.ring_of_forge` / `quest.act1.far_from_your_kind`); an early
+  attempt shows `Act1SmithingLocked` / `Act1BlackArtsLocked` naming the quest that unlocks it. This is
+  the explicit design exception to "quest chain does not gate crafting" (Google Doc: "The Smithing /
+  Black Arts Station is unlocked"). Act I ends at the `far_from_your_kind` turn-in; afterwards only
+  `quest.side.potion_supply.001` becomes Available.
+- **Three guidance surfaces.**
+  - `TutorialOverlayRoot`: Input Tutorial steps first; when no step is pending (or it is a
+    `WaitForQuest` step) it shows the tracked quest's current objective `ControlHint` (shop, farm
+    storage seeds, quick bar, planting, fishing). Hidden outside `GameState.Playing` (dialogue, menus,
+    fishing) and while Shop/Crafting/Farm Storage windows are open. Skipping the Input Tutorial does
+    not hide quest hints — untracking the quest does.
+  - `QuestTracker`: objective line names the NPC/place + action + counter; READY shows the quest's
+    `TurnInDirections` (who receives it). Between quests — only when *no* quest is Active/Ready — it
+    shows the next giver's `OfferDirections` with a `NEW` tag; acceptance still only happens through
+    that NPC's dialogue. Objectives may name `NavigationNpcId`/`NavigationAreaId` for the direction
+    indicator (Cuthbert for the juice steps, `area.farm`, `area.fishing_dock` — both new
+    `AreaTriggerZone`s in MapNhat).
+  - `QuestLogWindow (J)`: every objective with its counter, finished ones dimmed, the current one
+    marked, a `TURN IN:` line (highlighted at READY) and reward item names. Stage titles use
+    `1:`, `2-1:`, `2-2:`, `2-3:`, `3:`, `4:`, `5:` prefixes (the DigitalDisco font has no `·`).
+  - After Continue, tracker/log/overlay re-read state on every GameState change (restore raises no
+    events, so they previously showed the pre-restore New Game state).
 
 NPCs that also run a shop (Merric, Agnes, Eadric, Oswin, Cuthbert) use `QuestNpcInteractionUI` for
 this, not `TraderNpcInteractionUI` -- `QuestNpcInteractionUI` now also opens Shop/Crafting/Storage
@@ -292,3 +345,14 @@ Create New Game
 
 Song song, test một player bỏ Tutorial Quest vẫn có thể khám phá, gather, shop và craft nhưng không
 thể nhận Main Quest.
+
+### Quest completion gold
+
+Production quest completions grant gold through the existing QuestRewardDefinition.
+Act I awards 140 G (A New Journey), 20 G (A Drink Before the Road), 8 G (Stocking Up,
+Oswin), 10 G (Stocking Up, Eadric), 24 G (Back to the Fields), 12 G (Back to Eadric),
+18 G (Back to Oswin), 30 G (Cast a Line), 25 G (The Ring of the Forge), and 30 G
+(Far From Your Kind). Potion Supply awards 28 G against its 20 G purchase.
+Item and EXP rewards retain their authored values. The first reward covers both drink
+purchases at maximum quotes. The mandatory stages between the drinks and fishing award
+enough gold to buy Worm Bait at up to 3 G each, including spare bait for failed attempts.

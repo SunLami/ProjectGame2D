@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 14c148da086a4444f9dc223cd131312a, type: 3}
+  m_Name: Act1RingOfForgeTurnIn
+  m_EditorClassIdentifier: ProjectGame2D.Runtime::DialogueDefinition
+  _dialogueId: dialogue.act1.ring_of_forge.turn_in
+  _initialNodeId: greeting
+  _nodes:
+  - _nodeId: greeting
+    _speakerName: 'Merric'
+    _portrait: {fileID: 0}
+    _text: 'Take these Gold Bars as a welcome gift. The Smithing Station is yours to use now -- ask me whenever you want to craft. There''s someone else you should meet, if you''re not easily spooked: Agnes, at the Black Arts stall.'
+    _nextNodeId:
+    _outcomeId: visit
+    _choices: []

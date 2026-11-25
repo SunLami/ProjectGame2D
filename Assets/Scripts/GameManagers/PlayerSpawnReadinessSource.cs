@@ -48,6 +48,24 @@ public sealed class PlayerSpawnReadinessSource : MonoBehaviour, IGameplayReadine
             ? GameSessionManager.Instance.Current
             : default;
 
+        if (SceneTravel.IsWorldGateArrival)
+        {
+            var sessions = GameSessionManager.Instance;
+            sessions.BeginRestore();
+            try
+            {
+                RestoreSceneState(session.SaveData);
+                GetComponent<SceneTravelArrival>().ApplyWorldGateArrival(_playerTransform.GetComponent<Player>());
+            }
+            finally
+            {
+                sessions.EndRestore();
+            }
+            sessions.MarkDirty();
+            MarkReady();
+            return;
+        }
+
         if (session.Kind == GameSessionKind.Development && _developmentInventory != null && InventoryManager.Instance != null)
             InventoryManager.Instance.GetComponent<InventorySeeder>()?.SeedDevelopmentInventory(_developmentInventory);
 
@@ -161,13 +179,32 @@ public sealed class PlayerSpawnReadinessSource : MonoBehaviour, IGameplayReadine
             QuestManager.Instance.RestoreState(session.SaveData.quests);
         }
 
+        _farmingManager ??= FarmingManager.Instance;
+        RestoreSceneState(session.SaveData);
+
+        // 11. Farm storage -- stable itemId state like the quick bar, restores after Farming plots.
+        // Unknown items (removed content) are reported and left out of storage.
+        if (FarmStorageManager.Instance != null && session.SaveData.farmStorage != null)
+        {
+            List<string> missingStorageItems = new();
+            FarmStorageManager.Instance.RestoreState(session.SaveData.farmStorage, resolver, missingStorageItems);
+            if (missingStorageItems.Count > 0)
+                Debug.LogWarning($"Skipped unresolved farm storage item(s): {string.Join(", ", missingStorageItems)}", this);
+        }
+    }
+
+    private void RestoreSceneState(GameSaveData save)
+    {
+        if (save == null)
+            return;
+
         // 9. World persistence -- chest/pickup/boss/resource-node state, restored before Playing
         // is reached (this class is itself an IGameplayReadinessSource). No reward is granted and
         // no gameplay event fires here; unknown/removed persistentIds are reported, not thrown.
-        if (_worldRegistry != null && session.SaveData.world != null)
+        if (_worldRegistry != null && save.world != null)
         {
             List<string> missingWorldIds = new();
-            _worldRegistry.RestoreState(session.SaveData.world, missingWorldIds);
+            _worldRegistry.RestoreState(save.world, missingWorldIds);
             if (missingWorldIds.Count > 0)
             {
                 Debug.LogWarning(
@@ -179,26 +216,15 @@ public sealed class PlayerSpawnReadinessSource : MonoBehaviour, IGameplayReadine
 
         // 10. Farming plots restore after world state and before Playing. Growth stage derives
         // from crop definition + UTC timestamp, so restore never simulates intermediate frames.
-        _farmingManager ??= FarmingManager.Instance;
-        if (_farmingManager != null && session.SaveData.farming != null)
+        if (_farmingManager != null && save.farming != null)
         {
             List<string> missingPlots = new();
             List<string> missingCrops = new();
-            _farmingManager.RestoreState(session.SaveData.farming, missingPlots, missingCrops);
+            _farmingManager.RestoreState(save.farming, missingPlots, missingCrops);
             if (missingPlots.Count > 0)
                 Debug.LogWarning($"Skipped missing farm plot(s): {string.Join(", ", missingPlots)}", this);
             if (missingCrops.Count > 0)
                 Debug.LogWarning($"Skipped unresolved crop(s): {string.Join(", ", missingCrops)}", this);
-        }
-
-        // 11. Farm storage -- stable itemId state like the quick bar, restores after Farming plots.
-        // Unknown items (removed content) are reported and left out of storage.
-        if (FarmStorageManager.Instance != null && session.SaveData.farmStorage != null)
-        {
-            List<string> missingStorageItems = new();
-            FarmStorageManager.Instance.RestoreState(session.SaveData.farmStorage, resolver, missingStorageItems);
-            if (missingStorageItems.Count > 0)
-                Debug.LogWarning($"Skipped unresolved farm storage item(s): {string.Join(", ", missingStorageItems)}", this);
         }
     }
 

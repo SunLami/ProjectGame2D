@@ -128,3 +128,6 @@ Inventory và target boundary đã hoàn tất. Chưa sửa Input Actions asset 
 để tránh phá serialized events trước khi bootstrap/MainMenu/input coordinator của Phase 1 tồn tại.
 
 2026-10-22 owner promotion: Dash scene allow-list now includes MapNhat and DemoScene (D-085). MapNhat installs SkillPanel P and catalog-driven Q/E/R/T casting bridge; Shield uses RMB. Shared Bootstrap SkillHUD displays their cooldowns. Editor bindings checked, owner gameplay acceptance pending.
+
+2026-11-25 owner revision — SkillPanel opens from Agnes's dialogue outcome
+`skills.training`. The serialized P action has been removed.

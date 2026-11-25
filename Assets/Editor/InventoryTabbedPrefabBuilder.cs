@@ -240,8 +240,10 @@ public static class InventoryTabbedPrefabBuilder
             if(item.inventoryCategory!=InventoryCategory.All) EditorUtility.SetDirty(item);
         }
         // Explicit initial content authoring. Runtime filtering reads metadata only.
-        string[] foods={"Food/Bread","Food/Cheese","Drinks/Water","Drinks/Ale","Farming/Crop.Carrot","Farming/Crop.Eggplant"};
-        string[] potions={"Shop/HealthPotion","Consumables/BuffPotionAttack","Consumables/BuffPotionDefense"};
+        // Retired 2026-11-25: Bread/Cheese/Water/Ale/Eggplant/Health Potion/buff potions (save
+        // migration V13->V14 maps them to sheet items); only paths that still exist are listed.
+        string[] foods={"Consumables/HarvestStew","Drinks/LemonJuice","Drinks/AppleJuice","Farming/Crop.Carrot"};
+        string[] potions={"Consumables/SmallHealthPotion","Consumables/SmallManaPotion"};
         foreach(var path in foods) SetCategory(path,InventoryCategory.Consumption);
         foreach(var path in potions) SetCategory(path,InventoryCategory.Consumption);
     }

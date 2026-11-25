@@ -47,3 +47,23 @@ The sheet explicitly retires `shield_lvl9`, `ring_lvl9`, `ring_lvl10`, `necklace
 - Every recipe output and ingredient resolves through `ResourcesItemResolver`.
 - No catalog reference may point at a retired equipment GUID.
 
+
+## Inventory icon refresh — 2026-11-25
+
+- All 55 equipment items point to dedicated 64×64 transparent, point-filtered sprites under
+  `Assets/Art/ItemIcons`, named by stable item ID.
+- The nine swords, eight body armors and six helmets use the first idle frame from their equipped
+  SpriteLibraryAsset. The icon crop and padding preserve the frame's proportions.
+- Foot, Shield, Ring and Necklace slots use the existing item art as their source. These slots
+  currently have no independent equipped sprite in EquipmentManager.
+
+
+### Equipment icon redrawing
+
+The 55 equipment icons were redrawn with built-in ImageGen using contact sheets of the
+equipped/source sprites as visual references. Each sprite keeps its stable asset path and is
+cropped onto the existing 64×64 transparent canvas. The six helmet icons show hollow helmet
+shells. Reference prompts preserve item order, silhouette, palette and equipment profile while
+using crisp pixel clusters and articulated highlights. Weapon prompts emphasize distinct blade,
+hilt and guard details, including the wooden Training Sword. Helmet prompts exclude all player
+features. Body, boot, pendant, ring and shield prompts preserve their individual trim and shape.

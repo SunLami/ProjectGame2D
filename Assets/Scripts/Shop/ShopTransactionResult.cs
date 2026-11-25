@@ -8,5 +8,8 @@ public enum ShopTransactionResult
     InsufficientGold,
     InsufficientInventoryCapacity,
     InsufficientItemQuantity,
-    GameplayNotAllowed
+    GameplayNotAllowed,
+    // Appended (never inserted) so existing int values stay stable.
+    QuestAllowanceUnavailable,
+    QuestAllowanceExceeded
 }

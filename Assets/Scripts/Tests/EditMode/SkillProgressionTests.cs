@@ -77,7 +77,7 @@ public sealed class SkillProgressionTests
     public void Migration_BackfillsExactlyOnceAndNeverMutatesInventory()
     {
         var save=new GameSaveData{saveVersion=12,player=new PlayerSaveData{level=7},inventory=new InventorySaveData()};
-        var inventory=save.inventory;SaveMigration.Migrate(save);Assert.AreEqual(13,save.saveVersion);
+        var inventory=save.inventory;SaveMigration.Migrate(save);Assert.AreEqual(GameSaveData.CurrentSaveVersion,save.saveVersion);
         Assert.AreEqual(6,save.player.skills.points);save.player.skills.points=2;SaveMigration.Migrate(save);
         Assert.AreEqual(2,save.player.skills.points);Assert.AreSame(inventory,save.inventory);
         Assert.AreEqual(0,NewGameFactory.CreateDefault().player.skills.points);

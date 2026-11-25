@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Quest_Act1FarFromYourKind
   m_EditorClassIdentifier: ProjectGame2D.Runtime::QuestDefinition
   _questId: quest.act1.far_from_your_kind
-  _displayName: Far From Your Kind...
+  _displayName: "5: Far From Your Kind..."
   _prerequisiteQuestIds:
   - quest.act1.ring_of_forge
   _objectives:
@@ -22,10 +22,10 @@ MonoBehaviour:
     _targetAreaId:
     _targetCount: 1
     _obtainMode: 0
-    _description: Visit the suspicious merchant.
+    _description: "Visit Agnes at the Black Arts stall."
   _rewards:
     _items: []
-    _gold: 0
+    _gold: 30
     _experience: 0
   _isTutorialQuest: 0
   _isMainQuest: 0
@@ -34,3 +34,5 @@ MonoBehaviour:
   _giverNpcId: npc.town.hermetist
   _turnInNpcId: npc.town.hermetist
   _autoTurnIn: 0
+  _offerDirections: "Find Agnes at the Black Arts stall."
+  _turnInDirections: "Speak to Agnes again to unlock Black Arts."

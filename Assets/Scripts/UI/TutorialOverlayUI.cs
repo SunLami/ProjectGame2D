@@ -40,6 +40,24 @@ public sealed class TutorialOverlayUI : MonoBehaviour
             BindTutorialManager();
     }
 
+    private void LateUpdate()
+    {
+        if (_pendingStep != null && _pendingStep.Type != TutorialStepType.WaitForQuest)
+            return;
+
+        // Quest control hints (from the tracked quest's current objective) share this banner. They
+        // only show during free gameplay: not in dialogue/menus/fishing, and not over the Shop/
+        // Crafting/Farm Storage windows, which keep GameState.Playing but occupy the same screen area.
+        string hint = QuestManager.Instance?.GetTrackedControlHint();
+        bool showHint = GameStateManager.Instance?.CurrentState == GameState.Playing
+            && !IsCommerceWindowOpen
+            && !string.IsNullOrEmpty(hint);
+        _instructionPanel.SetActive(showHint);
+
+        if (showHint && _instructionText.text != hint)
+            _instructionText.text = hint;
+    }
+
     private void OnDisable()
     {
         _skipButton.onClick.RemoveListener(OpenSkipConfirmation);
@@ -55,7 +73,20 @@ public sealed class TutorialOverlayUI : MonoBehaviour
     // UnifiedGameplayHUD (above Tutorial in sibling order). Hiding this presentation-only banner
     // while any GameplayMenu is open keeps it from drawing over popup content without touching
     // TutorialManager progression, step binding, or the Skip callback.
-    private void HandleGameStateChanged(GameStateChange change) => Refresh(_pendingStep);
+    // Re-read the manager rather than the cached step: TutorialManager.RestoreState (Continue/load)
+    // raises no OnStepChanged, so the cached step can still be the pre-restore first step (e.g.
+    // "Move") for a save whose tutorial is already completed.
+    private void HandleGameStateChanged(GameStateChange change)
+    {
+        if (_tutorialManager == null)
+            BindTutorialManager();
+        else
+            Refresh(_tutorialManager.CurrentStep);
+    }
+
+    private static bool IsCommerceWindowOpen =>
+        (ShopCraftingUI.Instance != null && ShopCraftingUI.Instance.IsOpen)
+        || (FarmStorageUI.Instance != null && FarmStorageUI.Instance.IsOpen);
 
     private static bool IsGameplayMenuOpen =>
         GameStateManager.Instance != null && GameStateManager.Instance.CurrentState == GameState.GameplayMenu;
@@ -95,6 +126,7 @@ public sealed class TutorialOverlayUI : MonoBehaviour
         _pendingStep = null;
         _skipConfirmation.SetActive(false);
         _instructionPanel.SetActive(false);
+        _skipButton.gameObject.SetActive(false);
     }
 
     private void Refresh(TutorialStepDefinition step)
@@ -108,6 +140,7 @@ public sealed class TutorialOverlayUI : MonoBehaviour
         // duplicating the same text through the Tutorial banner too.
         bool hasActiveStep = step != null && step.Type != TutorialStepType.WaitForQuest && !IsGameplayMenuOpen;
         _instructionPanel.SetActive(hasActiveStep);
+        _skipButton.gameObject.SetActive(hasActiveStep);
 
         if (step != null && step.Type != TutorialStepType.WaitForQuest)
             _instructionText.text = step.InstructionText;

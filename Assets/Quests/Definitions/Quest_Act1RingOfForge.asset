@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Quest_Act1RingOfForge
   m_EditorClassIdentifier: ProjectGame2D.Runtime::QuestDefinition
   _questId: quest.act1.ring_of_forge
-  _displayName: The Ring of the Forge
+  _displayName: "4: The Ring of the Forge"
   _prerequisiteQuestIds:
   - quest.act1.cast_a_line
   _objectives:
@@ -22,12 +22,12 @@ MonoBehaviour:
     _targetAreaId:
     _targetCount: 1
     _obtainMode: 0
-    _description: Visit the smithing station.
+    _description: "Visit Merric at the smithy."
   _rewards:
     _items:
     - _itemId: item.material.gold_bar
       _quantity: 5
-    _gold: 0
+    _gold: 25
     _experience: 0
   _isTutorialQuest: 0
   _isMainQuest: 0
@@ -36,3 +36,5 @@ MonoBehaviour:
   _giverNpcId: npc.town.artificer
   _turnInNpcId: npc.town.artificer
   _autoTurnIn: 0
+  _offerDirections: "Meet Merric at the smithy."
+  _turnInDirections: "Speak to Merric again to unlock smithing."

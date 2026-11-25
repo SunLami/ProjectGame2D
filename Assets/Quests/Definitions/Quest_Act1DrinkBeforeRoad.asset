@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Quest_Act1DrinkBeforeRoad
   m_EditorClassIdentifier: ProjectGame2D.Runtime::QuestDefinition
   _questId: quest.act1.drink_before_road
-  _displayName: A Drink Before the Road
+  _displayName: "1: A Drink Before the Road"
   _prerequisiteQuestIds:
   - quest.act1.new_journey
   _objectives:
@@ -22,22 +22,28 @@ MonoBehaviour:
     _targetAreaId:
     _targetCount: 1
     _obtainMode: 0
-    _description: Talk to the Mixology.
+    _description: "Speak with Cuthbert at the drinks stall."
   - _type: 3
     _targetId: item.drink.carrot_juice
     _targetAreaId:
     _targetCount: 5
     _obtainMode: 0
-    _description: Buy 5 Carrot Juice.
+    _description: "Buy 5 Carrot Juice from Cuthbert's stall."
+    _controlHint: "Talk to Cuthbert, pick Show me your goods. Select Carrot Juice, press + to 5, then Buy."
+    _navigationAreaId:
+    _navigationNpcId: npc.town.mixologist
   - _type: 3
     _targetId: item.drink.grape_juice
     _targetAreaId:
     _targetCount: 5
     _obtainMode: 0
-    _description: Buy 5 Grape Juice.
+    _description: "Buy 5 Grape Juice from Cuthbert's stall."
+    _controlHint: "In Cuthbert's shop select Grape Juice, press + to 5, then Buy. Esc closes the shop."
+    _navigationAreaId:
+    _navigationNpcId: npc.town.mixologist
   _rewards:
     _items: []
-    _gold: 0
+    _gold: 20
     _experience: 0
   _isTutorialQuest: 0
   _isMainQuest: 0
@@ -46,3 +52,5 @@ MonoBehaviour:
   _giverNpcId: npc.town.mixologist
   _turnInNpcId: npc.town.mixologist
   _autoTurnIn: 0
+  _offerDirections: "Meet Cuthbert at the drinks stall."
+  _turnInDirections: "Close the shop and speak to Cuthbert again to hand in."

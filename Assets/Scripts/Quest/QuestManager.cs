@@ -227,6 +227,10 @@ public sealed class QuestManager : MonoBehaviour
             QuestObjectiveDefinition objective = trackedState.CurrentObjective;
             if (objective != null && objective.Type == QuestObjectiveType.Talk && !string.IsNullOrEmpty(objective.TargetId))
                 yield return objective.TargetId;
+            // Non-Talk objectives that still happen at an NPC (e.g. Purchase at a shop keeper) name
+            // that NPC explicitly as authored navigation data instead of guessing from the type.
+            if (!string.IsNullOrEmpty(objective?.NavigationNpcId))
+                yield return objective.NavigationNpcId;
         }
 
         foreach (QuestDefinition quest in _catalog.AllQuests)
@@ -247,6 +251,12 @@ public sealed class QuestManager : MonoBehaviour
             yield break;
 
         QuestObjectiveDefinition objective = state.CurrentObjective;
+        if (!string.IsNullOrEmpty(objective?.NavigationAreaId))
+        {
+            yield return objective.NavigationAreaId;
+            yield break;
+        }
+
         if (objective != null
             && !string.IsNullOrEmpty(objective.TargetAreaId)
             && (objective.Type == QuestObjectiveType.Kill || objective.Type == QuestObjectiveType.Gather))
@@ -254,6 +264,26 @@ public sealed class QuestManager : MonoBehaviour
             yield return objective.TargetAreaId;
         }
     }
+
+    /// <summary>How many more units of itemId the Active quest questId still needs for a Purchase
+    /// objective that is its current step. 0 when the quest is not Active, its current objective is
+    /// something else, or that objective is already full. Read-only: lets a quest-scoped shop
+    /// allowance (ShopStockEntry.QuestAllowanceId) cap a complimentary line to exactly the quest's
+    /// need, so a 0 G quest gift is never an unlimited item source.</summary>
+    public int GetRemainingPurchaseAllowance(string questId, string itemId)
+    {
+        if (string.IsNullOrEmpty(questId)
+            || !_runtime.TryGetValue(questId, out QuestRuntimeState state)
+            || !QuestObjectiveMatchers.MatchesPurchase(state.CurrentObjective, itemId))
+        {
+            return 0;
+        }
+
+        return Mathf.Max(0, state.CurrentObjective.TargetCount - state.ObjectiveCounters[state.CurrentObjectiveIndex]);
+    }
+
+    public string GetTrackedControlHint() =>
+        TryGetTrackedState(out QuestRuntimeState state) ? state.CurrentObjective?.ControlHint : null;
 
     private bool TryGetTrackedState(out QuestRuntimeState state)
     {
@@ -418,11 +448,15 @@ public sealed class QuestManager : MonoBehaviour
         state.MarkCompleted();
         result = QuestTurnInResult.Success;
         SoundFXManager.PlaySfx(SfxIds.QuestComplete);
+        // Clear tracking before any completion listener runs: a listener may chain-accept the next
+        // quest (TrainingAreaQuestFlow auto-accepts quest.act1.back_to_fields from this very
+        // turn-in), and TryAcceptQuest only auto-tracks when nothing is tracked. Clearing after the
+        // events left the chained quest untracked and the tracker empty.
+        if (IsTracked(questId))
+            SetTrackedQuest(null);
         QuestCompleted?.Invoke(questId);
         QuestTurnedIn?.Invoke(questId);
         QuestProgressChanged?.Invoke(questId);
-        if (IsTracked(questId))
-            SetTrackedQuest(null);
         ReconcileMainQuestUnlock(fireEvent: true);
         return true;
     }

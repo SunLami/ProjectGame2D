@@ -545,3 +545,26 @@ D-119 verification checkpoint: 15/15 EditMode and 40/40 PlayMode passed; 9/9 dir
 Merged Duy/main content into SuperaAI, preserving its Act I and skill work. Owner selected main
 configuration for overlapping items/crops; no feature milestone status is advanced by this merge.
 Validation and remaining Editor/runtime gates: [Branch merge verification](BranchMergeVerification.md).
+
+## Content production — Act I "A Stop in Heorte" (2026-11-25)
+
+Status: **playable end-to-end in MapNhat, pending owner decisions** (see DecisionRegister "Follow-up —
+Act I guidance/completion pass"). Quest 1 → 5 verified in Play Mode through real NPC dialogue, accept
+popup, Cuthbert's shop UI, farming (plant/harvest/storage), fishing session and second-visit turn-ins,
+with Save/Continue mid-chapter and a legacy empty-farm save. Not yet done: DemoScene integration of
+the new reusable pieces (quest shop allowance, `QuestFarmSupply`), economy for D-119 items, bait
+source for Quest 3, and the pre-existing PlayMode test harness issue (tests fail when
+`playModeStartScene` loads Bootstrap singletons).
+
+2026-11-25 — Agnes's normal dialogue now provides the SkillPanel training entry point
+in place of the P action. See [Skill Progression](SkillProgression.md#skill-training-entry-point).
+
+2026-11-25 — Restored tree Ent as `Assets/Prefabs/Enemies/Ent.prefab`. The prefab
+uses EnemyUniversal and the existing shared melee state machine with all 24 directional
+Ent clips. The body and directional hitbox geometry comes from the former SampleScene
+Ent in commit 4d10b8de8. Editor validation resolved all clips, attack events and hitbox
+references. Scene placement and live combat acceptance remain pending.
+
+2026-11-25 — MapDuy connected to MapNhat through north/south world gates. The south
+arrival uses the owner's marked path. Save-backed travel preserves the current
+session, and Continue can select MapDuy from the saved player location.

@@ -74,3 +74,21 @@ Năm gem do Agnes — Hermetist (`npc.town.hermetist`) mua và bán tại `shop.
 2026-10-22 owner revision: `item.material.fish_fillet` is a stackable material at Gastronome. One selected fish instance (any current species, any weight) yields two fillets via crafting; price remains pending. Harvest Stew costs 2 Meat + 2 Carrot + 2 Mushroom + 2 Chillie. Trailrunner Fish Broth costs 2 Fish Fillet + 2 Lemon + 2 Carrot + 2 Cucumber and moves to Gastronome. Orchard Elixir costs one each Lemon/Apple/Carrot/Grape Juice; each Juice uses two corresponding produce. Stable output IDs and buff effects unchanged. See SheetContentExpansion.md for current verification.
 
 New stable IDs: item.material.meat, item.material.bone, item.material.bone_ash, item.material.slime, item.material.health_herb and item.material.mana_herb. Bone refining outputs three Bone Ash per Bone; NPC/station remain empty. Tree drop is exactly three Wood Log; a presentation-only ResourceVisualVariants chooses among existing tree sprites. Health/Mana plants drop three matching herbs. Seven reusable node prefabs and three wildlife prefabs are authored under Assets/Prefabs/SheetContent; placed DemoScene nodes use explicit registry entries and unique persistent IDs. Wildlife is ordinary respawn-on-scene-load content; dropped loot is transient, retained when inventory is full. Unknown commerce prices are explicitly marked pending, not converted into free stock. Legacy ore/bar/gem IDs, Coal/Merric and station.forge decisions are unchanged.
+
+### NPC shop price completion
+
+Internal gold ranges for the remaining standard shop stock. The Buy UI displays the quoted
+unit price for the current shop opening.
+
+| Item | Buy | Sell |
+|---|---:|---:|
+| Carrot Juice | 10–12 | 4–5 |
+| Grape Juice | 14–16 | 6–7 |
+| Lemon Juice, Apple Juice | 18–21 | 8–10 |
+| Orchard Elixir | 70–82 | 28–34 |
+| Meat | 6–8 | 3–4 |
+| Fish Fillet | 5–7 | 2–3 |
+| Harvest Stew | 40–46 | 16–20 |
+| Trailrunner Fish Broth | 46–54 | 20–24 |
+
+Carrot and Grape Juice use standard prices during and outside the Act I quest.

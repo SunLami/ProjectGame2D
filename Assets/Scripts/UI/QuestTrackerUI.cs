@@ -217,7 +217,7 @@ public sealed class QuestTrackerUI : MonoBehaviour
         row.GetComponent<ContentSizeFitter>().verticalFit = ContentSizeFitter.FitMode.PreferredSize;
 
         CreateInfoLine(row.transform, "QuestTitle", CategorySprite(quest.Category), quest.Title, string.Empty, 7.5f, CategoryColor(quest.Category));
-        string progress = quest.ReadyToTurnIn ? "READY" : quest.TargetCount > 1 ? $"{quest.CurrentCount}/{quest.TargetCount}" : string.Empty;
+        string progress = ProgressLabel(quest);
         Sprite objectiveIcon = quest.ReadyToTurnIn ? LoadSprite("objective_return") : ObjectiveSprite(quest.ObjectiveType);
         CreateInfoLine(row.transform, "Objective", objectiveIcon, quest.ShortDescription, progress, 6.5f, quest.ReadyToTurnIn ? Gold : Cream);
         _rows.Add(row);
@@ -243,7 +243,7 @@ public sealed class QuestTrackerUI : MonoBehaviour
         objectiveIcon.sprite = quest.ReadyToTurnIn ? LoadSprite("objective_return") : ObjectiveSprite(quest.ObjectiveType);
         objectiveLabel.text = quest.ShortDescription;
         objectiveLabel.color = quest.ReadyToTurnIn ? Gold : Cream;
-        progress.text = quest.ReadyToTurnIn ? "READY" : quest.TargetCount > 1 ? $"{quest.CurrentCount}/{quest.TargetCount}" : string.Empty;
+        progress.text = ProgressLabel(quest);
         progress.color = quest.ReadyToTurnIn ? Gold : Cream;
         _rows.Add(row);
     }
@@ -360,6 +360,11 @@ public sealed class QuestTrackerUI : MonoBehaviour
         return slicedSprites.Length > 0 ? slicedSprites[0] : null;
     }
 
+    private static string ProgressLabel(TrackedQuestView quest) =>
+        quest.ReadyToTurnIn ? "READY"
+        : quest.IsOffer ? "NEW"
+        : quest.TargetCount > 1 ? $"{quest.CurrentCount}/{quest.TargetCount}" : string.Empty;
+
     private static Color CategoryColor(QuestCategory category) => category switch
     {
         QuestCategory.Main => Gold,
@@ -378,12 +383,17 @@ public enum QuestCategory { Main = 0, Side = 1, Daily = 2 }
 
 public readonly struct TrackedQuestView
 {
-    public TrackedQuestView(string questId, string title, string shortDescription, QuestCategory category)
-        : this(questId, title, shortDescription, category, QuestObjectiveType.Talk, 0, 0, false) { }
+    public TrackedQuestView(string questId, string title, string shortDescription, QuestCategory category,
+        bool isOffer = false)
+        : this(questId, title, shortDescription, category, QuestObjectiveType.Talk, 0, 0, false)
+    {
+        IsOffer = isOffer;
+    }
 
     public TrackedQuestView(string questId, string title, string shortDescription, QuestCategory category,
         QuestObjectiveType objectiveType, int currentCount, int targetCount, bool readyToTurnIn)
     {
+        IsOffer = false;
         QuestId = questId;
         Title = title;
         ShortDescription = shortDescription;
@@ -402,6 +412,8 @@ public readonly struct TrackedQuestView
     public int CurrentCount { get; }
     public int TargetCount { get; }
     public bool ReadyToTurnIn { get; }
+    /// <summary>Not accepted yet: a "go meet this NPC" hint shown between quests.</summary>
+    public bool IsOffer { get; }
 }
 
 public static class QuestTrackerOrdering

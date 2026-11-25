@@ -74,7 +74,8 @@ public sealed class MainMenuController : MonoBehaviour
             return;
         }
 
-        if (!GameSessionManager.Instance.TryStartLoadedGame(slotId, _gameplaySceneName, saveData))
+        string destination = SceneTravel.ResolveSavedScene(saveData, _gameplaySceneName);
+        if (!GameSessionManager.Instance.TryStartLoadedGame(slotId, destination, saveData))
         {
             OnOperationFailed?.Invoke("Could not start the loaded game session.");
             return;
@@ -82,7 +83,7 @@ public sealed class MainMenuController : MonoBehaviour
 
         // resetBootstrap: loading a different save slot must never inherit the previous
         // session's manager state (leaking slot A's inventory/quest/etc. into slot B).
-        if (!SceneFlowService.Instance.TryLoadGameplay(_gameplaySceneName, resetBootstrap: true))
+        if (!SceneFlowService.Instance.TryLoadGameplay(destination, resetBootstrap: true))
             OnOperationFailed?.Invoke("Could not start loading the gameplay scene.");
     }
 

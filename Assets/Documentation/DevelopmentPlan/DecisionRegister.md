@@ -776,6 +776,47 @@ edited and saved" category of bug): the Dev Debug toggle button (`DevPanel.prefa
 placing it off-screen; restored to the prefab's authored `(-18, -142)` (just below the Minimap).
 
 
+#### Follow-up — Act I guidance/completion pass — 2026-11-25
+
+Owner request: finish Act I so a new player can go Quest 1 → 5 through real interaction, with the
+Codex WIP (offer/turn-in directions, tracker/log/hint overlay, 0 G juice, New-Game farm config,
+crafting unlock) reviewed and completed. Decisions taken inside existing contracts (no stable ID,
+quest ID or save schema change — save stays V13):
+
+- Quest-scoped shop allowance (`ShopStockEntry._questAllowanceId`) for Cuthbert's "my treat"
+  juices: free, Purchase-event-producing, capped to the current Purchase objective's remaining
+  count, never a sell-back price. Replaces the WIP's unconditional 0 G lines (an unlimited free
+  item source).
+- `QuestFarmSupply` replaces the WIP New-Game farm seeding: ripe starter crops + replant seeds when
+  `quest.act1.back_to_fields` is accepted, seed-only top-up afterwards (wrong-order harvest, legacy
+  save with an empty farm), always capped by the remaining objective need. FarmingCatalog reference
+  on MapNhat `FarmingFeature` (was null: Continue dropped every saved crop) is now assigned.
+- `QuestManager.TryTurnIn` clears tracking before completion events so a chained auto-accept is
+  tracked.
+- Smithing/Black Arts crafting gated by `quest.act1.ring_of_forge` / `quest.act1.far_from_your_kind`
+  — explicit exception to the "tutorial chain does not gate crafting" principle, from the owner's
+  Act I design ("Station is unlocked").
+- Separate turn-in dialogues; offer lines no longer pre-narrate rewards.
+- Tracker/QuestLog/TutorialOverlay refresh on GameState change (restore raises no events).
+
+**Open — owner must decide before change (not implemented):**
+
+1. *Fishing bait for Quest 3.* D-059 requires selected bait; New Game has 0 gold and no bait
+   (InventorySeeder gives equipment + Carrot seeds only; Eggplant retired by D-120). Today the player must sell
+   produce (e.g. to Eadric) and buy Worm Bait from Dunstan — the hint says so. Options: Oswin gives
+   N Worm Bait on accepting Quest 3 (changes items the player holds), or keep the economy path.
+2. *Delivering produce in 2-3.* Still a Talk; switching to consuming 15/15/15 items needs quantity,
+   failure/recovery rules if the player ate or sold them.
+3. *Ordered harvest.* Objectives stay strictly ordered (save contract); an "any order" flag would
+   be friendlier but changes `QuestRuntimeState` semantics.
+4. *Dev seeding on New Game.* `InventorySeeder._seedingEnabled = 1` in Bootstrap grants 2 extra
+   Training Swords and 24 Carrot seeds before Quest 1 rewards — fine for QA, misleading for a real
+   first play-through.
+5. *Juice economy.* Resolved by the owner direction under Remaining NPC shop prices.
+
+Verification and remaining limits: [TutorialAndQuestProgression.md](TutorialAndQuestProgression.md)
+"Act I guidance and completion pass".
+
 ## D-119 — Items List content expansion (Accepted, owner 2026-10-21)
 
 Latest owner-approved revision 2026-10-22 supersedes the preceding recipes: Fish Fillet (`item.material.fish_fillet`) is a stackable material sold by Gastronome; one selected fish instance of any existing species produces two fillets regardless of weight, via Gastronome crafting. Each species has a data-driven recipe; UI selects the individual instance by ID and displays weight. Harvest Stew = 2 Meat + 2 Carrot + 2 Mushroom + 2 Chillie. Trailrunner Fish Broth = 2 Fish Fillet + 2 Lemon + 2 Carrot + 2 Cucumber, offered/sold by Gastronome instead of Mixologist. Orchard Elixir = one each Lemon/Apple/Carrot/Grape Juice; each juice costs two matching produce for one juice. Existing output IDs/effects unchanged; no save schema change. Unknown prices/stations stay unset. Inventory exchange validates post-consumption capacity and commits once before notifications, with crafting reentrancy rejection. Owner authorized updating the live Resource Items sheet to match.
@@ -798,3 +839,95 @@ SuperaAI's existing living-gameplay guard. DemoScene retains both branches' addi
 is byte-identical to upstream/main. No new production placement or feature acceptance is implied.
 
 Verification and limitations: see [Branch merge verification](BranchMergeVerification.md).
+
+## D-120 — Retire 13 out-of-sheet ItemSO (Accepted, owner 2026-11-25)
+
+Owner-approved: delete the 13 ItemSO that are not in the Items List sheet and replace every use with a
+sheet item. **Supersedes the D-119 choice "Preserve Eggplant and its existing IDs"**: Eggplant seed,
+produce and `crop.eggplant` are removed (owner decision).
+
+| Retired stable ID | Replacement | Content change |
+|---|---|---|
+| `item.drink.water` | `item.drink.lemon_juice` | Removed from Cuthbert; Lemon Juice line/recipe (`Recipe_LemonJuice`) reused |
+| `item.drink.ale` | `item.drink.apple_juice` | Removed from Cuthbert; Apple Juice line/recipe reused |
+| `item.material.medicinal_leaf` | `item.material.health_herb` | `MedicinalHerb` resource node now drops Health Herb (node/prefab/IDs kept) |
+| `item.material.plank` | `item.material.wood_log` | Cenhelm Plank recipe removed (owner chose the sheet/production Wood Log, not `item.material.wood`) |
+| `item.consumable.health_potion` | `item.consumable.small_health_potion` | Cenhelm stock line re-pointed (20 G legacy line reused, owner-approved, Cenhelm only); Potion Supply objective/dialogue; Cenhelm recipe removed |
+| `item.unique.ancient_relic` | `item.material.tanzanite` | DemoScene pickup `world.pickup.tutorial.relic.01` grants Tanzanite x1; persistentId kept |
+| `item.quest.tutorial_badge` | `item.material.gold_bar` | Save-only (no live gameplay reference existed) |
+| `item.food.bread` | `item.food.harvest_stew` | Oswin stock/recipe removed; Back to Oswin rewards Harvest Stew, Cast a Line rewards Trailrunner Fish Broth |
+| `item.food.cheese` | `item.food.harvest_stew` | Oswin stock/recipe removed (Harvest Stew line reused, no duplicate) |
+| `item.seed.eggplant` | `item.seed.carrot` | Eadric/Leofrun lines removed; New Game/Demo seed lists merged into Carrot Seeds |
+| `item.crop.eggplant` | `item.crop.carrot` | Eadric lines removed; `crop.eggplant` → `crop.carrot` for planted plots |
+| `item.consumable.potion_buff_defense` | `item.consumable.small_health_potion` | Agnes stock/recipe removed |
+| `item.consumable.potion_buff_attack` | `item.consumable.small_mana_potion` | Agnes stock/recipe removed |
+
+Deleted: the 13 ItemSO + metas; 8 recipes that produced them (`Recipe_Water/Ale/WoodPlank/HealthPotion/
+Bread/Cheese/BuffPotionAttack/BuffPotionDefense`, also removed from `RecipeCatalog`); `Crop.Eggplant`
+CropDefinition (removed from `FarmingCatalog`). Art/sprites/prefabs kept. Retained assets keep their
+Unity IDs. Authoring stops recreating them: `FarmingAuthoring` (no Eggplant), `DemoResourceNodeAuthoring`
+(loads Health Herb instead of creating Medicinal Leaf), `InventoryTabbedPrefabBuilder` (new paths).
+
+**Save:** V13 → V14 (`SaveMigration.V13ToV14_RetireOutOfSheetItems`, map in
+`SaveMigration.RetiredItemReplacements`/`RetiredCropReplacements`). In-place, per-slot ID rewrite of
+inventory, equipment, quick bar, farm storage and planted crops; quantities, slot positions, gold,
+plot IDs, planting timestamps, quest state/counters and world records unchanged; no merge/split (all
+targets stack to 99 ≥ any retired item). Loading never writes the file; the next real save stores V14.
+
+**Open for owner (not changed):** two "Wood Log" assets exist (`item.material.wood_log` production/sheet,
+`item.material.wood` Phase-6 quest material used by Cenhelm stock, Potion Supply reward and the
+remaining Cheese-less recipes); Cuthbert and Oswin now have no priced item outside quests (Lemon/Apple
+Juice, Harvest Stew etc. still D-119 pending); a full inventory silently refuses quest turn-in rewards;
+world records of DemoScene objects are dropped when saving from MapNhat (scene-scoped registry);
+New Game seeding runs twice (Carrot Seeds 48). Verification: SaveAndWorldPersistence.md "V14".
+
+### Farm shop assortment — owner direction
+
+Leofrun's Buy tab offers the seven active crop seeds. Eadric's Buy tab offers the seven
+harvest items from those crops. This supersedes the old Eadric Carrot/Carrot Seeds assortment.
+Leofrun's existing produce buyback and Farm Storage dialogue remain available through their
+existing configuration. Owner authorized setting the remaining farm shop prices, using the
+existing Carrot and Carrot Seeds prices as anchors. The 14 seed and harvest ItemSOs now use
+the approved-scope farm economy ranges in FarmingSystem.md. D-119 pending pricing continues
+to apply to other unpriced content.
+
+### NPC shop Buy price presentation — owner direction
+
+The Buy list shows one concrete domain-generated unit quote per item for the open shop
+session. Selection, quantity changes and confirmation use that quote. The next shop opening
+may roll fresh prices from the authored ranges. This supersedes the Buy re-roll timing in D-042
+for the shared shop UI. Quest allowance labels and server-side-equivalent domain validation
+continue to apply, including a refreshed confirmation if the displayed quote goes stale.
+
+### Remaining NPC shop prices — owner direction
+
+The remaining standard Buy rows at Cuthbert and Oswin now have normal ItemSO prices.
+Lemon Juice, Apple Juice and Orchard Elixir are priced alongside Meat, Fish Fillet,
+Harvest Stew and Trailrunner Fish Broth. The owner also requested normal purchase prices for Act I Carrot/Grape Juice. This
+supersedes their free quest allowance. Purchase objectives and counters retain their existing
+IDs and order. Wigheard awards 140 G at A New Journey turn-in to cover the maximum gold cost
+of five units of each juice. Prior completions do not replay the reward.
+
+### Production quest gold — owner direction
+
+Every production quest awards gold on completion. The Act I budget covers its mandatory
+paid drinks and gives room for fishing retries. Editor-only debug quests keep their fixtures.
+Save V15 adds a one-time wallet floor for older saves that had already passed Wigheard while
+still depending on the free drink line. See TutorialAndQuestProgression and
+SaveAndWorldPersistence for the reward schedule and migration.
+
+### Agnes opens SkillPanel — owner direction
+
+Agnes offers “Teach me a skill.” in her normal dialogue. The training outcome opens
+GameplayMenuPage.Skills after the dialogue returns to Playing. This replaces the P
+binding from D-116. Existing quest-specific dialogue and crafting gates keep their
+own rules. Skill costs, loadout inputs and save data use the existing contracts.
+
+### MapNhat–MapDuy world gates — owner approved
+
+NorthExitToMapDuy loads MapDuy at the marked southern dirt road. The south exit returns
+to the village just below its north exit. This activates D-064 and extends D-089 only for
+these two world gates, including New Game and Continue. Travel preserves live persistent
+managers and snapshots scene-owned world and farming state in memory before unloading.
+Regular saves in MapDuy record its scene name for Continue. Travel does not write a slot.
+Boss pillar policy is independent.

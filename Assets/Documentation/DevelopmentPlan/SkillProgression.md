@@ -246,3 +246,9 @@ in Bootstrap; MapNhat and DemoScene local copies are removed to avoid duplicate 
 MapNhat retains PlayerSkillCasting, local Player/FX binding and dash configuration. SkillPanel
 already rebinds PlayerStat.Instance as sessions change and gates P to Playing/Skills state;
 scene unloading does not own the shared UI lifetime. No save/gameplay tuning changes.
+
+### Skill training entry point
+
+Click Agnes in range, choose **Teach me a skill.**, and continue her reply to open
+SkillPanel. Her quest offer and turn-in dialogue take priority when available.
+The P binding was removed. Close or Escape returns to gameplay through GameStateManager.

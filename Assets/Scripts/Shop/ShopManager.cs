@@ -1,4 +1,6 @@
+using System;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 /// <summary>
 /// Atomic buy/sell transaction engine, separate from UI (Roadmap Phase 7: "Tach ShopService khoi
@@ -16,16 +18,64 @@ public sealed class ShopManager : MonoBehaviour
 
     private IItemResolver _itemResolver;
     private IRecipeResolver _recipeResolver;
+    private Func<string, string, int> _questAllowanceOverride;
 
     public IShopResolver Catalog => _catalog;
 
     private IItemResolver ItemResolver => _itemResolver ??= new ResourcesItemResolver();
 
-    internal void ConfigureForTests(ShopCatalog catalog, IItemResolver itemResolver = null, IRecipeResolver recipeResolver = null)
+    internal void ConfigureForTests(ShopCatalog catalog, IItemResolver itemResolver = null, IRecipeResolver recipeResolver = null,
+        Func<string, string, int> questAllowance = null)
     {
         _catalog = catalog;
         _itemResolver = itemResolver;
         _recipeResolver = recipeResolver;
+        _questAllowanceOverride = questAllowance;
+    }
+
+    /// <summary>Remaining units a quest-scoped stock line may still hand out; int.MaxValue for an
+    /// ordinary line. UI uses this for the quantity cap and the price label.</summary>
+    public int GetRemainingAllowance(string shopId, string itemId)
+    {
+        if (_catalog == null || !_catalog.TryResolve(shopId, out ShopDefinition shop)
+            || !TryFindStock(shop, itemId, out ShopStockEntry stock) || !stock.IsQuestAllowance)
+        {
+            return int.MaxValue;
+        }
+        return QuestAllowance(stock.QuestAllowanceId, itemId);
+    }
+
+    /// <summary>True when itemId's price comes from a quest-scoped stock line.</summary>
+    public bool IsQuestAllowanceLine(string shopId, string itemId) =>
+        _catalog != null && _catalog.TryResolve(shopId, out ShopDefinition shop)
+        && TryFindStock(shop, itemId, out ShopStockEntry stock) && stock.IsQuestAllowance;
+
+    private int QuestAllowance(string questId, string itemId) =>
+        _questAllowanceOverride != null
+            ? _questAllowanceOverride(questId, itemId)
+            : QuestManager.Instance != null ? QuestManager.Instance.GetRemainingPurchaseAllowance(questId, itemId) : 0;
+
+    private enum BuyPricing { Unpriced, ItemRange, Stock, QuestAllowance }
+
+    // Single pricing rule shared by quote and purchase so a stale quote can never bypass the cap:
+    // an active quest allowance wins (its stock price, capped to the quest's remaining need); then
+    // the ItemSO Buy Min/Max range; then an ordinary stock line. A quest allowance line whose quest
+    // step is not current/full is ignored, so the item falls back to normal pricing or is unpriced.
+    private BuyPricing ResolveBuyPricing(ShopDefinition shop, ItemSO item, out ShopStockEntry stock, out int allowance)
+    {
+        allowance = int.MaxValue;
+        bool hasStock = TryFindStock(shop, item.itemId, out stock);
+        if (hasStock && stock.IsQuestAllowance)
+        {
+            allowance = QuestAllowance(stock.QuestAllowanceId, item.itemId);
+            if (allowance > 0)
+                return BuyPricing.QuestAllowance;
+            allowance = 0;
+            hasStock = false;
+        }
+        if (item.MaxBuyPrice > 0)
+            return BuyPricing.ItemRange;
+        return hasStock ? BuyPricing.Stock : BuyPricing.Unpriced;
     }
 
     private void Awake()
@@ -92,14 +142,25 @@ public sealed class ShopManager : MonoBehaviour
             return false;
         }
 
-        if (item.MaxBuyPrice > 0)
-            unitPrice = Random.Range(item.MinBuyPrice, item.MaxBuyPrice + 1);
-        else if (TryFindStock(shop, itemId, out ShopStockEntry stock))
-            unitPrice = stock.Price;
-        else
+        switch (ResolveBuyPricing(shop, item, out ShopStockEntry stock, out int allowance))
         {
-            result = ShopTransactionResult.ItemNotInStock;
-            return false;
+            case BuyPricing.QuestAllowance:
+                if (quantity > allowance)
+                {
+                    result = ShopTransactionResult.QuestAllowanceExceeded;
+                    return false;
+                }
+                unitPrice = stock.Price;
+                break;
+            case BuyPricing.ItemRange:
+                unitPrice = Random.Range(item.MinBuyPrice, item.MaxBuyPrice + 1);
+                break;
+            case BuyPricing.Stock:
+                unitPrice = stock.Price;
+                break;
+            default:
+                result = allowance == 0 ? ShopTransactionResult.QuestAllowanceUnavailable : ShopTransactionResult.ItemNotInStock;
+                return false;
         }
         result = ShopTransactionResult.Success;
         return true;
@@ -123,9 +184,23 @@ public sealed class ShopManager : MonoBehaviour
             result = ShopTransactionResult.ItemNotInStock;
             return false;
         }
-        bool validQuote = item.MaxBuyPrice > 0
-            ? unitPrice >= item.MinBuyPrice && unitPrice <= item.MaxBuyPrice
-            : TryFindStock(shop, itemId, out ShopStockEntry stock) && unitPrice == stock.Price;
+        BuyPricing pricing = ResolveBuyPricing(shop, item, out ShopStockEntry stock, out int allowance);
+        if (pricing == BuyPricing.Unpriced && allowance == 0)
+        {
+            result = ShopTransactionResult.QuestAllowanceUnavailable;
+            return false;
+        }
+        if (pricing == BuyPricing.QuestAllowance && quantity > allowance)
+        {
+            result = ShopTransactionResult.QuestAllowanceExceeded;
+            return false;
+        }
+        bool validQuote = pricing switch
+        {
+            BuyPricing.ItemRange => unitPrice >= item.MinBuyPrice && unitPrice <= item.MaxBuyPrice,
+            BuyPricing.Stock or BuyPricing.QuestAllowance => unitPrice == stock.Price,
+            _ => false
+        };
         if (!validQuote || quantity <= 0)
         {
             result = ShopTransactionResult.ItemNotInStock;
@@ -213,7 +288,7 @@ public sealed class ShopManager : MonoBehaviour
         {
             unitPrice = Random.Range(item.MinSellPrice, item.MaxSellPrice + 1);
         }
-        else if (TryFindStock(shop, itemId, out ShopStockEntry stock))
+        else if (TryFindStock(shop, itemId, out ShopStockEntry stock) && !stock.IsQuestAllowance)
         {
             unitPrice = Mathf.RoundToInt(stock.Price * shop.SellPriceMultiplier);
         }
@@ -246,7 +321,7 @@ public sealed class ShopManager : MonoBehaviour
         }
         bool validQuote = item.MaxSellPrice > 0
             ? unitPrice >= item.MinSellPrice && unitPrice <= item.MaxSellPrice
-            : TryFindStock(shop, itemId, out ShopStockEntry stock)
+            : TryFindStock(shop, itemId, out ShopStockEntry stock) && !stock.IsQuestAllowance
               && unitPrice == Mathf.RoundToInt(stock.Price * shop.SellPriceMultiplier);
         if (!validQuote)
         {
@@ -275,7 +350,7 @@ public sealed class ShopManager : MonoBehaviour
         foreach (ItemSO item in shop.SellItems)
             if (item != null && item.itemId == itemId)
                 return true;
-        if (!shop.UsesExplicitSellItems && TryFindStock(shop, itemId, out _)) return true;
+        if (!shop.UsesExplicitSellItems && TryFindStock(shop, itemId, out ShopStockEntry stock) && !stock.IsQuestAllowance) return true;
         IRecipeResolver recipes = _recipeResolver ?? CraftingManager.Instance?.Catalog;
         if (recipes == null) return false;
         foreach (RecipeDefinition recipe in recipes.AllRecipes)

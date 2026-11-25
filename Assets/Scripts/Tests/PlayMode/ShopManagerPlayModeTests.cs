@@ -263,4 +263,77 @@ public sealed class ShopManagerPlayModeTests
         Assert.IsFalse(_manager.TrySell("shop.explicit", buyOnly.itemId, 1, out ShopTransactionResult rejectedSell));
         Assert.AreEqual(ShopTransactionResult.ItemNotInStock, rejectedSell);
     }
+
+    private ShopDefinition MakeAllowanceShop(string questId)
+    {
+        ShopDefinition shop = MakeShop("shop.town.trader_drinks", "npc.town.mixologist", ("item.drink.carrot_juice", 0));
+        ShopStockEntry entry = shop.Stock[0];
+        SetPrivate(entry, "_questAllowanceId", questId);
+        return shop;
+    }
+
+    [Test]
+    public void QuestAllowanceLine_IsFreeButCappedToRemainingQuestNeed()
+    {
+        ItemSO juice = MakeItem("item.drink.carrot_juice");
+        var resolver = new FakeItemResolver();
+        resolver.Register(juice);
+        int remaining = 5;
+        _manager.ConfigureForTests(MakeCatalog(MakeAllowanceShop("quest.act1.drink_before_road")), resolver,
+            questAllowance: (questId, itemId) => remaining);
+
+        Assert.IsFalse(_manager.TryPurchase("shop.town.trader_drinks", "item.drink.carrot_juice", 6, out ShopTransactionResult over));
+        Assert.AreEqual(ShopTransactionResult.QuestAllowanceExceeded, over);
+        Assert.AreEqual(0, InventoryManager.Instance.GetTotalQuantity("item.drink.carrot_juice"));
+
+        Assert.IsTrue(_manager.TryPurchase("shop.town.trader_drinks", "item.drink.carrot_juice", 5, out ShopTransactionResult ok));
+        Assert.AreEqual(ShopTransactionResult.Success, ok);
+        Assert.AreEqual(5, InventoryManager.Instance.GetTotalQuantity("item.drink.carrot_juice"));
+        Assert.AreEqual(0, InventoryManager.Instance.Gold, "The quest gift costs nothing.");
+    }
+
+    [Test]
+    public void QuestAllowanceLine_OutsideItsQuestStep_IsNotASourceOfFreeItems()
+    {
+        ItemSO juice = MakeItem("item.drink.carrot_juice");
+        var resolver = new FakeItemResolver();
+        resolver.Register(juice);
+        _manager.ConfigureForTests(MakeCatalog(MakeAllowanceShop("quest.act1.drink_before_road")), resolver,
+            questAllowance: (questId, itemId) => 0);
+
+        Assert.IsFalse(_manager.TryPurchase("shop.town.trader_drinks", "item.drink.carrot_juice", 1, out ShopTransactionResult result));
+        Assert.AreEqual(ShopTransactionResult.QuestAllowanceUnavailable, result);
+        Assert.AreEqual(0, _manager.GetRemainingAllowance("shop.town.trader_drinks", "item.drink.carrot_juice"));
+    }
+
+    [Test]
+    public void QuestAllowanceLine_StaleQuoteCannotExceedAllowance()
+    {
+        ItemSO juice = MakeItem("item.drink.carrot_juice");
+        var resolver = new FakeItemResolver();
+        resolver.Register(juice);
+        int remaining = 5;
+        _manager.ConfigureForTests(MakeCatalog(MakeAllowanceShop("quest.act1.drink_before_road")), resolver,
+            questAllowance: (questId, itemId) => remaining);
+
+        Assert.IsTrue(_manager.TryCreateBuyQuote("shop.town.trader_drinks", "item.drink.carrot_juice", 5, out int price, out _));
+        remaining = 2;
+        Assert.IsFalse(_manager.TryPurchaseQuoted("shop.town.trader_drinks", "item.drink.carrot_juice", 5, price, out _, out ShopTransactionResult result));
+        Assert.AreEqual(ShopTransactionResult.QuestAllowanceExceeded, result);
+    }
+
+    [Test]
+    public void QuestAllowanceLine_IsNeverUsedAsSellBackPrice()
+    {
+        ItemSO juice = MakeItem("item.drink.carrot_juice");
+        var resolver = new FakeItemResolver();
+        resolver.Register(juice);
+        _manager.ConfigureForTests(MakeCatalog(MakeAllowanceShop("quest.act1.drink_before_road")), resolver,
+            questAllowance: (questId, itemId) => 5);
+        InventoryManager.Instance.AddItem(juice, 3);
+
+        Assert.IsFalse(_manager.TrySell("shop.town.trader_drinks", "item.drink.carrot_juice", 1, out ShopTransactionResult result));
+        Assert.AreEqual(ShopTransactionResult.ItemNotInStock, result);
+        Assert.AreEqual(3, InventoryManager.Instance.GetTotalQuantity("item.drink.carrot_juice"));
+    }
 }

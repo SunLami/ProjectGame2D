@@ -35,11 +35,13 @@ public static class DemoResourceNodeAuthoring
 
         Sprite copperIcon = LoadAtlasSprite(IconAtlasPath, "Icons_r01_c00");
         Sprite woodIcon = LoadAtlasSprite(IconAtlasPath, "Icons_r01_c27");
-        Sprite herbIcon = LoadAtlasSprite(IconAtlasPath, "Icons_r01_c21");
 
         ItemSO copper = CreateItem("CopperOre", "item.material.copper_ore", "Copper Ore", copperIcon);
         ItemSO wood = CreateItem("WoodLog", "item.material.wood_log", "Wood Log", woodIcon);
-        ItemSO herb = CreateItem("MedicinalLeaf", "item.material.medicinal_leaf", "Medicinal Leaf", herbIcon);
+        // The medicinal herb node drops the sheet's Health Herb (Medicinal Leaf retired 2026-11-25).
+        // Load the existing asset instead of CreateItem so this builder never recreates or rewrites it.
+        ItemSO herb = AssetDatabase.LoadAssetAtPath<ItemSO>("Assets/Resources/Items/Materials/HealthHerb.asset")
+            ?? throw new System.InvalidOperationException("Health Herb item (item.material.health_herb) is missing.");
 
         ResourceNodeDefinition copperDefinition = CreateDefinition(
             "CopperOreVein", "resource.ore.copper", ResourceHarvestType.Mining, 5f, 1f, 30f,
@@ -105,7 +107,8 @@ public static class DemoResourceNodeAuthoring
         item.itemId = itemId;
         item.itemName = displayName;
         item.description = $"Temporary demo material for {displayName}. Replace its art without changing itemId.";
-        item.icon = icon;
+        if (item.icon == null)
+            item.icon = icon;
         item.type = ItemType.Material;
         item.isStackable = true;
         item.maxStackSize = 99;

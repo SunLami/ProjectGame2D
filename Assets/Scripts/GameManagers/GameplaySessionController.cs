@@ -253,6 +253,22 @@ public sealed class GameplaySessionController : MonoBehaviour
         PlayerSaveData playerData = PlayerSaveCapture.Capture(
             _playerStat, _playerTransform, previousLocation.areaId, previousLocation.fallbackSpawnId);
 
+        if (gameObject.scene.name == "MapDuy")
+        {
+            playerData.location.sceneId = "MapDuy";
+            playerData.location.areaId = "area.mapduy";
+            playerData.location.fallbackSpawnId = "spawn.mapduy.south_entry";
+        }
+        else if (gameObject.scene.name == "MapNhat")
+        {
+            playerData.location.sceneId = "MapNhat";
+            if (previousLocation.areaId == "area.mapduy")
+            {
+                playerData.location.areaId = "area.tutorial";
+                playerData.location.fallbackSpawnId = "spawn.mapnhat.north_return";
+            }
+        }
+
         return new GameSaveData
         {
             saveId = session.SaveData.saveId,
@@ -294,13 +310,14 @@ public sealed class GameplaySessionController : MonoBehaviour
             return false;
         }
 
-        if (!GameSessionManager.Instance.TryStartLoadedGame(slotId, _gameplaySceneName, saveData))
+        string destination = SceneTravel.ResolveSavedScene(saveData, _gameplaySceneName);
+        if (!GameSessionManager.Instance.TryStartLoadedGame(slotId, destination, saveData))
         {
             Fail(GameplaySessionOperationResult.TransitionFailed, "Could not start the loaded game session.");
             return false;
         }
 
-        if (!SceneFlowService.Instance.TryLoadGameplay(_gameplaySceneName))
+        if (!SceneFlowService.Instance.TryLoadGameplay(destination))
         {
             Fail(GameplaySessionOperationResult.TransitionFailed, "Could not start loading the gameplay scene.");
             return false;

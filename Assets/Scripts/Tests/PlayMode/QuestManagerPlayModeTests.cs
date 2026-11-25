@@ -531,4 +531,59 @@ public sealed class QuestManagerPlayModeTests
         QuestDomainEvents.RaiseEnemyKilled("enemy.slime.green", null);
         Assert.AreEqual(QuestStatus.ReadyToTurnIn, _manager.GetStatus("quest.disabled"));
     }
+
+    [Test]
+    public void TurnIn_QuestChainedFromQuestTurnedIn_IsAutoTracked()
+    {
+        QuestDefinition first = MakeDefinition("quest.chain.first",
+            new[] { MakeObjective(QuestObjectiveType.Talk, "npc.a") }, giverNpcId: "npc.a");
+        QuestDefinition second = MakeDefinition("quest.chain.second",
+            new[] { MakeObjective(QuestObjectiveType.Gather, "crop.carrot", 3) },
+            prerequisites: new[] { "quest.chain.first" });
+        _manager.ConfigureForTests(MakeCatalog(first, second));
+
+        void Chain(string questId)
+        {
+            if (questId == "quest.chain.first")
+                _manager.TryAcceptQuest("quest.chain.second");
+        }
+
+        QuestManager.QuestTurnedIn += Chain;
+        try
+        {
+            Assert.IsTrue(_manager.TryAcceptQuest("quest.chain.first"));
+            QuestDomainEvents.RaiseNpcConversationCompleted("npc.a", "chat");
+            Assert.IsTrue(_manager.TryTurnIn("quest.chain.first", out _));
+        }
+        finally
+        {
+            QuestManager.QuestTurnedIn -= Chain;
+        }
+
+        Assert.AreEqual(QuestStatus.Active, _manager.GetStatus("quest.chain.second"));
+        Assert.AreEqual("quest.chain.second", _manager.TrackedQuestId,
+            "A quest auto-accepted from the previous turn-in must take over tracking.");
+    }
+
+    [Test]
+    public void GetRemainingPurchaseAllowance_OnlyForCurrentPurchaseStep()
+    {
+        QuestDefinition quest = MakeDefinition("quest.drinks", new[]
+        {
+            MakeObjective(QuestObjectiveType.Purchase, "item.drink.carrot_juice", 5),
+            MakeObjective(QuestObjectiveType.Purchase, "item.drink.grape_juice", 5)
+        });
+        _manager.ConfigureForTests(MakeCatalog(quest));
+        Assert.AreEqual(0, _manager.GetRemainingPurchaseAllowance("quest.drinks", "item.drink.carrot_juice"), "Not accepted yet.");
+
+        Assert.IsTrue(_manager.TryAcceptQuest("quest.drinks"));
+        Assert.AreEqual(5, _manager.GetRemainingPurchaseAllowance("quest.drinks", "item.drink.carrot_juice"));
+        Assert.AreEqual(0, _manager.GetRemainingPurchaseAllowance("quest.drinks", "item.drink.grape_juice"), "Grape step is not current yet.");
+
+        QuestDomainEvents.RaiseItemPurchased("item.drink.carrot_juice", 3, "shop");
+        Assert.AreEqual(2, _manager.GetRemainingPurchaseAllowance("quest.drinks", "item.drink.carrot_juice"));
+        QuestDomainEvents.RaiseItemPurchased("item.drink.carrot_juice", 2, "shop");
+        Assert.AreEqual(0, _manager.GetRemainingPurchaseAllowance("quest.drinks", "item.drink.carrot_juice"));
+        Assert.AreEqual(5, _manager.GetRemainingPurchaseAllowance("quest.drinks", "item.drink.grape_juice"));
+    }
 }
