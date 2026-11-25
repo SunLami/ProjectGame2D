@@ -66,29 +66,34 @@ public sealed class InventoryItemTooltipUI : MonoBehaviour
         if (_panel == null || !_panel.gameObject.activeInHierarchy) return;
 
         Canvas canvas = _canvas != null ? _canvas.rootCanvas : GetComponentInParent<Canvas>()?.rootCanvas;
-        RectTransform canvasRect = canvas?.transform as RectTransform;
-        Camera camera = canvas != null && canvas.renderMode != RenderMode.ScreenSpaceOverlay ? canvas.worldCamera : null;
-        if (canvasRect == null) return;
+        var parent = _panel.parent as RectTransform;
+        if (parent == null) return;
 
-        float scale = canvas != null ? canvas.scaleFactor : 1f;
-        Vector2 pixelSize = _panel.rect.size * scale;
+        Camera camera = canvas != null && canvas.renderMode != RenderMode.ScreenSpaceOverlay ? canvas.worldCamera : null;
+        Vector2 origin = RectTransformUtility.WorldToScreenPoint(camera, _panel.position);
+        Vector2 lower = RectTransformUtility.WorldToScreenPoint(camera, _panel.TransformPoint(_panel.rect.min)) - origin;
+        Vector2 upper = RectTransformUtility.WorldToScreenPoint(camera, _panel.TransformPoint(_panel.rect.max)) - origin;
+        Rect safe = Screen.safeArea;
         Vector2 screen = pointerScreenPosition + new Vector2(18f, -22f);
 
-        if (screen.x + pixelSize.x > Screen.width - 8f)
-            screen.x = pointerScreenPosition.x - pixelSize.x - 18f;
-        if (screen.y - pixelSize.y < 8f)
-            screen.y = pointerScreenPosition.y + pixelSize.y + 22f;
+        if (screen.x + upper.x > safe.xMax - 8f)
+            screen.x = pointerScreenPosition.x - upper.x - 18f;
+        if (screen.y + lower.y < safe.yMin + 8f)
+            screen.y = pointerScreenPosition.y - lower.y + 22f;
 
-        screen.x = Mathf.Clamp(screen.x, 8f, Mathf.Max(8f, Screen.width - pixelSize.x - 8f));
-        screen.y = Mathf.Clamp(screen.y, pixelSize.y + 8f, Screen.height - 8f);
-        RectTransformUtility.ScreenPointToLocalPointInRectangle(canvasRect, screen, camera, out Vector2 local);
-        _panel.anchoredPosition = local;
+        Vector2 min = safe.min + Vector2.one * 8f - lower;
+        Vector2 max = safe.max - Vector2.one * 8f - upper;
+        screen.x = Mathf.Clamp(screen.x, min.x, Mathf.Max(min.x, max.x));
+        screen.y = Mathf.Clamp(screen.y, min.y, Mathf.Max(min.y, max.y));
+        if (RectTransformUtility.ScreenPointToWorldPointInRectangle(parent, screen, camera, out Vector3 world))
+            _panel.position = world;
     }
 
     private static string BuildStats(ItemSO item)
     {
         var lines = new List<string>();
-        if (item.isStackable) lines.Add($"Stack size: {item.maxStackSize}");
+        if (item.isStackable && InventoryManager.Instance != null)
+            lines.Add($"Owned: {InventoryManager.Instance.GetTotalQuantity(item.itemId)}");
         if (item is EquipmentItemSO equipment)
         {
             lines.Add($"Required level: {equipment.requiredLevel}");

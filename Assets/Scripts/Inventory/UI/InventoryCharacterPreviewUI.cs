@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.UI;
+using System.Collections;
 using System.Collections.Generic;
 
 [RequireComponent(typeof(RawImage))]
@@ -7,6 +8,7 @@ public sealed class InventoryCharacterPreviewUI : MonoBehaviour
 {
     private const int PreviewLayer = 30;
     private RawImage _image;
+    private Coroutine _pendingPreview;
     private RenderTexture _texture;
     private Camera _camera;
     private Player _player;
@@ -21,7 +23,9 @@ public sealed class InventoryCharacterPreviewUI : MonoBehaviour
     private void OnEnable()
     {
         _image = GetComponent<RawImage>();
-        BuildPreview();
+        // Switching between Character and Inventory is synchronous. Wait for the previous
+        // preview to restore the Player renderer and camera state before taking ownership.
+        _pendingPreview = StartCoroutine(BuildWhenPreviousMenuCloses());
     }
 
     private void LateUpdate()
@@ -31,7 +35,22 @@ public sealed class InventoryCharacterPreviewUI : MonoBehaviour
         _camera.transform.position = new Vector3(previewCenter.x, previewCenter.y, -10f);
     }
 
-    private void OnDisable() => Cleanup();
+    private void OnDisable()
+    {
+        if (_pendingPreview != null)
+        {
+            StopCoroutine(_pendingPreview);
+            _pendingPreview = null;
+        }
+        Cleanup();
+    }
+
+    private IEnumerator BuildWhenPreviousMenuCloses()
+    {
+        yield return null;
+        _pendingPreview = null;
+        BuildPreview();
+    }
 
     private void BuildPreview()
     {

@@ -34,7 +34,7 @@ Stats rise monotonically inside each equipment family:
 - Ring: Attack Damage and Critical Chance.
 - Necklace: Max Health and Health Regeneration.
 
-The sheet intentionally leaves Foot and Head descriptions empty, so those assets keep an empty description instead of invented lore.
+The sheet leaves Foot and Head descriptions empty. The subsequent description pass added short in-game descriptions based on the equipment type and appearance.
 
 ## Removed legacy content
 

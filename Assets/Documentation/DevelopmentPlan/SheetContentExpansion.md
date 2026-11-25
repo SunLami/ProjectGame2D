@@ -74,7 +74,7 @@ Initial full validator: 1141 errors / 55 warnings. Of these, 29 are intentionall
 ## Remaining gates and known limits
 
 1. Rebind RockTileData to its correct tile assets, then re-run global validation. No guessed replacement list and no weakening of required tile validation.
-2. Replace provisional art: new crop visuals reuse Carrot stages; new icons reuse a valid crop icon; ore prefabs reuse Copper visuals; wildlife currently uses Pig art for Rabbit/Deer/Boar. Gameplay definitions/IDs are distinct; these are functional prototypes, not final visuals. Existing resource sprites/atlas import GUIDs were preserved.
+2. Replace provisional art: new crop visuals reuse Carrot stages; new icons reuse a valid crop icon; ore prefabs reuse Copper visuals; the original SheetContent wildlife fixtures use Pig art for Rabbit/Deer/Boar. The animated replacements under Assets/Prefabs/Animal are documented in ResourceContent.md. Gameplay definitions/IDs are distinct; these are functional prototypes, not final visuals. Existing resource sprites/atlas import GUIDs were preserved.
 3. Configure owner-deferred economy/NPC/station data. Unknown-priced stock displays unavailable and rejects transactions. Unassigned recipes exist in catalog and can be exercised through CraftingManager, but are not offered by an invented NPC.
 4. Test production world placement/portability and player UX before installing node/animal instances in MapNhat. Shared catalog/item data is available there; no new production world layout was authored in this slice.
 5. Run physical Windows Player smoke. Windows build completion is confirmed by Editor log and executable; interactive Player behavior remains unverified.

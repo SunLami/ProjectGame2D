@@ -34,6 +34,7 @@ public static class GameplaySettingsLightFantasySkinBuilder
         Sprite musicIcon = ImportSprite(IconRoot + "settings-2.png");
 
         SetImage(Find(root, "Panel"), board, false);
+        PopupViewportFit.Configure(Find(root, "Panel"), new Vector2(560f, 720f));
         StyleButton(Find(root, "SaveBtn"), primaryButton, "SAVE", false);
         StyleButton(Find(root, "DeclineBtn"), primaryButton, "CANCEL", true);
         GameObject closeButton = Find(root, "CloseBtn");

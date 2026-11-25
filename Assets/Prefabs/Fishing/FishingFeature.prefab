@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 6048155565435371219}
   - component: {fileID: 7576891675432878946}
   - component: {fileID: 461415825474552838}
+  - component: {fileID: 70408188095736497}
   m_Layer: 0
   m_Name: ResultPanel
   m_TagString: Untagged
@@ -413,6 +414,7 @@ GameObject:
   - component: {fileID: 3919455584458094370}
   - component: {fileID: 6846208159741481610}
   - component: {fileID: 8652083252594328935}
+  - component: {fileID: 4047873295533831170}
   m_Layer: 0
   m_Name: MinigamePanel
   m_TagString: Untagged
@@ -1076,7 +1078,7 @@ MonoBehaviour:
   m_ReferencePixelsPerUnit: 100
   m_ScaleFactor: 1
   m_ReferenceResolution: {x: 1920, y: 1080}
-  m_ScreenMatchMode: 0
+  m_ScreenMatchMode: 1
   m_MatchWidthOrHeight: 0.5
   m_PhysicalUnit: 3
   m_FallbackScreenDPI: 96
@@ -1573,3 +1575,31 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
+--- !u!114 &4047873295533831170
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4047873294388913298}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 62cbb84a32354e089018523ad1f4e783, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: ProjectGame2D.Runtime::PopupViewportFit
+  _targetSize: {x: 560, y: 720}
+  _verticalAlignment: 0.5
+--- !u!114 &70408188095736497
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 70408187470920225}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 62cbb84a32354e089018523ad1f4e783, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: ProjectGame2D.Runtime::PopupViewportFit
+  _targetSize: {x: 640, y: 224}
+  _verticalAlignment: 0.72

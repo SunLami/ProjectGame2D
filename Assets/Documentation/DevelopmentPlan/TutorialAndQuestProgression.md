@@ -250,9 +250,9 @@ flow above (stable quest IDs, save V13 and NPC dialogue → accept popup → sec
     fishing) and while Shop/Crafting/Farm Storage windows are open. Skipping the Input Tutorial does
     not hide quest hints — untracking the quest does.
   - `QuestTracker`: objective line names the NPC/place + action + counter; READY shows the quest's
-    `TurnInDirections` (who receives it). Between quests — only when *no* quest is Active/Ready — it
-    shows the next giver's `OfferDirections` with a `NEW` tag; acceptance still only happens through
-    that NPC's dialogue. Objectives may name `NavigationNpcId`/`NavigationAreaId` for the direction
+    `TurnInDirections` (who receives it). Tracker lists accepted quests that are currently tracked.
+    Between quests, the Quest Log shows the next giver's `OfferDirections` with a `NEW` tag.
+    Acceptance happens through that NPC's dialogue. Objectives may name `NavigationNpcId`/`NavigationAreaId` for the direction
     indicator (Cuthbert for the juice steps, `area.farm`, `area.fishing_dock` — both new
     `AreaTriggerZone`s in MapNhat).
   - `QuestLogWindow (J)`: every objective with its counter, finished ones dimmed, the current one
@@ -356,3 +356,5 @@ Oswin), 10 G (Stocking Up, Eadric), 24 G (Back to the Fields), 12 G (Back to Ead
 Item and EXP rewards retain their authored values. The first reward covers both drink
 purchases at maximum quotes. The mandatory stages between the drinks and fishing award
 enough gold to buy Worm Bait at up to 3 G each, including spare bait for failed attempts.
+
+Quest Log shows the next available guidance offer between quests. The offer appears as NEW with the giver directions and remains available for acceptance through NPC dialogue. Completed quests are collected in the collapsible history.

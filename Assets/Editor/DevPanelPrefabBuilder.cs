@@ -49,6 +49,7 @@ public static class DevPanelPrefabBuilder
             panelRect.anchorMin = panelRect.anchorMax = panelRect.pivot = new Vector2(0f, 1f);
             panelRect.sizeDelta = new Vector2(PanelWidth, PanelHeight);
             panelRect.anchoredPosition = new Vector2(18f, -18f);
+            PopupViewportFit.Configure(panelObject, new Vector2(560f, 720f), verticalAlignment: 1f, horizontalAlignment: 0f);
             panelObject.GetComponent<Image>().color = new Color(0.06f, 0.06f, 0.08f, 0.94f);
 
             TMP_Text feedbackText = BuildHeaderAndFeedback(panelRect, controller);

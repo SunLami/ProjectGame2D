@@ -10,8 +10,14 @@ public static class CharacterPopupAuthoring
 {
     private const string PrefabPath = "Assets/Resources/UI/Gameplay/UnifiedHUD/UnifiedGameplayHUD.prefab";
     private const string UnifiedBoardPath = "Assets/Resources/UI/Character/DarkInventoryStyle/character_popup_unified_v1.png";
-    private const string InnerTitlePath = "Assets/Resources/UI/Character/DarkInventoryStyle/character_inner_title_v1.png";
-    private const string StatSectionPath = "Assets/Resources/UI/Character/DarkInventoryStyle/character_stat_section_v1.png";
+    private const string DossierBoardPath = "Assets/Resources/UI/Character/DarkInventoryStyle/character_dossier_board_v2.png";
+    private const string PortraitStagePath = "Assets/Resources/UI/Character/DarkInventoryStyle/character_portrait_stage_v3.png";
+    private const string FontPath = "Assets/Fonts/DigitalDisco SDF v3.asset";
+    private static readonly Color Gold = new Color32(231, 187, 104, 255);
+    private static readonly Color Ivory = new Color32(242, 228, 197, 255);
+    private static readonly Color Muted = new Color32(192, 179, 154, 255);
+    private static readonly Color Surface = new Color32(39, 31, 27, 255);
+    private static readonly Color Row = new Color32(56, 44, 35, 255);
     private const string SlotPath = "Assets/Resources/UI/Inventory/QuestStyle1920/inventory_slot_reference_v4.png";
 
     [MenuItem("Tools/ProjectGame2D/UI/Rebuild Character Popup")]
@@ -56,21 +62,27 @@ public static class CharacterPopupAuthoring
 
     private static void BuildPopup(GameObject root, RectTransform popup)
     {
-        Sprite unifiedBoard = LoadSprite(UnifiedBoardPath);
-        // Border values measured from the source bitmaps' actual diagonal corner-bevel bounds
-        // (pixel-sampled), not the placeholder 72/72/72/72 and 56/56/56/56 that exceeded the
-        // sprites' own trimmed height (138px and 120px), guaranteeing 9-slice corner distortion.
-        Sprite innerTitle = LoadSlicedSprite(InnerTitlePath, new Vector4(32f, 28f, 32f, 28f), new Rect(2f, 22f, 997f, 132f));
-        Sprite statSection = LoadSlicedSprite(StatSectionPath, new Vector4(16f, 12f, 16f, 12f), new Rect(0f, 51f, 798f, 121f));
+        Sprite board = AssetDatabase.LoadAssetAtPath<Sprite>(DossierBoardPath);
+        if (board == null && AssetImporter.GetAtPath(DossierBoardPath) != null)
+            board = LoadSprite(DossierBoardPath);
         Sprite slot = LoadSprite(SlotPath);
         Sprite close = LoadSprite("Assets/Resources/UI/Inventory/LightFantasy/inventory_close_thin_hd.png");
 
-        RectTransform window = CreateRect("Window", popup, Vector2.zero, new Vector2(760f, 410f));
+        RectTransform window = CreateRect("Window", popup, Vector2.zero, new Vector2(720f, 405f));
+        window.gameObject.AddComponent<PopupViewportFit>();
         Image windowBoard = window.gameObject.AddComponent<Image>();
-        windowBoard.sprite = unifiedBoard;
+        windowBoard.sprite = board != null ? board : LoadSprite(UnifiedBoardPath);
         windowBoard.raycastTarget = false;
-        List<Image> equipmentIcons = BuildEquipmentPanel(window, innerTitle, slot);
-        StatTextBindings stats = BuildStatsPanel(window, innerTitle, statSection);
+
+        Text("Header", window, new Vector2(-312f, 158f), new Vector2(320f, 28f), "CHARACTER STATS", 21f, Gold);
+        Block("HeaderDivider", window, new Vector2(0f, 136f), new Vector2(638f, 1f), new Color32(150, 107, 57, 255));
+        var badge = Block("LevelBadge", window, new Vector2(228f, 158f), new Vector2(82f, 28f), Surface);
+        TMP_Text level = CreateText("LevelValue", badge, Vector2.zero, new Vector2(76f, 22f),
+            "LV. 1", 13f, TextAlignmentOptions.Center);
+        level.color = Gold;
+
+        List<Image> equipmentIcons = BuildEquipmentPanel(window, slot);
+        StatTextBindings stats = BuildStatsPanel(window);
         BuildCloseButton(root, window, close);
 
         CharacterPopupUI popupUi = popup.GetComponent<CharacterPopupUI>() ?? popup.gameObject.AddComponent<CharacterPopupUI>();
@@ -84,8 +96,10 @@ public static class CharacterPopupAuthoring
             element.FindPropertyRelative("slot").enumValueIndex = (int)slotTypes[i];
             element.FindPropertyRelative("icon").objectReferenceValue = equipmentIcons[i];
         }
-        popupSo.FindProperty("_levelValue").objectReferenceValue = stats.Level;
-        popupSo.FindProperty("_vitalsValues").objectReferenceValue = stats.Vitals;
+        popupSo.FindProperty("_levelValue").objectReferenceValue = level;
+        BindVital(popupSo, "_health", stats.Health);
+        BindVital(popupSo, "_mana", stats.Mana);
+        BindVital(popupSo, "_stamina", stats.Stamina);
         popupSo.FindProperty("_combatValues").objectReferenceValue = stats.Combat;
         popupSo.FindProperty("_mobilityValues").objectReferenceValue = stats.Mobility;
         popupSo.FindProperty("_recoveryValues").objectReferenceValue = stats.Recovery;
@@ -98,86 +112,97 @@ public static class CharacterPopupAuthoring
         hudSo.ApplyModifiedPropertiesWithoutUndo();
     }
 
-    private static List<Image> BuildEquipmentPanel(RectTransform window, Sprite titleSprite, Sprite slotSprite)
+    private static void BindVital(SerializedObject popup, string propertyName, VitalBindings binding)
     {
-        RectTransform panel = CreateRect("EquipmentPanel", window, new Vector2(-222f, 0f), new Vector2(280f, 400f));
+        SerializedProperty property = popup.FindProperty(propertyName);
+        property.FindPropertyRelative("value").objectReferenceValue = binding.Value;
+        property.FindPropertyRelative("fill").objectReferenceValue = binding.Fill;
+    }
 
-        RectTransform titleFrame = CreateRect("TitleFrame", panel, new Vector2(0f, 130f), new Vector2(190f, 30f));
-        Image titleImage = titleFrame.gameObject.AddComponent<Image>();
-        titleImage.sprite = titleSprite;
-        titleImage.type = Image.Type.Sliced;
-        titleImage.raycastTarget = false;
-        TMP_Text title = CreateText("Title", titleFrame, Vector2.zero, new Vector2(178f, 26f), "EQUIPMENT", 18f, TextAlignmentOptions.Center);
-        title.color = new Color(0.86f, 0.69f, 0.30f, 1f);
-        title.fontStyle = FontStyles.Bold;
+    private static List<Image> BuildEquipmentPanel(RectTransform window, Sprite slotSprite)
+    {
+        RectTransform panel = CreateRect("EquipmentPanel", window, new Vector2(-162f, -22f),
+            new Vector2(304f, 294f));
+        Text("Title", panel, new Vector2(-150f, 132f), new Vector2(270f, 18f), "EQUIPMENT", 13f, Gold);
+        Block("Divider", panel, new Vector2(0f, 118f), new Vector2(300f, 1f), Gold * 0.55f);
 
-        (EquipSlot Slot, string Name, Vector2 Position)[] definitions =
+        RectTransform stage = Block("PortraitStage", panel, new Vector2(0f, -6f), new Vector2(158f, 219f), Surface);
+        if (AssetImporter.GetAtPath(PortraitStagePath) != null)
         {
-            (EquipSlot.Head, "Head", new Vector2(0f, 82f)),
-            (EquipSlot.Weapon, "Weapon", new Vector2(-76f, 17f)),
-            (EquipSlot.Body, "Body", new Vector2(0f, 17f)),
-            (EquipSlot.Shield, "Shield", new Vector2(76f, 17f)),
-            (EquipSlot.Necklace, "Necklace", new Vector2(0f, -52f)),
-            (EquipSlot.Ring, "Ring", new Vector2(-55f, -125f)),
-            (EquipSlot.Foot, "Foot", new Vector2(55f, -125f))
+            Image stageImage = stage.GetComponent<Image>();
+            stageImage.sprite = LoadSprite(PortraitStagePath);
+            stageImage.preserveAspect = false;
+            stageImage.color = Color.white;
+        }
+        RectTransform portrait = CreateRect("LiveCharacter", stage, new Vector2(0f, -44f), new Vector2(128f, 192f));
+        portrait.gameObject.AddComponent<RawImage>().raycastTarget = false;
+        portrait.gameObject.AddComponent<InventoryCharacterPreviewUI>();
+
+        string[] names = { "Head", "Weapon", "Body", "Shield", "Necklace", "Ring", "Feet" };
+        Vector2[] positions =
+        {
+            new(-116f, 77f), new(-116f, -1f), new(-116f, -79f),
+            new(116f, 77f), new(116f, -1f), new(116f, -79f), new(0f, -114f)
         };
-
-        var icons = new List<Image>(definitions.Length);
-        foreach ((EquipSlot _, string name, Vector2 position) in definitions)
+        var icons = new List<Image>(names.Length);
+        for (int i = 0; i < names.Length; i++)
         {
-            RectTransform slot = CreateRect(name + "Slot", panel, position, new Vector2(58f, 58f));
+            string name = names[i];
+            RectTransform slot = CreateRect(name + "Slot", panel, positions[i], new Vector2(43f, 43f));
             Image slotImage = slot.gameObject.AddComponent<Image>();
             slotImage.sprite = slotSprite;
             slotImage.raycastTarget = false;
 
-            RectTransform iconRect = CreateRect("Icon", slot, Vector2.zero, new Vector2(42f, 42f));
-            Image icon = iconRect.gameObject.AddComponent<Image>();
+            Image icon = CreateRect("Icon", slot, Vector2.zero, new Vector2(35f, 35f)).gameObject.AddComponent<Image>();
             icon.preserveAspect = true;
             icon.raycastTarget = false;
             icon.enabled = false;
             icons.Add(icon);
 
-            TMP_Text label = CreateText("Label", slot, new Vector2(0f, -34f), new Vector2(74f, 14f), name.ToUpperInvariant(), 7.5f, TextAlignmentOptions.Top);
-            label.color = new Color(0.82f, 0.78f, 0.68f, 0.88f);
+            TMP_Text label = CreateText("Label", slot, new Vector2(0f, -28f), new Vector2(66f, 14f),
+                name, 9f, TextAlignmentOptions.Center);
+            label.color = Ivory;
         }
         return icons;
     }
 
-    private static StatTextBindings BuildStatsPanel(RectTransform window, Sprite titleSprite, Sprite sectionSprite)
+    private static StatTextBindings BuildStatsPanel(RectTransform window)
     {
-        RectTransform panel = CreateRect("CharacterStatsPanel", window, new Vector2(145f, 0f), new Vector2(450f, 400f));
+        var panel = CreateRect("CharacterStatsPanel", window, new Vector2(160f, -22f), new Vector2(320f, 294f));
+        Text("Header", panel, new Vector2(-159f, 132f), new Vector2(200f, 18f), "VITALS", 13f, Gold);
+        Block("Divider", panel, new Vector2(0f, 118f), new Vector2(318f, 1f), Gold * 0.55f);
+        VitalBindings health = BuildVital(panel, "Health", 98f, new Color32(207, 83, 71, 255));
+        VitalBindings mana = BuildVital(panel, "Mana", 72f, new Color32(74, 153, 221, 255));
+        VitalBindings stamina = BuildVital(panel, "Stamina", 46f, new Color32(115, 173, 93, 255));
 
-        RectTransform titleFrame = CreateRect("TitleFrame", panel, new Vector2(0f, 132f), new Vector2(310f, 34f));
-        Image titleImage = titleFrame.gameObject.AddComponent<Image>();
-        titleImage.sprite = titleSprite;
-        titleImage.type = Image.Type.Sliced;
-        titleImage.raycastTarget = false;
-        // 310 wide frame with >=10px inset on each side.
-        TMP_Text title = CreateText("Title", titleFrame, Vector2.zero, new Vector2(290f, 30f), "CHARACTER STATS", 20f, TextAlignmentOptions.Center);
-        title.color = new Color(0.86f, 0.69f, 0.30f, 1f);
-        title.fontStyle = FontStyles.Bold;
+        TMP_Text combat = CreateSection(panel, "Combat", new Vector2(0f, -29f), 320f, 99f,
+            "Attack\nDefense\nCritical Chance\nCritical Damage", "10.0\n2.0\n5.0%\nx1.50");
+        TMP_Text mobility = CreateSection(panel, "Mobility", new Vector2(-82f, -113f), 156f, 67f,
+            "Move Speed\nSprint Multiplier\nDodge Chance", "4.0\nx1.75\n0.0%");
+        TMP_Text recovery = CreateSection(panel, "Recovery", new Vector2(82f, -113f), 156f, 67f,
+            "Damage Reduction\nHealth Regen", "0.0%\n0.0 /s");
+        return new StatTextBindings(health, mana, stamina, combat, mobility, recovery);
+    }
 
-        RectTransform badge = CreateRect("LevelBadge", panel, new Vector2(0f, 94f), new Vector2(330f, 28f));
-        Image badgeImage = badge.gameObject.AddComponent<Image>();
-        badgeImage.sprite = titleSprite;
-        badgeImage.type = Image.Type.Sliced;
-        badgeImage.color = new Color(0.72f, 0.82f, 1f, 1f);
-        badgeImage.raycastTarget = false;
-        TMP_Text level = CreateText("LevelValue", badge, Vector2.zero, new Vector2(310f, 24f), "LV. 1", 15f, TextAlignmentOptions.Center);
-        level.color = new Color(1f, 0.88f, 0.47f, 1f);
-        level.fontStyle = FontStyles.Bold;
-
-        TMP_Text vitals = CreateSection(panel, sectionSprite, "Vitals", 51f, 54f, "Health\nStamina", "100 / 100\n100 / 100");
-        TMP_Text combat = CreateSection(panel, sectionSprite, "Combat", -16f, 72f, "Attack\nDefense\nCritical Chance\nCritical Damage", "10.0\n2.0\n5.0%\nx1.50");
-        TMP_Text mobility = CreateSection(panel, sectionSprite, "Mobility", -85f, 58f, "Move Speed\nSprint Multiplier\nDodge Chance", "2.0\nx2.00\n0.0%");
-        TMP_Text recovery = CreateSection(panel, sectionSprite, "Recovery", -143f, 50f, "Damage Reduction\nHealth Regeneration", "0.0%\n0.0 /s");
-
-        return new StatTextBindings(level, vitals, combat, mobility, recovery);
+    private static VitalBindings BuildVital(RectTransform parent, string name, float y, Color accent)
+    {
+        RectTransform row = CreateRect(name, parent, new Vector2(0f, y), new Vector2(320f, 24f));
+        Block("Accent", row, new Vector2(-155f, 1f), new Vector2(3f, 16f), accent);
+        Text("Label", row, new Vector2(-147f, 5f), new Vector2(180f, 16f), name, 10f, Ivory);
+        TMP_Text value = CreateText("Value", row, new Vector2(94f, 5f), new Vector2(110f, 16f),
+            "100 / 100", 11f, TextAlignmentOptions.MidlineRight);
+        value.color = Ivory;
+        RectTransform border = Block("TrackBorder", row, new Vector2(1f, -7f), new Vector2(300f, 7f), Row);
+        RectTransform track = Block("Track", border, Vector2.zero, new Vector2(298f, 5f), Surface);
+        RectTransform fill = Block("Fill", track, Vector2.zero, Vector2.zero, accent);
+        fill.anchorMin = Vector2.zero;
+        fill.anchorMax = Vector2.one;
+        return new VitalBindings(value, fill);
     }
 
     private static void BuildCloseButton(GameObject root, RectTransform window, Sprite closeSprite)
     {
-        RectTransform closeRect = CreateRect("CloseButton", window, Vector2.one, Vector2.one, new Vector2(-30f, -30f), new Vector2(34f, 34f));
+        RectTransform closeRect = CreateRect("CloseButton", window, Vector2.one, Vector2.one, new Vector2(-34f, -32f), new Vector2(30f, 30f));
         Image closeImage = closeRect.gameObject.AddComponent<Image>();
         closeImage.sprite = closeSprite;
         Button closeButton = closeRect.gameObject.AddComponent<Button>();
@@ -185,29 +210,46 @@ public static class CharacterPopupAuthoring
         UnityEventTools.AddPersistentListener(closeButton.onClick, root.GetComponent<UnifiedGameplayHudController>().ClosePopup);
     }
 
-    private static TMP_Text CreateSection(RectTransform parent, Sprite sectionSprite, string name, float y, float height, string labels, string values)
+    private static TMP_Text CreateSection(RectTransform parent, string name, Vector2 position,
+        float width, float height, string labels, string values)
     {
-        RectTransform section = CreateRect(name, parent, new Vector2(0f, y), new Vector2(350f, height));
-        Image background = section.gameObject.AddComponent<Image>();
-        background.sprite = sectionSprite;
-        background.type = Image.Type.Sliced;
-        background.color = Color.white;
-        background.raycastTarget = false;
+        RectTransform section = Block(name, parent, position, new Vector2(width, height), Surface);
+        Block("TopRule", section, new Vector2(0f, height * 0.5f), new Vector2(width, 1f), Gold * 0.65f);
+        float left = -width * 0.5f + 12f;
+        float top = height * 0.5f - 13f;
+        Text("Header", section, new Vector2(left, top), new Vector2(width - 24f, 18f),
+            name.ToUpperInvariant(), 12f, Gold);
+        Block("Divider", section, new Vector2(0f, top - 11f), new Vector2(width - 24f, 1f), Row);
+        float bodyHeight = height - 28f;
+        bool wide = width > 200f;
+        float fontSize = wide ? 10.5f : 8f;
+        var label = CreateText("Labels", section, new Vector2(-23f, -13f), new Vector2(width - 68f, bodyHeight),
+            labels, fontSize, TextAlignmentOptions.TopLeft);
+        label.color = Muted;
+        var value = CreateText("Values", section, new Vector2(width * 0.5f - 36f, -12f),
+            new Vector2(48f, bodyHeight), values, fontSize, TextAlignmentOptions.TopRight);
+        value.color = Ivory;
+        float spacing = wide ? 17f : 3f;
+        label.lineSpacing = value.lineSpacing = spacing;
+        return value;
+    }
 
-        TMP_Text header = CreateText("Header", section, new Vector2(0f, height * 0.5f - 10f), new Vector2(324f, 16f), name.ToUpperInvariant(), 10.5f, TextAlignmentOptions.MidlineLeft);
-        header.color = new Color(0.86f, 0.69f, 0.30f, 1f);
-        header.fontStyle = FontStyles.Bold;
+    private static RectTransform Block(string name, Transform parent, Vector2 position, Vector2 size, Color color)
+    {
+        RectTransform rect = CreateRect(name, parent, position, size);
+        Image image = rect.gameObject.AddComponent<Image>();
+        image.color = color;
+        image.raycastTarget = false;
+        return rect;
+    }
 
-        float bodyHeight = height - 24f;
-        const float bodyY = -6f;
-        TMP_Text labelText = CreateText("Labels", section, new Vector2(-72f, bodyY), new Vector2(170f, bodyHeight), labels, 9.5f, TextAlignmentOptions.TopLeft);
-        labelText.lineSpacing = 1f;
-        labelText.color = new Color(0.90f, 0.87f, 0.80f, 1f);
-        TMP_Text valueText = CreateText("Values", section, new Vector2(104f, bodyY), new Vector2(120f, bodyHeight), values, 9.5f, TextAlignmentOptions.TopRight);
-        valueText.lineSpacing = 1f;
-        valueText.color = new Color(0.78f, 0.86f, 1f, 1f);
-        valueText.fontStyle = FontStyles.Bold;
-        return valueText;
+    private static TMP_Text Text(string name, Transform parent, Vector2 left, Vector2 size, string value,
+        float fontSize, Color color)
+    {
+        TMP_Text label = CreateText(name, parent, left + Vector2.right * (size.x * 0.5f), size,
+            value, fontSize, TextAlignmentOptions.MidlineLeft);
+        label.color = color;
+        return label;
     }
 
     private static RectTransform CreateRect(string name, Transform parent, Vector2 position, Vector2 size) =>
@@ -229,14 +271,14 @@ public static class CharacterPopupAuthoring
     {
         RectTransform rect = CreateRect(name, parent, position, size);
         TextMeshProUGUI text = rect.gameObject.AddComponent<TextMeshProUGUI>();
-        text.font = TMP_Settings.defaultFontAsset;
+        text.font = AssetDatabase.LoadAssetAtPath<TMP_FontAsset>(FontPath);
         text.text = value;
         text.fontSize = fontSize;
         text.alignment = alignment;
         text.color = new Color(0.19f, 0.105f, 0.055f, 1f);
         text.raycastTarget = false;
         text.textWrappingMode = TextWrappingModes.NoWrap;
-        text.overflowMode = TextOverflowModes.Overflow;
+        text.overflowMode = TextOverflowModes.Ellipsis;
         return text;
     }
 
@@ -245,7 +287,7 @@ public static class CharacterPopupAuthoring
         if (AssetImporter.GetAtPath(path) is TextureImporter importer
             && (importer.textureType != TextureImporterType.Sprite
                 || importer.spriteImportMode != SpriteImportMode.Single
-                || importer.mipmapEnabled))
+                || importer.mipmapEnabled || importer.filterMode != FilterMode.Point))
         {
             importer.textureType = TextureImporterType.Sprite;
             importer.spriteImportMode = SpriteImportMode.Single;
@@ -262,60 +304,34 @@ public static class CharacterPopupAuthoring
         return sprite;
     }
 
-    private static Sprite LoadSlicedSprite(string path, Vector4 border, Rect contentRect)
+    private readonly struct VitalBindings
     {
-        TextureImporter importer = AssetImporter.GetAtPath(path) as TextureImporter;
-        if (importer != null)
+        public VitalBindings(TMP_Text value, RectTransform fill)
         {
-            importer.textureType = TextureImporterType.Sprite;
-            importer.spriteBorder = border;
-            importer.filterMode = FilterMode.Point;
-            importer.mipmapEnabled = false;
-            importer.alphaIsTransparency = true;
-            importer.textureCompression = TextureImporterCompression.Uncompressed;
-
-            // SpriteImportMode.Single ignores any custom rect written to `spritesheet` -- it always
-            // reports the full texture as the sprite rect (verified empirically). These bitmaps
-            // carry transparent padding around the visible art, so a full-canvas rect stretches that
-            // empty margin into the 9-slice's middle, squashing the real artwork into a fraction of
-            // the target rect. Multiple mode with a single named entry is the only way to get Unity
-            // to honor a custom rect without touching the source pixels.
-            importer.spriteImportMode = SpriteImportMode.Multiple;
-#pragma warning disable CS0618
-            importer.spritesheet = new SpriteMetaData[]
-            {
-                new SpriteMetaData
-                {
-                    name = System.IO.Path.GetFileNameWithoutExtension(path),
-                    rect = contentRect,
-                    border = border,
-                    pivot = new Vector2(0.5f, 0.5f),
-                    alignment = (int)SpriteAlignment.Center
-                }
-            };
-#pragma warning restore CS0618
-            importer.SaveAndReimport();
+            Value = value;
+            Fill = fill;
         }
 
-        Sprite sprite = AssetDatabase.LoadAssetAtPath<Sprite>(path);
-        if (sprite == null)
-            throw new InvalidOperationException("Missing sliced sprite: " + path);
-        return sprite;
+        public TMP_Text Value { get; }
+        public RectTransform Fill { get; }
     }
 
     private readonly struct StatTextBindings
     {
-        public StatTextBindings(TMP_Text level, TMP_Text vitals, TMP_Text combat, TMP_Text mobility, TMP_Text recovery)
+        public StatTextBindings(VitalBindings health, VitalBindings mana, VitalBindings stamina,
+            TMP_Text combat, TMP_Text mobility, TMP_Text recovery)
         {
-            Level = level;
-            Vitals = vitals;
+            Health = health;
+            Mana = mana;
+            Stamina = stamina;
             Combat = combat;
             Mobility = mobility;
             Recovery = recovery;
         }
 
-        public TMP_Text Level { get; }
-        public TMP_Text Vitals { get; }
+        public VitalBindings Health { get; }
+        public VitalBindings Mana { get; }
+        public VitalBindings Stamina { get; }
         public TMP_Text Combat { get; }
         public TMP_Text Mobility { get; }
         public TMP_Text Recovery { get; }

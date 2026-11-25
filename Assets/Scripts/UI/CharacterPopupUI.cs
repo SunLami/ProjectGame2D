@@ -12,12 +12,21 @@ public sealed class CharacterPopupUI : MonoBehaviour
         public Image icon;
     }
 
+    [Serializable]
+    private struct VitalBinding
+    {
+        public TMP_Text value;
+        public RectTransform fill;
+    }
+
     [Header("Equipment Preview (Read Only)")]
     [SerializeField] private EquipmentSlotBinding[] _equipmentSlots;
 
     [Header("Character Stats")]
     [SerializeField] private TMP_Text _levelValue;
-    [SerializeField] private TMP_Text _vitalsValues;
+    [SerializeField] private VitalBinding _health;
+    [SerializeField] private VitalBinding _mana;
+    [SerializeField] private VitalBinding _stamina;
     [SerializeField] private TMP_Text _combatValues;
     [SerializeField] private TMP_Text _mobilityValues;
     [SerializeField] private TMP_Text _recoveryValues;
@@ -53,12 +62,15 @@ public sealed class CharacterPopupUI : MonoBehaviour
 
         if (_playerStat != playerStat)
         {
-            if (_playerStat != null)
-                _playerStat.OnStatsChanged -= RefreshStats;
-
+            UnbindStats();
             _playerStat = playerStat;
             if (_playerStat != null)
+            {
                 _playerStat.OnStatsChanged += RefreshStats;
+                _playerStat.OnHealthChanged += HandleVitalChanged;
+                _playerStat.OnManaChanged += HandleVitalChanged;
+                _playerStat.OnStaminaChanged += HandleVitalChanged;
+            }
         }
 
         if (_equipmentManager != equipmentManager)
@@ -76,14 +88,25 @@ public sealed class CharacterPopupUI : MonoBehaviour
 
     private void UnbindRuntimeSources()
     {
-        if (_playerStat != null)
-            _playerStat.OnStatsChanged -= RefreshStats;
+        UnbindStats();
         if (_equipmentManager != null)
             _equipmentManager.OnEquipmentChanged -= HandleEquipmentChanged;
 
         _playerStat = null;
         _equipmentManager = null;
     }
+
+    private void UnbindStats()
+    {
+        if (_playerStat == null) return;
+
+        _playerStat.OnStatsChanged -= RefreshStats;
+        _playerStat.OnHealthChanged -= HandleVitalChanged;
+        _playerStat.OnManaChanged -= HandleVitalChanged;
+        _playerStat.OnStaminaChanged -= HandleVitalChanged;
+    }
+
+    private void HandleVitalChanged(float current, float maximum) => RefreshVitals();
 
     private void RefreshAll()
     {
@@ -121,9 +144,7 @@ public sealed class CharacterPopupUI : MonoBehaviour
             return;
 
         SetText(_levelValue, $"LV. {_playerStat.Level}");
-        SetText(_vitalsValues,
-            $"{_playerStat.Health:0} / {_playerStat.MaxHealth:0}\n"
-            + $"{_playerStat.Stamina:0} / {_playerStat.MaxStamina:0}");
+        RefreshVitals();
         SetText(_combatValues,
             $"{_playerStat.AttackDamage:0.0}\n"
             + $"{_playerStat.Defense:0.0}\n"
@@ -136,6 +157,21 @@ public sealed class CharacterPopupUI : MonoBehaviour
         SetText(_recoveryValues,
             $"{_playerStat.DamageReduction * 100f:0.0}%\n"
             + $"{_playerStat.HealthRegeneration:0.0} /s");
+    }
+
+    private void RefreshVitals()
+    {
+        if (_playerStat == null) return;
+        SetVital(_health, _playerStat.Health, _playerStat.MaxHealth);
+        SetVital(_mana, _playerStat.Mana, _playerStat.MaxMana);
+        SetVital(_stamina, _playerStat.Stamina, _playerStat.MaxStamina);
+    }
+
+    private static void SetVital(VitalBinding binding, float current, float maximum)
+    {
+        SetText(binding.value, $"{current:0} / {maximum:0}");
+        if (binding.fill != null)
+            binding.fill.anchorMax = new Vector2(maximum > 0f ? Mathf.Clamp01(current / maximum) : 0f, 1f);
     }
 
     private static void SetText(TMP_Text target, string value)

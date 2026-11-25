@@ -25,10 +25,7 @@ public static class QuestAcceptPopupPrefabBuilder
             if (ui == null) throw new InvalidOperationException("QuestAcceptPopupUI missing from prefab.");
 
             CanvasScaler scaler = root.GetComponent<CanvasScaler>();
-            scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
-            scaler.referenceResolution = new Vector2(800f, 600f);
-            scaler.screenMatchMode = CanvasScaler.ScreenMatchMode.MatchWidthOrHeight;
-            scaler.matchWidthOrHeight = 0.5f;
+            PopupViewportFit.ConfigureCanvas(scaler);
 
             RectTransform overlay = Require(root.transform, "PopupOverlay").GetComponent<RectTransform>();
             Stretch(overlay, 0f);
@@ -40,6 +37,7 @@ public static class QuestAcceptPopupPrefabBuilder
 
             Transform card = Require(overlay, "Card");
             Center(card.GetComponent<RectTransform>(), new Vector2(320f, 400f), Vector2.zero);
+            PopupViewportFit.Configure(card.gameObject, new Vector2(720f, 800f));
             Image cardImage = card.GetComponent<Image>();
             cardImage.sprite = Load(BoardPath);
             cardImage.type = Image.Type.Simple;

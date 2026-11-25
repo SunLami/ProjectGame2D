@@ -6744,6 +6744,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1216375487}
+  - component: {fileID: 1664206766}
   m_Layer: 0
   m_Name: SlotPage
   m_TagString: Untagged
@@ -6767,10 +6768,10 @@ RectTransform:
   - {fileID: 1916895713}
   m_Father: {fileID: 712232705}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 1, y: 1}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_SizeDelta: {x: 1920, y: 1080}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &1232658637
 GameObject:
@@ -7140,7 +7141,7 @@ MonoBehaviour:
   m_ReferencePixelsPerUnit: 100
   m_ScaleFactor: 1
   m_ReferenceResolution: {x: 1920, y: 1080}
-  m_ScreenMatchMode: 0
+  m_ScreenMatchMode: 1
   m_MatchWidthOrHeight: 0.5
   m_PhysicalUnit: 3
   m_FallbackScreenDPI: 96
@@ -7457,6 +7458,7 @@ GameObject:
   - component: {fileID: 1332791702}
   - component: {fileID: 1332791701}
   - component: {fileID: 1332791700}
+  - component: {fileID: 347265282}
   m_Layer: 0
   m_Name: Dialog
   m_TagString: Untagged
@@ -9357,6 +9359,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1706259508}
+  - component: {fileID: 1308809507}
   m_Layer: 0
   m_Name: SettingsPage
   m_TagString: Untagged
@@ -9380,10 +9383,10 @@ RectTransform:
   - {fileID: 993041592}
   m_Father: {fileID: 712232705}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 1, y: 1}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_SizeDelta: {x: 900, y: 950}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &1753383637
 GameObject:
@@ -9539,6 +9542,7 @@ GameObject:
   - component: {fileID: 1821477100}
   - component: {fileID: 1821477099}
   - component: {fileID: 1821477098}
+  - component: {fileID: 928225400}
   m_Layer: 0
   m_Name: Dialog
   m_TagString: Untagged
@@ -12131,3 +12135,59 @@ SceneRoots:
   - {fileID: 358754853}
   - {fileID: 2030496593}
   - {fileID: 417643704}
+--- !u!114 &928225400
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1821477096}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 62cbb84a32354e089018523ad1f4e783, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: ProjectGame2D.Runtime::PopupViewportFit
+  _targetSize: {x: 640, y: 320}
+  _verticalAlignment: 0.5
+  _horizontalAlignment: 0.5
+--- !u!114 &347265282
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1332791698}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 62cbb84a32354e089018523ad1f4e783, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: ProjectGame2D.Runtime::PopupViewportFit
+  _targetSize: {x: 640, y: 320}
+  _verticalAlignment: 0.5
+  _horizontalAlignment: 0.5
+--- !u!114 &1664206766
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1216375486}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 62cbb84a32354e089018523ad1f4e783, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: ProjectGame2D.Runtime::PopupViewportFit
+  _targetSize: {x: 960, y: 640}
+--- !u!114 &1308809507
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1706259507}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 62cbb84a32354e089018523ad1f4e783, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: ProjectGame2D.Runtime::PopupViewportFit
+  _targetSize: {x: 560, y: 720}

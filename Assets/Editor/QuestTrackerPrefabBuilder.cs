@@ -22,9 +22,9 @@ public static class QuestTrackerPrefabBuilder
             RemoveIfPresent(root.transform, "Viewport");
 
             RectTransform rootRect = root.GetComponent<RectTransform>();
-            rootRect.anchorMin = rootRect.anchorMax = new Vector2(1f, 1f);
-            rootRect.pivot = new Vector2(1f, 1f);
-            rootRect.anchoredPosition = new Vector2(-16f, -16f);
+            rootRect.anchorMin = rootRect.anchorMax = new Vector2(0f, 0.5f);
+            rootRect.pivot = new Vector2(0f, 0.5f);
+            rootRect.anchoredPosition = new Vector2(16f, 0f);
             rootRect.sizeDelta = new Vector2(155f, 190f);
             Image rootImage = root.GetComponent<Image>() ?? root.AddComponent<Image>();
             rootImage.sprite = null;

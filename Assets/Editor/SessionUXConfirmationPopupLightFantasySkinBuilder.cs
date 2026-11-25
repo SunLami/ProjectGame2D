@@ -67,6 +67,7 @@ public static class SessionUXConfirmationPopupLightFantasySkinBuilder
         panelRect.anchoredPosition = Vector2.zero;
         panelRect.localScale = Vector3.one;
         panelRect.sizeDelta = new Vector2(500f, 245f);
+        PopupViewportFit.Configure(panel.gameObject, new Vector2(640f, 320f));
         DisableOutline(panel.gameObject);
 
         Transform titleTransform = RequireChild(panel, "Title");

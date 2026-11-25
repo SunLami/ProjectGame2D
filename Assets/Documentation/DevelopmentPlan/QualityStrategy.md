@@ -198,3 +198,6 @@ Không dùng save cá nhân duy nhất của developer làm fixture chuẩn.
 - Failure/cancel có trả GameState đúng không?
 - UI có gọi trực tiếp file I/O/SceneManager/domain internals không?
 - Test nào chứng minh acceptance criteria?
+
+Quick Bar regression covers moving a binding, retaining it while quantity is positive, clearing it
+at zero, keeping it empty after restock, and normalizing legacy duplicates on restore.

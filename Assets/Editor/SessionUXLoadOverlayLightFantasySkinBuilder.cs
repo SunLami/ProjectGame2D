@@ -39,6 +39,7 @@ public static class SessionUXLoadOverlayLightFantasySkinBuilder
         panelRect.anchoredPosition = Vector2.zero;
         panelRect.localScale = Vector3.one;
         panelRect.sizeDelta = new Vector2(430f, 250f);
+        PopupViewportFit.Configure(panel.gameObject, new Vector2(960f, 640f));
         DisableOutline(panel.gameObject);
 
         Transform overlayTitleTransform = RequireDirectChild(panel, "Title");

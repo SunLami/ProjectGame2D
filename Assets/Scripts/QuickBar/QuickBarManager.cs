@@ -7,6 +7,7 @@ public sealed class QuickBarManager : MonoBehaviour
 {
     private readonly string[] _assignedItemIds = new string[QuickBarSaveData.SlotCount];
     private IItemResolver _resolver;
+    private InventoryManager _inventory;
     private int _selectedIndex;
 
     public static QuickBarManager Instance { get; private set; }
@@ -56,9 +57,16 @@ public sealed class QuickBarManager : MonoBehaviour
         if (!IsValidIndex(index) || item == null || !item.usedItems || string.IsNullOrWhiteSpace(item.itemId))
             return false;
 
-        if (_assignedItemIds[index] == item.itemId)
+        BindInventory();
+        if (_inventory == null || _inventory.GetTotalQuantity(item.itemId) <= 0)
+            return false;
+
+        int previousIndex = Array.IndexOf(_assignedItemIds, item.itemId);
+        if (previousIndex == index)
             return true;
 
+        if (previousIndex >= 0)
+            _assignedItemIds[previousIndex] = null;
         _assignedItemIds[index] = item.itemId;
         Changed?.Invoke();
         return true;
@@ -104,6 +112,7 @@ public sealed class QuickBarManager : MonoBehaviour
 
     public void RestoreState(QuickBarSaveData data, List<string> missingItemIds = null)
     {
+        BindInventory();
         Array.Clear(_assignedItemIds, 0, _assignedItemIds.Length);
         _selectedIndex = IsValidIndex(data?.selectedIndex ?? 0) ? data?.selectedIndex ?? 0 : 0;
 
@@ -114,14 +123,42 @@ public sealed class QuickBarManager : MonoBehaviour
             {
                 string itemId = data.assignedItemIds[i];
                 if (string.IsNullOrWhiteSpace(itemId)) continue;
-                if (_resolver != null && _resolver.TryResolve(itemId, out _))
-                    _assignedItemIds[i] = itemId;
-                else
+                if (_resolver == null || !_resolver.TryResolve(itemId, out ItemSO item))
+                {
                     missingItemIds?.Add(itemId);
+                    continue;
+                }
+
+                if (Array.IndexOf(_assignedItemIds, itemId) < 0 && !IsDepleted(item))
+                    _assignedItemIds[i] = itemId;
             }
         }
 
         Changed?.Invoke();
+    }
+
+    private void BindInventory()
+    {
+        InventoryManager inventory = InventoryManager.Instance;
+        if (ReferenceEquals(_inventory, inventory)) return;
+        if (_inventory != null) _inventory.OnInventoryChanged -= RemoveDepletedAssignments;
+        _inventory = inventory;
+        if (_inventory != null) _inventory.OnInventoryChanged += RemoveDepletedAssignments;
+    }
+
+    private bool IsDepleted(ItemSO item) =>
+        item != null && item.usedItems && _inventory != null && _inventory.GetTotalQuantity(item.itemId) <= 0;
+
+    private void RemoveDepletedAssignments()
+    {
+        bool changed = false;
+        for (int i = 0; i < _assignedItemIds.Length; i++)
+        {
+            if (!TryGetAssignedItem(i, out ItemSO item) || !IsDepleted(item)) continue;
+            _assignedItemIds[i] = null;
+            changed = true;
+        }
+        if (changed) Changed?.Invoke();
     }
 
     internal void ConfigureResolverForTests(IItemResolver resolver) => _resolver = resolver;
@@ -130,6 +167,7 @@ public sealed class QuickBarManager : MonoBehaviour
 
     private void OnDestroy()
     {
+        if (_inventory != null) _inventory.OnInventoryChanged -= RemoveDepletedAssignments;
         if (Instance == this) Instance = null;
     }
 }

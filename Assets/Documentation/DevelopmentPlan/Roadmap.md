@@ -568,3 +568,44 @@ references. Scene placement and live combat acceptance remain pending.
 2026-11-25 — MapDuy connected to MapNhat through north/south world gates. The south
 arrival uses the owner's marked path. Save-backed travel preserves the current
 session, and Continue can select MapDuy from the saved player location.
+
+2026-11-25 — Authored Boar, Deer and Hare prefab animations from the supplied Tiled sprite
+pack. Reuses the existing wildlife definitions and IDs. Editor sampled every directional
+clip. Production-world placement remains separate.
+
+2026-11-25 Quick Bar follow-up: shared Inventory/HUD bindings move between slots, clear at zero
+quantity, and normalize on Continue. See [Farming System](FarmingSystem.md#quick-bar-contract).
+
+Item description pass: audit all ItemSO descriptions, fill blank entries, replace placeholder copy and preserve authored copy when regenerating farming or demo gathering assets.
+
+Popup layout follow-up: Crafting, Farm Storage, Character, Quest Log and Skill Panel use the
+shared compatibility fit. Full Map retains D-053 pending a choice on viewport presentation.
+See [Popup Layout Standard](PopupLayoutStandardPlan.md).
+
+Popup layout follow-up: shared fit added to utility panels, dialogue, fishing panels,
+and confirmations. Main Menu page layouts and the shared GridSlot layout remain pending.
+
+Save Slot Picker and Main Menu Settings have moved to the shared compatibility fit.
+Inventory and Commerce GridSlot badges are tuned for comparable display size under that fit.
+Grid dimensions and child layout migration remain pending.
+
+Inventory, Commerce and Farm Storage now derive item grid metrics from the shared 96/16
+reference and their viewport width. Panel-child layout migration remains separate.
+
+Inventory and Shop headers, footers and scroll regions now use edge/stretch anchors in
+the source prefabs and authoring workflows. Global CanvasScaler and the art split remain pending.
+
+Crafting and Farm Storage main regions now use edge/stretch anchors in the source
+prefabs and their authoring workflows.
+
+Standalone popup canvases now use 1920×1080 with Expand. The shared GameplayUIRoot scaler
+still awaits HUD and overlay migration.
+
+Popup layout implementation includes the shared CanvasScaler and responsive board artwork.
+Unity acceptance remains owner-led. See [Popup Layout Standard](PopupLayoutStandardPlan.md).
+
+Quest Log displays the next offer between quests and separates completed history. The HUD Tracker shows accepted quests selected for tracking.
+
+Restored the shared Minimap prefab and moved the Quest Tracker to the middle-left at the owner’s request.
+
+Character Stats UI rebuild uses new board art, Inventory styling and live vital meters. Unity gameplay acceptance remains owner-led.

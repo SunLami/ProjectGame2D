@@ -27,9 +27,7 @@ public static class DialogueUIAuthoring
         canvas.renderMode = RenderMode.ScreenSpaceOverlay;
         canvas.sortingOrder = 220;
         CanvasScaler scaler = root.GetComponent<CanvasScaler>();
-        scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
-        scaler.referenceResolution = new Vector2(800f, 450f);
-        scaler.matchWidthOrHeight = 0.5f;
+        PopupViewportFit.ConfigureCanvas(scaler);
 
         GameObject overlay = UI("DialogueOverlay", root.transform);
         Stretch(overlay.GetComponent<RectTransform>());
@@ -42,6 +40,7 @@ public static class DialogueUIAuthoring
         panelRect.pivot = new Vector2(0.5f, 0f);
         panelRect.anchoredPosition = new Vector2(0f, 24f);
         panelRect.sizeDelta = new Vector2(700f, 270f);
+        PopupViewportFit.Configure(panel, new Vector2(960f, 280f), verticalAlignment: 0f);
         panelRect.localScale = new Vector3(0.5f, 0.5f, 1f);
 
         Image portrait = Image("Portrait", panel.transform, null, Color.white);
