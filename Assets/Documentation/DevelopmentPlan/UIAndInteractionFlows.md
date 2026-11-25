@@ -240,6 +240,9 @@ scene Style Guide riêng; mỗi UI được migration trực tiếp trên prefab
 
 - `InventoryUIController.prefab` giữ nguyên navigation, drag/drop, equipment binding và gameplay-state
   contract; reskin không được chuyển ownership sang presentation.
+- Quantity Text trong từng GridSlot nằm trong góc dưới phải. Inventory dùng nền số 14×12 và cỡ chữ tối đa 10 trước khi co toàn cửa sổ, co theo
+  vùng số và tự thu cỡ chữ khi cần. Prefab slot dùng chung vẽ số trắng trên nền tối đục phía
+  trên icon. Tooltip của vật phẩm stackable hiển thị Owned từ tổng số trong Inventory. Farm Storage dùng inset cho cả hai cột.
 - Inventory dùng cùng ngôn ngữ Light Fantasy tối của PlayerHUD/UnifiedGameplayHUD/QuestTracker: gỗ
   walnut sẫm, lòng panel charcoal, viền vàng cổ, sapphire xanh và lá xanh tiết chế; label động tiếp
   tục dùng TMP/Digital Disco.
@@ -487,6 +490,9 @@ scene Style Guide riêng; mỗi UI được migration trực tiếp trên prefab
 
 ### Commerce UI layout
 
+- CompactInventory in Shop and Crafting anchors each stack count inside the visible bottom-right
+  corner of its GridSlot, with a small inset from the frame.
+
 - Crafting navigation is an accordion with exactly seven equipment sections in the authored order:
   `Head`, `Body`, `Foot`, `Ring`, `Necklace`, `Shield`, `Sword`. All section headers remain visible,
   including empty sections. Activating a header expands only that section's blueprint rows; activating
@@ -676,7 +682,7 @@ Three surfaces, one job each (details: TutorialAndQuestProgression.md "Act I gui
 | Surface | Shows | Hidden when |
 |---|---|---|
 | `TutorialOverlayRoot` | Input Tutorial step; otherwise the tracked quest's current objective `ControlHint` (≤ 115 chars, 3 lines of the 205×38 banner — guarded by `QuestGuidanceTextTests`) | not `GameState.Playing` (dialogue, menus, fishing); Shop/Crafting/Farm Storage open; quest untracked |
-| `QuestTracker` | stage title (`2-2: …`), NPC/place + action, counter; `READY` + who to hand in to; between quests the next giver with `NEW` | Quest Log open; dialogue (whole `GameplayUIRoot`) |
+| `QuestTracker` | stage title (`2-2: …`), NPC/place + action, counter; `READY` + who to hand in to for the currently tracked accepted quest | Quest Log open; dialogue (whole `GameplayUIRoot`) |
 | `QuestLogWindow (J)` | all objectives with counters (done dimmed, current marked), `TURN IN:` line, reward names, Track/Untrack, Abandon | — |
 
 Tracker, Quest Log and overlay re-read their state on every `GameState` change, because save restore
@@ -692,3 +698,22 @@ MapDuy keeps camera bounds inside the painted southern terrain at Y = -18.2. A s
 edge at Y = -19 stops traversal off the bottom. The road return trigger is centered on
 (12.50, -18.55), above the solid edge and below the arrival point. Both maps use Frawand
 scale (1, 1, 1), body collider (0.70, 0.25), and Cinemachine orthographic size 8.
+
+Quest Log lists active/ready quests and the next available NEW offer between quests under CURRENT QUESTS. COMPLETED QUESTS starts collapsed on open and expands inside the same scroll list. Collapsing it clears a hidden selection and selects the first current quest when available.
+
+The shared HUD Minimap is back at the top right. Quest Tracker is anchored to the middle-left and appears only when an accepted quest is tracked.
+
+Tutorial InstructionPanel is anchored bottom-left at (10, 96) above the HUD and below the middle-left Quest Tracker. Its authored size matches the former Bootstrap override.
+
+Skill HUD is ordered below gameplay popups in the shared HUD prefab. The Quest Log scrollbar
+auto-hides without expanding the viewport past its authored inset. Track/Untrack and Abandon
+use 96×32 buttons with centered labels.
+
+Quest direction arrows are hidden during modal UI, including the independent Quest Offer, Shop, Crafting and Farm Storage overlays. Full Map uses a dedicated top Canvas and GraphicRaycaster authored on MapPopup, leaving only the map and its own controls visible.
+
+Character Stats (C) now uses a generated textless walnut/brass/sapphire frame and the Inventory Digital Disco font, close button and equipment slot sprite. The window displays seven read-only equipment rows, a level badge, live Health/Mana/Stamina meters and cards for Combat, Mobility and Recovery.
+
+The C window now places a live player preview in a textless portrait alcove, with the seven
+read-only equipment sockets around it. Vitals use full-width bars, with Combat above the
+more compact Mobility and Recovery groups. The preview renderer is shared with Inventory
+and initializes after a menu transition has released any previous preview.

@@ -190,23 +190,24 @@ public sealed class FarmStorageUI : MonoBehaviour
         if (itemContent == null)
             return;
 
-        const int columns = 6;
-        const float cellSize = 48f;
-        const float spacing = 10f;
-        const float verticalPadding = 40f;
-        int rows = Mathf.Max(5, Mathf.CeilToInt(slotCount / (float)columns));
-        float height = verticalPadding + rows * cellSize + (rows - 1) * spacing;
+        var itemRect = itemContent as RectTransform;
+        var scrollContent = itemContent.parent as RectTransform;
+        if (itemRect == null || scrollContent == null) return;
 
-        RectTransform itemRect = itemContent as RectTransform;
-        RectTransform scrollContent = itemContent.parent as RectTransform;
-        if (itemRect != null)
-            itemRect.sizeDelta = new Vector2(itemRect.sizeDelta.x, height);
-        if (scrollContent != null)
-            scrollContent.sizeDelta = new Vector2(scrollContent.sizeDelta.x, height);
+        var grid = itemContent.GetComponent<GridLayoutGroup>();
+        var emptySlots = scrollContent.Find("EmptySlots") as RectTransform;
+        if (grid == null || emptySlots == null || emptySlots.childCount == 0) return;
+        var emptyGrid = emptySlots.GetComponent<GridLayoutGroup>();
+        var scroll = scrollContent.GetComponentInParent<ScrollRect>();
+        PopupItemGridLayout.Apply(grid, scroll?.viewport, TextAnchor.UpperLeft);
+        PopupItemGridLayout.Apply(emptyGrid, scroll?.viewport, TextAnchor.UpperLeft);
 
-        Transform emptySlots = scrollContent != null ? scrollContent.Find("EmptySlots") : null;
-        if (emptySlots == null || emptySlots.childCount == 0)
-            return;
+        int cellCount = Mathf.Max(slotCount, emptySlots.childCount);
+        int rows = Mathf.CeilToInt(cellCount / (float)grid.constraintCount);
+        float height = grid.padding.vertical + rows * grid.cellSize.y + (rows - 1) * grid.spacing.y;
+        itemRect.sizeDelta = new Vector2(itemRect.sizeDelta.x, height);
+        emptySlots.sizeDelta = new Vector2(emptySlots.sizeDelta.x, height);
+        scrollContent.sizeDelta = new Vector2(scrollContent.sizeDelta.x, height);
 
         GameObject template = emptySlots.GetChild(0).gameObject;
         while (emptySlots.childCount < slotCount)

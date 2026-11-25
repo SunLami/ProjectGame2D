@@ -1,7 +1,7 @@
 # Resource Content
 
 Nguồn content: Google Sheet `Items List`, tab `Resources` (`gid=1236028827`), tích hợp ngày 2026-09-28.
-Description được chủ động bỏ qua theo yêu cầu hiện tại.
+Mô tả tiếng Anh trong ItemSO đã được bổ sung sau đợt tích hợp sheet. Tooltip đọc công dụng đã có trong dữ liệu game.
 
 ## Node và loot
 
@@ -92,3 +92,18 @@ unit price for the current shop opening.
 | Trailrunner Fish Broth | 46–54 | 20–24 |
 
 Carrot and Grape Juice use standard prices during and outside the Act I quest.
+
+### Animated hunting animals — 2026-11-25
+
+Reusable animated prefabs for integration are `Assets/Prefabs/Animal/Boar.prefab`,
+`Deer.prefab` and `Hare.prefab`. The four-direction 32×32 frames come from the shadowed
+Boar, Deer and Hare sheets in the Top-Down Hunt Animals pack under Tiled. Dedicated sliced
+copies under `Assets/Animations/Animals` preserve the original Tiled textures and their
+import references.
+
+All three have Idle, Walk, Run, Hurt and Death. Boar also has Attack in four directions.
+WildlifeActor feeds facing and movement to the optional Animator, sends the contact-attack
+and hurt triggers, and keeps the animated body alive through its death clip. Existing loot,
+combat values and one-time quest kill handling still come from the corresponding definitions.
+Hare is the visual prefab for `animal.rabbit`. Prefabs remain available for DemoScene-first
+placement and do not add instances to a production scene.

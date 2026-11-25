@@ -50,6 +50,7 @@ public static class QuestLogWindowPrefabBuilder
 
         RectTransform rect = window.GetComponent<RectTransform>();
         Center(rect, new Vector2(560f, 340f), Vector2.zero);
+        if (!window.TryGetComponent<PopupViewportFit>(out _)) window.gameObject.AddComponent<PopupViewportFit>();
         Image image = EnsureImage(window.gameObject, Load(BoardPath));
         image.type = Image.Type.Simple;
         image.preserveAspect = true;
@@ -146,7 +147,7 @@ public static class QuestLogWindowPrefabBuilder
         scrollRect.movementType = ScrollRect.MovementType.Clamped;
         scrollRect.scrollSensitivity = 22f;
         scrollRect.verticalScrollbar = scrollbar;
-        scrollRect.verticalScrollbarVisibility = ScrollRect.ScrollbarVisibility.AutoHideAndExpandViewport;
+        scrollRect.verticalScrollbarVisibility = ScrollRect.ScrollbarVisibility.AutoHide;
         scrollRect.verticalScrollbarSpacing = 0f;
 
         Transform row = Require(content, "QuestRowTemplate");
@@ -184,13 +185,13 @@ public static class QuestLogWindowPrefabBuilder
 
         TMP_Text title = Require(row, "Title").GetComponent<TMP_Text>();
         Style(title, font, 9f, Color.white, TextAlignmentOptions.Left);
-        Rect(title.rectTransform, new Vector2(114f, 17f), new Vector2(40f, -7f));
+        Rect(title.rectTransform, new Vector2(108f, 17f), new Vector2(40f, -7f));
         TMP_Text status = Require(row, "Status").GetComponent<TMP_Text>();
         Style(status, font, 7f, new Color(0.82f, 0.90f, 1f, 1f), TextAlignmentOptions.Left);
-        Rect(status.rectTransform, new Vector2(76f, 13f), new Vector2(40f, -29f));
+        Rect(status.rectTransform, new Vector2(64f, 13f), new Vector2(40f, -29f));
         TMP_Text category = ChildText(row, "Category", font, 7f, Gold);
         category.alignment = TextAlignmentOptions.Center;
-        Rect(category.rectTransform, new Vector2(48f, 13f), new Vector2(113f, -29f));
+        Rect(category.rectTransform, new Vector2(30f, 13f), new Vector2(102f, -29f));
         Image pin = ChildImage(row, "TrackedPin", Load("Assets/Resources/UI/Quest/Tracker1920/objective_location.png"));
         Place(pin.rectTransform, new Vector2(12f, 12f), new Vector2(-10f, -25f), new Vector2(1f, 1f));
         pin.preserveAspect = true;
@@ -289,10 +290,10 @@ public static class QuestLogWindowPrefabBuilder
         rewardSummary.rectTransform.offsetMax = new Vector2(0f, 21f);
 
         Button track = Require(panel, "TrackQuestButton").GetComponent<Button>();
-        Place(track.GetComponent<RectTransform>(), new Vector2(76f, 22f), new Vector2(46f, 20f), new Vector2(0f, 0f));
+        Place(track.GetComponent<RectTransform>(), new Vector2(96f, 32f), new Vector2(46f, 20f), new Vector2(0f, 0f));
         StyleButton(track, font, Gold, "TRACK QUEST");
         Button abandon = Require(panel, "AbandonQuestButton").GetComponent<Button>();
-        Place(abandon.GetComponent<RectTransform>(), new Vector2(76f, 22f), new Vector2(-26f, 20f), new Vector2(1f, 0f));
+        Place(abandon.GetComponent<RectTransform>(), new Vector2(96f, 32f), new Vector2(-26f, 20f), new Vector2(1f, 0f));
         StyleButton(abandon, font, new Color(0.55f, 0.13f, 0.12f, 1f), "ABANDON");
     }
 
@@ -324,8 +325,8 @@ public static class QuestLogWindowPrefabBuilder
             if (string.IsNullOrWhiteSpace(label.text)) label.text = fallback;
             label.rectTransform.anchorMin = Vector2.zero;
             label.rectTransform.anchorMax = Vector2.one;
-            label.rectTransform.offsetMin = new Vector2(3f, -2f);
-            label.rectTransform.offsetMax = new Vector2(-3f, -8f);
+            label.rectTransform.offsetMin = new Vector2(6f, 6f);
+            label.rectTransform.offsetMax = new Vector2(-6f, -6f);
         }
     }
 

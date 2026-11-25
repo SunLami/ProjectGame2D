@@ -36,8 +36,8 @@ public sealed class QuestTrackerUI : MonoBehaviour
         if (legacyBanner != null) legacyBanner.gameObject.SetActive(false);
 
         RectTransform root = (RectTransform)transform;
-        root.anchorMin = root.anchorMax = root.pivot = Vector2.one;
-        root.anchoredPosition = new Vector2(-16f, -16f);
+        root.anchorMin = root.anchorMax = root.pivot = new Vector2(0f, 0.5f);
+        root.anchoredPosition = new Vector2(16f, 0f);
         root.sizeDelta = new Vector2(155f, 190f); // 372x456 physical pixels at 1920x1080.
         Image rootImage = GetComponent<Image>() ?? gameObject.AddComponent<Image>();
         rootImage.sprite = null;
@@ -362,7 +362,6 @@ public sealed class QuestTrackerUI : MonoBehaviour
 
     private static string ProgressLabel(TrackedQuestView quest) =>
         quest.ReadyToTurnIn ? "READY"
-        : quest.IsOffer ? "NEW"
         : quest.TargetCount > 1 ? $"{quest.CurrentCount}/{quest.TargetCount}" : string.Empty;
 
     private static Color CategoryColor(QuestCategory category) => category switch
@@ -383,17 +382,14 @@ public enum QuestCategory { Main = 0, Side = 1, Daily = 2 }
 
 public readonly struct TrackedQuestView
 {
-    public TrackedQuestView(string questId, string title, string shortDescription, QuestCategory category,
-        bool isOffer = false)
+    public TrackedQuestView(string questId, string title, string shortDescription, QuestCategory category)
         : this(questId, title, shortDescription, category, QuestObjectiveType.Talk, 0, 0, false)
     {
-        IsOffer = isOffer;
     }
 
     public TrackedQuestView(string questId, string title, string shortDescription, QuestCategory category,
         QuestObjectiveType objectiveType, int currentCount, int targetCount, bool readyToTurnIn)
     {
-        IsOffer = false;
         QuestId = questId;
         Title = title;
         ShortDescription = shortDescription;
@@ -412,8 +408,6 @@ public readonly struct TrackedQuestView
     public int CurrentCount { get; }
     public int TargetCount { get; }
     public bool ReadyToTurnIn { get; }
-    /// <summary>Not accepted yet: a "go meet this NPC" hint shown between quests.</summary>
-    public bool IsOffer { get; }
 }
 
 public static class QuestTrackerOrdering

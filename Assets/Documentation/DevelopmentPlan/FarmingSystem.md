@@ -11,14 +11,13 @@ with positive quantity. Teammate must subscribe/unsubscribe one effect owner, va
 atomic effect/Inventory consumption. No handler means no effect or consumption. Select is selection
 only for UI clicks and drag/drop. Legacy ineligible IDs are preserved but cannot resolve as usable.
 
-- Có đúng 8 slot. Assignment lưu stable `itemId`, không lưu index/reference của `InventorySlot`.
-- Kéo một item thường từ Inventory lên quick slot để gán; click hoặc phím số 1–8 để chọn.
-- Kéo item đã gán ra ngoài toàn bộ quick slot để xóa assignment. Kéo sang quick slot khác sẽ chuyển
-  assignment sang slot đích; thao tác chỉ đổi stable `itemId`, không xóa item khỏi Inventory.
-- HUD resolve icon qua `IItemResolver` và hiển thị tổng quantity đang có trong Inventory.
-- Item hết quantity không xóa assignment; slot hiển thị mờ/0 và hoạt động lại khi người chơi có item.
-- Save lưu tám assignment và `selectedIndex`; restore bỏ qua item ID không resolve được nhưng không crash.
-- Quick bar chỉ chọn item. Behavior sử dụng item thuộc domain nhận interaction (farming, consumable về sau).
+- Bốn ô Inventory và HUD dùng chung assignment theo stable `itemId`.
+- Mỗi loại item đang sở hữu chỉ gán vào một ô. Gán sang ô mới chuyển binding; kéo ra ngoài
+  quick bar chỉ xóa binding. Cả hai thao tác giữ nguyên số lượng trong Inventory.
+- HUD hiển thị tổng số lượng trong Inventory. Khi số lượng về 0, cả Inventory và HUD bỏ
+  binding; nhận lại item cần gán lại.
+- Save giữ nguyên bốn assignment và `selectedIndex`. Khi restore, giữ ô có chỉ số thấp nhất
+  cho ID trùng và bỏ binding đã hết hàng của item đủ điều kiện sử dụng.
 
 ## Farming gameplay
 
@@ -73,7 +72,7 @@ và farm storage rỗng.
 ## Integration và acceptance
 
 - Build/test ở DemoScene trước; feature prefab/catalog sau đó được promote sang MapNhat.
-- Quick bar: assign/select/swap inventory/quantity zero/save-load đều giữ đúng binding.
+- Quick bar: assign/select/swap giữ đúng binding; quantity về 0 xóa binding; load save cũ dọn ô trùng và ô đã hết.
 - Plant: sai item, hết seed, ngoài tầm hoặc plot không Empty đều không mutate gì.
 - Growth: stage và Mature đúng qua save/load và thời gian app đóng.
 - Harvest: inventory đầy giữ nguyên crop; thành công grant đúng một lần và plot Empty.

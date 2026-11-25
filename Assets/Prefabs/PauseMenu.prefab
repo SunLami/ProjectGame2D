@@ -334,6 +334,7 @@ GameObject:
   - component: {fileID: 5429418871270287066}
   - component: {fileID: 3114203835079060543}
   - component: {fileID: 7353639009930857818}
+  - component: {fileID: 1722991491357257071}
   m_Layer: 0
   m_Name: Panel
   m_TagString: Untagged
@@ -1463,3 +1464,17 @@ MonoBehaviour:
   m_EditorClassIdentifier: ProjectGame2D.Runtime::ButtonSfx
   _playHoverSfx: 1
   _clickSound: 0
+--- !u!114 &1722991491357257071
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1722991490170142207}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 62cbb84a32354e089018523ad1f4e783, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: ProjectGame2D.Runtime::PopupViewportFit
+  _targetSize: {x: 560, y: 720}
+  _verticalAlignment: 0.5

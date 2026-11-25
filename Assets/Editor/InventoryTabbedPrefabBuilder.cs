@@ -195,6 +195,17 @@ public static class InventoryTabbedPrefabBuilder
             Rect(Find(root,"GoldIcon"),-27,0,15,15);
             Rect(Find(root,"GoldText"),13,0,54,20);
             Rect(Find(root,"CloseBtn"),287,161,22,22);
+            PopupLayoutAuthoring.Reanchor(Find(board.gameObject, "TitleInventory"), new Vector2(0.5f, 1f), new Vector2(0.5f, 1f));
+            PopupLayoutAuthoring.Reanchor(Find(board.gameObject, "InventoryTitleLabel"), new Vector2(0f, 1f), new Vector2(0f, 1f));
+            PopupLayoutAuthoring.Reanchor(Find(board.gameObject, "CloseBtn"), new Vector2(1f, 1f), new Vector2(1f, 1f));
+            PopupLayoutAuthoring.Reanchor(Find(board.gameObject, "CurrencyRow"), new Vector2(1f, 0f), new Vector2(1f, 0f));
+            PopupBoardArtwork.Configure(board.GetComponent<Image>(), ((RectTransform)board).rect.size,
+                new Vector2(0.13f, 0.11f), 0.45f);
+            PopupLayoutAuthoring.Reanchor(Find(board.gameObject, "GridScrollView"), new Vector2(0.5f, 0f), new Vector2(1f, 1f));
+            PopupLayoutAuthoring.Reanchor(Find(board.gameObject, "GridFrame"), new Vector2(0.5f, 0f), new Vector2(1f, 1f));
+            PopupLayoutAuthoring.Reanchor(Find(board.gameObject, "CategoryBookmarks"), new Vector2(0f, 1f), new Vector2(1f, 1f));
+            PopupLayoutAuthoring.Reanchor(Find(board.gameObject, "QuickAssign"), new Vector2(0f, 0f), new Vector2(1f, 0f));
+            PopupLayoutAuthoring.Reanchor(Find(board.gameObject, "InventoryStats"), new Vector2(0f, 0f), new Vector2(0.5f, 0f));
             PrefabUtility.SaveAsPrefabAsset(root,PrefabPath);
         }
         finally {PrefabUtility.UnloadPrefabContents(root);}

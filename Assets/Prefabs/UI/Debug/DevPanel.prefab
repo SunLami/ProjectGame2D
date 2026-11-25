@@ -5280,6 +5280,7 @@ GameObject:
   - component: {fileID: 8824415977114555731}
   - component: {fileID: 5245107995073420541}
   - component: {fileID: 5200815019786948271}
+  - component: {fileID: 6339294800525020607}
   m_Layer: 0
   m_Name: DevPanelRoot
   m_TagString: Untagged
@@ -7916,3 +7917,18 @@ MonoBehaviour:
   m_FlexibleWidth: -1
   m_FlexibleHeight: -1
   m_LayoutPriority: 1
+--- !u!114 &6339294800525020607
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6339294801401503023}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 62cbb84a32354e089018523ad1f4e783, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: ProjectGame2D.Runtime::PopupViewportFit
+  _targetSize: {x: 560, y: 720}
+  _verticalAlignment: 1
+  _horizontalAlignment: 0

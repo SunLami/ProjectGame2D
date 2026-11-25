@@ -83,7 +83,10 @@ public static class FarmingAuthoring
     {
         item.itemId = itemId;
         item.itemName = itemName;
-        item.description = item is SeedItemSO ? $"Plant to grow {itemName.Replace(" Seeds", string.Empty)}." : "Fresh farm produce.";
+        if (string.IsNullOrWhiteSpace(item.description))
+            item.description = item is SeedItemSO
+                ? $"Plant these seeds in an empty farm plot to grow {itemName.Replace(" Seeds", string.Empty).ToLowerInvariant()}."
+                : $"{itemName} harvested from a farm plot.";
         if (item.icon == null)
             item.icon = icon;
         item.type = ItemType.Material;

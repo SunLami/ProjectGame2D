@@ -106,7 +106,10 @@ public static class DemoResourceNodeAuthoring
         }
         item.itemId = itemId;
         item.itemName = displayName;
-        item.description = $"Temporary demo material for {displayName}. Replace its art without changing itemId.";
+        if (string.IsNullOrWhiteSpace(item.description))
+            item.description = itemId == "item.material.copper_ore"
+                ? "Raw copper-bearing rock that can be refined into Copper Bars."
+                : "A rough length of timber used as a crafting material.";
         if (item.icon == null)
             item.icon = icon;
         item.type = ItemType.Material;

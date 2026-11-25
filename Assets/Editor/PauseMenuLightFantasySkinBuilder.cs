@@ -52,6 +52,7 @@ public static class PauseMenuLightFantasySkinBuilder
         GameObject panel = Find(root, "Panel");
         SetImage(panel, board, false);
         panel.GetComponent<RectTransform>().sizeDelta = new Vector2(164f, 340f);
+        PopupViewportFit.Configure(panel, new Vector2(560f, 720f));
         EnsurePauseTitle(panel.transform);
 
         GameObject closeButton = Find(root, "CloseBtn");

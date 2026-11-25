@@ -62,7 +62,6 @@ public sealed class QuickBarSlotUI : MonoBehaviour, IPointerClickHandler, IDropH
             // Inventory and HUD can render the same underlying quick slot.
             if (quickBarSource._slotIndex == _slotIndex) return;
             if (!QuickBarManager.Instance.Assign(_slotIndex, quickBarItem)) return;
-            QuickBarManager.Instance.Clear(quickBarSource._slotIndex);
             QuickBarManager.Instance.Select(_slotIndex);
             return;
         }

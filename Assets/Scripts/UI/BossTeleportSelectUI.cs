@@ -199,9 +199,7 @@ public sealed class BossTeleportSelectUI : MonoBehaviour
         canvas.renderMode = RenderMode.ScreenSpaceOverlay;
         canvas.sortingOrder = 900;
         var scaler = canvasObject.GetComponent<CanvasScaler>();
-        scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
-        scaler.referenceResolution = new Vector2(1920f, 1080f);
-        scaler.matchWidthOrHeight = 0.5f;
+        PopupViewportFit.ConfigureCanvas(scaler);
         _root = canvasObject;
 
         Image dim = NewImage("Dim", canvasObject.transform, new Color(0f, 0f, 0f, 0.62f));
@@ -210,6 +208,7 @@ public sealed class BossTeleportSelectUI : MonoBehaviour
         Image frame = NewImage("PanelFrame", canvasObject.transform, Gold);
         SetRect(frame.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), Vector2.zero, new Vector2(1180f, 700f));
         Image panel = NewImage("Panel", frame.transform, Charcoal);
+        PopupViewportFit.Configure(frame.gameObject, new Vector2(1280f, 700f));
         Inset(panel.rectTransform, 3f);
 
         TMP_Text title = NewText("Title", panel.transform, "BOSS TELEPORT", 30, Gold, TextAlignmentOptions.Center);

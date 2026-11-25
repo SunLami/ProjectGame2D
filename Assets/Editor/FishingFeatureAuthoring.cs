@@ -144,9 +144,7 @@ public static class FishingFeatureAuthoring
         canvas.renderMode = RenderMode.ScreenSpaceOverlay;
         canvas.sortingOrder = 80;
         CanvasScaler scaler = canvasObject.GetComponent<CanvasScaler>();
-        scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
-        scaler.referenceResolution = new Vector2(1920f, 1080f);
-        scaler.matchWidthOrHeight = 0.5f;
+        PopupViewportFit.ConfigureCanvas(scaler);
 
         GameObject uiRoot = CreateRect("FishingUI", canvasObject.transform, Vector2.zero, Vector2.one, Vector2.zero);
         FishingMinigameUI ui = uiRoot.AddComponent<FishingMinigameUI>();
@@ -165,6 +163,7 @@ public static class FishingFeatureAuthoring
         bobberAnimator.runtimeAnimatorController = bobberController;
 
         GameObject minigame = CreateSpritePanel("MinigamePanel", uiRoot.transform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(520f, 650f), minigamePanelSprite);
+        PopupViewportFit.Configure(minigame, new Vector2(560f, 720f));
         TMP_Text timer = CreateText("Timer", minigame.transform, font, "18s", 34f, Color.white);
         RectTransform timerRect = timer.rectTransform;
         timerRect.anchorMin = timerRect.anchorMax = new Vector2(0.5f, 1f);
@@ -190,6 +189,7 @@ public static class FishingFeatureAuthoring
         progressRect.anchoredPosition = new Vector2(105f, -10f);
 
         GameObject result = CreateSpritePanel("ResultPanel", uiRoot.transform, new Vector2(0.5f, 0.72f), new Vector2(0.5f, 0.72f), new Vector2(620f, 180f), resultPanelSprite);
+        PopupViewportFit.Configure(result, new Vector2(640f, 224f), verticalAlignment: 0.72f);
         GameObject resultIconObject = CreateRect("ResultFishIcon", result.transform, new Vector2(0f, 0.5f), new Vector2(0f, 0.5f), new Vector2(90f, 90f));
         resultIconObject.GetComponent<RectTransform>().anchoredPosition = new Vector2(85f, 0f);
         Image resultFishImage = resultIconObject.AddComponent<Image>();

@@ -89,11 +89,16 @@ public sealed class QuestDirectionIndicator : MonoBehaviour
         }
     }
 
-    private void Update()
+    private void OnDisable() => HideAll();
+
+    private void LateUpdate()
     {
-        GameStateManager state = GameStateManager.Instance;
-        if (state != null && state.CurrentState == GameState.GameplayMenu
-            && state.CurrentMenuPage == GameplayMenuPage.Map)
+        // Quest offer and commerce can show a modal independently of the current gameplay state.
+        if (!GameStateManager.AllowsGameplayInput
+            || (QuestAcceptPopupUI.Instance != null && QuestAcceptPopupUI.Instance.IsOpen)
+            || (DialogueUI.Instance != null && DialogueUI.Instance.IsOpen)
+            || (ShopCraftingUI.Instance != null && ShopCraftingUI.Instance.IsOpen)
+            || (FarmStorageUI.Instance != null && FarmStorageUI.Instance.IsOpen))
         {
             HideAll();
             return;

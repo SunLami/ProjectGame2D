@@ -81,7 +81,9 @@ public class EquipmentSlotUI : MonoBehaviour, IPointerClickHandler, IDropHandler
         dragImage.preserveAspect = true;
 
         RectTransform dragRect = _dragIcon.GetComponent<RectTransform>();
-        dragRect.sizeDelta = ((RectTransform)_iconImage.transform).rect.size;
+        RectTransform iconRect = _iconImage.rectTransform;
+        Vector3 worldSize = iconRect.TransformVector(iconRect.rect.size);
+        dragRect.sizeDelta = canvas.rootCanvas.transform.InverseTransformVector(worldSize);
 
         _dragIcon.GetComponent<CanvasGroup>().blocksRaycasts = false;
         _dragIcon.transform.position = eventData.position;

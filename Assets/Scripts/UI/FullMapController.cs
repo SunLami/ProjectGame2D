@@ -10,6 +10,7 @@ using UnityEngine.UI;
 // Once zoomed in, the scaled image is bigger than the viewport, so it also needs to be draggable
 // (IDragHandler) to reach corners the zoom pushed outside the visible area -- panning is clamped
 // so the image can never reveal empty space past its own edge.
+[RequireComponent(typeof(Canvas), typeof(GraphicRaycaster))]
 public sealed class FullMapController : MonoBehaviour, IScrollHandler, IBeginDragHandler, IDragHandler
 {
     [SerializeField] private RectTransform _viewport;
@@ -23,6 +24,20 @@ public sealed class FullMapController : MonoBehaviour, IScrollHandler, IBeginDra
     private bool _hasBounds;
     private float _zoom = 1f;
     private Canvas _canvas;
+
+    // Scene overlays and popup canvases can sort above the shared gameplay canvas.
+    // Give only the fullscreen map its own draw layer.
+    public const int FullMapSortingOrder = 2000;
+
+    private void Awake()
+    {
+        if (!TryGetComponent(out _canvas))
+            _canvas = gameObject.AddComponent<Canvas>();
+        _canvas.overrideSorting = true;
+        _canvas.sortingOrder = FullMapSortingOrder;
+        if (!TryGetComponent<GraphicRaycaster>(out _))
+            gameObject.AddComponent<GraphicRaycaster>();
+    }
 
     private void OnEnable()
     {
@@ -63,9 +78,14 @@ public sealed class FullMapController : MonoBehaviour, IScrollHandler, IBeginDra
         if (_mapImage == null)
             return;
 
-        float scaleFactor = _canvas != null && _canvas.scaleFactor > 0f ? _canvas.scaleFactor : 1f;
-        Vector2 delta = eventData.delta / scaleFactor;
-        _mapImage.rectTransform.anchoredPosition = ClampPan(_mapImage.rectTransform.anchoredPosition + delta);
+        Camera camera = _canvas != null && _canvas.renderMode != RenderMode.ScreenSpaceOverlay
+            ? _canvas.worldCamera : null;
+        if (!RectTransformUtility.ScreenPointToLocalPointInRectangle(_viewport, eventData.position, camera, out Vector2 current) ||
+            !RectTransformUtility.ScreenPointToLocalPointInRectangle(_viewport, eventData.position - eventData.delta, camera, out Vector2 previous))
+            return;
+
+        _mapImage.rectTransform.anchoredPosition =
+            ClampPan(_mapImage.rectTransform.anchoredPosition + current - previous);
     }
 
     private void ApplyZoom()

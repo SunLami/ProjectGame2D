@@ -341,3 +341,6 @@ Restore only scene-owned data on entry, then apply the player handoff at the reg
 spawn. Saving in MapDuy uses the existing player location sceneId and preserves the village
 world/farm data. Continue routes MapDuy saves to MapDuy, while older saves retain their
 configured fallback. No save schema change is required.
+
+Current four-slot quick-bar restore runs after Inventory. It normalizes duplicate IDs in slot order
+and drops depleted usable-item bindings without a save schema change.

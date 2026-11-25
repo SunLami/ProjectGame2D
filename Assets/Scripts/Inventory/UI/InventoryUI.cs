@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class InventoryUI : MonoBehaviour
 {
@@ -49,8 +50,9 @@ public class InventoryUI : MonoBehaviour
     private IEnumerator ForceLayoutNextFrame()
     {
         yield return null;
-        UnityEngine.UI.LayoutRebuilder.ForceRebuildLayoutImmediate(_slotContainer as RectTransform);
-        var scroll = _slotContainer.GetComponentInParent<UnityEngine.UI.ScrollRect>();
+        var scroll = _slotContainer.GetComponentInParent<ScrollRect>();
+        PopupItemGridLayout.Apply(_slotContainer.GetComponent<GridLayoutGroup>(), scroll?.viewport);
+        LayoutRebuilder.ForceRebuildLayoutImmediate(_slotContainer as RectTransform);
         if (scroll != null) scroll.verticalNormalizedPosition = 1f;
     }
 

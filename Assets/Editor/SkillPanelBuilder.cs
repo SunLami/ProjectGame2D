@@ -34,12 +34,12 @@ public static class SkillPanelBuilder
             root.GetComponent<Canvas>().renderMode = RenderMode.ScreenSpaceOverlay;
             root.GetComponent<Canvas>().sortingOrder = 120;
             var scaler = root.GetComponent<CanvasScaler>();
-            scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
-            scaler.referenceResolution = new Vector2(1920, 1080); scaler.matchWidthOrHeight = .5f;
+            PopupViewportFit.ConfigureCanvas(scaler);
             var window = Rect(root.transform, "Window", 0, 0, 1920, 1080);
             window.anchorMin = Vector2.zero; window.anchorMax = Vector2.one; window.sizeDelta = Vector2.zero;
             var dim = window.gameObject.AddComponent<Image>(); dim.color = new Color(0,0,0,.62f);
             var composition = Rect(window, "Composition", 0, 0, 1720, 900);
+            composition.gameObject.AddComponent<PopupViewportFit>();
             // Center the board and content; hover tooltip positioning clamps itself to the Canvas.
             var board = Picture(composition, "Board", "skill_panel_board_v1", 0, 0, 1300, 790);
             var content = Rect(composition, "Content", 0, 0, 1180, 710);

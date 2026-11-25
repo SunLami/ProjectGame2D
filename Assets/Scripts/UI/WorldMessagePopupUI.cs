@@ -32,9 +32,7 @@ public sealed class WorldMessagePopupUI : MonoBehaviour
         canvas.sortingOrder = 1000;
 
         CanvasScaler scaler = root.GetComponent<CanvasScaler>();
-        scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
-        scaler.referenceResolution = new Vector2(1920f, 1080f);
-        scaler.matchWidthOrHeight = 0.5f;
+        PopupViewportFit.ConfigureCanvas(scaler);
 
         WorldMessagePopupUI popup = root.GetComponent<WorldMessagePopupUI>();
         popup.BuildPresentation(root.transform);
@@ -50,6 +48,7 @@ public sealed class WorldMessagePopupUI : MonoBehaviour
         RectTransform boardRect = board.rectTransform;
         boardRect.anchorMin = boardRect.anchorMax = new Vector2(0.5f, 0.5f);
         boardRect.sizeDelta = new Vector2(480f, 224f);
+        PopupViewportFit.Configure(board.gameObject, new Vector2(480f, 224f));
         Sprite[] boardSprites = Resources.LoadAll<Sprite>(BoardResource);
         if (boardSprites.Length > 0)
         {

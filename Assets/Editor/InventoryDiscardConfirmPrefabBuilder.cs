@@ -35,9 +35,7 @@ public static class InventoryDiscardConfirmPrefabBuilder
             canvas.renderMode = RenderMode.ScreenSpaceOverlay;
             canvas.sortingOrder = 40; // above InventoryWindowUI's own canvas, matches other modal popups
             CanvasScaler scaler = root.GetComponent<CanvasScaler>();
-            scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
-            scaler.referenceResolution = new Vector2(1920f, 1080f);
-            scaler.matchWidthOrHeight = 0.5f;
+            PopupViewportFit.ConfigureCanvas(scaler);
 
             InventoryDiscardConfirmUI controller = root.GetComponent<InventoryDiscardConfirmUI>();
 
@@ -104,6 +102,7 @@ public static class InventoryDiscardConfirmPrefabBuilder
         rect.pivot = new Vector2(0.5f, 0.5f);
         rect.anchoredPosition = Vector2.zero;
         rect.sizeDelta = new Vector2(500f, 245f);
+        PopupViewportFit.Configure(panel, new Vector2(640f, 320f));
         return rect;
     }
 

@@ -173,7 +173,10 @@ public static class CommerceDarkStylePrefabBuilder
     private static ShopRefs BuildShop(Transform parent, Sprite board, ShopCraftingUI controller)
     {
         GameObject window = ImageObject("ShopWindow", parent, board, Color.white, true);
+        PopupBoardArtwork.Configure(window.GetComponent<Image>(), new Vector2(1536f, 1024f),
+            new Vector2(0.13f, 0.11f), 0.45f);
         Place(window, Vector2.zero, new Vector2(1536f, 1024f));
+        window.AddComponent<PopupViewportFit>();
         window.transform.localScale = new Vector3(0.39f, 0.39f, 1f);
 
         TMP_Text title = Text("Title", window.transform, "SHOP", 38, TextAlignmentOptions.Center, Ivory);
@@ -256,6 +259,20 @@ public static class CommerceDarkStylePrefabBuilder
         dropSerialized.FindProperty("_commerceUI").objectReferenceValue = controller;
         dropSerialized.ApplyModifiedPropertiesWithoutUndo();
 
+        PopupLayoutAuthoring.Reanchor(title.transform, new Vector2(0.25f, 1f), new Vector2(0.25f, 1f));
+        PopupLayoutAuthoring.Reanchor(close.transform, new Vector2(1f, 1f), new Vector2(1f, 1f));
+        PopupLayoutAuthoring.Reanchor(inventoryTitle.transform, new Vector2(0.75f, 1f), new Vector2(0.75f, 1f));
+        PopupLayoutAuthoring.Reanchor(buyTab.transform, new Vector2(0.125f, 0f), new Vector2(0.125f, 0f));
+        PopupLayoutAuthoring.Reanchor(sellTab.transform, new Vector2(0.375f, 0f), new Vector2(0.375f, 0f));
+        PopupLayoutAuthoring.Reanchor(controls.transform, new Vector2(0f, 0f), new Vector2(0.5f, 0f));
+        PopupLayoutAuthoring.Reanchor(details.transform, new Vector2(0f, 0f), new Vector2(0.5f, 0f));
+        PopupLayoutAuthoring.Reanchor(feedback.transform, new Vector2(0f, 0f), new Vector2(0.5f, 0f));
+        PopupLayoutAuthoring.Reanchor(buyViewport.transform, new Vector2(0f, 0f), new Vector2(0.5f, 1f));
+        PopupLayoutAuthoring.Reanchor(sellZone.transform, new Vector2(0f, 0f), new Vector2(0.5f, 1f));
+        PopupLayoutAuthoring.Reanchor(inventory.transform, new Vector2(0.5f, 0f), new Vector2(1f, 1f));
+        PopupLayoutAuthoring.Reanchor(inventory.transform.Find("GridScrollView"), new Vector2(0f, 0f), new Vector2(1f, 1f));
+        PopupLayoutAuthoring.Reanchor(inventory.transform.Find("CurrencyGold"), new Vector2(0.5f, 0f), new Vector2(0.5f, 0f));
+
         return new ShopRefs(window, title, gold, buyContent.transform, row, details, quantity, feedback,
             minus, plus, buy, sell, close, buyTab, sellTab, buyPanel, sellPanel, sellIcon, sellName, sellQuote);
     }
@@ -263,6 +280,9 @@ public static class CommerceDarkStylePrefabBuilder
     private static CraftRefs BuildCrafting(Transform parent, Sprite board)
     {
         GameObject window = ImageObject("CraftingWindow", parent, board, Color.white, true);
+        PopupBoardArtwork.Configure(window.GetComponent<Image>(), new Vector2(1536f, 1024f),
+            new Vector2(0.22f, 0.16f), 0.22f, 0.56f);
+        window.AddComponent<PopupViewportFit>();
         Place(window, Vector2.zero, new Vector2(1536f, 1024f));
         window.transform.localScale = new Vector3(0.39f, 0.39f, 1f);
 
@@ -304,9 +324,12 @@ public static class CommerceDarkStylePrefabBuilder
         Image[] ingredientIcons = new Image[4];
         TMP_Text[] ingredientCounts = new TMP_Text[4];
         float[] xs = { -319, -211, -100, 13 };
+        float[] anchors = { 0.29f, 0.36f, 0.43f, 0.5f };
         for (int i = 0; i < 4; i++)
         {
             GameObject socket = Rect($"IngredientSocket{i + 1}", window.transform, new Vector2(xs[i], 13), new Vector2(76, 82));
+            Vector2 anchor = new(anchors[i], 0.5f);
+            PopupLayoutAuthoring.Reanchor(socket.transform, anchor, anchor);
             ingredientIcons[i] = ImageObject("Icon", socket.transform, null, Color.white, false).GetComponent<Image>();
             StretchInset(ingredientIcons[i].rectTransform, 14);
             ingredientCounts[i] = Text("Count", socket.transform, string.Empty, 19, TextAlignmentOptions.BottomRight, Ivory);
@@ -317,9 +340,20 @@ public static class CommerceDarkStylePrefabBuilder
         Place(feedback.gameObject, new Vector2(-155, -135), new Vector2(400, 38));
         Button craft = ButtonObject("CraftButton", window.transform, "CRAFT", 30);
         Place(craft.gameObject, new Vector2(-155, -240), new Vector2(340, 56));
-        BuildCompactInventory(
+        CommerceInventoryPanelUI inventory = BuildCompactInventory(
             window.transform, new Vector2(400, -5), new Vector2(570, 448),
             new Vector2(80, 80), new Vector2(13, 12), true, false, -240);
+
+        PopupLayoutAuthoring.Reanchor(title.transform, new Vector2(0.5f, 1f), new Vector2(0.5f, 1f));
+        PopupLayoutAuthoring.Reanchor(close.transform, new Vector2(1f, 1f), new Vector2(1f, 1f));
+        PopupLayoutAuthoring.Reanchor(viewport.transform, new Vector2(0f, 0f), new Vector2(0.22f, 1f));
+        PopupLayoutAuthoring.Reanchor(output.transform, new Vector2(0.3f, 0.65f), new Vector2(0.3f, 0.65f));
+        PopupLayoutAuthoring.Reanchor(details.transform, new Vector2(0.34f, 0.6f), new Vector2(0.56f, 0.77f));
+        PopupLayoutAuthoring.Reanchor(feedback.transform, new Vector2(0.22f, 0f), new Vector2(0.55f, 0f));
+        PopupLayoutAuthoring.Reanchor(craft.transform, new Vector2(0.4f, 0f), new Vector2(0.4f, 0f));
+        PopupLayoutAuthoring.Reanchor(inventory.transform, new Vector2(0.56f, 0f), new Vector2(1f, 1f));
+        PopupLayoutAuthoring.Reanchor(inventory.transform.Find("GridScrollView"), new Vector2(0f, 0f), new Vector2(1f, 1f));
+        PopupLayoutAuthoring.Reanchor(inventory.transform.Find("CurrencyGold"), new Vector2(0.5f, 0f), new Vector2(0.5f, 0f));
 
         return new CraftRefs(window, title, content.transform, blueprintTemplate, categoryTemplate, details,
             output, ingredientIcons, ingredientCounts, feedback, craft, close);
@@ -384,6 +418,13 @@ public static class CommerceDarkStylePrefabBuilder
         slot.SetActive(false);
         RectTransform slotRect = slot.GetComponent<RectTransform>();
         slotRect.sizeDelta = layout.cellSize;
+        // The visible frame sits inside the layout cell. Anchor the count to that inset.
+        var quantityRect = (RectTransform)slot.transform.Find("QuantityText");
+        quantityRect.anchorMin = quantityRect.anchorMax = new Vector2(0.88f, 0.12f);
+        quantityRect.anchoredPosition = new Vector2(-4f, 4f);
+        quantityRect.sizeDelta = new Vector2(37f, 32f);
+        var quantityText = quantityRect.GetComponent<TMP_Text>();
+        quantityText.fontSize = quantityText.fontSizeMax = 27f;
         if (!showSlotFrame)
         {
             Image slotFrame = slot.GetComponent<Image>();

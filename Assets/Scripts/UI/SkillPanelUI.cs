@@ -123,14 +123,14 @@ public sealed class SkillPanelUI : MonoBehaviour
 
     private void PositionTooltip(Vector2 pointer)
     {
-        var canvasRect = (RectTransform)transform;
-        if (!RectTransformUtility.ScreenPointToLocalPointInRectangle(canvasRect, pointer, null, out var local)) return;
+        var composition = (RectTransform)_tooltipRect.parent;
+        if (!RectTransformUtility.ScreenPointToLocalPointInRectangle(composition, pointer, null, out var local)) return;
         Vector2 half = _tooltipRect.rect.size * .5f;
         Vector2 center = local + new Vector2(18f + half.x, -18f - half.y);
-        Rect bounds = canvasRect.rect;
+        Rect bounds = composition.rect;
         center.x = Mathf.Clamp(center.x, bounds.xMin + half.x + 12f, bounds.xMax - half.x - 12f);
         center.y = Mathf.Clamp(center.y, bounds.yMin + half.y + 12f, bounds.yMax - half.y - 12f);
-        _tooltipRect.position = canvasRect.TransformPoint(center);
+        _tooltipRect.position = composition.TransformPoint(center);
         _tooltipRect.SetAsLastSibling();
     }
 

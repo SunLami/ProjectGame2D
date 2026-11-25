@@ -109,6 +109,8 @@ cập nhật tài liệu liên quan trước hoặc cùng lúc với code.
     `InventoryUIController` với bookmark All/Weapon/Resources/Food/Potion và Quick Assign 1–4; giữ
     contract quick bar tám slot hiện có, chờ owner duyệt mapping category trước khi gen/implement.
 
+Kế hoạch chuẩn hóa Canvas, kích thước và layout theo từng cửa sổ: [Popup Layout Standard](PopupLayoutStandardPlan.md).
+
 ## Quy tắc quản trị tài liệu
 
 - [PlayerHUD consolidation](PlayerHUDRedesign.md): D-115, owner-approved bottom-left four-slot HUD,

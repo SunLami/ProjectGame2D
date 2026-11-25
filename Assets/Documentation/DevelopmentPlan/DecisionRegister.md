@@ -931,3 +931,37 @@ these two world gates, including New Game and Continue. Travel preserves live pe
 managers and snapshots scene-owned world and farming state in memory before unloading.
 Regular saves in MapDuy record its scene name for Continue. Travel does not write a slot.
 Boss pillar policy is independent.
+
+## Quick Bar assignment update (Accepted, 2026-11-25)
+
+The owner requested unique Inventory/HUD bindings and clearing used-up items. This supersedes
+the zero-quantity retention in D-028. Each owned item ID occupies one slot; reassigning moves it.
+Depletion clears the binding and restore keeps the first owned assignment in slot order for legacy
+duplicates. The four-slot save shape and D-117 use modes are preserved.
+
+The owner requested a full ItemSO description pass on 2026-11-25. This supersedes the temporary description omission in D-065 and fills the Foot and Head entries left blank in the equipment sheet. Existing lore remains where it already describes the item.
+
+## Chuẩn popup, đợt Inventory và Shop
+
+Chủ dự án yêu cầu bắt đầu triển khai khung hiển thị 1600×900 trên hệ tham chiếu 1920×1080.
+Đợt đầu cho phép co cả board cũ đồng đều trong safe area, giữ binding và bố cục con.
+Giữ CanvasScaler hiện tại cho đến khi các UI phụ thuộc được chuyển. Chủ dự án thực hiện kiểm thử.
+
+GameplayUIRoot and MainMenu now share the 1920×1080 Expand reference. A runtime compatibility
+content root preserves existing HUD authoring units and sibling order. Full Map retains D-053.
+Board art uses separately stretched surface and trim regions from the existing sprites.
+
+Quest Log follow-up requested by the owner: expose the Tracker’s next offer in the current section, and group completed quests in a collapsed-by-default section. Category filters still apply to accepted and completed quests. The Tracker’s guidance offer stays visible regardless of filter.
+
+Quest Tracker follow-up: only an accepted, tracked quest in Active or ReadyToTurnIn appears on
+the HUD. Between accepted quests the next NPC offer remains in Quest Log with NEW.
+
+HUD placement follow-up: restore the shared Minimap at the top right and move Quest Tracker to the middle-left. This supersedes the placement and Minimap removal of 2026-10-22.
+
+D-053 follow-up (2026-11-26): Full Map uses its own top Canvas rather than moving the shared HUD in sibling order. Quest navigation arrows are suppressed while modal UI is visible.
+
+D-044 visual follow-up (2026-11-26): at the owner’s request, Character Stats is rebuilt with the Inventory visual language. New frame art is textless. Existing Character menu input, PlayerStat and EquipmentManager ownership are preserved.
+
+Character Stats visual follow-up (2026-11-26): the owner requested a stronger visual hierarchy.
+Use the player's live pixel sprite, a new generated display alcove, and the existing Inventory
+slot art. Equipment and statistics remain read-only in this window.

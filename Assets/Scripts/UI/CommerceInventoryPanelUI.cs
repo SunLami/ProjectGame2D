@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 public sealed class CommerceInventoryPanelUI : MonoBehaviour
 {
@@ -24,6 +25,8 @@ public sealed class CommerceInventoryPanelUI : MonoBehaviour
     public void Refresh()
     {
         if (_gridRoot == null || _slotTemplate == null || InventoryManager.Instance == null) return;
+        var scroll = _gridRoot.GetComponentInParent<ScrollRect>();
+        PopupItemGridLayout.Apply(_gridRoot.GetComponent<GridLayoutGroup>(), scroll?.viewport);
         IReadOnlyList<InventorySlot> source = InventoryManager.Instance.Slots;
         int visible = _slotCapacity > 0 ? Mathf.Min(_slotCapacity, source.Count) : source.Count;
         while (_slots.Count < visible)

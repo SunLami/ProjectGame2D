@@ -41,6 +41,9 @@ public sealed class QuestLogUI : MonoBehaviour
     private InputAction _questLogAction;
     private string _selectedQuestId;
     private QuestCategory? _activeFilter;
+    private bool _showCompleted;
+    private GameObject _completedHeader;
+    private GameObject _firstQuestRow;
     private Button[] _filterButtons;
 
     private void Awake()
@@ -173,8 +176,18 @@ public sealed class QuestLogUI : MonoBehaviour
         // UI lives in Bootstrap and bound before the save was restored -- without this the tracker
         // and list kept showing the pre-restore (empty / New Game) presentation until the next
         // quest event. Every state transition (Loading -> Playing, menu open/close) re-reads it.
+        bool isOpen = IsQuestLogOpen();
+        bool opening = isOpen && !_logRoot.activeSelf;
+        if (!isOpen)
+            _showCompleted = false;
         BindQuestManager();
-        if (IsQuestLogOpen())
+        if (opening && _listContent is RectTransform content)
+        {
+            LayoutRebuilder.ForceRebuildLayoutImmediate(content);
+            var scroll = content.GetComponentInParent<ScrollRect>();
+            if (scroll != null) scroll.verticalNormalizedPosition = 1f;
+        }
+        if (isOpen)
             SelectDefault();
     }
 
@@ -261,39 +274,8 @@ public sealed class QuestLogUI : MonoBehaviour
                 status == QuestStatus.ReadyToTurnIn));
         }
 
-        // Between quests (nothing Active/Ready anywhere, not merely untracked) point at the next
-        // giver. This is a read-only hint: the quest is still accepted only through that NPC's
-        // dialogue + accept popup, and a player who untracks an in-progress quest keeps an empty
-        // tracker instead of being nudged elsewhere.
-        if (_trackedQuests.Count == 0 && !HasQuestInProgress())
-        {
-            foreach (QuestDefinition quest in _questManager.Catalog.AllQuests)
-            {
-                if (string.IsNullOrEmpty(quest.OfferDirections)
-                    || _questManager.GetStatus(quest.QuestId) != QuestStatus.Available)
-                    continue;
-
-                _trackedQuests.Add(new TrackedQuestView(quest.QuestId, quest.DisplayName,
-                    quest.OfferDirections, CategoryOf(quest), isOffer: true));
-                break;
-            }
-        }
-
         _trackedQuests.Sort(QuestTrackerOrdering.Compare);
         _tracker?.SetQuests(_trackedQuests);
-    }
-
-    private bool HasQuestInProgress()
-    {
-        foreach (QuestDefinition quest in _questManager.Catalog.AllQuests)
-        {
-            if (quest.IsDebugQuest)
-                continue;
-            QuestStatus status = _questManager.GetStatus(quest.QuestId);
-            if (status == QuestStatus.Active || status == QuestStatus.ReadyToTurnIn)
-                return true;
-        }
-        return false;
     }
 
     private static string TurnInDirections(QuestDefinition quest) =>
@@ -316,53 +298,136 @@ public sealed class QuestLogUI : MonoBehaviour
     private void RebuildList()
     {
         foreach (GameObject row in _rows)
+        {
+            row.SetActive(false);
             Destroy(row);
+        }
         _rows.Clear();
+        _firstQuestRow = null;
+        _completedHeader = null;
 
+        _emptyText.gameObject.SetActive(_questManager?.Catalog == null);
         if (_questManager?.Catalog == null)
         {
-            _emptyText.gameObject.SetActive(true);
+            _selectedQuestId = null;
             return;
         }
 
-        QuestDefinition first = null;
+        var current = new List<QuestDefinition>();
+        var completed = new List<QuestDefinition>();
+        QuestDefinition nextOffer = null;
+        bool hasQuestInProgress = false;
         foreach (QuestDefinition quest in _questManager.Catalog.AllQuests)
         {
             QuestStatus status = _questManager.GetStatus(quest.QuestId);
-            if (status != QuestStatus.Active
-                && status != QuestStatus.ReadyToTurnIn
-                && status != QuestStatus.Completed)
+            if (!quest.IsDebugQuest)
             {
-                continue;
+                if (status is QuestStatus.Active or QuestStatus.ReadyToTurnIn)
+                    hasQuestInProgress = true;
+                if (status == QuestStatus.Available && !string.IsNullOrEmpty(quest.OfferDirections))
+                    nextOffer ??= quest;
             }
 
             QuestCategory category = CategoryOf(quest);
             if (_activeFilter.HasValue && category != _activeFilter.Value)
                 continue;
 
-            first ??= quest;
-            GameObject row = Instantiate(_rowTemplate, _listContent);
-            row.name = $"QuestRow_{quest.QuestId}";
-            row.SetActive(true);
-            row.transform.Find("Title").GetComponent<TMP_Text>().text = quest.DisplayName;
-            row.transform.Find("Status").GetComponent<TMP_Text>().text = FormatStatus(status);
-            TMP_Text categoryLabel = row.transform.Find("Category")?.GetComponent<TMP_Text>();
-            if (categoryLabel != null)
-                categoryLabel.text = category.ToString().ToUpperInvariant();
-            Image categoryIcon = row.transform.Find("CategoryIcon")?.GetComponent<Image>();
-            if (categoryIcon != null)
-                categoryIcon.sprite = LoadCategorySprite(category);
-            Transform pin = row.transform.Find("TrackedPin");
-            if (pin != null)
-                pin.gameObject.SetActive(_questManager.IsTracked(quest.QuestId));
-            string questId = quest.QuestId;
-            row.GetComponent<Button>().onClick.AddListener(() => SelectQuest(questId));
-            _rows.Add(row);
+            switch (status)
+            {
+                case QuestStatus.Active:
+                case QuestStatus.ReadyToTurnIn:
+                    current.Add(quest);
+                    break;
+                case QuestStatus.Completed:
+                    completed.Add(quest);
+                    break;
+            }
         }
 
-        _emptyText.gameObject.SetActive(_rows.Count == 0);
-        if (string.IsNullOrEmpty(_selectedQuestId) && first != null)
-            _selectedQuestId = first.QuestId;
+        // Keep the next NPC hint in the log between quests, independently of the category filter.
+        if (!hasQuestInProgress && nextOffer != null)
+            current.Insert(0, nextOffer);
+
+        AddSectionLabel("CurrentQuests", "CURRENT QUESTS");
+        foreach (QuestDefinition quest in current)
+            AddQuestRow(quest, _questManager.GetStatus(quest.QuestId));
+        if (current.Count == 0)
+            AddSectionLabel("NoCurrentQuests", "No current quests", subdued: true);
+
+        string marker = _showCompleted ? "[-]" : "[+]";
+        _completedHeader = AddSectionLabel("CompletedQuests", $"{marker}  COMPLETED QUESTS ({completed.Count})");
+        var headerBackground = _completedHeader.AddComponent<Image>();
+        headerBackground.color = new Color32(61, 44, 27, 255);
+        var button = _completedHeader.AddComponent<Button>();
+        button.targetGraphic = headerBackground;
+        button.onClick.AddListener(ToggleCompletedQuests);
+
+        if (_showCompleted)
+        {
+            foreach (QuestDefinition quest in completed)
+                AddQuestRow(quest, QuestStatus.Completed);
+            if (completed.Count == 0)
+                AddSectionLabel("NoCompletedQuests", "No completed quests", subdued: true);
+        }
+
+        bool selectionVisible = current.Exists(quest => quest.QuestId == _selectedQuestId)
+            || (_showCompleted && completed.Exists(quest => quest.QuestId == _selectedQuestId));
+        if (!selectionVisible)
+            _selectedQuestId = current.Count > 0 ? current[0].QuestId : null;
+    }
+
+    private GameObject AddSectionLabel(string name, string text, bool subdued = false)
+    {
+        var section = new GameObject(name, typeof(RectTransform), typeof(LayoutElement));
+        section.transform.SetParent(_listContent, false);
+        section.GetComponent<LayoutElement>().preferredHeight = 19f;
+
+        var labelObject = new GameObject("Label", typeof(RectTransform), typeof(TextMeshProUGUI));
+        var label = labelObject.GetComponent<TMP_Text>();
+        label.transform.SetParent(section.transform, false);
+        label.rectTransform.anchorMin = Vector2.zero;
+        label.rectTransform.anchorMax = Vector2.one;
+        label.rectTransform.offsetMin = new Vector2(8f, 0f);
+        label.rectTransform.offsetMax = new Vector2(-4f, 0f);
+        label.font = _rowTemplate.transform.Find("Title").GetComponent<TMP_Text>().font;
+        label.fontSize = 9f;
+        label.alignment = TextAlignmentOptions.MidlineLeft;
+        label.color = subdued ? new Color32(181, 171, 150, 255) : new Color32(255, 224, 138, 255);
+        label.raycastTarget = false;
+        label.text = text;
+        _rows.Add(section);
+        return section;
+    }
+
+    private void ToggleCompletedQuests()
+    {
+        _showCompleted = !_showCompleted;
+        RebuildList();
+        RefreshDetails();
+        EventSystem.current?.SetSelectedGameObject(_completedHeader);
+    }
+
+    private void AddQuestRow(QuestDefinition quest, QuestStatus status)
+    {
+        QuestCategory category = CategoryOf(quest);
+        GameObject row = Instantiate(_rowTemplate, _listContent);
+        row.name = $"QuestRow_{quest.QuestId}";
+        row.SetActive(true);
+        row.transform.Find("Title").GetComponent<TMP_Text>().text = quest.DisplayName;
+        row.transform.Find("Status").GetComponent<TMP_Text>().text = FormatStatus(status);
+        TMP_Text categoryLabel = row.transform.Find("Category")?.GetComponent<TMP_Text>();
+        if (categoryLabel != null)
+            categoryLabel.text = category.ToString().ToUpperInvariant();
+        Image categoryIcon = row.transform.Find("CategoryIcon")?.GetComponent<Image>();
+        if (categoryIcon != null)
+            categoryIcon.sprite = LoadCategorySprite(category);
+        Transform pin = row.transform.Find("TrackedPin");
+        if (pin != null)
+            pin.gameObject.SetActive(_questManager.IsTracked(quest.QuestId));
+        string questId = quest.QuestId;
+        row.GetComponent<Button>().onClick.AddListener(() => SelectQuest(questId));
+        _firstQuestRow ??= row;
+        _rows.Add(row);
     }
 
     private void SelectQuest(string questId)
@@ -442,7 +507,10 @@ public sealed class QuestLogUI : MonoBehaviour
         {
             _detailTitle.text = "QUEST";
             _detailStatus.text = string.Empty;
-            _detailObjectives.text = "No accepted quests.";
+            _detailObjectives.text = "Select a quest to see its details.";
+            Transform emptyDetail = _detailTitle.transform.parent;
+            foreach (string child in new[] { "CategoryIcon", "CategoryLabel", "ObjectiveIcon", "Rewards" })
+                emptyDetail.Find(child)?.gameObject.SetActive(false);
             SetQuestActionVisibility(false, false);
             return;
         }
@@ -450,9 +518,15 @@ public sealed class QuestLogUI : MonoBehaviour
         QuestStatus status = _questManager.GetStatus(quest.QuestId);
         _detailTitle.text = quest.DisplayName;
         _detailStatus.text = FormatStatus(status);
-        _detailObjectives.text = BuildObjectiveText(quest, compact: false);
+        _detailObjectives.text = status == QuestStatus.Available
+            ? $"<color=#F5B033>TO START:</color> {quest.OfferDirections}\n\n{BuildObjectiveText(quest, compact: false)}"
+            : BuildObjectiveText(quest, compact: false);
 
         Transform detail = _detailTitle.transform.parent;
+        detail.Find("CategoryIcon")?.gameObject.SetActive(true);
+        detail.Find("CategoryLabel")?.gameObject.SetActive(true);
+        detail.Find("ObjectiveIcon")?.gameObject.SetActive(quest.Objectives.Count > 0);
+        detail.Find("Rewards")?.gameObject.SetActive(true);
         Image categoryIcon = detail.Find("CategoryIcon")?.GetComponent<Image>();
         if (categoryIcon != null)
             categoryIcon.sprite = LoadCategorySprite(CategoryOf(quest));
@@ -608,7 +682,8 @@ public sealed class QuestLogUI : MonoBehaviour
                 builder.Append("</color>");
         }
 
-        string handIn = HandInLine(quest);
+        string handIn = _questManager.GetStatus(quest.QuestId) == QuestStatus.Completed
+            ? string.Empty : HandInLine(quest);
         if (!string.IsNullOrEmpty(handIn))
         {
             bool ready = hasProgress && snapshot.Status == QuestStatus.ReadyToTurnIn;
@@ -647,6 +722,7 @@ public sealed class QuestLogUI : MonoBehaviour
         QuestStatus.ReadyToTurnIn => "READY TO TURN IN",
         QuestStatus.Completed => "COMPLETED",
         QuestStatus.Active => "IN PROGRESS",
+        QuestStatus.Available => "NEW",
         _ => status.ToString().ToUpperInvariant()
     };
 
@@ -655,7 +731,7 @@ public sealed class QuestLogUI : MonoBehaviour
         if (EventSystem.current == null)
             return;
 
-        GameObject target = _rows.Count > 0 ? _rows[0] : _closeButton.gameObject;
+        GameObject target = _firstQuestRow ?? _completedHeader ?? _closeButton?.gameObject;
         EventSystem.current.SetSelectedGameObject(target);
     }
 }

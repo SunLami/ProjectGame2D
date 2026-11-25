@@ -42,3 +42,5 @@ Captures/QuestTracker/top_right_no_background.png. Shows category/objective icon
 render background is a plain camera clear color, not gameplay acceptance. Preview sample is not saved
 into actual quest data. No Play Mode transition or automated tests. Owner manual map gameplay, collapse,
 scroll, scene/session changes and M/FullMap checks remain pending.
+
+Update: the owner restored the Minimap to the upper-right corner and moved the Quest Tracker to the middle-left. The background-free tracker art and accepted-only behavior remain in use.

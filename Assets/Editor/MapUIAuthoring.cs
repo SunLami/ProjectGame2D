@@ -22,7 +22,7 @@ public static class MapUIAuthoring
     private const string MarkerPath = ArtRoot + "player_marker_v1.png";
     private const string TagPath = ArtRoot + "minimap_tag_v1.png";
 
-    [MenuItem("Tools/ProjectGame2D/UI/Rebuild Full Map UI")]
+    [MenuItem("Tools/ProjectGame2D/UI/Rebuild Map UI")]
     public static void Rebuild()
     {
         Sprite snapshot = AssetDatabase.LoadAssetAtPath<Sprite>(SnapshotPath);
@@ -36,18 +36,18 @@ public static class MapUIAuthoring
         GameObject root = PrefabUtility.LoadPrefabContents(PrefabPath);
         try
         {
-            Transform minimap = root.transform.Find("Minimap");
-            if (minimap != null) UnityEngine.Object.DestroyImmediate(minimap.gameObject);
+            BuildMinimap(root, snapshot, LoadSprite(FramePath), LoadSprite(MaskPath),
+                markerSprite, LoadSprite(TagPath));
             BuildFullMap(root, snapshot, closeSprite, markerSprite);
 
             UnifiedGameplayHudController hud = root.GetComponent<UnifiedGameplayHudController>();
             SerializedObject hudSo = new SerializedObject(hud);
-            hudSo.FindProperty("_minimap").objectReferenceValue = null;
+            hudSo.FindProperty("_minimap").objectReferenceValue = root.transform.Find("Minimap").gameObject;
             hudSo.ApplyModifiedPropertiesWithoutUndo();
 
             PrefabUtility.SaveAsPrefabAsset(root, PrefabPath);
             AssetDatabase.SaveAssets();
-            Debug.Log("Full Map UI rebuilt; Minimap removed by owner request.");
+            Debug.Log("Minimap and Full Map UI rebuilt.");
         }
         finally
         {
@@ -187,6 +187,9 @@ public static class MapUIAuthoring
             root.GetComponent<UnifiedGameplayHudController>().ClosePopup);
 
         FullMapController controller = mapPopup.AddComponent<FullMapController>();
+        Canvas mapCanvas = mapPopup.GetComponent<Canvas>();
+        mapCanvas.overrideSorting = true;
+        mapCanvas.sortingOrder = FullMapController.FullMapSortingOrder;
         SerializedObject so = new SerializedObject(controller);
         so.FindProperty("_viewport").objectReferenceValue = viewport;
         so.FindProperty("_mapImage").objectReferenceValue = mapImage;

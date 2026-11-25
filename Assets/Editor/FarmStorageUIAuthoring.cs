@@ -45,9 +45,7 @@ public static class FarmStorageUIAuthoring
         canvas.renderMode = RenderMode.ScreenSpaceOverlay;
         canvas.sortingOrder = 225;
         CanvasScaler scaler = root.GetComponent<CanvasScaler>();
-        scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
-        scaler.referenceResolution = new Vector2(1920f, 1080f);
-        scaler.matchWidthOrHeight = 0.5f;
+        PopupViewportFit.ConfigureCanvas(scaler);
 
         GameObject backdrop = UI("Backdrop", root.transform);
         Stretch(backdrop.GetComponent<RectTransform>());
@@ -55,13 +53,16 @@ public static class FarmStorageUIAuthoring
         blocker.color = new Color(0f, 0f, 0f, 0.55f);
 
         GameObject panel = Panel("Panel", backdrop.transform, panelSprite, new Vector2(900f, 600f));
+        PopupBoardArtwork.Configure(panel.GetComponent<Image>(), new Vector2(900f, 600f),
+            new Vector2(0.17f, 0.13f), 0.5f);
+        panel.AddComponent<PopupViewportFit>();
 
         TMP_Text title = Text("Title", panel.transform, font, 22f, TextAlignmentOptions.Center, GoldText);
         SetRect(title.rectTransform, new Vector2(0f, 248f), new Vector2(360f, 34f));
         title.text = "Farm Storage";
 
         Button closeButton = Button("CloseButton", panel.transform, closeSprite);
-        SetRect(closeButton.GetComponent<RectTransform>(), new Vector2(468f, 264f), new Vector2(36f, 36f));
+        SetRect(closeButton.GetComponent<RectTransform>(), new Vector2(425f, 264f), new Vector2(36f, 36f));
 
         TMP_Text feedback = Text("Feedback", panel.transform, font, 13f, TextAlignmentOptions.Center, GoldText);
         SetRect(feedback.rectTransform, new Vector2(0f, -214f), new Vector2(760f, 24f));
@@ -69,6 +70,12 @@ public static class FarmStorageUIAuthoring
 
         Transform inventoryContent = BuildColumn(panel.transform, "InventoryColumn", "Inventory", new Vector2(-205f, 0f), font, slotSprite);
         Transform storageContent = BuildColumn(panel.transform, "StorageColumn", "Storage", new Vector2(205f, 0f), font, slotSprite);
+
+        PopupLayoutAuthoring.Reanchor(title.transform, new Vector2(0.5f, 1f), new Vector2(0.5f, 1f));
+        PopupLayoutAuthoring.Reanchor(closeButton.transform, new Vector2(1f, 1f), new Vector2(1f, 1f));
+        PopupLayoutAuthoring.Reanchor(feedback.transform, new Vector2(0f, 0f), new Vector2(1f, 0f));
+        PopupLayoutAuthoring.Reanchor(panel.transform.Find("InventoryColumn"), new Vector2(0f, 0f), new Vector2(0.5f, 1f));
+        PopupLayoutAuthoring.Reanchor(panel.transform.Find("StorageColumn"), new Vector2(0.5f, 0f), new Vector2(1f, 1f));
 
         GameObject rowTemplate = BuildRowTemplate(panel.transform, font, slotSprite);
 
@@ -144,6 +151,9 @@ public static class FarmStorageUIAuthoring
         scroll.content = scrollContentRect;
         scroll.movementType = ScrollRect.MovementType.Clamped;
         scroll.scrollSensitivity = 24f;
+
+        PopupLayoutAuthoring.Reanchor(headerText.transform, new Vector2(0f, 1f), Vector2.one);
+        PopupLayoutAuthoring.Reanchor(scrollRect, Vector2.zero, Vector2.one);
 
         return content.transform;
     }

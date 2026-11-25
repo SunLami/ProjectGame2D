@@ -11,6 +11,7 @@ public class InventorySlotUI : MonoBehaviour, IPointerClickHandler, IPointerEnte
 
     private InventorySlot _slot;
     private GameObject _dragIcon;
+    private Image _quantityBackground;
     private bool _dropWasHandled;
 
     public ItemSO Item => _slot?.item;
@@ -30,14 +31,39 @@ public class InventorySlotUI : MonoBehaviour, IPointerClickHandler, IPointerEnte
 
         _iconImage.sprite = slot.item.icon;
         _iconImage.enabled = slot.item.icon != null;
-        _quantityText.text = slot.quantity > 1 ? slot.quantity.ToString() : string.Empty;
+        SetQuantity(slot.quantity);
     }
 
     public void Clear()
     {
         _iconImage.sprite = null;
         _iconImage.enabled = false;
-        _quantityText.text = string.Empty;
+        SetQuantity(0);
+    }
+
+    private void SetQuantity(int quantity)
+    {
+        bool showCount = quantity > 1;
+        _quantityText.text = showCount ? quantity.ToString() : string.Empty;
+
+        if (showCount && _quantityBackground == null)
+        {
+            var badge = new GameObject("QuantityBackground", typeof(RectTransform), typeof(Image));
+            var text = _quantityText.rectTransform;
+            var rect = (RectTransform)badge.transform;
+            rect.SetParent(text.parent, false);
+            rect.anchorMin = rect.anchorMax = text.anchorMax;
+            rect.pivot = text.pivot;
+            rect.anchoredPosition = text.anchoredPosition;
+            rect.sizeDelta = text.sizeDelta;
+            rect.SetSiblingIndex(text.GetSiblingIndex());
+
+            _quantityBackground = badge.GetComponent<Image>();
+            _quantityBackground.color = new Color32(27, 19, 13, 255);
+            _quantityBackground.raycastTarget = false;
+        }
+
+        if (_quantityBackground != null) _quantityBackground.enabled = showCount;
     }
 
     public void OnPointerClick(PointerEventData eventData)
@@ -110,7 +136,9 @@ public class InventorySlotUI : MonoBehaviour, IPointerClickHandler, IPointerEnte
         dragImage.preserveAspect = true;
 
         RectTransform dragRect = _dragIcon.GetComponent<RectTransform>();
-        dragRect.sizeDelta = ((RectTransform)_iconImage.transform).rect.size;
+        RectTransform iconRect = _iconImage.rectTransform;
+        Vector3 worldSize = iconRect.TransformVector(iconRect.rect.size);
+        dragRect.sizeDelta = canvas.rootCanvas.transform.InverseTransformVector(worldSize);
 
         _dragIcon.GetComponent<CanvasGroup>().blocksRaycasts = false;
         _dragIcon.transform.position = eventData.position;

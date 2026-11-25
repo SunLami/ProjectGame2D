@@ -35,8 +35,9 @@ public static class TutorialOverlayLightFantasySkinBuilder
 
         SetImage(instruction.gameObject, instructionBoard, false, true);
         RectTransform instructionRect = instruction.GetComponent<RectTransform>();
-        instructionRect.sizeDelta = new Vector2(360f, 92f);
-        instructionRect.anchoredPosition = new Vector2(instructionRect.anchoredPosition.x, 80f);
+        instructionRect.anchorMin = instructionRect.anchorMax = instructionRect.pivot = Vector2.zero;
+        instructionRect.sizeDelta = new Vector2(286.1943f, 67.5211f);
+        instructionRect.anchoredPosition = new Vector2(10f, 96f);
 
         TMP_Text header = RequireChild(instruction, "Header").GetComponent<TMP_Text>();
         SetRect(header.rectTransform, new Vector2(0.5f, 1f), new Vector2(0.5f, 0.5f), new Vector2(120f, 20f), new Vector2(0f, -9f));
@@ -59,6 +60,7 @@ public static class TutorialOverlayLightFantasySkinBuilder
         dim.raycastTarget = true;
 
         SetImage(dialog.gameObject, skipDialog, false, true);
+        PopupViewportFit.Configure(dialog.gameObject, new Vector2(640f, 320f));
         dialog.GetComponent<RectTransform>().sizeDelta = new Vector2(570f, 245f);
 
         TMP_Text title = RequireChild(dialog, "Title").GetComponent<TMP_Text>();

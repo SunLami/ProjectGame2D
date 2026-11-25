@@ -65,6 +65,7 @@ public static class SkillHUDBuilder
 
             var root = new GameObject("SkillHUD", typeof(RectTransform), typeof(SkillHUDController));
             root.transform.SetParent(prefabRoot.transform, false);
+            root.transform.SetAsFirstSibling();
 
             RectTransform rootRect = root.GetComponent<RectTransform>();
             rootRect.anchorMin = rootRect.anchorMax = rootRect.pivot = new Vector2(1f, 0f);
