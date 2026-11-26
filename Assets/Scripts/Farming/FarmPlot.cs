@@ -11,8 +11,17 @@ public sealed class FarmPlot : MonoBehaviour
     [SerializeField] private string _plotId;
     [SerializeField] private string _areaId = "area.farm";
     [SerializeField] private SpriteRenderer _cropRenderer;
-    [SerializeField] private GameObject _emptyPlotHighlight;
+    [Tooltip("Soil sprite of an empty plot. Hidden while a crop occupies the plot, shown again after harvest.")]
+    [SerializeField] private SpriteRenderer _plotRenderer;
+    [Tooltip("Outline traced around the soil sprite when an empty plot is hovered (D-055).")]
+    [SerializeField] private HoverOutline _plotOutline;
     [SerializeField] private HoverOutline _cropOutline;
+    [Tooltip("Solid footprint at the crop's base (sprite pivot). Enabled only while a crop is visible; sized per growth stage.")]
+    [SerializeField] private BoxCollider2D _cropCollider;
+    [Tooltip("Footprint width as a fraction of the current stage sprite width, clamped to the min/max below.")]
+    [SerializeField, Range(0.05f, 1f)] private float _cropColliderWidthFraction = 0.3f;
+    [SerializeField] private Vector2 _cropColliderWidthRange = new(0.3f, 0.9f);
+    [SerializeField, Min(0.05f)] private float _cropColliderHeight = 0.25f;
 
     private FarmingManager _manager;
     private CropDefinition _crop;
@@ -77,12 +86,11 @@ public sealed class FarmPlot : MonoBehaviour
         return TryBeginHarvest();
     }
 
-    // Empty plot: highlighted by _emptyPlotHighlight (a tile-shaped indicator -- there's no crop
-    // sprite to trace an outline around). Planted crop: highlighted by the shared HoverOutline
-    // (D-055), same white-silhouette style as NPCs/fishing spot, instead of tinting the sprite.
+    // Both states use the shared HoverOutline (D-055): an empty plot outlines its soil sprite,
+    // a planted plot outlines the crop sprite (the soil sprite is hidden while a crop grows).
     public void SetHighlighted(bool highlighted)
     {
-        if (_emptyPlotHighlight != null) _emptyPlotHighlight.SetActive(highlighted && _crop == null);
+        _plotOutline?.SetHighlighted(highlighted && _crop == null);
         _cropOutline?.SetHighlighted(highlighted && _crop != null);
     }
 
@@ -132,6 +140,7 @@ public sealed class FarmPlot : MonoBehaviour
         }
 
         if (_cropRenderer != null) _cropRenderer.enabled = false;
+        ApplyCropCollider();
         SoundFXManager.PlaySfxAt(SfxIds.FarmHarvest, transform.position);
         yield return ResourceLootFlyVisual.Play(transform.position, player, grants);
         if (InventoryManager.Instance == null || !InventoryManager.Instance.TryAddBatch(grants))
@@ -192,12 +201,14 @@ public sealed class FarmPlot : MonoBehaviour
 
     private void ApplyVisual()
     {
+        if (_plotRenderer != null) _plotRenderer.enabled = _crop == null;
         if (_cropRenderer == null) return;
         if (_crop == null)
         {
             _cropRenderer.sprite = null;
             _cropRenderer.enabled = false;
             _lastStage = -1;
+            ApplyCropCollider();
             return;
         }
 
@@ -205,6 +216,23 @@ public sealed class FarmPlot : MonoBehaviour
         _cropRenderer.sprite = _crop.GetStageSprite(_lastStage);
         _cropRenderer.enabled = !_isResolving && _cropRenderer.sprite != null;
         _cropRenderer.color = _baseCropColor;
+        ApplyCropCollider();
+    }
+
+    // Crop sprites are authored with the pivot at the plant base, so the footprint sits just above
+    // the pivot and Y-sorting (spriteSortPoint = Pivot) matches where the player collides.
+    private void ApplyCropCollider()
+    {
+        if (_cropCollider == null) return;
+        Sprite sprite = _cropRenderer != null ? _cropRenderer.sprite : null;
+        bool solid = sprite != null && _cropRenderer.enabled;
+        _cropCollider.enabled = solid;
+        if (!solid) return;
+
+        float width = Mathf.Clamp(sprite.bounds.size.x * _cropColliderWidthFraction,
+            _cropColliderWidthRange.x, _cropColliderWidthRange.y);
+        _cropCollider.size = new Vector2(width, _cropColliderHeight);
+        _cropCollider.offset = new Vector2(0f, _cropColliderHeight * 0.5f);
     }
 
     private double RemainingHarvestSeconds(long nowTicks) =>

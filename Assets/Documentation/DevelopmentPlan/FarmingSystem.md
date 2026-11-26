@@ -26,6 +26,14 @@ only for UI clicks and drag/drop. Legacy ineligible IDs are preserved but cannot
 - Click hợp lệ trừ đúng một seed rồi đặt `cropId` + `plantedAtUtcTicks`.
 - Crop stage được tính từ UTC elapsed và `CropDefinition.stages`; không serialize sprite/stage index.
 - Mature plot hover sáng nhẹ. Click harvest kiểm tra toàn bộ reward fit trước khi ẩn crop.
+- Plot visual (2026-11-26, owner request): root `FarmPlot` có sprite đất `Plants_34` (`_plotRenderer`). Ô trống hover
+  hiện `HoverOutline` viền trắng theo hình sprite đất (`_plotOutline`, thay cho `EmptyHighlight` cũ). Khi có crop,
+  sprite đất bị ẩn và outline chuyển sang crop (`_cropOutline`); sau harvest/plot Empty sprite đất hiện lại.
+- Depth/collision (2026-11-26, owner request): project Y-sort bằng Transparency Sort Axis (0,1,0). Crop dùng
+  `Default/0` + `spriteSortPoint = Pivot` (sprite crop có pivot ở gốc cây) nên sort cùng actor theo trục Y; sprite đất
+  `Default/-10` luôn nằm dưới actor. `CropVisual` có `BoxCollider2D` không-trigger (`_cropCollider`) ở gốc cây: chỉ bật
+  khi crop đang hiển thị, rộng `30%` sprite (clamp 0.3–0.9), cao 0.25, tự đổi theo stage; tắt khi harvest/Empty.
+  Click/hover vẫn qua collider trigger 0.9×0.9 ở root.
 - Loot dùng cùng drop/fly presentation với resource/chest; Inventory chỉ commit khi loot tới Player.
 - Nếu capacity/Player/commit thất bại, crop mature được khôi phục và có thể thử lại.
 - Farming click là non-combat primary click: không tiêu stamina, không set Attack trigger, không phát `PlayerAttacked`.

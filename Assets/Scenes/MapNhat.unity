@@ -664,11 +664,11 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 24.71
+      value: 25.32
       objectReference: {fileID: 0}
     - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -21.4
+      value: -21.37
       objectReference: {fileID: 0}
     - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
       propertyPath: m_LocalPosition.z
@@ -875,6 +875,107 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 61986286}
   m_CullTransparentMesh: 1
+--- !u!1001 &66204121
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 1839170709}
+    m_Modifications:
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 13.98
+      objectReference: {fileID: 0}
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -31.42
+      objectReference: {fileID: 0}
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2920842790040878123, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: _plotId
+      value: farm.mapnhat.plot.039
+      objectReference: {fileID: 0}
+    - target: {fileID: 2920842790040878123, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: _cropOutline
+      value: 
+      objectReference: {fileID: 66204124}
+    - target: {fileID: 8688889621308454510, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_Name
+      value: FarmPlot_039
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 5261745787805472583, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 66204124}
+  m_SourcePrefab: {fileID: 100100000, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+--- !u!4 &66204122 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+  m_PrefabInstance: {fileID: 66204121}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &66204123 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 5261745787805472583, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+  m_PrefabInstance: {fileID: 66204121}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &66204124
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 66204123}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5d99099959d6f1a4fb47b151ab021c45, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ProjectGame2D.Runtime::HoverOutline
+--- !u!114 &66204125 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2920842790040878123, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+  m_PrefabInstance: {fileID: 66204121}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 50e4b6ab263219b4e93278a5f1596553, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ProjectGame2D.Runtime::FarmPlot
 --- !u!1001 &85794973
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -885,11 +986,11 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 14.21
+      value: 14.01
       objectReference: {fileID: 0}
     - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -23.89
+      value: -23.43
       objectReference: {fileID: 0}
     - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
       propertyPath: m_LocalPosition.z
@@ -959,6 +1060,107 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
   m_PrefabInstance: {fileID: 85794973}
   m_PrefabAsset: {fileID: 0}
+--- !u!1001 &95524254
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 1839170709}
+    m_Modifications:
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 16.19
+      objectReference: {fileID: 0}
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -31.42
+      objectReference: {fileID: 0}
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2920842790040878123, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: _plotId
+      value: farm.mapnhat.plot.040
+      objectReference: {fileID: 0}
+    - target: {fileID: 2920842790040878123, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: _cropOutline
+      value: 
+      objectReference: {fileID: 95524257}
+    - target: {fileID: 8688889621308454510, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_Name
+      value: FarmPlot_040
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 5261745787805472583, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 95524257}
+  m_SourcePrefab: {fileID: 100100000, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+--- !u!4 &95524255 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+  m_PrefabInstance: {fileID: 95524254}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &95524256 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 5261745787805472583, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+  m_PrefabInstance: {fileID: 95524254}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &95524257
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 95524256}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5d99099959d6f1a4fb47b151ab021c45, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ProjectGame2D.Runtime::HoverOutline
+--- !u!114 &95524258 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2920842790040878123, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+  m_PrefabInstance: {fileID: 95524254}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 50e4b6ab263219b4e93278a5f1596553, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ProjectGame2D.Runtime::FarmPlot
 --- !u!1 &114452302
 GameObject:
   m_ObjectHideFlags: 0
@@ -1130,9 +1332,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: ProjectGame2D.Runtime::QuestNpcInteractionUI
   _npcId: npc.leofrun
   _stationTag: 
+  _craftingUnlockQuestId: 
+  _lockedCraftingDialogue: {fileID: 0}
   _markerText: {fileID: 2051050302}
   _promptRoot: {fileID: 1574466240}
   _promptText: {fileID: 1891262029}
+  _feedbackText: {fileID: 0}
   _interactionButton: {fileID: 1574466242}
   _dialogue: {fileID: 11400000, guid: b4536f74b6e4f8e4a8891ba5312c6cf6, type: 2}
   _questDialogues:
@@ -29821,7 +30026,7 @@ Tilemap:
       - {fileID: -1615318996, guid: ad14db5d5ca2fd04e82b139e5d1dd524, type: 3}
       - {fileID: -832549809, guid: ad14db5d5ca2fd04e82b139e5d1dd524, type: 3}
       - {fileID: 1567531226, guid: ad14db5d5ca2fd04e82b139e5d1dd524, type: 3}
-      m_AnimationSpeed: 5
+      m_AnimationSpeed: 5.0000005
       m_AnimationTimeOffset: 0
       m_Flags: 0
   - first: {x: 34, y: -67, z: 0}
@@ -31303,7 +31508,7 @@ Tilemap:
       - {fileID: 661363949, guid: ad14db5d5ca2fd04e82b139e5d1dd524, type: 3}
       - {fileID: -1617802963, guid: ad14db5d5ca2fd04e82b139e5d1dd524, type: 3}
       - {fileID: -1818316260, guid: ad14db5d5ca2fd04e82b139e5d1dd524, type: 3}
-      m_AnimationSpeed: 5.0000005
+      m_AnimationSpeed: 5
       m_AnimationTimeOffset: 0
       m_Flags: 0
   - first: {x: 35, y: -51, z: 0}
@@ -31498,7 +31703,7 @@ Tilemap:
       - {fileID: 661363949, guid: ad14db5d5ca2fd04e82b139e5d1dd524, type: 3}
       - {fileID: -1617802963, guid: ad14db5d5ca2fd04e82b139e5d1dd524, type: 3}
       - {fileID: -1818316260, guid: ad14db5d5ca2fd04e82b139e5d1dd524, type: 3}
-      m_AnimationSpeed: 5.0000005
+      m_AnimationSpeed: 5
       m_AnimationTimeOffset: 0
       m_Flags: 0
   - first: {x: 61, y: -50, z: 0}
@@ -31524,7 +31729,7 @@ Tilemap:
       - {fileID: 661363949, guid: ad14db5d5ca2fd04e82b139e5d1dd524, type: 3}
       - {fileID: -1617802963, guid: ad14db5d5ca2fd04e82b139e5d1dd524, type: 3}
       - {fileID: -1818316260, guid: ad14db5d5ca2fd04e82b139e5d1dd524, type: 3}
-      m_AnimationSpeed: 5
+      m_AnimationSpeed: 5.0000005
       m_AnimationTimeOffset: 0
       m_Flags: 0
   - first: {x: 63, y: -50, z: 0}
@@ -31589,7 +31794,7 @@ Tilemap:
       - {fileID: 121880533, guid: ad14db5d5ca2fd04e82b139e5d1dd524, type: 3}
       - {fileID: 738093862, guid: ad14db5d5ca2fd04e82b139e5d1dd524, type: 3}
       - {fileID: 1667820229, guid: ad14db5d5ca2fd04e82b139e5d1dd524, type: 3}
-      m_AnimationSpeed: 5.0000005
+      m_AnimationSpeed: 5
       m_AnimationTimeOffset: 0
       m_Flags: 0
   - first: {x: 38, y: -49, z: 0}
@@ -31615,7 +31820,7 @@ Tilemap:
       - {fileID: 661363949, guid: ad14db5d5ca2fd04e82b139e5d1dd524, type: 3}
       - {fileID: -1617802963, guid: ad14db5d5ca2fd04e82b139e5d1dd524, type: 3}
       - {fileID: -1818316260, guid: ad14db5d5ca2fd04e82b139e5d1dd524, type: 3}
-      m_AnimationSpeed: 5
+      m_AnimationSpeed: 5.0000005
       m_AnimationTimeOffset: 0
       m_Flags: 0
   - first: {x: 40, y: -49, z: 0}
@@ -37004,90 +37209,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 208709574}
   m_CullTransparentMesh: 1
---- !u!1001 &221537897
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    serializedVersion: 3
-    m_TransformParent: {fileID: 1839170709}
-    m_Modifications:
-    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 14.21
-      objectReference: {fileID: 0}
-    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: -33.89
-      objectReference: {fileID: 0}
-    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
-      propertyPath: m_LocalRotation.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
-      propertyPath: m_LocalRotation.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
-      propertyPath: m_LocalRotation.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2920842790040878123, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
-      propertyPath: _plotId
-      value: farm.mapnhat.plot.019
-      objectReference: {fileID: 0}
-    - target: {fileID: 2920842790040878123, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
-      propertyPath: _cropOutline
-      value: 
-      objectReference: {fileID: 389354311}
-    - target: {fileID: 8688889621308454510, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
-      propertyPath: m_Name
-      value: FarmPlot_019
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-    m_RemovedGameObjects: []
-    m_AddedGameObjects: []
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 5261745787805472583, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 389354311}
-  m_SourcePrefab: {fileID: 100100000, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
---- !u!114 &221537898 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 2920842790040878123, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
-  m_PrefabInstance: {fileID: 221537897}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 50e4b6ab263219b4e93278a5f1596553, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: ProjectGame2D.Runtime::FarmPlot
---- !u!4 &221537899 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
-  m_PrefabInstance: {fileID: 221537897}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &290349298
 GameObject:
   m_ObjectHideFlags: 0
@@ -145900,6 +146021,107 @@ Canvas:
   m_SortingLayerID: 0
   m_SortingOrder: 50
   m_TargetDisplay: 0
+--- !u!1001 &330534695
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 1839170709}
+    m_Modifications:
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 14.02
+      objectReference: {fileID: 0}
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -27.42
+      objectReference: {fileID: 0}
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2920842790040878123, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: _plotId
+      value: farm.mapnhat.plot.032
+      objectReference: {fileID: 0}
+    - target: {fileID: 2920842790040878123, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: _cropOutline
+      value: 
+      objectReference: {fileID: 330534698}
+    - target: {fileID: 8688889621308454510, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_Name
+      value: FarmPlot_032
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 5261745787805472583, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 330534698}
+  m_SourcePrefab: {fileID: 100100000, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+--- !u!4 &330534696 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+  m_PrefabInstance: {fileID: 330534695}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &330534697 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 5261745787805472583, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+  m_PrefabInstance: {fileID: 330534695}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &330534698
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 330534697}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5d99099959d6f1a4fb47b151ab021c45, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ProjectGame2D.Runtime::HoverOutline
+--- !u!114 &330534699 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2920842790040878123, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+  m_PrefabInstance: {fileID: 330534695}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 50e4b6ab263219b4e93278a5f1596553, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ProjectGame2D.Runtime::FarmPlot
 --- !u!1 &342082513
 GameObject:
   m_ObjectHideFlags: 0
@@ -146162,23 +146384,6 @@ EdgeCollider2D:
   m_AdjacentEndPoint: {x: 0, y: 0}
   m_UseAdjacentStartPoint: 0
   m_UseAdjacentEndPoint: 0
---- !u!1 &360038319 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 5261745787805472583, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
-  m_PrefabInstance: {fileID: 520976702}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &360038322
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 360038319}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5d99099959d6f1a4fb47b151ab021c45, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: ProjectGame2D.Runtime::HoverOutline
 --- !u!1 &371697648
 GameObject:
   m_ObjectHideFlags: 0
@@ -146402,28 +146607,112 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5d99099959d6f1a4fb47b151ab021c45, type: 3}
   m_Name: 
   m_EditorClassIdentifier: ProjectGame2D.Runtime::HoverOutline
---- !u!4 &384191844 stripped
+--- !u!1001 &373808793
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 1839170709}
+    m_Modifications:
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 28.69
+      objectReference: {fileID: 0}
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -17.47
+      objectReference: {fileID: 0}
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2920842790040878123, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: _plotId
+      value: farm.mapnhat.plot.023
+      objectReference: {fileID: 0}
+    - target: {fileID: 2920842790040878123, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: _cropOutline
+      value: 
+      objectReference: {fileID: 373808796}
+    - target: {fileID: 8688889621308454510, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_Name
+      value: FarmPlot_023
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 5261745787805472583, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 373808796}
+  m_SourcePrefab: {fileID: 100100000, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+--- !u!4 &373808794 stripped
 Transform:
-  m_CorrespondingSourceObject: {fileID: 167812508504398168, guid: 55302d83e73d62d469073c2f3c5885f0, type: 3}
-  m_PrefabInstance: {fileID: 7727704437584487520}
+  m_CorrespondingSourceObject: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+  m_PrefabInstance: {fileID: 373808793}
   m_PrefabAsset: {fileID: 0}
---- !u!1 &389354308 stripped
+--- !u!1 &373808795 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 5261745787805472583, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
-  m_PrefabInstance: {fileID: 221537897}
+  m_PrefabInstance: {fileID: 373808793}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &389354311
+--- !u!114 &373808796
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 389354308}
+  m_GameObject: {fileID: 373808795}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 5d99099959d6f1a4fb47b151ab021c45, type: 3}
   m_Name: 
   m_EditorClassIdentifier: ProjectGame2D.Runtime::HoverOutline
+--- !u!114 &373808797 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2920842790040878123, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+  m_PrefabInstance: {fileID: 373808793}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 50e4b6ab263219b4e93278a5f1596553, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ProjectGame2D.Runtime::FarmPlot
+--- !u!4 &384191844 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 167812508504398168, guid: 55302d83e73d62d469073c2f3c5885f0, type: 3}
+  m_PrefabInstance: {fileID: 7727704437584487520}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &400965282
 GameObject:
   m_ObjectHideFlags: 0
@@ -146845,90 +147134,6 @@ Tilemap:
     e31: 0
     e32: 0
     e33: 1
---- !u!1001 &412137608
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    serializedVersion: 3
-    m_TransformParent: {fileID: 1839170709}
-    m_Modifications:
-    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 14.21
-      objectReference: {fileID: 0}
-    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: -31.89
-      objectReference: {fileID: 0}
-    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
-      propertyPath: m_LocalRotation.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
-      propertyPath: m_LocalRotation.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
-      propertyPath: m_LocalRotation.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2920842790040878123, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
-      propertyPath: _plotId
-      value: farm.mapnhat.plot.016
-      objectReference: {fileID: 0}
-    - target: {fileID: 2920842790040878123, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
-      propertyPath: _cropOutline
-      value: 
-      objectReference: {fileID: 1367459219}
-    - target: {fileID: 8688889621308454510, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
-      propertyPath: m_Name
-      value: FarmPlot_016
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-    m_RemovedGameObjects: []
-    m_AddedGameObjects: []
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 5261745787805472583, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 1367459219}
-  m_SourcePrefab: {fileID: 100100000, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
---- !u!114 &412137609 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 2920842790040878123, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
-  m_PrefabInstance: {fileID: 412137608}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 50e4b6ab263219b4e93278a5f1596553, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: ProjectGame2D.Runtime::FarmPlot
---- !u!4 &412137610 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
-  m_PrefabInstance: {fileID: 412137608}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &413558382
 GameObject:
   m_ObjectHideFlags: 0
@@ -147071,90 +147276,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1038773982}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1001 &425795150
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    serializedVersion: 3
-    m_TransformParent: {fileID: 1839170709}
-    m_Modifications:
-    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 18.21
-      objectReference: {fileID: 0}
-    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: -33.89
-      objectReference: {fileID: 0}
-    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
-      propertyPath: m_LocalRotation.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
-      propertyPath: m_LocalRotation.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
-      propertyPath: m_LocalRotation.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2920842790040878123, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
-      propertyPath: _plotId
-      value: farm.mapnhat.plot.021
-      objectReference: {fileID: 0}
-    - target: {fileID: 2920842790040878123, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
-      propertyPath: _cropOutline
-      value: 
-      objectReference: {fileID: 1394089691}
-    - target: {fileID: 8688889621308454510, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
-      propertyPath: m_Name
-      value: FarmPlot_021
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-    m_RemovedGameObjects: []
-    m_AddedGameObjects: []
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 5261745787805472583, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 1394089691}
-  m_SourcePrefab: {fileID: 100100000, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
---- !u!114 &425795151 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 2920842790040878123, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
-  m_PrefabInstance: {fileID: 425795150}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 50e4b6ab263219b4e93278a5f1596553, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: ProjectGame2D.Runtime::FarmPlot
---- !u!4 &425795152 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
-  m_PrefabInstance: {fileID: 425795150}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &452247948 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 5261745787805472583, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
@@ -147748,23 +147869,6 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 4690270231353569524, guid: 52d3ebaf5ad38174ab1e04bf8a11ca00, type: 3}
   m_PrefabInstance: {fileID: 1438207973}
   m_PrefabAsset: {fileID: 0}
---- !u!1 &461413589 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 5261745787805472583, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
-  m_PrefabInstance: {fileID: 1117632279}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &461413592
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 461413589}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5d99099959d6f1a4fb47b151ab021c45, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: ProjectGame2D.Runtime::HoverOutline
 --- !u!1 &479123160
 GameObject:
   m_ObjectHideFlags: 0
@@ -150076,90 +150180,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 507982196}
   m_CullTransparentMesh: 1
---- !u!1001 &520976702
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    serializedVersion: 3
-    m_TransformParent: {fileID: 1839170709}
-    m_Modifications:
-    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 28.21
-      objectReference: {fileID: 0}
-    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: -27.89
-      objectReference: {fileID: 0}
-    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
-      propertyPath: m_LocalRotation.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
-      propertyPath: m_LocalRotation.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
-      propertyPath: m_LocalRotation.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2920842790040878123, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
-      propertyPath: _plotId
-      value: farm.mapnhat.plot.014
-      objectReference: {fileID: 0}
-    - target: {fileID: 2920842790040878123, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
-      propertyPath: _cropOutline
-      value: 
-      objectReference: {fileID: 360038322}
-    - target: {fileID: 8688889621308454510, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
-      propertyPath: m_Name
-      value: FarmPlot_014
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-    m_RemovedGameObjects: []
-    m_AddedGameObjects: []
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 5261745787805472583, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 360038322}
-  m_SourcePrefab: {fileID: 100100000, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
---- !u!114 &520976703 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 2920842790040878123, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
-  m_PrefabInstance: {fileID: 520976702}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 50e4b6ab263219b4e93278a5f1596553, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: ProjectGame2D.Runtime::FarmPlot
---- !u!4 &520976704 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
-  m_PrefabInstance: {fileID: 520976702}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &541853985
 GameObject:
   m_ObjectHideFlags: 0
@@ -150527,6 +150547,107 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 1
   m_BlendShapeWeights: []
+--- !u!1001 &574118350
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 1839170709}
+    m_Modifications:
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 28.11
+      objectReference: {fileID: 0}
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -28.36
+      objectReference: {fileID: 0}
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2920842790040878123, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: _plotId
+      value: farm.mapnhat.plot.037
+      objectReference: {fileID: 0}
+    - target: {fileID: 2920842790040878123, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: _cropOutline
+      value: 
+      objectReference: {fileID: 574118353}
+    - target: {fileID: 8688889621308454510, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_Name
+      value: FarmPlot_037
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 5261745787805472583, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 574118353}
+  m_SourcePrefab: {fileID: 100100000, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+--- !u!4 &574118351 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+  m_PrefabInstance: {fileID: 574118350}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &574118352 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 5261745787805472583, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+  m_PrefabInstance: {fileID: 574118350}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &574118353
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 574118352}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5d99099959d6f1a4fb47b151ab021c45, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ProjectGame2D.Runtime::HoverOutline
+--- !u!114 &574118354 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2920842790040878123, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+  m_PrefabInstance: {fileID: 574118350}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 50e4b6ab263219b4e93278a5f1596553, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ProjectGame2D.Runtime::FarmPlot
 --- !u!1 &576119468
 GameObject:
   m_ObjectHideFlags: 0
@@ -155352,6 +155473,107 @@ Tilemap:
     e31: 0
     e32: 0
     e33: 1
+--- !u!1001 &585208806
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 1839170709}
+    m_Modifications:
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 13.99
+      objectReference: {fileID: 0}
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -33.42
+      objectReference: {fileID: 0}
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2920842790040878123, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: _plotId
+      value: farm.mapnhat.plot.042
+      objectReference: {fileID: 0}
+    - target: {fileID: 2920842790040878123, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: _cropOutline
+      value: 
+      objectReference: {fileID: 585208809}
+    - target: {fileID: 8688889621308454510, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_Name
+      value: FarmPlot_042
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 5261745787805472583, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 585208809}
+  m_SourcePrefab: {fileID: 100100000, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+--- !u!4 &585208807 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+  m_PrefabInstance: {fileID: 585208806}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &585208808 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 5261745787805472583, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+  m_PrefabInstance: {fileID: 585208806}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &585208809
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 585208808}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5d99099959d6f1a4fb47b151ab021c45, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ProjectGame2D.Runtime::HoverOutline
+--- !u!114 &585208810 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2920842790040878123, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+  m_PrefabInstance: {fileID: 585208806}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 50e4b6ab263219b4e93278a5f1596553, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ProjectGame2D.Runtime::FarmPlot
 --- !u!1 &590891473
 GameObject:
   m_ObjectHideFlags: 0
@@ -155489,6 +155711,107 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 590891473}
   m_CullTransparentMesh: 1
+--- !u!1001 &596810301
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 1839170709}
+    m_Modifications:
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 16.24
+      objectReference: {fileID: 0}
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -35.410004
+      objectReference: {fileID: 0}
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2920842790040878123, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: _plotId
+      value: farm.mapnhat.plot.046
+      objectReference: {fileID: 0}
+    - target: {fileID: 2920842790040878123, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: _cropOutline
+      value: 
+      objectReference: {fileID: 596810304}
+    - target: {fileID: 8688889621308454510, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_Name
+      value: FarmPlot_046
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 5261745787805472583, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 596810304}
+  m_SourcePrefab: {fileID: 100100000, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+--- !u!4 &596810302 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+  m_PrefabInstance: {fileID: 596810301}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &596810303 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 5261745787805472583, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+  m_PrefabInstance: {fileID: 596810301}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &596810304
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 596810303}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5d99099959d6f1a4fb47b151ab021c45, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ProjectGame2D.Runtime::HoverOutline
+--- !u!114 &596810305 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2920842790040878123, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+  m_PrefabInstance: {fileID: 596810301}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 50e4b6ab263219b4e93278a5f1596553, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ProjectGame2D.Runtime::FarmPlot
 --- !u!1 &596846558 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 5261745787805472583, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
@@ -155516,11 +155839,11 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 16.21
+      value: 16.24
       objectReference: {fileID: 0}
     - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -25.89
+      value: -25.43
       objectReference: {fileID: 0}
     - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
       propertyPath: m_LocalPosition.z
@@ -156929,11 +157252,11 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 28.72
+      value: 30.65
       objectReference: {fileID: 0}
     - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -21.4
+      value: -21.37
       objectReference: {fileID: 0}
     - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
       propertyPath: m_LocalPosition.z
@@ -157043,143 +157366,6 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 1.2}
   m_SizeDelta: {x: 320, y: 150}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!1 &2051050300
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 2051050301}
-  - component: {fileID: 2051050303}
-  - component: {fileID: 2051050302}
-  m_Layer: 0
-  m_Name: QuestMarker
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!224 &2051050301
-RectTransform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2051050300}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 687484781}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 1}
-  m_AnchorMax: {x: 0.5, y: 1}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 50, y: 46}
-  m_Pivot: {x: 0.5, y: 0}
---- !u!222 &2051050303
-CanvasRenderer:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2051050300}
-  m_CullTransparentMesh: 1
---- !u!114 &2051050302
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2051050300}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
-  m_Name:
-  m_EditorClassIdentifier: Unity.TextMeshPro::TMPro.TextMeshProUGUI
-  m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_RaycastTarget: 0
-  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
-  m_Maskable: 1
-  m_OnCullStateChanged:
-    m_PersistentCalls:
-      m_Calls: []
-  m_text: '!'
-  m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 39c450f2cabb3b64f8c807e54fa773c1, type: 2}
-  m_sharedMaterial: {fileID: -2151005897107381033, guid: 39c450f2cabb3b64f8c807e54fa773c1, type: 2}
-  m_fontSharedMaterials: []
-  m_fontMaterial: {fileID: 0}
-  m_fontMaterials: []
-  m_fontColor32:
-    serializedVersion: 2
-    rgba: 4281588223
-  m_fontColor: {r: 1, g: 0.85, b: 0.2, a: 1}
-  m_enableVertexGradient: 0
-  m_colorMode: 3
-  m_fontColorGradient:
-    topLeft: {r: 1, g: 1, b: 1, a: 1}
-    topRight: {r: 1, g: 1, b: 1, a: 1}
-    bottomLeft: {r: 1, g: 1, b: 1, a: 1}
-    bottomRight: {r: 1, g: 1, b: 1, a: 1}
-  m_fontColorGradientPreset: {fileID: 0}
-  m_spriteAsset: {fileID: 0}
-  m_tintAllSprites: 0
-  m_StyleSheet: {fileID: 0}
-  m_TextStyleHashCode: -1183493901
-  m_overrideHtmlColors: 0
-  m_faceColor:
-    serializedVersion: 2
-    rgba: 4294967295
-  m_fontSize: 34
-  m_fontSizeBase: 34
-  m_fontWeight: 400
-  m_enableAutoSizing: 0
-  m_fontSizeMin: 18
-  m_fontSizeMax: 72
-  m_fontStyle: 0
-  m_HorizontalAlignment: 2
-  m_VerticalAlignment: 512
-  m_textAlignment: 65535
-  m_characterSpacing: 0
-  m_characterHorizontalScale: 1
-  m_wordSpacing: 0
-  m_lineSpacing: 0
-  m_lineSpacingMax: 0
-  m_paragraphSpacing: 0
-  m_charWidthMaxAdj: 0
-  m_TextWrappingMode: 1
-  m_wordWrappingRatios: 0.4
-  m_overflowMode: 0
-  m_linkedTextComponent: {fileID: 0}
-  parentLinkedComponent: {fileID: 0}
-  m_enableKerning: 0
-  m_ActiveFontFeatures: 6e72656b
-  m_enableExtraPadding: 0
-  checkPaddingRequired: 0
-  m_isRichText: 1
-  m_EmojiFallbackSupport: 1
-  m_parseCtrlCharacters: 1
-  m_isOrthographic: 1
-  m_isCullingEnabled: 0
-  m_horizontalMapping: 0
-  m_verticalMapping: 0
-  m_uvLineOffset: 0
-  m_geometrySortingOrder: 0
-  m_IsTextObjectScaleStatic: 0
-  m_VertexBufferAutoSizeReduction: 0
-  m_useMaxVisibleDescender: 1
-  m_pageToDisplay: 1
-  m_margin: {x: 0, y: 0, z: 0, w: 0}
-  m_isUsingLegacyAnimationComponent: 0
-  m_isVolumetricText: 0
-  m_hasFontAssetChanged: 0
-  m_baseMaterial: {fileID: 0}
-  m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
 --- !u!114 &687484782
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -157239,7 +157425,7 @@ Canvas:
   m_SortingBucketNormalizedSize: 0
   m_VertexColorAlwaysGammaSpace: 0
   m_UseReflectionProbes: 0
-  m_AdditionalShaderChannelsFlag: 0
+  m_AdditionalShaderChannelsFlag: 25
   m_UpdateRectTransformForStandalone: 0
   m_SortingLayerID: 0
   m_SortingOrder: 50
@@ -157254,11 +157440,11 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 14.21
+      value: 14.02
       objectReference: {fileID: 0}
     - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -25.89
+      value: -25.43
       objectReference: {fileID: 0}
     - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
       propertyPath: m_LocalPosition.z
@@ -157526,23 +157712,6 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 1b607dff0e45747cc86a3bc880593dcd, type: 3}
---- !u!1 &755562104 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 5261745787805472583, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
-  m_PrefabInstance: {fileID: 805781703}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &755562107
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 755562104}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5d99099959d6f1a4fb47b151ab021c45, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: ProjectGame2D.Runtime::HoverOutline
 --- !u!1001 &760150711
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -157553,11 +157722,11 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 24.21
+      value: 22.74
       objectReference: {fileID: 0}
     - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -27.89
+      value: -26.41
       objectReference: {fileID: 0}
     - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
       propertyPath: m_LocalPosition.z
@@ -157632,6 +157801,107 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 2979001961371183774, guid: 6ddcf9ea85d2f3a49b633aa4d751f099, type: 3}
   m_PrefabInstance: {fileID: 1110141941089089371}
   m_PrefabAsset: {fileID: 0}
+--- !u!1001 &771566238
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 1839170709}
+    m_Modifications:
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 28.09
+      objectReference: {fileID: 0}
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -26.41
+      objectReference: {fileID: 0}
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2920842790040878123, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: _plotId
+      value: farm.mapnhat.plot.030
+      objectReference: {fileID: 0}
+    - target: {fileID: 2920842790040878123, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: _cropOutline
+      value: 
+      objectReference: {fileID: 771566241}
+    - target: {fileID: 8688889621308454510, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_Name
+      value: FarmPlot_030
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 5261745787805472583, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 771566241}
+  m_SourcePrefab: {fileID: 100100000, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+--- !u!4 &771566239 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+  m_PrefabInstance: {fileID: 771566238}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &771566240 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 5261745787805472583, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+  m_PrefabInstance: {fileID: 771566238}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &771566241
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 771566240}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5d99099959d6f1a4fb47b151ab021c45, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ProjectGame2D.Runtime::HoverOutline
+--- !u!114 &771566242 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2920842790040878123, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+  m_PrefabInstance: {fileID: 771566238}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 50e4b6ab263219b4e93278a5f1596553, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ProjectGame2D.Runtime::FarmPlot
 --- !u!1 &778423994
 GameObject:
   m_ObjectHideFlags: 0
@@ -157920,90 +158190,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 783021903}
   m_CullTransparentMesh: 1
---- !u!1001 &805781703
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    serializedVersion: 3
-    m_TransformParent: {fileID: 1839170709}
-    m_Modifications:
-    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 26.21
-      objectReference: {fileID: 0}
-    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: -27.89
-      objectReference: {fileID: 0}
-    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
-      propertyPath: m_LocalRotation.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
-      propertyPath: m_LocalRotation.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
-      propertyPath: m_LocalRotation.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2920842790040878123, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
-      propertyPath: _plotId
-      value: farm.mapnhat.plot.013
-      objectReference: {fileID: 0}
-    - target: {fileID: 2920842790040878123, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
-      propertyPath: _cropOutline
-      value: 
-      objectReference: {fileID: 755562107}
-    - target: {fileID: 8688889621308454510, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
-      propertyPath: m_Name
-      value: FarmPlot_013
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-    m_RemovedGameObjects: []
-    m_AddedGameObjects: []
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 5261745787805472583, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 755562107}
-  m_SourcePrefab: {fileID: 100100000, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
---- !u!114 &805781704 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 2920842790040878123, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
-  m_PrefabInstance: {fileID: 805781703}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 50e4b6ab263219b4e93278a5f1596553, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: ProjectGame2D.Runtime::FarmPlot
---- !u!4 &805781705 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
-  m_PrefabInstance: {fileID: 805781703}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &820342116
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -158102,6 +158288,107 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 6700192558566442853, guid: de1f8a82945f8f34dbd87e9f457c5810, type: 3}
   m_PrefabInstance: {fileID: 820342116}
   m_PrefabAsset: {fileID: 0}
+--- !u!1001 &851813001
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 1839170709}
+    m_Modifications:
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 18.37
+      objectReference: {fileID: 0}
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -31.42
+      objectReference: {fileID: 0}
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2920842790040878123, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: _plotId
+      value: farm.mapnhat.plot.041
+      objectReference: {fileID: 0}
+    - target: {fileID: 2920842790040878123, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: _cropOutline
+      value: 
+      objectReference: {fileID: 851813004}
+    - target: {fileID: 8688889621308454510, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_Name
+      value: FarmPlot_041
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 5261745787805472583, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 851813004}
+  m_SourcePrefab: {fileID: 100100000, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+--- !u!4 &851813002 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+  m_PrefabInstance: {fileID: 851813001}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &851813003 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 5261745787805472583, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+  m_PrefabInstance: {fileID: 851813001}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &851813004
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 851813003}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5d99099959d6f1a4fb47b151ab021c45, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ProjectGame2D.Runtime::HoverOutline
+--- !u!114 &851813005 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2920842790040878123, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+  m_PrefabInstance: {fileID: 851813001}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 50e4b6ab263219b4e93278a5f1596553, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ProjectGame2D.Runtime::FarmPlot
 --- !u!1 &878407340
 GameObject:
   m_ObjectHideFlags: 0
@@ -158155,90 +158442,6 @@ Transform:
   - {fileID: 114452304}
   m_Father: {fileID: 1879876234}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1001 &909738717
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    serializedVersion: 3
-    m_TransformParent: {fileID: 1839170709}
-    m_Modifications:
-    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 30.21
-      objectReference: {fileID: 0}
-    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: -27.89
-      objectReference: {fileID: 0}
-    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
-      propertyPath: m_LocalRotation.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
-      propertyPath: m_LocalRotation.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
-      propertyPath: m_LocalRotation.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2920842790040878123, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
-      propertyPath: _plotId
-      value: farm.mapnhat.plot.015
-      objectReference: {fileID: 0}
-    - target: {fileID: 2920842790040878123, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
-      propertyPath: _cropOutline
-      value: 
-      objectReference: {fileID: 2005941105}
-    - target: {fileID: 8688889621308454510, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
-      propertyPath: m_Name
-      value: FarmPlot_015
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-    m_RemovedGameObjects: []
-    m_AddedGameObjects: []
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 5261745787805472583, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 2005941105}
-  m_SourcePrefab: {fileID: 100100000, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
---- !u!114 &909738718 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 2920842790040878123, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
-  m_PrefabInstance: {fileID: 909738717}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 50e4b6ab263219b4e93278a5f1596553, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: ProjectGame2D.Runtime::FarmPlot
---- !u!4 &909738719 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
-  m_PrefabInstance: {fileID: 909738717}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &910000000
 GameObject:
   m_ObjectHideFlags: 0
@@ -183471,6 +183674,107 @@ TilemapCollider2D:
   m_MaximumTileChangeCount: 1000
   m_ExtrusionFactor: 0
   m_UseDelaunayMesh: 0
+--- !u!1001 &926212181
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 1839170709}
+    m_Modifications:
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 22.74
+      objectReference: {fileID: 0}
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -28.36
+      objectReference: {fileID: 0}
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2920842790040878123, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: _plotId
+      value: farm.mapnhat.plot.035
+      objectReference: {fileID: 0}
+    - target: {fileID: 2920842790040878123, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: _cropOutline
+      value: 
+      objectReference: {fileID: 926212184}
+    - target: {fileID: 8688889621308454510, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_Name
+      value: FarmPlot_035
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 5261745787805472583, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 926212184}
+  m_SourcePrefab: {fileID: 100100000, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+--- !u!4 &926212182 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+  m_PrefabInstance: {fileID: 926212181}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &926212183 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 5261745787805472583, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+  m_PrefabInstance: {fileID: 926212181}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &926212184
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 926212183}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5d99099959d6f1a4fb47b151ab021c45, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ProjectGame2D.Runtime::HoverOutline
+--- !u!114 &926212185 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2920842790040878123, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+  m_PrefabInstance: {fileID: 926212181}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 50e4b6ab263219b4e93278a5f1596553, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ProjectGame2D.Runtime::FarmPlot
 --- !u!1 &926356754
 GameObject:
   m_ObjectHideFlags: 0
@@ -185016,6 +185320,107 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1001 &938829537
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 1839170709}
+    m_Modifications:
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 25.35
+      objectReference: {fileID: 0}
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -28.36
+      objectReference: {fileID: 0}
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2920842790040878123, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: _plotId
+      value: farm.mapnhat.plot.036
+      objectReference: {fileID: 0}
+    - target: {fileID: 2920842790040878123, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: _cropOutline
+      value: 
+      objectReference: {fileID: 938829540}
+    - target: {fileID: 8688889621308454510, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_Name
+      value: FarmPlot_036
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 5261745787805472583, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 938829540}
+  m_SourcePrefab: {fileID: 100100000, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+--- !u!4 &938829538 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+  m_PrefabInstance: {fileID: 938829537}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &938829539 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 5261745787805472583, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+  m_PrefabInstance: {fileID: 938829537}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &938829540
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 938829539}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5d99099959d6f1a4fb47b151ab021c45, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ProjectGame2D.Runtime::HoverOutline
+--- !u!114 &938829541 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2920842790040878123, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+  m_PrefabInstance: {fileID: 938829537}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 50e4b6ab263219b4e93278a5f1596553, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ProjectGame2D.Runtime::FarmPlot
 --- !u!1 &940780650
 GameObject:
   m_ObjectHideFlags: 0
@@ -185179,6 +185584,107 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1364074935}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1001 &983016603
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 1839170709}
+    m_Modifications:
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 30.77
+      objectReference: {fileID: 0}
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -17.47
+      objectReference: {fileID: 0}
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2920842790040878123, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: _plotId
+      value: farm.mapnhat.plot.024
+      objectReference: {fileID: 0}
+    - target: {fileID: 2920842790040878123, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: _cropOutline
+      value: 
+      objectReference: {fileID: 983016606}
+    - target: {fileID: 8688889621308454510, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_Name
+      value: FarmPlot_024
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 5261745787805472583, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 983016606}
+  m_SourcePrefab: {fileID: 100100000, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+--- !u!4 &983016604 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+  m_PrefabInstance: {fileID: 983016603}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &983016605 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 5261745787805472583, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+  m_PrefabInstance: {fileID: 983016603}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &983016606
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 983016605}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5d99099959d6f1a4fb47b151ab021c45, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ProjectGame2D.Runtime::HoverOutline
+--- !u!114 &983016607 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2920842790040878123, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+  m_PrefabInstance: {fileID: 983016603}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 50e4b6ab263219b4e93278a5f1596553, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ProjectGame2D.Runtime::FarmPlot
 --- !u!1 &1028958097
 GameObject:
   m_ObjectHideFlags: 0
@@ -188199,6 +188705,85 @@ PolygonCollider2D:
       - {x: -0.8311676, y: -1.8778398}
       - {x: 0.5640669, y: -1.8839111}
   m_UseDelaunayMesh: 1
+--- !u!1 &1056925390
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1056925393}
+  - component: {fileID: 1056925392}
+  - component: {fileID: 1056925391}
+  m_Layer: 0
+  m_Name: EventSystem
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1056925391
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1056925390}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 01614664b831546d2ae94a42149d80ac, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.InputSystem::UnityEngine.InputSystem.UI.InputSystemUIInputModule
+  m_SendPointerHoverToParent: 1
+  m_MoveRepeatDelay: 0.5
+  m_MoveRepeatRate: 0.1
+  m_XRTrackingOrigin: {fileID: 0}
+  m_ActionsAsset: {fileID: -944628639613478452, guid: ca9f5fa95ffab41fb9a615ab714db018, type: 3}
+  m_PointAction: {fileID: -1654692200621890270, guid: ca9f5fa95ffab41fb9a615ab714db018, type: 3}
+  m_MoveAction: {fileID: -8784545083839296357, guid: ca9f5fa95ffab41fb9a615ab714db018, type: 3}
+  m_SubmitAction: {fileID: 392368643174621059, guid: ca9f5fa95ffab41fb9a615ab714db018, type: 3}
+  m_CancelAction: {fileID: 7727032971491509709, guid: ca9f5fa95ffab41fb9a615ab714db018, type: 3}
+  m_LeftClickAction: {fileID: 3001919216989983466, guid: ca9f5fa95ffab41fb9a615ab714db018, type: 3}
+  m_MiddleClickAction: {fileID: -2185481485913320682, guid: ca9f5fa95ffab41fb9a615ab714db018, type: 3}
+  m_RightClickAction: {fileID: -4090225696740746782, guid: ca9f5fa95ffab41fb9a615ab714db018, type: 3}
+  m_ScrollWheelAction: {fileID: 6240969308177333660, guid: ca9f5fa95ffab41fb9a615ab714db018, type: 3}
+  m_TrackedDevicePositionAction: {fileID: 6564999863303420839, guid: ca9f5fa95ffab41fb9a615ab714db018, type: 3}
+  m_TrackedDeviceOrientationAction: {fileID: 7970375526676320489, guid: ca9f5fa95ffab41fb9a615ab714db018, type: 3}
+  m_DeselectOnBackgroundClick: 1
+  m_PointerBehavior: 0
+  m_CursorLockBehavior: 0
+  m_ScrollDeltaPerTick: 6
+--- !u!114 &1056925392
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1056925390}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 76c392e42b5098c458856cdf6ecaaaa1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.EventSystems.EventSystem
+  m_FirstSelected: {fileID: 0}
+  m_sendNavigationEvents: 1
+  m_DragThreshold: 10
+--- !u!4 &1056925393
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1056925390}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &1065965366
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -188271,6 +188856,107 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 5390050775177653352, guid: 624744bc9c5530d4a8f80419a2f78bf2, type: 3}
   m_PrefabInstance: {fileID: 1819686655592239893}
   m_PrefabAsset: {fileID: 0}
+--- !u!1001 &1082480257
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 1839170709}
+    m_Modifications:
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 18.39
+      objectReference: {fileID: 0}
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -33.42
+      objectReference: {fileID: 0}
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2920842790040878123, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: _plotId
+      value: farm.mapnhat.plot.044
+      objectReference: {fileID: 0}
+    - target: {fileID: 2920842790040878123, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: _cropOutline
+      value: 
+      objectReference: {fileID: 1082480260}
+    - target: {fileID: 8688889621308454510, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_Name
+      value: FarmPlot_044
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 5261745787805472583, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1082480260}
+  m_SourcePrefab: {fileID: 100100000, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+--- !u!4 &1082480258 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+  m_PrefabInstance: {fileID: 1082480257}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &1082480259 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 5261745787805472583, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+  m_PrefabInstance: {fileID: 1082480257}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1082480260
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1082480259}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5d99099959d6f1a4fb47b151ab021c45, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ProjectGame2D.Runtime::HoverOutline
+--- !u!114 &1082480261 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2920842790040878123, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+  m_PrefabInstance: {fileID: 1082480257}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 50e4b6ab263219b4e93278a5f1596553, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ProjectGame2D.Runtime::FarmPlot
 --- !u!1 &1088207985
 GameObject:
   m_ObjectHideFlags: 0
@@ -188572,191 +189258,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1735715396}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1001 &1117632279
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    serializedVersion: 3
-    m_TransformParent: {fileID: 1839170709}
-    m_Modifications:
-    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 16.21
-      objectReference: {fileID: 0}
-    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: -31.89
-      objectReference: {fileID: 0}
-    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
-      propertyPath: m_LocalRotation.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
-      propertyPath: m_LocalRotation.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
-      propertyPath: m_LocalRotation.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2920842790040878123, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
-      propertyPath: _plotId
-      value: farm.mapnhat.plot.017
-      objectReference: {fileID: 0}
-    - target: {fileID: 2920842790040878123, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
-      propertyPath: _cropOutline
-      value: 
-      objectReference: {fileID: 461413592}
-    - target: {fileID: 8688889621308454510, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
-      propertyPath: m_Name
-      value: FarmPlot_017
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-    m_RemovedGameObjects: []
-    m_AddedGameObjects: []
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 5261745787805472583, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 461413592}
-  m_SourcePrefab: {fileID: 100100000, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
---- !u!114 &1117632280 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 2920842790040878123, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
-  m_PrefabInstance: {fileID: 1117632279}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 50e4b6ab263219b4e93278a5f1596553, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: ProjectGame2D.Runtime::FarmPlot
---- !u!4 &1117632281 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
-  m_PrefabInstance: {fileID: 1117632279}
-  m_PrefabAsset: {fileID: 0}
---- !u!1 &1129139307 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 5261745787805472583, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
-  m_PrefabInstance: {fileID: 1129521292}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &1129139310
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1129139307}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5d99099959d6f1a4fb47b151ab021c45, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: ProjectGame2D.Runtime::HoverOutline
---- !u!1001 &1129521292
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    serializedVersion: 3
-    m_TransformParent: {fileID: 1839170709}
-    m_Modifications:
-    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 16.21
-      objectReference: {fileID: 0}
-    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: -33.89
-      objectReference: {fileID: 0}
-    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
-      propertyPath: m_LocalRotation.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
-      propertyPath: m_LocalRotation.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
-      propertyPath: m_LocalRotation.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2920842790040878123, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
-      propertyPath: _plotId
-      value: farm.mapnhat.plot.020
-      objectReference: {fileID: 0}
-    - target: {fileID: 2920842790040878123, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
-      propertyPath: _cropOutline
-      value: 
-      objectReference: {fileID: 1129139310}
-    - target: {fileID: 8688889621308454510, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
-      propertyPath: m_Name
-      value: FarmPlot_020
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-    m_RemovedGameObjects: []
-    m_AddedGameObjects: []
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 5261745787805472583, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 1129139310}
-  m_SourcePrefab: {fileID: 100100000, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
---- !u!114 &1129521293 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 2920842790040878123, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
-  m_PrefabInstance: {fileID: 1129521292}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 50e4b6ab263219b4e93278a5f1596553, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: ProjectGame2D.Runtime::FarmPlot
---- !u!4 &1129521294 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
-  m_PrefabInstance: {fileID: 1129521292}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1130576604
 GameObject:
   m_ObjectHideFlags: 0
@@ -202704,6 +203205,107 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 613afcea6ee4e3c42a921248614019ee, type: 3}
   m_Name: 
   m_EditorClassIdentifier: ProjectGame2D.Runtime::FishingMinigameController
+--- !u!1001 &1237967248
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 1839170709}
+    m_Modifications:
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 13.99
+      objectReference: {fileID: 0}
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -35.410004
+      objectReference: {fileID: 0}
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2920842790040878123, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: _plotId
+      value: farm.mapnhat.plot.045
+      objectReference: {fileID: 0}
+    - target: {fileID: 2920842790040878123, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: _cropOutline
+      value: 
+      objectReference: {fileID: 1237967251}
+    - target: {fileID: 8688889621308454510, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_Name
+      value: FarmPlot_045
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 5261745787805472583, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1237967251}
+  m_SourcePrefab: {fileID: 100100000, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+--- !u!4 &1237967249 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+  m_PrefabInstance: {fileID: 1237967248}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &1237967250 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 5261745787805472583, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+  m_PrefabInstance: {fileID: 1237967248}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1237967251
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1237967250}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5d99099959d6f1a4fb47b151ab021c45, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ProjectGame2D.Runtime::HoverOutline
+--- !u!114 &1237967252 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2920842790040878123, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+  m_PrefabInstance: {fileID: 1237967248}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 50e4b6ab263219b4e93278a5f1596553, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ProjectGame2D.Runtime::FarmPlot
 --- !u!1 &1238454001
 GameObject:
   m_ObjectHideFlags: 0
@@ -203042,11 +203644,11 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 29.71
+      value: 28.7
       objectReference: {fileID: 0}
     - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -16.29
+      value: -15.48
       objectReference: {fileID: 0}
     - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
       propertyPath: m_LocalPosition.z
@@ -203058,15 +203660,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
       propertyPath: m_LocalRotation.x
-      value: 0
+      value: -0
       objectReference: {fileID: 0}
     - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
       propertyPath: m_LocalRotation.y
-      value: 0
+      value: -0
       objectReference: {fileID: 0}
     - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
       propertyPath: m_LocalRotation.z
-      value: 0
+      value: -0
       objectReference: {fileID: 0}
     - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -203525,6 +204127,108 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5d99099959d6f1a4fb47b151ab021c45, type: 3}
   m_Name: 
   m_EditorClassIdentifier: ProjectGame2D.Runtime::HoverOutline
+--- !u!1 &1259489529
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1259489530}
+  - component: {fileID: 1259489533}
+  - component: {fileID: 1259489532}
+  - component: {fileID: 1259489531}
+  m_Layer: 5
+  m_Name: Canvas
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &1259489530
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1259489529}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 0, y: 0, z: 0}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1839170709}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
+  m_Pivot: {x: 0, y: 0}
+--- !u!114 &1259489531
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1259489529}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dc42784cf147c0c48a680349fa168899, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.GraphicRaycaster
+  m_IgnoreReversedGraphics: 1
+  m_BlockingObjects: 0
+  m_BlockingMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
+--- !u!114 &1259489532
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1259489529}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0cd44c1031e13a943bb63640046fad76, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.CanvasScaler
+  m_UiScaleMode: 0
+  m_ReferencePixelsPerUnit: 100
+  m_ScaleFactor: 1
+  m_ReferenceResolution: {x: 800, y: 600}
+  m_ScreenMatchMode: 0
+  m_MatchWidthOrHeight: 0
+  m_PhysicalUnit: 3
+  m_FallbackScreenDPI: 96
+  m_DefaultSpriteDPI: 96
+  m_DynamicPixelsPerUnit: 1
+  m_PresetInfoIsWorld: 0
+--- !u!223 &1259489533
+Canvas:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1259489529}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_RenderMode: 0
+  m_Camera: {fileID: 0}
+  m_PlaneDistance: 100
+  m_PixelPerfect: 0
+  m_ReceivesEvents: 1
+  m_OverrideSorting: 0
+  m_OverridePixelPerfect: 0
+  m_SortingBucketNormalizedSize: 0
+  m_VertexColorAlwaysGammaSpace: 0
+  m_UseReflectionProbes: 0
+  m_AdditionalShaderChannelsFlag: 0
+  m_UpdateRectTransformForStandalone: 0
+  m_SortingLayerID: 0
+  m_SortingOrder: 0
+  m_TargetDisplay: 0
 --- !u!4 &1269313212 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 6711420288377813214, guid: c91e3cf4d973fc1468c50acee61ada35, type: 3}
@@ -233130,11 +233834,314 @@ Tilemap:
     e31: 0
     e32: 0
     e33: 1
+--- !u!1001 &1291395934
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 1839170709}
+    m_Modifications:
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 30.77
+      objectReference: {fileID: 0}
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -15.48
+      objectReference: {fileID: 0}
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2920842790040878123, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: _plotId
+      value: farm.mapnhat.plot.022
+      objectReference: {fileID: 0}
+    - target: {fileID: 2920842790040878123, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: _cropOutline
+      value: 
+      objectReference: {fileID: 1291395937}
+    - target: {fileID: 8688889621308454510, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_Name
+      value: FarmPlot_022
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 5261745787805472583, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1291395937}
+  m_SourcePrefab: {fileID: 100100000, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+--- !u!4 &1291395935 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+  m_PrefabInstance: {fileID: 1291395934}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &1291395936 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 5261745787805472583, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+  m_PrefabInstance: {fileID: 1291395934}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1291395937
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1291395936}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5d99099959d6f1a4fb47b151ab021c45, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ProjectGame2D.Runtime::HoverOutline
+--- !u!114 &1291395938 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2920842790040878123, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+  m_PrefabInstance: {fileID: 1291395934}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 50e4b6ab263219b4e93278a5f1596553, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ProjectGame2D.Runtime::FarmPlot
 --- !u!4 &1306785617 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 5882703327321680818, guid: c3b10c13509645146ba2585fad3b743d, type: 3}
   m_PrefabInstance: {fileID: 6881615193191209020}
   m_PrefabAsset: {fileID: 0}
+--- !u!1001 &1319551165
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 1839170709}
+    m_Modifications:
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 18.460001
+      objectReference: {fileID: 0}
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -27.42
+      objectReference: {fileID: 0}
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2920842790040878123, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: _plotId
+      value: farm.mapnhat.plot.034
+      objectReference: {fileID: 0}
+    - target: {fileID: 2920842790040878123, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: _cropOutline
+      value: 
+      objectReference: {fileID: 1319551168}
+    - target: {fileID: 8688889621308454510, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_Name
+      value: FarmPlot_034
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 5261745787805472583, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1319551168}
+  m_SourcePrefab: {fileID: 100100000, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+--- !u!4 &1319551166 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+  m_PrefabInstance: {fileID: 1319551165}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &1319551167 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 5261745787805472583, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+  m_PrefabInstance: {fileID: 1319551165}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1319551168
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1319551167}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5d99099959d6f1a4fb47b151ab021c45, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ProjectGame2D.Runtime::HoverOutline
+--- !u!114 &1319551169 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2920842790040878123, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+  m_PrefabInstance: {fileID: 1319551165}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 50e4b6ab263219b4e93278a5f1596553, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ProjectGame2D.Runtime::FarmPlot
+--- !u!1001 &1349383826
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 1839170709}
+    m_Modifications:
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 16.27
+      objectReference: {fileID: 0}
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -27.42
+      objectReference: {fileID: 0}
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2920842790040878123, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: _plotId
+      value: farm.mapnhat.plot.033
+      objectReference: {fileID: 0}
+    - target: {fileID: 2920842790040878123, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: _cropOutline
+      value: 
+      objectReference: {fileID: 1349383829}
+    - target: {fileID: 8688889621308454510, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_Name
+      value: FarmPlot_033
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 5261745787805472583, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1349383829}
+  m_SourcePrefab: {fileID: 100100000, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+--- !u!4 &1349383827 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+  m_PrefabInstance: {fileID: 1349383826}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &1349383828 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 5261745787805472583, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+  m_PrefabInstance: {fileID: 1349383826}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1349383829
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1349383828}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5d99099959d6f1a4fb47b151ab021c45, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ProjectGame2D.Runtime::HoverOutline
+--- !u!114 &1349383830 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2920842790040878123, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+  m_PrefabInstance: {fileID: 1349383826}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 50e4b6ab263219b4e93278a5f1596553, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ProjectGame2D.Runtime::FarmPlot
 --- !u!1 &1363651382
 GameObject:
   m_ObjectHideFlags: 0
@@ -233602,11 +234609,11 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 26.72
+      value: 28.02
       objectReference: {fileID: 0}
     - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -21.4
+      value: -21.37
       objectReference: {fileID: 0}
     - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
       propertyPath: m_LocalPosition.z
@@ -233676,23 +234683,6 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
   m_PrefabInstance: {fileID: 1366218425}
   m_PrefabAsset: {fileID: 0}
---- !u!1 &1367459216 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 5261745787805472583, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
-  m_PrefabInstance: {fileID: 412137608}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &1367459219
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1367459216}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5d99099959d6f1a4fb47b151ab021c45, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: ProjectGame2D.Runtime::HoverOutline
 --- !u!1 &1376084642
 GameObject:
   m_ObjectHideFlags: 0
@@ -233834,107 +234824,6 @@ CanvasRenderer:
 Transform:
   m_CorrespondingSourceObject: {fileID: 6941412956494677770, guid: 285a4140d280c0c4ead2b1e775820e06, type: 3}
   m_PrefabInstance: {fileID: 2001063970}
-  m_PrefabAsset: {fileID: 0}
---- !u!1 &1394089688 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 5261745787805472583, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
-  m_PrefabInstance: {fileID: 425795150}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &1394089691
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1394089688}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5d99099959d6f1a4fb47b151ab021c45, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: ProjectGame2D.Runtime::HoverOutline
---- !u!1001 &1402945604
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    serializedVersion: 3
-    m_TransformParent: {fileID: 1839170709}
-    m_Modifications:
-    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 18.21
-      objectReference: {fileID: 0}
-    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: -31.89
-      objectReference: {fileID: 0}
-    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
-      propertyPath: m_LocalRotation.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
-      propertyPath: m_LocalRotation.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
-      propertyPath: m_LocalRotation.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2920842790040878123, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
-      propertyPath: _plotId
-      value: farm.mapnhat.plot.018
-      objectReference: {fileID: 0}
-    - target: {fileID: 2920842790040878123, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
-      propertyPath: _cropOutline
-      value: 
-      objectReference: {fileID: 1761752210}
-    - target: {fileID: 8688889621308454510, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
-      propertyPath: m_Name
-      value: FarmPlot_018
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-    m_RemovedGameObjects: []
-    m_AddedGameObjects: []
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 5261745787805472583, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 1761752210}
-  m_SourcePrefab: {fileID: 100100000, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
---- !u!114 &1402945605 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 2920842790040878123, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
-  m_PrefabInstance: {fileID: 1402945604}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 50e4b6ab263219b4e93278a5f1596553, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: ProjectGame2D.Runtime::FarmPlot
---- !u!4 &1402945606 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
-  m_PrefabInstance: {fileID: 1402945604}
   m_PrefabAsset: {fileID: 0}
 --- !u!1 &1409827068
 GameObject:
@@ -234712,11 +235601,11 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 18.21
+      value: 18.42
       objectReference: {fileID: 0}
     - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -25.89
+      value: -25.43
       objectReference: {fileID: 0}
     - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
       propertyPath: m_LocalPosition.z
@@ -236020,7 +236909,7 @@ Tilemap:
       - {fileID: 2496633593235588275, guid: 056a84a3a5361dc46ade9c1cbe5719f5, type: 3}
       - {fileID: 4188643299980983519, guid: 056a84a3a5361dc46ade9c1cbe5719f5, type: 3}
       - {fileID: -3044549651046346443, guid: 056a84a3a5361dc46ade9c1cbe5719f5, type: 3}
-      m_AnimationSpeed: 10.000001
+      m_AnimationSpeed: 10
       m_AnimationTimeOffset: 0
       m_Flags: 0
   - first: {x: 55, y: -46, z: 0}
@@ -236253,6 +237142,107 @@ Tilemap:
     e31: 0
     e32: 0
     e33: 1
+--- !u!1001 &1522079208
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 1839170709}
+    m_Modifications:
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 28.06
+      objectReference: {fileID: 0}
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -23.320002
+      objectReference: {fileID: 0}
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2920842790040878123, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: _plotId
+      value: farm.mapnhat.plot.027
+      objectReference: {fileID: 0}
+    - target: {fileID: 2920842790040878123, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: _cropOutline
+      value: 
+      objectReference: {fileID: 1522079211}
+    - target: {fileID: 8688889621308454510, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_Name
+      value: FarmPlot_027
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 5261745787805472583, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1522079211}
+  m_SourcePrefab: {fileID: 100100000, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+--- !u!4 &1522079209 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+  m_PrefabInstance: {fileID: 1522079208}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &1522079210 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 5261745787805472583, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+  m_PrefabInstance: {fileID: 1522079208}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1522079211
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1522079210}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5d99099959d6f1a4fb47b151ab021c45, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ProjectGame2D.Runtime::HoverOutline
+--- !u!114 &1522079212 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2920842790040878123, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+  m_PrefabInstance: {fileID: 1522079208}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 50e4b6ab263219b4e93278a5f1596553, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ProjectGame2D.Runtime::FarmPlot
 --- !u!1 &1523662694
 GameObject:
   m_ObjectHideFlags: 0
@@ -236390,6 +237380,107 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1523662694}
   m_CullTransparentMesh: 1
+--- !u!1001 &1555661218
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 1839170709}
+    m_Modifications:
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 18.43
+      objectReference: {fileID: 0}
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -35.410004
+      objectReference: {fileID: 0}
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2920842790040878123, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: _plotId
+      value: farm.mapnhat.plot.047
+      objectReference: {fileID: 0}
+    - target: {fileID: 2920842790040878123, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: _cropOutline
+      value: 
+      objectReference: {fileID: 1555661221}
+    - target: {fileID: 8688889621308454510, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_Name
+      value: FarmPlot_047
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 5261745787805472583, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1555661221}
+  m_SourcePrefab: {fileID: 100100000, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+--- !u!4 &1555661219 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+  m_PrefabInstance: {fileID: 1555661218}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &1555661220 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 5261745787805472583, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+  m_PrefabInstance: {fileID: 1555661218}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1555661221
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1555661220}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5d99099959d6f1a4fb47b151ab021c45, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ProjectGame2D.Runtime::HoverOutline
+--- !u!114 &1555661222 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2920842790040878123, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+  m_PrefabInstance: {fileID: 1555661218}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 50e4b6ab263219b4e93278a5f1596553, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ProjectGame2D.Runtime::FarmPlot
 --- !u!1 &1556845046
 GameObject:
   m_ObjectHideFlags: 0
@@ -238686,23 +239777,6 @@ MonoBehaviour:
   _bobSpeed: 2.5
   _nearRadius: 12
   _edgeMargin: 60
---- !u!1 &1761752207 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 5261745787805472583, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
-  m_PrefabInstance: {fileID: 1402945604}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &1761752210
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1761752207}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5d99099959d6f1a4fb47b151ab021c45, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: ProjectGame2D.Runtime::HoverOutline
 --- !u!1 &1789921171 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 5261745787805472583, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
@@ -239287,6 +240361,208 @@ EdgeCollider2D:
   m_AdjacentEndPoint: {x: 0, y: 0}
   m_UseAdjacentStartPoint: 0
   m_UseAdjacentEndPoint: 0
+--- !u!1001 &1807749223
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 1839170709}
+    m_Modifications:
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 16.21
+      objectReference: {fileID: 0}
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -33.42
+      objectReference: {fileID: 0}
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2920842790040878123, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: _plotId
+      value: farm.mapnhat.plot.043
+      objectReference: {fileID: 0}
+    - target: {fileID: 2920842790040878123, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: _cropOutline
+      value: 
+      objectReference: {fileID: 1807749226}
+    - target: {fileID: 8688889621308454510, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_Name
+      value: FarmPlot_043
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 5261745787805472583, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1807749226}
+  m_SourcePrefab: {fileID: 100100000, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+--- !u!4 &1807749224 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+  m_PrefabInstance: {fileID: 1807749223}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &1807749225 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 5261745787805472583, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+  m_PrefabInstance: {fileID: 1807749223}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1807749226
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1807749225}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5d99099959d6f1a4fb47b151ab021c45, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ProjectGame2D.Runtime::HoverOutline
+--- !u!114 &1807749227 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2920842790040878123, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+  m_PrefabInstance: {fileID: 1807749223}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 50e4b6ab263219b4e93278a5f1596553, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ProjectGame2D.Runtime::FarmPlot
+--- !u!1001 &1817664129
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 1839170709}
+    m_Modifications:
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 30.68
+      objectReference: {fileID: 0}
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -23.320002
+      objectReference: {fileID: 0}
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2920842790040878123, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: _plotId
+      value: farm.mapnhat.plot.028
+      objectReference: {fileID: 0}
+    - target: {fileID: 2920842790040878123, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: _cropOutline
+      value: 
+      objectReference: {fileID: 1817664132}
+    - target: {fileID: 8688889621308454510, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_Name
+      value: FarmPlot_028
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 5261745787805472583, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1817664132}
+  m_SourcePrefab: {fileID: 100100000, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+--- !u!4 &1817664130 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+  m_PrefabInstance: {fileID: 1817664129}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &1817664131 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 5261745787805472583, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+  m_PrefabInstance: {fileID: 1817664129}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1817664132
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1817664131}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5d99099959d6f1a4fb47b151ab021c45, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ProjectGame2D.Runtime::HoverOutline
+--- !u!114 &1817664133 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2920842790040878123, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+  m_PrefabInstance: {fileID: 1817664129}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 50e4b6ab263219b4e93278a5f1596553, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ProjectGame2D.Runtime::FarmPlot
 --- !u!1 &1825622324
 GameObject:
   m_ObjectHideFlags: 0
@@ -256766,6 +258042,107 @@ Tilemap:
     e31: 0
     e32: 0
     e33: 1
+--- !u!1001 &1830745564
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 1839170709}
+    m_Modifications:
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 25.38
+      objectReference: {fileID: 0}
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -26.41
+      objectReference: {fileID: 0}
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2920842790040878123, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: _plotId
+      value: farm.mapnhat.plot.029
+      objectReference: {fileID: 0}
+    - target: {fileID: 2920842790040878123, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: _cropOutline
+      value: 
+      objectReference: {fileID: 1830745567}
+    - target: {fileID: 8688889621308454510, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_Name
+      value: FarmPlot_029
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 5261745787805472583, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1830745567}
+  m_SourcePrefab: {fileID: 100100000, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+--- !u!4 &1830745565 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+  m_PrefabInstance: {fileID: 1830745564}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &1830745566 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 5261745787805472583, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+  m_PrefabInstance: {fileID: 1830745564}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1830745567
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1830745566}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5d99099959d6f1a4fb47b151ab021c45, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ProjectGame2D.Runtime::HoverOutline
+--- !u!114 &1830745568 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2920842790040878123, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+  m_PrefabInstance: {fileID: 1830745564}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 50e4b6ab263219b4e93278a5f1596553, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ProjectGame2D.Runtime::FarmPlot
 --- !u!1 &1839170707
 GameObject:
   m_ObjectHideFlags: 0
@@ -256810,15 +258187,32 @@ MonoBehaviour:
   - {fileID: 598470126}
   - {fileID: 1469819562}
   - {fileID: 760150712}
-  - {fileID: 805781704}
-  - {fileID: 520976703}
-  - {fileID: 909738718}
-  - {fileID: 412137609}
-  - {fileID: 1117632280}
-  - {fileID: 1402945605}
-  - {fileID: 221537898}
-  - {fileID: 1129521293}
-  - {fileID: 425795151}
+  - {fileID: 1291395938}
+  - {fileID: 373808797}
+  - {fileID: 983016607}
+  - {fileID: 1894236897}
+  - {fileID: 1872082145}
+  - {fileID: 1522079212}
+  - {fileID: 1817664133}
+  - {fileID: 1830745568}
+  - {fileID: 771566242}
+  - {fileID: 1989634367}
+  - {fileID: 330534699}
+  - {fileID: 1349383830}
+  - {fileID: 1319551169}
+  - {fileID: 926212185}
+  - {fileID: 938829541}
+  - {fileID: 574118354}
+  - {fileID: 2010299271}
+  - {fileID: 66204125}
+  - {fileID: 95524258}
+  - {fileID: 851813005}
+  - {fileID: 585208810}
+  - {fileID: 1807749227}
+  - {fileID: 1082480261}
+  - {fileID: 1237967252}
+  - {fileID: 596810305}
+  - {fileID: 1555661222}
 --- !u!4 &1839170709
 Transform:
   m_ObjectHideFlags: 0
@@ -256832,27 +258226,45 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 1248020602}
   - {fileID: 1864022173}
+  - {fileID: 1894236894}
+  - {fileID: 1872082142}
+  - {fileID: 1522079209}
+  - {fileID: 1817664130}
   - {fileID: 57633189}
   - {fileID: 1366218427}
   - {fileID: 672246179}
   - {fileID: 85794975}
+  - {fileID: 66204122}
   - {fileID: 2032496339}
+  - {fileID: 95524255}
   - {fileID: 1935760632}
+  - {fileID: 851813002}
   - {fileID: 689995817}
+  - {fileID: 585208807}
+  - {fileID: 330534696}
+  - {fileID: 1237967249}
+  - {fileID: 1349383827}
+  - {fileID: 596810302}
+  - {fileID: 1319551166}
+  - {fileID: 1555661219}
   - {fileID: 598470127}
+  - {fileID: 1807749224}
   - {fileID: 1469819563}
+  - {fileID: 1082480258}
   - {fileID: 760150713}
-  - {fileID: 805781705}
-  - {fileID: 520976704}
-  - {fileID: 909738719}
-  - {fileID: 412137610}
-  - {fileID: 1117632281}
-  - {fileID: 1402945606}
-  - {fileID: 221537899}
-  - {fileID: 1129521294}
-  - {fileID: 425795152}
+  - {fileID: 926212182}
+  - {fileID: 938829538}
+  - {fileID: 574118351}
+  - {fileID: 2010299268}
+  - {fileID: 1830745565}
+  - {fileID: 771566239}
+  - {fileID: 1989634364}
+  - {fileID: 1259489530}
+  - {fileID: 1248020602}
+  - {fileID: 1291395935}
+  - {fileID: 373808794}
+  - {fileID: 983016604}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1839170710
@@ -256868,6 +258280,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: ProjectGame2D.Runtime::QuestFarmSupply
   _questId: quest.act1.back_to_fields
+  _harvestQuestId: quest.act1.harvest_the_fields
   _farmingManager: {fileID: 1839170708}
   _seeds:
   - {fileID: 11400000, guid: ebe2f31f79dfc2b4a9ad82b500c515ac, type: 2}
@@ -257512,11 +258925,11 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 22.69
+      value: 22.75
       objectReference: {fileID: 0}
     - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -21.4
+      value: -21.37
       objectReference: {fileID: 0}
     - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
       propertyPath: m_LocalPosition.z
@@ -257586,6 +258999,107 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
   m_PrefabInstance: {fileID: 1864022171}
   m_PrefabAsset: {fileID: 0}
+--- !u!1001 &1872082141
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 1839170709}
+    m_Modifications:
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 25.35
+      objectReference: {fileID: 0}
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -23.320002
+      objectReference: {fileID: 0}
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2920842790040878123, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: _plotId
+      value: farm.mapnhat.plot.026
+      objectReference: {fileID: 0}
+    - target: {fileID: 2920842790040878123, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: _cropOutline
+      value: 
+      objectReference: {fileID: 1872082144}
+    - target: {fileID: 8688889621308454510, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_Name
+      value: FarmPlot_026
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 5261745787805472583, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1872082144}
+  m_SourcePrefab: {fileID: 100100000, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+--- !u!4 &1872082142 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+  m_PrefabInstance: {fileID: 1872082141}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &1872082143 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 5261745787805472583, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+  m_PrefabInstance: {fileID: 1872082141}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1872082144
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1872082143}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5d99099959d6f1a4fb47b151ab021c45, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ProjectGame2D.Runtime::HoverOutline
+--- !u!114 &1872082145 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2920842790040878123, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+  m_PrefabInstance: {fileID: 1872082141}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 50e4b6ab263219b4e93278a5f1596553, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ProjectGame2D.Runtime::FarmPlot
 --- !u!1 &1875249270 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 5261745787805472583, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
@@ -258060,6 +259574,107 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1891262027}
   m_CullTransparentMesh: 1
+--- !u!1001 &1894236893
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 1839170709}
+    m_Modifications:
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 22.77
+      objectReference: {fileID: 0}
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -23.320002
+      objectReference: {fileID: 0}
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2920842790040878123, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: _plotId
+      value: farm.mapnhat.plot.025
+      objectReference: {fileID: 0}
+    - target: {fileID: 2920842790040878123, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: _cropOutline
+      value: 
+      objectReference: {fileID: 1894236896}
+    - target: {fileID: 8688889621308454510, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_Name
+      value: FarmPlot_025
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 5261745787805472583, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1894236896}
+  m_SourcePrefab: {fileID: 100100000, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+--- !u!4 &1894236894 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+  m_PrefabInstance: {fileID: 1894236893}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &1894236895 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 5261745787805472583, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+  m_PrefabInstance: {fileID: 1894236893}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1894236896
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1894236895}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5d99099959d6f1a4fb47b151ab021c45, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ProjectGame2D.Runtime::HoverOutline
+--- !u!114 &1894236897 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2920842790040878123, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+  m_PrefabInstance: {fileID: 1894236893}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 50e4b6ab263219b4e93278a5f1596553, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ProjectGame2D.Runtime::FarmPlot
 --- !u!1001 &1896847393
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -258674,11 +260289,11 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 18.21
+      value: 18.400002
       objectReference: {fileID: 0}
     - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -23.89
+      value: -23.43
       objectReference: {fileID: 0}
     - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
       propertyPath: m_LocalPosition.z
@@ -259265,6 +260880,107 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: ProjectGame2D.Runtime::ButtonSfx
   _clickSound: 0
+--- !u!1001 &1989634363
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 1839170709}
+    m_Modifications:
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 30.7
+      objectReference: {fileID: 0}
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -26.41
+      objectReference: {fileID: 0}
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2920842790040878123, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: _plotId
+      value: farm.mapnhat.plot.031
+      objectReference: {fileID: 0}
+    - target: {fileID: 2920842790040878123, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: _cropOutline
+      value: 
+      objectReference: {fileID: 1989634366}
+    - target: {fileID: 8688889621308454510, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_Name
+      value: FarmPlot_031
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 5261745787805472583, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1989634366}
+  m_SourcePrefab: {fileID: 100100000, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+--- !u!4 &1989634364 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+  m_PrefabInstance: {fileID: 1989634363}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &1989634365 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 5261745787805472583, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+  m_PrefabInstance: {fileID: 1989634363}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1989634366
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1989634365}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5d99099959d6f1a4fb47b151ab021c45, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ProjectGame2D.Runtime::HoverOutline
+--- !u!114 &1989634367 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2920842790040878123, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+  m_PrefabInstance: {fileID: 1989634363}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 50e4b6ab263219b4e93278a5f1596553, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ProjectGame2D.Runtime::FarmPlot
 --- !u!1 &1994078753
 GameObject:
   m_ObjectHideFlags: 0
@@ -259616,23 +261332,6 @@ MonoBehaviour:
   - questId: quest.act1.drink_before_road
     dialogue: {fileID: 11400000, guid: 8fd2517fa9fa4e7d8ec91ba7933ff2f9, type: 2}
     turnInDialogue: {fileID: 11400000, guid: 22ae2ba69aee44aeba62329864a0e6dd, type: 2}
---- !u!1 &2005941102 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 5261745787805472583, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
-  m_PrefabInstance: {fileID: 909738717}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &2005941105
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2005941102}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5d99099959d6f1a4fb47b151ab021c45, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: ProjectGame2D.Runtime::HoverOutline
 --- !u!1 &2006913243
 GameObject:
   m_ObjectHideFlags: 0
@@ -261515,6 +263214,107 @@ EdgeCollider2D:
   m_AdjacentEndPoint: {x: 0, y: 0}
   m_UseAdjacentStartPoint: 0
   m_UseAdjacentEndPoint: 0
+--- !u!1001 &2010299267
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 1839170709}
+    m_Modifications:
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 30.72
+      objectReference: {fileID: 0}
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -28.36
+      objectReference: {fileID: 0}
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2920842790040878123, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: _plotId
+      value: farm.mapnhat.plot.038
+      objectReference: {fileID: 0}
+    - target: {fileID: 2920842790040878123, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: _cropOutline
+      value: 
+      objectReference: {fileID: 2010299270}
+    - target: {fileID: 8688889621308454510, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      propertyPath: m_Name
+      value: FarmPlot_038
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 5261745787805472583, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 2010299270}
+  m_SourcePrefab: {fileID: 100100000, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+--- !u!4 &2010299268 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+  m_PrefabInstance: {fileID: 2010299267}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &2010299269 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 5261745787805472583, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+  m_PrefabInstance: {fileID: 2010299267}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &2010299270
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2010299269}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5d99099959d6f1a4fb47b151ab021c45, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ProjectGame2D.Runtime::HoverOutline
+--- !u!114 &2010299271 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2920842790040878123, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
+  m_PrefabInstance: {fileID: 2010299267}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 50e4b6ab263219b4e93278a5f1596553, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ProjectGame2D.Runtime::FarmPlot
 --- !u!1 &2023882146
 GameObject:
   m_ObjectHideFlags: 0
@@ -261949,11 +263749,11 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 16.21
+      value: 16.220001
       objectReference: {fileID: 0}
     - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -23.89
+      value: -23.43
       objectReference: {fileID: 0}
     - target: {fileID: 2679471804231562806, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
       propertyPath: m_LocalPosition.z
@@ -262159,6 +263959,143 @@ CanvasRenderer:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2039199694}
+  m_CullTransparentMesh: 1
+--- !u!1 &2051050300
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2051050301}
+  - component: {fileID: 2051050303}
+  - component: {fileID: 2051050302}
+  m_Layer: 0
+  m_Name: QuestMarker
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &2051050301
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2051050300}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 687484781}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 1}
+  m_AnchorMax: {x: 0.5, y: 1}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 50, y: 46}
+  m_Pivot: {x: 0.5, y: 0}
+--- !u!114 &2051050302
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2051050300}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.TextMeshPro::TMPro.TextMeshProUGUI
+  m_Material: {fileID: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_RaycastTarget: 0
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_text: '!'
+  m_isRightToLeft: 0
+  m_fontAsset: {fileID: 11400000, guid: 39c450f2cabb3b64f8c807e54fa773c1, type: 2}
+  m_sharedMaterial: {fileID: -2151005897107381033, guid: 39c450f2cabb3b64f8c807e54fa773c1, type: 2}
+  m_fontSharedMaterials: []
+  m_fontMaterial: {fileID: 0}
+  m_fontMaterials: []
+  m_fontColor32:
+    serializedVersion: 2
+    rgba: 4281588223
+  m_fontColor: {r: 1, g: 0.85, b: 0.2, a: 1}
+  m_enableVertexGradient: 0
+  m_colorMode: 3
+  m_fontColorGradient:
+    topLeft: {r: 1, g: 1, b: 1, a: 1}
+    topRight: {r: 1, g: 1, b: 1, a: 1}
+    bottomLeft: {r: 1, g: 1, b: 1, a: 1}
+    bottomRight: {r: 1, g: 1, b: 1, a: 1}
+  m_fontColorGradientPreset: {fileID: 0}
+  m_spriteAsset: {fileID: 0}
+  m_tintAllSprites: 0
+  m_StyleSheet: {fileID: 0}
+  m_TextStyleHashCode: -1183493901
+  m_overrideHtmlColors: 0
+  m_faceColor:
+    serializedVersion: 2
+    rgba: 4294967295
+  m_fontSize: 34
+  m_fontSizeBase: 34
+  m_fontWeight: 400
+  m_enableAutoSizing: 0
+  m_fontSizeMin: 18
+  m_fontSizeMax: 72
+  m_fontStyle: 0
+  m_HorizontalAlignment: 2
+  m_VerticalAlignment: 512
+  m_textAlignment: 65535
+  m_characterSpacing: 0
+  m_characterHorizontalScale: 1
+  m_wordSpacing: 0
+  m_lineSpacing: 0
+  m_lineSpacingMax: 0
+  m_paragraphSpacing: 0
+  m_charWidthMaxAdj: 0
+  m_TextWrappingMode: 1
+  m_wordWrappingRatios: 0.4
+  m_overflowMode: 0
+  m_linkedTextComponent: {fileID: 0}
+  parentLinkedComponent: {fileID: 0}
+  m_enableKerning: 0
+  m_ActiveFontFeatures: 6e72656b
+  m_enableExtraPadding: 0
+  checkPaddingRequired: 0
+  m_isRichText: 1
+  m_EmojiFallbackSupport: 1
+  m_parseCtrlCharacters: 1
+  m_isOrthographic: 1
+  m_isCullingEnabled: 0
+  m_horizontalMapping: 0
+  m_verticalMapping: 0
+  m_uvLineOffset: 0
+  m_geometrySortingOrder: 0
+  m_IsTextObjectScaleStatic: 0
+  m_VertexBufferAutoSizeReduction: 0
+  m_useMaxVisibleDescender: 1
+  m_pageToDisplay: 1
+  m_margin: {x: 0, y: 0, z: 0, w: 0}
+  m_isUsingLegacyAnimationComponent: 0
+  m_isVolumetricText: 0
+  m_hasFontAssetChanged: 0
+  m_baseMaterial: {fileID: 0}
+  m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
+--- !u!222 &2051050303
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2051050300}
   m_CullTransparentMesh: 1
 --- !u!1 &2051323863
 GameObject:
@@ -270916,3 +272853,4 @@ SceneRoots:
   - {fileID: 722484229}
   - {fileID: 1556845049}
   - {fileID: 929060253}
+  - {fileID: 1056925393}

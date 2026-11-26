@@ -16,6 +16,8 @@ public static class FarmingAuthoring
     private const string PrefabRoot = "Assets/Prefabs/Farming";
     private const string CatalogPath = DefinitionRoot + "/FarmingCatalog.asset";
     private const string PlotPrefabPath = PrefabRoot + "/FarmPlot.prefab";
+    private const string PlotSoilSprite = "Plants_34";
+    private const int SoilSortingOrder = -10;
 
     [MenuItem("Tools/Project Game/Farming/Build And Install Farming")]
     public static void BuildAndInstall()
@@ -112,31 +114,36 @@ public static class FarmingAuthoring
 
     private static void BuildPlotPrefab()
     {
-        Sprite highlightSprite = LoadOrCreateHighlightSprite();
-        GameObject root = new("FarmPlot", typeof(BoxCollider2D), typeof(FarmPlot));
+        Sprite soilSprite = AssetDatabase.LoadAllAssetsAtPath(PlantAtlas).OfType<Sprite>()
+            .FirstOrDefault(s => s.name == PlotSoilSprite)
+            ?? throw new InvalidOperationException($"{PlotSoilSprite} was not found.");
+        GameObject root = new("FarmPlot", typeof(SpriteRenderer), typeof(HoverOutline), typeof(BoxCollider2D), typeof(FarmPlot));
         try
         {
             BoxCollider2D collider = root.GetComponent<BoxCollider2D>();
             collider.isTrigger = true;
             collider.size = new Vector2(0.9f, 0.9f);
 
-            GameObject highlight = new("EmptyHighlight", typeof(SpriteRenderer));
-            highlight.transform.SetParent(root.transform, false);
-            SpriteRenderer highlightRenderer = highlight.GetComponent<SpriteRenderer>();
-            highlightRenderer.sprite = highlightSprite;
-            highlightRenderer.color = new Color(0.65f, 1f, 0.45f, 0.48f);
-            highlightRenderer.sortingOrder = 19;
-            highlight.SetActive(false);
+            SpriteRenderer soilRenderer = root.GetComponent<SpriteRenderer>();
+            soilRenderer.sprite = soilSprite;
+            soilRenderer.sortingOrder = SoilSortingOrder; // flat ground: always below Y-sorted actors
 
-            GameObject cropVisual = new("CropVisual", typeof(SpriteRenderer));
+
+            GameObject cropVisual = new("CropVisual", typeof(SpriteRenderer), typeof(HoverOutline), typeof(BoxCollider2D));
             cropVisual.transform.SetParent(root.transform, false);
             SpriteRenderer cropRenderer = cropVisual.GetComponent<SpriteRenderer>();
-            cropRenderer.sortingOrder = 20;
+            cropRenderer.sortingOrder = 0; // same layer/order as actors: Y-sorted at the plant base
+            cropRenderer.spriteSortPoint = SpriteSortPoint.Pivot;
+            BoxCollider2D cropCollider = cropVisual.GetComponent<BoxCollider2D>();
+            cropCollider.enabled = false;
 
             SerializedObject plot = new(root.GetComponent<FarmPlot>());
             plot.FindProperty("_areaId").stringValue = "area.farm";
             plot.FindProperty("_cropRenderer").objectReferenceValue = cropRenderer;
-            plot.FindProperty("_emptyPlotHighlight").objectReferenceValue = highlight;
+            plot.FindProperty("_plotRenderer").objectReferenceValue = soilRenderer;
+            plot.FindProperty("_plotOutline").objectReferenceValue = root.GetComponent<HoverOutline>();
+            plot.FindProperty("_cropOutline").objectReferenceValue = cropVisual.GetComponent<HoverOutline>();
+            plot.FindProperty("_cropCollider").objectReferenceValue = cropCollider;
             plot.ApplyModifiedPropertiesWithoutUndo();
             PrefabUtility.SaveAsPrefabAsset(root, PlotPrefabPath);
         }
@@ -144,11 +151,6 @@ public static class FarmingAuthoring
         {
             UnityEngine.Object.DestroyImmediate(root);
         }
-    }
-
-    private static Sprite LoadOrCreateHighlightSprite()
-    {
-        return AssetDatabase.GetBuiltinExtraResource<Sprite>("UI/Skin/UISprite.psd");
     }
 
     private static void InstallScene(string scenePath, FarmingCatalog catalog, bool useFarmTilemap)
