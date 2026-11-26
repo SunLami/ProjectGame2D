@@ -123,7 +123,7 @@ toàn cục. Kiểm thử trong Unity do chủ dự án thực hiện.
 
 - Save Slot Picker dùng vùng 1440×810 ở Main Menu cho cả New Game và Continue, và 1440×810 trong gameplay. Main Menu giữ
   ba thẻ và bố cục gốc 1920×1080 làm hệ tọa độ nội dung. Gameplay dùng hệ tọa độ 776×430
-  theo vùng tham chiếu 16:9 hiện tại. Khi chọn Save hoặc Load, khung Pause ẩn. Back hoặc Cancel đóng trình chọn slot và hiện lại Pause.
+  theo vùng tham chiếu 16:9 hiện tại. Back trong Main Menu dùng khung 440×124, nằm giữa bên dưới ba thẻ ở cả New Game và Continue. Khung tiêu đề mỗi slot dùng 358×126 và nhãn căn giữa phần mặt bảng. Khi chọn Save hoặc Load, khung Pause ẩn. Back hoặc Cancel đóng trình chọn slot và hiện lại Pause.
 - Settings Main Menu dùng vùng 560×720. Bố cục gốc nằm trong rect 900×950 để tiêu đề và
   nội dung co cùng nhau. Settings gameplay đã dùng cùng vùng mục tiêu.
 - Badge Inventory, Shop và Crafting được chỉnh theo tỷ lệ board sau khi fit, nhắm cỡ chữ

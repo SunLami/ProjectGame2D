@@ -651,3 +651,29 @@ Extended the live Minimap and Full Map pilot from MapNhat to MapDuy and the thre
 2026-11-26 — Enabled the existing Player Dash in MapDuy.
 
 2026-11-26 — Hardened Settings, Quest Log, Pause and live-map teardown against Unity script reload during scene transitions.
+
+2026-11-26 — Placed the MapDuy density trial: 76 enemies including the original 62, 50 collectables, 72 ore veins, 76 harvestable trees and 28 animals. Ore split is 36 Copper / 18 Iron / 10 Gold / 5 Tin / 3 Diamond.
+
+2026-11-26 — Increased MapDuy to 90 collectables, 120 ore veins and 124 harvestable trees. Added points are spread between existing placements, including the northeastern routes.
+
+2026-11-26 — Added 180 harvestable trees in MapDuy, giving 304 total. Audited all authored spawn placements against the eight marked encounter regions and the connected terrain grid.
+
+2026-11-26 — Added a lakeshore spawn strip in MapDuy with 10 collectables, 8 ore veins and 14 harvestable trees. Adjusted prior placements using decoration sprite bounds and connected terrain.
+
+2026-11-26 — Redistributed MapDuy spawns to the northern clearing: 5 Boar and 37 ore veins (12 Copper, 9 Iron, 7 Gold, 5 Tin, 4 Diamond).
+
+2026-11-26 — Concentrated MapDuy mining in the northern Goblin clearing with 62 veins and all 6 Boar. Other regions retain 16 veins, 14 Hare and 8 Deer. Collectables and harvestable trees retain their placements.
+
+2026-11-26 — Added 24 harvestable trees and 18 collectables on the walkable grass west of the MapDuy lake, with clearance from paths and decorative props.
+
+2026-11-26 — Added 22 harvestable trees and 22 collectables on the approved walkable shoreline of the MapDuy lake.
+
+2026-11-26 — Added damage-driven health bars to animated Boar, Deer and Hare. Boar attack damage is synchronized with directional clips and can be interrupted by Hurt.
+
+2026-11-26 — Added randomized species-based encounter levels to the 104 MapDuy enemy and wildlife placements and added name and level labels to the shared health bar.
+
+2026-11-26 — Populated the two marked western MapDuy clearings with 24 harvestable trees, 16 collectables, 4 Deer and 6 Hare.
+
+2026-11-26 — Thinned harvestable trees in the eastern pond clearing from 61 to 40, opening routes through the clearing for enemies and wildlife.
+
+2026-11-26: implemented D-109 obstacle-aware movement for MapDuy enemies and wildlife. It adds a lazy Physics2D grid, A* waypoints, stuck detection and give-up fallbacks, and the `PathGrid` prefab is placed in MapDuy. The Ent prefab is scaled 1.6×. EditMode tests pass. Play Mode acceptance is pending owner testing. Details: [EnemyPathfindingPlan.md](EnemyPathfindingPlan.md) §8.
