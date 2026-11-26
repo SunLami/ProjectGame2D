@@ -462,7 +462,7 @@ TextureImporter:
   spriteMeshType: 1
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
-  spritePixelsToUnits: 32
+  spritePixelsToUnits: 16
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 0
   alphaUsage: 1
@@ -524,15 +524,15 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: CopperOre_Available
+      name: GoldOre_Available
       rect:
         serializedVersion: 2
         x: 1
         y: 241
         width: 28
         height: 24
-      alignment: 9
-      pivot: {x: 0.5, y: 0}
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -546,15 +546,15 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: CopperOre_Depleted
+      name: GoldOre_Depleted
       rect:
         serializedVersion: 2
         x: 33
         y: 241
         width: 28
         height: 24
-      alignment: 9
-      pivot: {x: 0.5, y: 0}
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -568,7 +568,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Objects_2
+      name: DiamondOre_Available
       rect:
         serializedVersion: 2
         x: 65
@@ -590,7 +590,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Objects_3
+      name: DiamondOre_Depleted
       rect:
         serializedVersion: 2
         x: 97
@@ -656,7 +656,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Objects_6
+      name: CopperOre_Available
       rect:
         serializedVersion: 2
         x: 194
@@ -678,7 +678,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Objects_7
+      name: CopperOre_Depleted
       rect:
         serializedVersion: 2
         x: 226
@@ -700,7 +700,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Objects_8
+      name: IronOre_Available
       rect:
         serializedVersion: 2
         x: 257
@@ -722,7 +722,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Objects_9
+      name: IronOre_Depleted
       rect:
         serializedVersion: 2
         x: 289
@@ -1096,7 +1096,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Objects_26
+      name: TinOre_Available
       rect:
         serializedVersion: 2
         x: 193
@@ -1118,7 +1118,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Objects_27
+      name: TinOre_Depleted
       rect:
         serializedVersion: 2
         x: 225
@@ -3443,8 +3443,14 @@ TextureImporter:
       - key: SpriteEditor.SliceSettings
         value: '{"sliceOnImport":false,"gridCellCount":{"x":1.0,"y":1.0},"gridSpriteSize":{"x":64.0,"y":64.0},"gridSpriteOffset":{"x":0.0,"y":0.0},"gridSpritePadding":{"x":0.0,"y":0.0},"pivot":{"x":0.5,"y":0.5},"pivotPixels":{"x":0.0,"y":0.0},"autoSlicingMethod":0,"spriteAlignment":0,"pivotUnitMode":0,"slicingType":0,"keepEmptyRects":false,"isAlternate":false}'
     nameFileIdTable:
-      CopperOre_Available: 755141082211021901
-      CopperOre_Depleted: 1030217251957551833
+      CopperOre_Available: -2746839580606631015
+      CopperOre_Depleted: 5372264662783423788
+      DiamondOre_Available: 3275407576765064038
+      DiamondOre_Depleted: -7067808830664889489
+      GoldOre_Available: 755141082211021901
+      GoldOre_Depleted: 1030217251957551833
+      IronOre_Available: -6895716492971166485
+      IronOre_Depleted: -4894898745955426128
       MedicinalHerb_Available: -4522729975624647956
       MedicinalHerb_Depleted: -3355458659597294393
       Objects_0: 7642980859614939925
@@ -3491,18 +3497,14 @@ TextureImporter:
       Objects_17: -2969016694365801900
       Objects_18: 1955328530927145255
       Objects_19: -2925288176213767688
-      Objects_2: 3275407576765064038
       Objects_20: -3803466081661082397
       Objects_21: 2752588384504392991
       Objects_22: 8284690431070618562
       Objects_23: 7859958447799540355
       Objects_24: 5820355003221595676
       Objects_25: -3857447443281189028
-      Objects_26: 8212777935605795489
-      Objects_27: -1668014440229517187
       Objects_28: -2035105256428418344
       Objects_29: 7043884582185661398
-      Objects_3: -7067808830664889489
       Objects_30: 7757104150326903795
       Objects_31: 2182464128780118203
       Objects_32: 2576728462390566697
@@ -3535,7 +3537,6 @@ TextureImporter:
       Objects_57: -4549469805725566138
       Objects_58: -4043780837925696159
       Objects_59: -3101308802076293628
-      Objects_6: -2746839580606631015
       Objects_60: 2780022079899246241
       Objects_61: -2899360304898280323
       Objects_62: -338228447435522767
@@ -3546,7 +3547,6 @@ TextureImporter:
       Objects_67: 4649482557999093556
       Objects_68: -3736867644340484305
       Objects_69: -1108098455314781316
-      Objects_7: 5372264662783423788
       Objects_70: 774074982635610924
       Objects_71: -8992927807544612251
       Objects_72: 5108118347405784964
@@ -3557,7 +3557,6 @@ TextureImporter:
       Objects_77: 4398868931401393710
       Objects_78: 7425545018328478448
       Objects_79: 7881271516424171006
-      Objects_8: -6895716492971166485
       Objects_80: -8102886684974876306
       Objects_81: -4827296256666933940
       Objects_82: -8016207045739360880
@@ -3568,7 +3567,6 @@ TextureImporter:
       Objects_87: 3881513329090628680
       Objects_88: -7320124526285240742
       Objects_89: -2681772495277608160
-      Objects_9: -4894898745955426128
       Objects_90: -2846207220525464403
       Objects_91: -4216284655010125573
       Objects_92: 5966429066039626428
@@ -3579,6 +3577,8 @@ TextureImporter:
       Objects_97: -1711523434982782601
       Objects_98: -3959818803741121525
       Objects_99: 6601666357239969419
+      TinOre_Available: 8212777935605795489
+      TinOre_Depleted: -1668014440229517187
       WoodTree001: -4637582773387940463
       WoodTree002: -8128843535577820725
       WoodTree003: 5751347226437846902
