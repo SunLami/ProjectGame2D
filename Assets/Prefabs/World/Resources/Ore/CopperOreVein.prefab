@@ -9,8 +9,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5896331059646056826}
-  - component: {fileID: 5497627030511419317}
   - component: {fileID: 6621630560647464566}
+  - component: {fileID: 3128045895679560707}
   m_Layer: 0
   m_Name: CopperOreVein
   m_TagString: Untagged
@@ -34,8 +34,25 @@ Transform:
   - {fileID: 4151231466724893365}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!61 &5497627030511419317
-BoxCollider2D:
+--- !u!114 &6621630560647464566
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5402855481071658297}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e7265f04d6e5d5c42949acad11169f8f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ProjectGame2D.Runtime::ResourceNodeInteractable
+  _persistentId: 
+  _areaId: 
+  _definition: {fileID: 11400000, guid: c9d442b4d4748dd479cb8c6e005e70ab, type: 2}
+  _visualRoot: {fileID: 7992422352850409975}
+  _flashRenderer: {fileID: 7067138088585145585}
+--- !u!70 &3128045895679560707
+CapsuleCollider2D:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -68,35 +85,9 @@ BoxCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
-  m_Offset: {x: 0, y: 0}
-  m_SpriteTilingProperty:
-    border: {x: 0, y: 0, z: 0, w: 0}
-    pivot: {x: 0, y: 0}
-    oldSize: {x: 0, y: 0}
-    newSize: {x: 0, y: 0}
-    adaptiveTilingThreshold: 0
-    drawMode: 0
-    adaptiveTiling: 0
-  m_AutoTiling: 0
-  m_Size: {x: 0.9, y: 0.75}
-  m_EdgeRadius: 0
---- !u!114 &6621630560647464566
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5402855481071658297}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e7265f04d6e5d5c42949acad11169f8f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: ProjectGame2D.Runtime::ResourceNodeInteractable
-  _persistentId: 
-  _areaId: 
-  _definition: {fileID: 11400000, guid: c9d442b4d4748dd479cb8c6e005e70ab, type: 2}
-  _visualRoot: {fileID: 7992422352850409975}
-  _flashRenderer: {fileID: 7067138088585145585}
+  m_Offset: {x: -0.03626444, y: -0.112200715}
+  m_Size: {x: 1.6818342, y: 0.81979305}
+  m_Direction: 1
 --- !u!1 &7992422352850409975
 GameObject:
   m_ObjectHideFlags: 0
@@ -124,7 +115,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1.5, y: 1.5, z: 1.5}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 5896331059646056826}
@@ -176,9 +167,9 @@ SpriteRenderer:
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 20
+  m_SortingOrder: 0
   m_MaskInteraction: 0
-  m_Sprite: {fileID: 755141082211021901, guid: 19c7589fcbac1494199d1aca3fc49184, type: 3}
+  m_Sprite: {fileID: -2746839580606631015, guid: 19c7589fcbac1494199d1aca3fc49184, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0

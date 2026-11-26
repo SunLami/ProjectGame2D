@@ -9,9 +9,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8496510450504808149}
-  - component: {fileID: 5315730783420567075}
   - component: {fileID: 8317203145138420119}
   - component: {fileID: 1363416663993983316}
+  - component: {fileID: -2093943439529924152}
   m_Layer: 0
   m_Name: WoodTree002
   m_TagString: Untagged
@@ -35,8 +35,40 @@ Transform:
   - {fileID: 3610459120762718885}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!61 &5315730783420567075
-BoxCollider2D:
+--- !u!114 &8317203145138420119
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3214626186216943696}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e7265f04d6e5d5c42949acad11169f8f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ProjectGame2D.Runtime::ResourceNodeInteractable
+  _persistentId: 
+  _areaId: 
+  _definition: {fileID: 11400000, guid: c5e10855d0dd39e44b8a1c9b30e5b85c, type: 2}
+  _visualRoot: {fileID: 5601864579220084965}
+  _flashRenderer: {fileID: 6534251699312291404}
+--- !u!114 &1363416663993983316
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3214626186216943696}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cd4ec706d8f881849a7f062e8970c7fc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ProjectGame2D.Runtime::ResourceVisualVariants
+  _renderer: {fileID: 6534251699312291404}
+  _variants:
+  - {fileID: -3581842131730062431, guid: ca034618aad783145a443eef7d70d48e, type: 3}
+--- !u!70 &-2093943439529924152
+CapsuleCollider2D:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -69,52 +101,9 @@ BoxCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
-  m_Offset: {x: 0, y: 0}
-  m_SpriteTilingProperty:
-    border: {x: 0, y: 0, z: 0, w: 0}
-    pivot: {x: 0, y: 0}
-    oldSize: {x: 0, y: 0}
-    newSize: {x: 0, y: 0}
-    adaptiveTilingThreshold: 0
-    drawMode: 0
-    adaptiveTiling: 0
-  m_AutoTiling: 0
-  m_Size: {x: 0.9, y: 1.25}
-  m_EdgeRadius: 0
---- !u!114 &8317203145138420119
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3214626186216943696}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e7265f04d6e5d5c42949acad11169f8f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: ProjectGame2D.Runtime::ResourceNodeInteractable
-  _persistentId: 
-  _areaId: 
-  _definition: {fileID: 11400000, guid: c5e10855d0dd39e44b8a1c9b30e5b85c, type: 2}
-  _visualRoot: {fileID: 5601864579220084965}
-  _flashRenderer: {fileID: 6534251699312291404}
---- !u!114 &1363416663993983316
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3214626186216943696}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: cd4ec706d8f881849a7f062e8970c7fc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: ProjectGame2D.Runtime::ResourceVisualVariants
-  _renderer: {fileID: 6534251699312291404}
-  _variants:
-  - {fileID: -4637582773387940463, guid: 19c7589fcbac1494199d1aca3fc49184, type: 3}
-  - {fileID: -8128843535577820725, guid: 19c7589fcbac1494199d1aca3fc49184, type: 3}
-  - {fileID: 5751347226437846902, guid: 19c7589fcbac1494199d1aca3fc49184, type: 3}
+  m_Offset: {x: -0.023278011, y: -0.08721093}
+  m_Size: {x: 1.4602174, y: 0.9062883}
+  m_Direction: 1
 --- !u!1 &5601864579220084965
 GameObject:
   m_ObjectHideFlags: 0
@@ -142,7 +131,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1.5, y: 1.5, z: 1.5}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 8496510450504808149}
@@ -194,9 +183,9 @@ SpriteRenderer:
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 20
+  m_SortingOrder: 0
   m_MaskInteraction: 0
-  m_Sprite: {fileID: -8128843535577820725, guid: 19c7589fcbac1494199d1aca3fc49184, type: 3}
+  m_Sprite: {fileID: -3581842131730062431, guid: ca034618aad783145a443eef7d70d48e, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -205,5 +194,5 @@ SpriteRenderer:
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
-  m_SpriteSortPoint: 0
+  m_SpriteSortPoint: 1
   m_BlendShapeWeights: []
