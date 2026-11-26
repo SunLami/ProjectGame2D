@@ -21,7 +21,7 @@ public static class InventoryTabbedPrefabBuilder
         var slot = Import("inventory_slot_v5", 90);
         var quick = Import("inventory_quick_slot_v1", 0);
         var gold = Import("inventory_gold_well_v1", 80);
-        var close = Import("inventory_close_v2", 0);
+        var close = AssetDatabase.LoadAssetAtPath<Sprite>(MapUIAuthoring.CloseButtonPath);
         var root = PrefabUtility.LoadPrefabContents(PrefabPath);
         try
         {
@@ -141,6 +141,9 @@ public static class InventoryTabbedPrefabBuilder
             Rect(board,0,0,680,680*941f/1672f);
             Skin(board,AssetDatabase.LoadAssetAtPath<Sprite>(path),false);
             ((RectTransform)Find(root,"InventoryWindow")).anchoredPosition=Vector2.zero;
+            var scrollSurface = Find(root, "GridScrollView").GetComponent<Image>();
+            scrollSurface.raycastTarget = true;
+            scrollSurface.canvasRenderer.cullTransparentMesh = false;
             var bakedNames=new[]{"InventoryOpaqueBackdrop","PreviewFrame","GridFrame","InventoryStats","GoldBadge","TitleInventory"};
             foreach(var image in root.GetComponentsInChildren<Image>(true))
                 if(bakedNames.Contains(image.name)) image.enabled=false;
@@ -194,7 +197,7 @@ public static class InventoryTabbedPrefabBuilder
             Rect(Find(root,"Gold"),0,0,90,22);
             Rect(Find(root,"GoldIcon"),-27,0,15,15);
             Rect(Find(root,"GoldText"),13,0,54,20);
-            Rect(Find(root,"CloseBtn"),287,161,22,22);
+            Rect(Find(root,"CloseBtn"),287,160.35167f,24,24);
             PopupLayoutAuthoring.Reanchor(Find(board.gameObject, "TitleInventory"), new Vector2(0.5f, 1f), new Vector2(0.5f, 1f));
             PopupLayoutAuthoring.Reanchor(Find(board.gameObject, "InventoryTitleLabel"), new Vector2(0f, 1f), new Vector2(0f, 1f));
             PopupLayoutAuthoring.Reanchor(Find(board.gameObject, "CloseBtn"), new Vector2(1f, 1f), new Vector2(1f, 1f));

@@ -15,6 +15,8 @@ public sealed class InventoryItemTooltipUI : MonoBehaviour
     [SerializeField] private TMP_Text _descriptionText;
 
     private Canvas _canvas;
+    private EquipmentItemSO _hoveredEquipment;
+    private bool _requiresHigherLevel;
 
     private void Awake()
     {
@@ -46,6 +48,8 @@ public sealed class InventoryItemTooltipUI : MonoBehaviour
         _typeText.text = item is EquipmentItemSO equipment
             ? $"{item.type.ToString().ToUpperInvariant()}   /   {equipment.slot.ToString().ToUpperInvariant()} SLOT"
             : item.type.ToString().ToUpperInvariant();
+        _hoveredEquipment = item as EquipmentItemSO;
+        _requiresHigherLevel = _hoveredEquipment != null && _hoveredEquipment.RequiresHigherLevel(PlayerStat.Instance);
         _statsText.text = BuildStats(item);
         _descriptionText.text = string.IsNullOrWhiteSpace(item.description)
             ? "No description available."
@@ -56,8 +60,19 @@ public sealed class InventoryItemTooltipUI : MonoBehaviour
         _panel.SetAsLastSibling();
     }
 
+    private void LateUpdate()
+    {
+        if (_hoveredEquipment == null || _panel == null || !_panel.gameObject.activeInHierarchy) return;
+        bool locked = _hoveredEquipment.RequiresHigherLevel(PlayerStat.Instance);
+        if (locked == _requiresHigherLevel) return;
+
+        _requiresHigherLevel = locked;
+        _statsText.text = BuildStats(_hoveredEquipment);
+    }
+
     public void Hide()
     {
+        _hoveredEquipment = null;
         if (_panel != null) _panel.gameObject.SetActive(false);
     }
 
@@ -96,7 +111,8 @@ public sealed class InventoryItemTooltipUI : MonoBehaviour
             lines.Add($"Owned: {InventoryManager.Instance.GetTotalQuantity(item.itemId)}");
         if (item is EquipmentItemSO equipment)
         {
-            lines.Add($"Required level: {equipment.requiredLevel}");
+            string color = equipment.RequiresHigherLevel(PlayerStat.Instance) ? "#FF7773" : "#FFFFFF";
+            lines.Add($"<color={color}>Required level: {equipment.requiredLevel}</color>");
             PlayerStatModifiers m = equipment.statModifiers;
             Add(lines, "Max Health", m.maxHealth);
             Add(lines, "Attack Damage", m.attackDamage);

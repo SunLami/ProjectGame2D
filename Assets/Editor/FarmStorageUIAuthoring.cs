@@ -18,7 +18,7 @@ public static class FarmStorageUIAuthoring
     private const string PanelSpritePath = ArtFolder + "/farm_storage_inventory_board_v4.png";
     private const string InventoryArtFolder = "Assets/Resources/UI/Inventory";
     private const string SlotSpritePath = InventoryArtFolder + "/QuestStyle1920/inventory_slot_reference_v4.png";
-    private const string CloseSpritePath = InventoryArtFolder + "/LightFantasy/inventory_close_thin_hd.png";
+    private const string CloseSpritePath = MapUIAuthoring.CloseButtonPath;
 
     private const int GridColumns = 6;
     private const int GridRows = 5;
@@ -62,7 +62,7 @@ public static class FarmStorageUIAuthoring
         title.text = "Farm Storage";
 
         Button closeButton = Button("CloseButton", panel.transform, closeSprite);
-        SetRect(closeButton.GetComponent<RectTransform>(), new Vector2(425f, 264f), new Vector2(36f, 36f));
+        SetRect(closeButton.GetComponent<RectTransform>(), new Vector2(416f, 264f), new Vector2(34f, 34f));
 
         TMP_Text feedback = Text("Feedback", panel.transform, font, 13f, TextAlignmentOptions.Center, GoldText);
         SetRect(feedback.rectTransform, new Vector2(0f, -214f), new Vector2(760f, 24f));

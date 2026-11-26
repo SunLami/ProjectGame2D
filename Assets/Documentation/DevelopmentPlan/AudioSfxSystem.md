@@ -262,3 +262,7 @@ generate bằng AI prompt.
 - Audio Mixer/ducking nâng cao (hiện vẫn là volume nhân thủ công trên AudioSource, đủ dùng cho scope
   này).
 - SFX rời cho scene ngoài MainMenu/StudioIntro/IntroCutscene/MapNhat.
+
+Unmapped tiles use the scene footstep fallback. During additive transitions, outgoing scene listeners are disabled before the incoming scene activates.
+
+If an Editor reload interrupts an additive transition, the scene flow retains one active listener with preference for the active scene.

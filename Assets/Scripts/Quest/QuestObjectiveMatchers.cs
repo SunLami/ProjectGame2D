@@ -7,20 +7,22 @@ using System;
 /// </summary>
 public static class QuestObjectiveMatchers
 {
-    public static bool MatchesTalk(QuestObjectiveDefinition objective, string npcId) =>
+    public static bool MatchesTalk(QuestObjectiveDefinition objective, string npcId, string outcomeId = null) =>
         objective != null
         && objective.Type == QuestObjectiveType.Talk
-        && HasSameId(objective.TargetId, npcId);
+        && HasSameId(objective.TargetId, npcId)
+        && MatchesArea(objective.RequiredDialogueOutcomeId, outcomeId);
 
     public static bool MatchesObtain(QuestObjectiveDefinition objective, string itemId) =>
         objective != null
         && objective.Type == QuestObjectiveType.Obtain
         && HasSameId(objective.TargetId, itemId);
 
-    public static bool MatchesCraft(QuestObjectiveDefinition objective, string itemId) =>
+    public static bool MatchesCraft(QuestObjectiveDefinition objective, string itemId, string stationId = null) =>
         objective != null
         && objective.Type == QuestObjectiveType.Craft
-        && HasSameId(objective.TargetId, itemId);
+        && HasSameId(objective.TargetId, itemId)
+        && MatchesArea(objective.TargetAreaId, stationId);
 
     public static bool MatchesPurchase(QuestObjectiveDefinition objective, string itemId) =>
         objective != null

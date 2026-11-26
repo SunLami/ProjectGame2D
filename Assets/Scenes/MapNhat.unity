@@ -1125,15 +1125,23 @@ MonoBehaviour:
   m_GameObject: {fileID: 114452302}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a1c2bca8dd1b0ea42ab2a258fe91c612, type: 3}
+  m_Script: {fileID: 11500000, guid: 02c4af0440944a14290a6035273fd5df, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: ProjectGame2D.Runtime::TraderNpcInteractionUI
+  m_EditorClassIdentifier: ProjectGame2D.Runtime::QuestNpcInteractionUI
   _npcId: npc.leofrun
   _stationTag: 
+  _markerText: {fileID: 2051050302}
   _promptRoot: {fileID: 1574466240}
   _promptText: {fileID: 1891262029}
   _interactionButton: {fileID: 1574466242}
   _dialogue: {fileID: 11400000, guid: b4536f74b6e4f8e4a8891ba5312c6cf6, type: 2}
+  _questDialogues:
+  - questId: quest.act1.back_to_fields
+    dialogue: {fileID: 11400000, guid: b1ea8c3bae714fb491138becfc108fb9, type: 2}
+    turnInDialogue: {fileID: 0}
+  - questId: quest.act1.harvest_the_fields
+    dialogue: {fileID: 0}
+    turnInDialogue: {fileID: 11400000, guid: 1a44107abd924e3fb7971d54d01fbf69, type: 2}
 --- !u!58 &114452308
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -157026,6 +157034,7 @@ RectTransform:
   m_LocalScale: {x: 0.01, y: 0.01, z: 0.01}
   m_ConstrainProportionsScale: 0
   m_Children:
+  - {fileID: 2051050301}
   - {fileID: 1574466241}
   m_Father: {fileID: 114452304}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -157034,6 +157043,143 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 1.2}
   m_SizeDelta: {x: 320, y: 150}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!1 &2051050300
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2051050301}
+  - component: {fileID: 2051050303}
+  - component: {fileID: 2051050302}
+  m_Layer: 0
+  m_Name: QuestMarker
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &2051050301
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2051050300}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 687484781}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 1}
+  m_AnchorMax: {x: 0.5, y: 1}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 50, y: 46}
+  m_Pivot: {x: 0.5, y: 0}
+--- !u!222 &2051050303
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2051050300}
+  m_CullTransparentMesh: 1
+--- !u!114 &2051050302
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2051050300}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Unity.TextMeshPro::TMPro.TextMeshProUGUI
+  m_Material: {fileID: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_RaycastTarget: 0
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_text: '!'
+  m_isRightToLeft: 0
+  m_fontAsset: {fileID: 11400000, guid: 39c450f2cabb3b64f8c807e54fa773c1, type: 2}
+  m_sharedMaterial: {fileID: -2151005897107381033, guid: 39c450f2cabb3b64f8c807e54fa773c1, type: 2}
+  m_fontSharedMaterials: []
+  m_fontMaterial: {fileID: 0}
+  m_fontMaterials: []
+  m_fontColor32:
+    serializedVersion: 2
+    rgba: 4281588223
+  m_fontColor: {r: 1, g: 0.85, b: 0.2, a: 1}
+  m_enableVertexGradient: 0
+  m_colorMode: 3
+  m_fontColorGradient:
+    topLeft: {r: 1, g: 1, b: 1, a: 1}
+    topRight: {r: 1, g: 1, b: 1, a: 1}
+    bottomLeft: {r: 1, g: 1, b: 1, a: 1}
+    bottomRight: {r: 1, g: 1, b: 1, a: 1}
+  m_fontColorGradientPreset: {fileID: 0}
+  m_spriteAsset: {fileID: 0}
+  m_tintAllSprites: 0
+  m_StyleSheet: {fileID: 0}
+  m_TextStyleHashCode: -1183493901
+  m_overrideHtmlColors: 0
+  m_faceColor:
+    serializedVersion: 2
+    rgba: 4294967295
+  m_fontSize: 34
+  m_fontSizeBase: 34
+  m_fontWeight: 400
+  m_enableAutoSizing: 0
+  m_fontSizeMin: 18
+  m_fontSizeMax: 72
+  m_fontStyle: 0
+  m_HorizontalAlignment: 2
+  m_VerticalAlignment: 512
+  m_textAlignment: 65535
+  m_characterSpacing: 0
+  m_characterHorizontalScale: 1
+  m_wordSpacing: 0
+  m_lineSpacing: 0
+  m_lineSpacingMax: 0
+  m_paragraphSpacing: 0
+  m_charWidthMaxAdj: 0
+  m_TextWrappingMode: 1
+  m_wordWrappingRatios: 0.4
+  m_overflowMode: 0
+  m_linkedTextComponent: {fileID: 0}
+  parentLinkedComponent: {fileID: 0}
+  m_enableKerning: 0
+  m_ActiveFontFeatures: 6e72656b
+  m_enableExtraPadding: 0
+  checkPaddingRequired: 0
+  m_isRichText: 1
+  m_EmojiFallbackSupport: 1
+  m_parseCtrlCharacters: 1
+  m_isOrthographic: 1
+  m_isCullingEnabled: 0
+  m_horizontalMapping: 0
+  m_verticalMapping: 0
+  m_uvLineOffset: 0
+  m_geometrySortingOrder: 0
+  m_IsTextObjectScaleStatic: 0
+  m_VertexBufferAutoSizeReduction: 0
+  m_useMaxVisibleDescender: 1
+  m_pageToDisplay: 1
+  m_margin: {x: 0, y: 0, z: 0, w: 0}
+  m_isUsingLegacyAnimationComponent: 0
+  m_isVolumetricText: 0
+  m_hasFontAssetChanged: 0
+  m_baseMaterial: {fileID: 0}
+  m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
 --- !u!114 &687484782
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -203359,6 +203505,9 @@ MonoBehaviour:
   - questId: quest.act1.ring_of_forge
     dialogue: {fileID: 11400000, guid: f4d944b2d5f242faacf22a893de3f85a, type: 2}
     turnInDialogue: {fileID: 11400000, guid: 4a3ef6ff0296491eac21e8d01794a11c, type: 2}
+  - questId: quest.act1.forge_brasstan_edge
+    dialogue: {fileID: 11400000, guid: 02e4cd490b3f49e690250e1df66007c8, type: 2}
+    turnInDialogue: {fileID: 11400000, guid: b34f628a30024cc5976a3560a1fcac4e, type: 2}
 --- !u!1 &1259234871 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 5261745787805472583, guid: 12faec5136b7cf1429aba6cb50396c5c, type: 3}
@@ -233095,7 +233244,6 @@ GameObject:
   - component: {fileID: 1364074938}
   - component: {fileID: 1364074937}
   - component: {fileID: 1364074936}
-  - component: {fileID: 1364074944}
   - component: {fileID: 1364074945}
   m_Layer: 0
   m_Name: _SceneContext
@@ -233276,18 +233424,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: ProjectGame2D.Runtime::GameplaySceneLifetime
   _persistentGameplayRoots:
   - {fileID: 1735715387}
---- !u!114 &1364074944
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1364074932}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b3434efec50d81644937ed735ad96b75, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: ProjectGame2D.Runtime::TrainingAreaQuestFlow
 --- !u!114 &1364074945
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -237124,7 +237260,7 @@ MonoBehaviour:
   ShowCameraFrustum: 1
   IgnoreTimeScale: 0
   WorldUpOverride: {fileID: 0}
-  ChannelMask: -1
+  ChannelMask: 16383
   UpdateMethod: 2
   BlendUpdateMethod: 1
   LensModeOverride:
@@ -256733,37 +256869,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: ProjectGame2D.Runtime::QuestFarmSupply
   _questId: quest.act1.back_to_fields
   _farmingManager: {fileID: 1839170708}
-  _starterPlots:
-  - plotId: farm.mapnhat.plot.006
-    crop: {fileID: 11400000, guid: d4d1a585008042b4485006eced38723e, type: 2}
-  - plotId: farm.mapnhat.plot.007
-    crop: {fileID: 11400000, guid: d4d1a585008042b4485006eced38723e, type: 2}
-  - plotId: farm.mapnhat.plot.008
-    crop: {fileID: 11400000, guid: d4d1a585008042b4485006eced38723e, type: 2}
-  - plotId: farm.mapnhat.plot.009
-    crop: {fileID: 11400000, guid: d4d1a585008042b4485006eced38723e, type: 2}
-  - plotId: farm.mapnhat.plot.010
-    crop: {fileID: 11400000, guid: d4d1a585008042b4485006eced38723e, type: 2}
-  - plotId: farm.mapnhat.plot.016
-    crop: {fileID: 11400000, guid: 86c6d8f9758b74349899ab88ceebd278, type: 2}
-  - plotId: farm.mapnhat.plot.017
-    crop: {fileID: 11400000, guid: 86c6d8f9758b74349899ab88ceebd278, type: 2}
-  - plotId: farm.mapnhat.plot.018
-    crop: {fileID: 11400000, guid: 86c6d8f9758b74349899ab88ceebd278, type: 2}
-  - plotId: farm.mapnhat.plot.019
-    crop: {fileID: 11400000, guid: 86c6d8f9758b74349899ab88ceebd278, type: 2}
-  - plotId: farm.mapnhat.plot.020
-    crop: {fileID: 11400000, guid: 86c6d8f9758b74349899ab88ceebd278, type: 2}
-  - plotId: farm.mapnhat.plot.002
-    crop: {fileID: 11400000, guid: 074c1b947850e4e4f85b233c2f37feec, type: 2}
-  - plotId: farm.mapnhat.plot.003
-    crop: {fileID: 11400000, guid: 074c1b947850e4e4f85b233c2f37feec, type: 2}
-  - plotId: farm.mapnhat.plot.004
-    crop: {fileID: 11400000, guid: 074c1b947850e4e4f85b233c2f37feec, type: 2}
-  - plotId: farm.mapnhat.plot.005
-    crop: {fileID: 11400000, guid: 074c1b947850e4e4f85b233c2f37feec, type: 2}
-  - plotId: farm.mapnhat.plot.012
-    crop: {fileID: 11400000, guid: 074c1b947850e4e4f85b233c2f37feec, type: 2}
   _seeds:
   - {fileID: 11400000, guid: ebe2f31f79dfc2b4a9ad82b500c515ac, type: 2}
   - {fileID: 11400000, guid: c21659e2122be5e48b1ca1db77144c43, type: 2}

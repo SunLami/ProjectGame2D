@@ -35,6 +35,112 @@ public sealed class SaveMigrationTests
         Assert.AreEqual(0, save.inventory.gold);
     }
 
+    [TestCase(QuestStatus.ReadyToTurnIn, QuestStatus.Active, 1)]
+    [TestCase(QuestStatus.Completed, QuestStatus.Completed, 2)]
+    public void V17_AgnesMigration_RequiresTrainingForUnfinishedQuests(
+        QuestStatus oldStatus, QuestStatus expectedStatus, int expectedIndex)
+    {
+        var save = NewGameFactory.CreateDefault();
+        save.saveVersion = 17;
+        var quest = new QuestProgressSaveData
+        {
+            questId = "quest.act1.far_from_your_kind",
+            status = oldStatus,
+            currentObjectiveIndex = 1,
+            objectiveCounters = new[] { 1 }
+        };
+        save.quests.quests.Add(quest);
+
+        SaveMigration.Migrate(save);
+
+        Assert.AreEqual(expectedStatus, quest.status);
+        Assert.AreEqual(expectedIndex, quest.currentObjectiveIndex);
+        if (expectedStatus == QuestStatus.Active)
+            CollectionAssert.AreEqual(new[] { 1, 0 }, quest.objectiveCounters);
+    }
+
+    [Test]
+    public void V16_CompletedPreForgeQuests_CreditLevelFiveOnce()
+    {
+        var save = NewGameFactory.CreateDefault();
+        save.saveVersion = 16;
+        foreach (string id in new[]
+        {
+            "new_journey", "drink_before_road", "stocking_up_oswin", "stocking_up_eadric",
+            "back_to_fields", "harvest_the_fields", "back_to_eadric", "back_to_oswin", "cast_a_line"
+        })
+            save.quests.quests.Add(new QuestProgressSaveData
+                { questId = "quest.act1." + id, status = QuestStatus.Completed });
+
+        SaveMigration.Migrate(save);
+        SaveMigration.Migrate(save);
+
+        Assert.AreEqual(5, save.player.level);
+        Assert.AreEqual(4, save.player.currentExperience);
+        Assert.AreEqual(4, save.player.skills.points);
+    }
+
+    [Test]
+    public void V15_FarmMigration_DefersHarvestWithoutLosingEitherCounter()
+    {
+        var save = NewGameFactory.CreateDefault();
+        save.saveVersion = 15;
+        save.quests.trackedQuestId = "quest.act1.back_to_fields";
+        save.quests.quests.Add(new QuestProgressSaveData
+        {
+            questId = save.quests.trackedQuestId,
+            status = QuestStatus.Active,
+            currentObjectiveIndex = 4,
+            objectiveCounters = new[] { 15, 15, 15, 5, 2, 0 }
+        });
+
+        SaveMigration.Migrate(save);
+        SaveMigration.Migrate(save);
+
+        Assert.AreEqual("quest.act1.back_to_fields", save.quests.trackedQuestId);
+        QuestProgressSaveData planting = save.quests.quests.Find(quest => quest.questId == save.quests.trackedQuestId);
+        QuestProgressSaveData harvest = save.quests.quests.Find(quest => quest.questId == "quest.act1.harvest_the_fields");
+        Assert.AreEqual(QuestStatus.Active, planting.status);
+        Assert.AreEqual(1, planting.currentObjectiveIndex);
+        CollectionAssert.AreEqual(new[] { 5, 2, 0 }, planting.objectiveCounters);
+        Assert.AreEqual(QuestStatus.Locked, harvest.status);
+        Assert.AreEqual(3, harvest.currentObjectiveIndex);
+        CollectionAssert.AreEqual(new[] { 15, 15, 15 }, harvest.objectiveCounters);
+        Assert.AreEqual(2, save.quests.quests.Count);
+    }
+
+    [Test]
+    public void V15_ReadyActOneQuests_StillRequireNpcTurnIn()
+    {
+        var save = NewGameFactory.CreateDefault();
+        save.saveVersion = 15;
+        save.quests.trackedQuestId = "quest.act1.back_to_fields";
+        var planting = new QuestProgressSaveData
+        {
+            questId = save.quests.trackedQuestId,
+            status = QuestStatus.ReadyToTurnIn,
+            objectiveCounters = new[] { 15, 15, 15, 5, 5, 5 }
+        };
+        var oswin = new QuestProgressSaveData
+        {
+            questId = "quest.act1.stocking_up_oswin",
+            status = QuestStatus.ReadyToTurnIn
+        };
+        save.quests.quests.Add(planting);
+        save.quests.quests.Add(oswin);
+        int originalGold = save.inventory.gold;
+
+        SaveMigration.Migrate(save);
+
+        const string harvestId = "quest.act1.harvest_the_fields";
+        QuestProgressSaveData harvest = save.quests.quests.Find(quest => quest.questId == harvestId);
+        Assert.AreEqual(QuestStatus.Completed, planting.status);
+        Assert.AreEqual(QuestStatus.ReadyToTurnIn, harvest.status);
+        Assert.AreEqual(QuestStatus.ReadyToTurnIn, oswin.status);
+        Assert.AreEqual(harvestId, save.quests.trackedQuestId);
+        Assert.AreEqual(originalGold, save.inventory.gold);
+    }
+
     [Test]
     public void V1_MigratesToCurrent_WithNewGameEquivalentDefaults()
     {

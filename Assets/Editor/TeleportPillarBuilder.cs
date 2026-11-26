@@ -161,8 +161,8 @@ public static class TeleportPillarBuilder
         {
             new TeleportDestination
             {
-                id = "return.demo", displayName = "Heart Village", sceneName = "DemoScene", spawnId = "teleport_pillar_return",
-                description = "Leave the arena and return to the village.", available = true,
+                id = "return.mapduy", displayName = "Ruined Temple", sceneName = "MapDuy", spawnId = "spawn.mapduy.boss_pillar_return",
+                description = "Leave the arena and return to the Ruined Temple.", available = true,
                 accent = new Color(0.55f, 0.85f, 0.5f, 1f),
             },
         };
@@ -170,7 +170,7 @@ public static class TeleportPillarBuilder
         var arena = Object.FindAnyObjectByType<BossArenaController>();
         Vector2 pillarPosition = scenePath == WindArenaScenePath ? new Vector2(7f, -13.2f) : new Vector2(5f, -13.6f);
         GameObject pillar = CreatePillar(scene, frames, pillarPosition, ui, destinations, arena,
-            "LEAVE THE ARENA", "Return to the village.");
+            "LEAVE THE ARENA", "Return to the Ruined Temple.");
 
         GameObject context = scene.GetRootGameObjects().First(g => g.name == "_SceneContext");
         AddArrival(context, "arena_entry");

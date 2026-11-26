@@ -9,6 +9,7 @@ public sealed class CropDefinition : ScriptableObject
     [SerializeField, Min(1)] private int _minimumHarvestQuantity = 1;
     [SerializeField, Min(1)] private int _maximumHarvestQuantity = 1;
     [SerializeField] private CropGrowthStage[] _stages;
+    [SerializeField, Min(0)] private float _harvestCooldownSeconds;
 
     public string CropId => _cropId;
     public ItemSO HarvestItem => _harvestItem;
@@ -17,13 +18,33 @@ public sealed class CropDefinition : ScriptableObject
     public CropGrowthStage[] Stages => _stages;
     public int MatureStageIndex => Mathf.Max(0, (_stages?.Length ?? 1) - 1);
 
+    public double SecondsUntilHarvest(long plantedAtUtcTicks, long nowUtcTicks)
+    {
+        double duration = HarvestWaitSeconds;
+        double elapsed = TimeSpan.FromTicks(Math.Max(0L, nowUtcTicks - plantedAtUtcTicks)).TotalSeconds;
+        return Math.Max(0d, duration - elapsed);
+    }
+
+    public double HarvestWaitSeconds
+    {
+        get
+        {
+            double duration = Math.Max(0f, _harvestCooldownSeconds);
+            for (int i = 0; i < MatureStageIndex; i++)
+                duration += StageDuration(i);
+            return duration;
+        }
+    }
+
+    private double StageDuration(int index) => Math.Max(0.1f, _stages[index]?.durationSeconds ?? 0.1f);
+
     public int GetStageIndex(long plantedAtUtcTicks, long nowUtcTicks)
     {
         if (_stages == null || _stages.Length <= 1) return 0;
         double elapsed = TimeSpan.FromTicks(Math.Max(0L, nowUtcTicks - plantedAtUtcTicks)).TotalSeconds;
         for (int i = 0; i < _stages.Length - 1; i++)
         {
-            elapsed -= Math.Max(0.1f, _stages[i]?.durationSeconds ?? 0.1f);
+            elapsed -= StageDuration(i);
             if (elapsed < 0d) return i;
         }
         return _stages.Length - 1;

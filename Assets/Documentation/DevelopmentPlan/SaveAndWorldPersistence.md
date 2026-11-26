@@ -344,3 +344,19 @@ configured fallback. No save schema change is required.
 
 Current four-slot quick-bar restore runs after Inventory. It normalizes duplicate IDs in slot order
 and drops depleted usable-item bindings without a save schema change.
+
+V16 splits older farm objectives into planting and deferred harvest counters, retaining completed
+quests and their paid rewards. An unfinished legacy Wigheard conversation is offered again so
+the new acceptance flow can deliver the sword. Ready legacy Oswin and Eadric quests remain ready for NPC hand-in. A legacy farm quest ready for hand-in becomes the ready harvest quest at Leofrun.
+
+V17 credits the newly authored pre-forge XP once for quests already completed. Old Merric turn-ins receive the five-bar difference or count the new step as complete if Brasstan Edge is already owned or Agnes's quest was started. If every inventory slot is occupied, the five legacy bars occupy one additional saved slot.
+
+V18 moves unfinished Agnes turn-ins to the training step, with the first talk objective preserved. Completed Agnes quests remain completed. Loadout visibility and crop indicators derive from existing saved bindings and UTC planting timestamps.
+
+Quest restore checks authored Gather possession criteria using the restored Inventory. Quest 2-2b can become ReadyToTurnIn during restore without granting rewards or publishing progression events.
+
+Quest 2-2 reconciles existing planted plots after farm restore and gameplay readiness. The calculation takes the greater of saved credit and matching plot count, capped at the objective target.
+
+Boss travel shares the MapDuy world gate handoff. World snapshots merge by stable persistent ID across scenes. Manual saves in the three arenas retain the current scene for Continue.
+
+Death return uses the live world travel handoff to MapNhat, preserving the active session and outgoing world snapshot. Returning does not write or reload a save slot.

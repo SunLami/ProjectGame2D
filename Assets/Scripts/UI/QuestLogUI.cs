@@ -49,7 +49,6 @@ public sealed class QuestLogUI : MonoBehaviour
     private void Awake()
     {
         ResolveQuestLogAction();
-        ResolveQuestLogPresentation();
 
         if (_trackerRoot != null)
         {
@@ -67,6 +66,7 @@ public sealed class QuestLogUI : MonoBehaviour
         _abandonButton?.onClick.AddListener(OpenAbandonConfirmation);
         _confirmAbandonButton?.onClick.AddListener(ConfirmAbandonQuest);
         _cancelAbandonButton?.onClick.AddListener(CloseAbandonConfirmation);
+        ResolveQuestLogPresentation();
         BindFilterButtons();
         if (_questLogAction != null)
             _questLogAction.performed += HandleQuestLogPerformed;
@@ -455,7 +455,7 @@ public sealed class QuestLogUI : MonoBehaviour
 
     private void BindFilterButtons()
     {
-        if (_filterButtons == null) return;
+        if (_filterButtons == null || _filterButtons.Length < 4) return;
         _filterButtons[0]?.onClick.AddListener(FilterAll);
         _filterButtons[1]?.onClick.AddListener(FilterMain);
         _filterButtons[2]?.onClick.AddListener(FilterSide);
@@ -464,7 +464,7 @@ public sealed class QuestLogUI : MonoBehaviour
 
     private void UnbindFilterButtons()
     {
-        if (_filterButtons == null) return;
+        if (_filterButtons == null || _filterButtons.Length < 4) return;
         _filterButtons[0]?.onClick.RemoveListener(FilterAll);
         _filterButtons[1]?.onClick.RemoveListener(FilterMain);
         _filterButtons[2]?.onClick.RemoveListener(FilterSide);
@@ -545,7 +545,7 @@ public sealed class QuestLogUI : MonoBehaviour
         }
 
         bool actionable = status == QuestStatus.Active || status == QuestStatus.ReadyToTurnIn;
-        SetQuestActionVisibility(actionable, actionable && !string.IsNullOrEmpty(quest.GiverNpcId));
+        SetQuestActionVisibility(actionable, actionable && quest.CanAbandon);
         if (_trackButtonLabel != null)
             _trackButtonLabel.text = _questManager.IsTracked(quest.QuestId) ? "UNTRACK QUEST" : "TRACK QUEST";
     }
@@ -610,7 +610,7 @@ public sealed class QuestLogUI : MonoBehaviour
         if (_questManager?.Catalog == null
             || string.IsNullOrEmpty(_selectedQuestId)
             || !_questManager.Catalog.TryResolve(_selectedQuestId, out QuestDefinition quest)
-            || string.IsNullOrEmpty(quest.GiverNpcId))
+            || !quest.CanAbandon)
         {
             return;
         }
@@ -668,8 +668,11 @@ public sealed class QuestLogUI : MonoBehaviour
                 builder.AppendLine();
 
             bool done = hasProgress && (snapshot.Status == QuestStatus.ReadyToTurnIn
-                || snapshot.Status == QuestStatus.Completed || i < currentIndex);
-            bool current = hasProgress && snapshot.Status == QuestStatus.Active && i == currentIndex;
+                || snapshot.Status == QuestStatus.Completed || i < currentIndex
+                || (quest.ObjectivesInAnyOrder && i < snapshot.ObjectiveCounters.Count
+                    && snapshot.ObjectiveCounters[i] >= quest.Objectives[i].TargetCount));
+            bool current = hasProgress && snapshot.Status == QuestStatus.Active
+                && !quest.ObjectivesInAnyOrder && i == currentIndex;
             builder.Append(done ? "<color=#8F8A7A>" : current ? "<color=#FFE08A>> " : "  ");
             AppendObjective(
                 builder,

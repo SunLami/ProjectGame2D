@@ -27,8 +27,8 @@ public readonly struct PlayerTravelSnapshot
 /// <see cref="SceneFlowService"/> to load the destination scene and remembers where the player should
 /// appear; <see cref="SceneTravelArrival"/> in the destination applies it. Nothing is written to disk.
 ///
-/// Boss pillars keep their Development-only policy. The MapNhat–MapDuy world gates also
-/// support save-backed sessions, using live managers and capturing scene-owned state in memory.
+/// World gates and the MapDuy boss routes support save-backed sessions using live managers
+/// and capturing scene-owned state in memory.
 /// </summary>
 public static class SceneTravel
 {
@@ -37,9 +37,21 @@ public static class SceneTravel
     private static bool _pending;
     public static bool IsWorldGateArrival { get; private set; }
 
-    public static string ResolveSavedScene(GameSaveData save, string fallback) =>
-        save?.player?.location?.sceneId == "MapDuy" && Application.CanStreamedLevelBeLoaded("MapDuy")
-            ? "MapDuy" : fallback;
+    public static string ResolveSavedScene(GameSaveData save, string fallback)
+    {
+        string scene = save?.player?.location?.sceneId;
+        return (scene == "MapDuy" || IsBossArena(scene)) && Application.CanStreamedLevelBeLoaded(scene)
+            ? scene : fallback;
+    }
+
+    internal const string BossReturnSpawn = "spawn.mapduy.boss_pillar_return";
+    internal static bool IsBossArena(string scene) =>
+        scene is "BossArena_Earth" or "BossArena_Water" or "BossArena_Wind";
+
+    internal static bool IsSavedBossRoute(string source, string destination, string spawnId) =>
+        (source == "MapDuy" && IsBossArena(destination) && spawnId == "arena_entry")
+        || (IsBossArena(source) && destination == "MapDuy" && spawnId == BossReturnSpawn);
+
     private static string _pendingSpawnId;
     private static PlayerTravelSnapshot _pendingSnapshot;
 
@@ -53,7 +65,7 @@ public static class SceneTravel
     /// <summary>Returns null when travel can start, otherwise a short reason for the player.</summary>
     public static string CheckCanTravel() => CheckCanTravel(false);
 
-    private static string CheckCanTravel(bool worldGate)
+    private static string CheckCanTravel(bool worldGate, bool respawning = false)
     {
         if (SceneFlowService.Instance == null || SceneFlowService.Instance.IsTransitioning)
             return "Travel is not available right now.";
@@ -65,7 +77,7 @@ public static class SceneTravel
         if (!worldGate && sessions.Current.SaveData != null)
             return RefusedSaveSessionMessage;
 
-        if (PlayerStat.Instance == null || PlayerStat.Instance.IsDead)
+        if (PlayerStat.Instance == null || PlayerStat.Instance.IsDead != respawning)
             return "You cannot travel while defeated.";
 
         if (GameStateManager.Instance == null)
@@ -78,6 +90,10 @@ public static class SceneTravel
     public static bool TryTravel(string sceneName, string spawnId, out string failureReason) =>
         TryTravel(sceneName, spawnId, default, false, out failureReason);
 
+    internal static bool TryTravelThroughBossPillar(Scene source, string sceneName, string spawnId,
+        out string failureReason) =>
+        TryTravel(sceneName, spawnId, source, IsSavedBossRoute(source.name, sceneName, spawnId), out failureReason);
+
     internal static bool TryTravelThroughWorldGate(Scene source, string sceneName, string spawnId,
         out string failureReason)
     {
@@ -86,10 +102,15 @@ public static class SceneTravel
         return TryTravel(sceneName, spawnId, source, validRoute, out failureReason);
     }
 
+    internal static bool TryRespawnInVillage(Scene source, out string failureReason) =>
+        TryTravel("MapNhat", VillageSpawnId, source, true, out failureReason, respawning: true);
+
+    internal const string VillageSpawnId = "spawn.mapnhat.start";
+
     private static bool TryTravel(string sceneName, string spawnId, Scene source, bool worldGate,
-        out string failureReason)
+        out string failureReason, bool respawning = false)
     {
-        failureReason = CheckCanTravel(worldGate);
+        failureReason = CheckCanTravel(worldGate, respawning);
         if (failureReason != null)
             return false;
 
@@ -108,7 +129,7 @@ public static class SceneTravel
                 {
                     var world = root.GetComponent<WorldObjectRegistry>();
                     if (world != null)
-                        save.world = world.ToSaveData();
+                        save.world = WorldSaveData.Merge(save.world, world.ToSaveData());
                     var farm = root.GetComponent<FarmingManager>();
                     if (farm != null)
                         save.farming = farm.ToSaveData();
@@ -120,7 +141,7 @@ public static class SceneTravel
         PlayerStat stat = PlayerStat.Instance;
         if (stat != null)
         {
-            _pendingSnapshot = new PlayerTravelSnapshot(stat.Level, stat.CurrentExperience, stat.Health, stat.Stamina, stat.Skills.Capture());
+            _pendingSnapshot = new PlayerTravelSnapshot(stat.Level, stat.CurrentExperience, respawning ? -1f : stat.Health, respawning ? stat.MaxStamina : stat.Stamina, stat.Skills.Capture());
             _pendingSpawnId = spawnId;
             _pending = true;
         }
@@ -132,7 +153,8 @@ public static class SceneTravel
             return false;
         }
 
-        SoundFXManager.PlaySfx(SfxIds.WorldGateExit);
+        if (!respawning)
+            SoundFXManager.PlaySfx(SfxIds.WorldGateExit);
         return true;
     }
 

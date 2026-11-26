@@ -218,12 +218,13 @@ public sealed class BossTeleportSelectUI : MonoBehaviour
         _subtitleLabel = subtitle;
         SetRect(subtitle.rectTransform, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(0.5f, 1f), new Vector2(0f, -68f), new Vector2(-120f, 28f));
 
-        // close button (top right)
-        Image closeImage = NewImage("Close", panel.transform, Walnut);
-        SetRect(closeImage.rectTransform, new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(-16f, -16f), new Vector2(44f, 44f));
-        TMP_Text closeLabel = NewText("X", closeImage.transform, "X", 24, Gold, TextAlignmentOptions.Center);
-        Inset(closeLabel.rectTransform, 0f);
+        Image closeImage = NewImage("Close", panel.transform, Color.white);
+        closeImage.sprite = Resources.Load<Sprite>("UI/Map/DarkInventoryStyle/map_close_button_v1");
+        closeImage.preserveAspect = true;
+        SetRect(closeImage.rectTransform, Vector2.one, Vector2.one, Vector2.one,
+            new Vector2(-20f, -20f), new Vector2(44f, 44f));
         var closeButton = closeImage.gameObject.AddComponent<Button>();
+        closeButton.targetGraphic = closeImage;
         closeButton.onClick.AddListener(Close);
 
         var container = new GameObject("Cards", typeof(RectTransform), typeof(HorizontalLayoutGroup));

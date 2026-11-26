@@ -220,9 +220,8 @@ public sealed class QuestNpcInteractionUI : MonoBehaviour
         // offered -- every giver quest must have its own "come back and hand it in" visit, even
         // one whose only objective is talking to this same NPC (e.g. new_journey): accepting can
         // still satisfy that Talk objective in this conversation (ReadyToTurnIn), but the reward
-        // only grants on a later, separate TryInteract call where offered is null. Quests with no
-        // giver (e.g. back_to_fields) are unaffected -- they rely on QuestManager's own AutoTurnIn
-        // completion instead of ever reaching this method.
+        // only grants on a later, separate TryInteract call where offered is null. Quests configured
+        // with AutoTurnIn complete through QuestManager when their objectives are satisfied.
         if (offered == null)
             TryPerformTurnIn();
         Refresh();
@@ -274,7 +273,10 @@ public sealed class QuestNpcInteractionUI : MonoBehaviour
         else if (outcomeId == TraderNpcInteractionUI.StorageOutcomeId)
             FarmStorageUI.Instance?.Open(_playerInput);
         else if (outcomeId == SkillPanelUI.TrainingOutcomeId)
-            SkillPanelUI.OpenFromTrainer();
+        {
+            if (SkillPanelUI.OpenFromTrainer())
+                _service?.ReportConversation(_npcId, outcomeId);
+        }
         else
             return false;
 
@@ -295,7 +297,8 @@ public sealed class QuestNpcInteractionUI : MonoBehaviour
         if (_service == null || offered == null)
             return;
 
-        _service.TryAcceptQuest(_npcId, offered.QuestId);
+        if (!_service.TryAcceptQuest(_npcId, offered.QuestId) && offered.AcceptanceSupplies?.Items.Count > 0)
+            WorldMessagePopupUI.Show("Make room in your inventory for the quest supplies, then try again.");
     }
 
     private void Refresh()

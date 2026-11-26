@@ -67,3 +67,5 @@ shells. Reference prompts preserve item order, silhouette, palette and equipment
 using crisp pixel clusters and articulated highlights. Weapon prompts emphasize distinct blade,
 hilt and guard details, including the wooden Training Sword. Helmet prompts exclude all player
 features. Body, boot, pendant, ring and shield prompts preserve their individual trim and shape.
+
+Brasstan Edge (level 5) requires the starter sword and 10 Gold Bars at Merric's smithy. The Ring of the Forge supplies the bars, and Quest 4b tracks crafting the sword at the forge.

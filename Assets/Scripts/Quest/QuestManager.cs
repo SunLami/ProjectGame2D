@@ -113,10 +113,10 @@ public sealed class QuestManager : MonoBehaviour
     }
 
     private void HandleTalk(string npcId, string outcomeId) =>
-        ProgressMatching(o => QuestObjectiveMatchers.MatchesTalk(o, npcId), 1);
+        ProgressMatching(o => QuestObjectiveMatchers.MatchesTalk(o, npcId, outcomeId), 1);
 
     private void HandleCraft(string itemId, int quantity, string stationId) =>
-        ProgressMatching(o => QuestObjectiveMatchers.MatchesCraft(o, itemId), quantity);
+        ProgressMatching(o => QuestObjectiveMatchers.MatchesCraft(o, itemId, stationId), quantity);
 
     private void HandlePurchase(string itemId, int quantity, string shopId) =>
         ProgressMatching(o => QuestObjectiveMatchers.MatchesPurchase(o, itemId), quantity);
@@ -144,22 +144,17 @@ public sealed class QuestManager : MonoBehaviour
         {
             QuestRuntimeState state = _runtime[questId];
             QuestObjectiveDefinition objective = state.CurrentObjective;
-            if (!QuestObjectiveMatchers.MatchesObtain(objective, itemId))
-                continue;
-
-            bool progressed;
-            if (objective.ObtainMode == ObtainObjectiveMode.RequirePossession)
+            bool progressed = false;
+            if (QuestObjectiveMatchers.MatchesObtain(objective, itemId))
             {
-                progressed = InventoryManager.Instance != null
-                    && InventoryManager.Instance.HasItemId(itemId, objective.TargetCount)
-                    && state.CompleteCurrentObjective();
-            }
-            else
-            {
-                progressed = state.TryProgressCurrentObjective(quantity);
+                progressed = objective.ObtainMode == ObtainObjectiveMode.RequirePossession
+                    ? HasInventoryItem(itemId, objective.TargetCount) && state.CompleteCurrentObjective()
+                    : state.TryProgressCurrentObjective(quantity);
             }
 
-            if (progressed)
+            if (state.ReconcileGatherPossession(HasInventoryItem))
+                NotifyObjectiveProgress(questId, state);
+            else if (progressed)
             {
                 SoundFXManager.PlaySfx(SfxIds.QuestObjective);
                 QuestProgressChanged?.Invoke(questId);
@@ -167,26 +162,34 @@ public sealed class QuestManager : MonoBehaviour
         }
     }
 
+    private static bool HasInventoryItem(string itemId, int quantity) =>
+        InventoryManager.Instance != null && InventoryManager.Instance.HasItemId(itemId, quantity);
+
     private void ProgressMatching(Func<QuestObjectiveDefinition, bool> matches, int amount)
     {
         foreach (string questId in SnapshotActiveQuestIds())
         {
             QuestRuntimeState state = _runtime[questId];
-            if (!matches(state.CurrentObjective))
+            if (!state.TryProgressMatchingObjective(matches, amount))
                 continue;
 
-            if (!state.TryProgressCurrentObjective(amount))
-                continue;
-
-            SoundFXManager.PlaySfx(SfxIds.QuestObjective);
-            QuestProgressChanged?.Invoke(questId);
-
-            // A quest authored with AutoTurnIn (e.g. "equip a weapon") completes itself the
-            // instant its objectives are done -- no NPC visit to hand it in. TryTurnIn re-validates
-            // ReadyToTurnIn/reward capacity itself, so this is just as safe as any other caller.
-            if (state.Status == QuestStatus.ReadyToTurnIn && state.Definition.AutoTurnIn)
-                TryTurnIn(questId, out _);
+            state.ReconcileGatherPossession(HasInventoryItem);
+            NotifyObjectiveProgress(questId, state);
         }
+    }
+
+    internal void ReconcilePlantingCounts(string questId, Func<string, string, int> countPlants)
+    {
+        if (_runtime.TryGetValue(questId, out QuestRuntimeState state) && state.ReconcilePlantingCounts(countPlants))
+            NotifyObjectiveProgress(questId, state);
+    }
+
+    private void NotifyObjectiveProgress(string questId, QuestRuntimeState state)
+    {
+        SoundFXManager.PlaySfx(SfxIds.QuestObjective);
+        QuestProgressChanged?.Invoke(questId);
+        if (state.Status == QuestStatus.ReadyToTurnIn && state.Definition.AutoTurnIn)
+            TryTurnIn(questId, out _);
     }
 
     // Snapshot of keys for Active quests only -- a handler mutating _runtime mid-dispatch (not
@@ -282,8 +285,25 @@ public sealed class QuestManager : MonoBehaviour
         return Mathf.Max(0, state.CurrentObjective.TargetCount - state.ObjectiveCounters[state.CurrentObjectiveIndex]);
     }
 
-    public string GetTrackedControlHint() =>
-        TryGetTrackedState(out QuestRuntimeState state) ? state.CurrentObjective?.ControlHint : null;
+    public string GetTrackedControlHint()
+    {
+        if (TryGetTrackedState(out QuestRuntimeState state))
+        {
+            if (state.Status == QuestStatus.ReadyToTurnIn && state.Definition.ShowOfferTutorial)
+                return state.Definition.TurnInDirections;
+
+            string hint = state.CurrentObjective?.ControlHint;
+            if (!string.IsNullOrEmpty(hint))
+                return hint;
+        }
+
+        if (_catalog != null)
+            foreach (QuestDefinition quest in _catalog.AllQuests)
+                if (quest.ShowOfferTutorial && GetStatus(quest.QuestId) == QuestStatus.Available)
+                    return quest.OfferDirections;
+
+        return null;
+    }
 
     private bool TryGetTrackedState(out QuestRuntimeState state)
     {
@@ -297,7 +317,7 @@ public sealed class QuestManager : MonoBehaviour
     /// (TutorialAndQuestProgression.md Main Quest gate -- never trust a single cached bool).</summary>
     public QuestStatus GetStatus(string questId)
     {
-        if (_runtime.TryGetValue(questId, out QuestRuntimeState state))
+        if (_runtime.TryGetValue(questId, out QuestRuntimeState state) && state.Status != QuestStatus.Locked)
             return state.Status;
 
         if (_catalog == null || !_catalog.TryResolve(questId, out QuestDefinition definition))
@@ -345,12 +365,51 @@ public sealed class QuestManager : MonoBehaviour
         if (GetStatus(questId) != QuestStatus.Available)
             return false;
 
-        _runtime[questId] = new QuestRuntimeState(definition);
+        if (!TryGrantAcceptanceSupplies(definition.AcceptanceSupplies))
+            return false;
+
+        if (!_runtime.TryGetValue(questId, out QuestRuntimeState state))
+            _runtime[questId] = state = new QuestRuntimeState(definition);
+        else
+        {
+            QuestStatus resumedStatus = state.CurrentObjectiveIndex >= definition.Objectives.Count
+                ? QuestStatus.ReadyToTurnIn : QuestStatus.Active;
+            state.RestoreProgress(resumedStatus, state.CurrentObjectiveIndex, state.ObjectiveCounters);
+        }
+
+        state.ReconcileGatherPossession(HasInventoryItem);
         SoundFXManager.PlaySfx(SfxIds.QuestAccept);
         QuestAccepted?.Invoke(questId);
         QuestProgressChanged?.Invoke(questId);
         if (string.IsNullOrEmpty(_trackedQuestId))
             SetTrackedQuest(questId);
+        if (state.Status == QuestStatus.ReadyToTurnIn && definition.AutoTurnIn)
+            TryTurnIn(questId, out _);
+        return true;
+    }
+
+    private bool TryGrantAcceptanceSupplies(QuestRewardDefinition supplies)
+    {
+        if (supplies == null)
+            return true;
+
+        var grants = new List<InventoryItemGrant>();
+        foreach (QuestRewardItemEntry entry in supplies.Items)
+        {
+            if (!ItemResolver.TryResolve(entry.ItemId, out ItemSO item))
+                return false;
+            grants.Add(new InventoryItemGrant(item, entry.Quantity));
+        }
+
+        InventoryManager inventory = InventoryManager.Instance;
+        if ((grants.Count > 0 || supplies.Gold > 0) && inventory == null)
+            return false;
+        if (grants.Count > 0 && !inventory.TryAddBatch(grants))
+            return false;
+        if (supplies.Gold > 0)
+            inventory.AddGold(supplies.Gold);
+        if (supplies.Experience > 0)
+            PlayerStat.Instance?.AddExperience(supplies.Experience);
         return true;
     }
 
@@ -384,7 +443,7 @@ public sealed class QuestManager : MonoBehaviour
         if (string.IsNullOrEmpty(questId)
             || !_runtime.TryGetValue(questId, out QuestRuntimeState state)
             || (state.Status != QuestStatus.Active && state.Status != QuestStatus.ReadyToTurnIn)
-            || string.IsNullOrEmpty(state.Definition.GiverNpcId))
+            || !state.Definition.CanAbandon)
         {
             return false;
         }
@@ -448,16 +507,15 @@ public sealed class QuestManager : MonoBehaviour
         state.MarkCompleted();
         result = QuestTurnInResult.Success;
         SoundFXManager.PlaySfx(SfxIds.QuestComplete);
-        // Clear tracking before any completion listener runs: a listener may chain-accept the next
-        // quest (TrainingAreaQuestFlow auto-accepts quest.act1.back_to_fields from this very
-        // turn-in), and TryAcceptQuest only auto-tracks when nothing is tracked. Clearing after the
-        // events left the chained quest untracked and the tracker empty.
+        // Clear tracking before completion listeners run so a newly accepted quest can be tracked.
         if (IsTracked(questId))
             SetTrackedQuest(null);
         QuestCompleted?.Invoke(questId);
         QuestTurnedIn?.Invoke(questId);
         QuestProgressChanged?.Invoke(questId);
         ReconcileMainQuestUnlock(fireEvent: true);
+        if (!string.IsNullOrEmpty(state.Definition.AutoStartQuestId))
+            TryAcceptQuest(state.Definition.AutoStartQuestId);
         return true;
     }
 
@@ -573,6 +631,7 @@ public sealed class QuestManager : MonoBehaviour
 
                 var state = new QuestRuntimeState(definition);
                 state.RestoreProgress(entry.status, entry.currentObjectiveIndex, entry.objectiveCounters);
+                state.ReconcileGatherPossession(HasInventoryItem);
                 _runtime[entry.questId] = state;
             }
         }

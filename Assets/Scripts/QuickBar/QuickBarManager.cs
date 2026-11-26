@@ -44,6 +44,8 @@ public sealed class QuickBarManager : MonoBehaviour
 
     public string GetAssignedItemId(int index) => IsValidIndex(index) ? _assignedItemIds[index] : null;
 
+    public bool IsAssigned(string itemId) => !string.IsNullOrEmpty(itemId) && Array.IndexOf(_assignedItemIds, itemId) >= 0;
+
     public bool TryGetAssignedItem(int index, out ItemSO item)
     {
         item = null;
@@ -70,6 +72,30 @@ public sealed class QuickBarManager : MonoBehaviour
         _assignedItemIds[index] = item.itemId;
         Changed?.Invoke();
         return true;
+    }
+
+    internal bool ReturnToInventory(int index, InventorySlot target)
+    {
+        BindInventory();
+        if (target == null || _inventory == null || !TryGetAssignedItem(index, out ItemSO item))
+            return false;
+
+        InventorySlot source = null;
+        bool ownsTarget = false;
+        foreach (InventorySlot slot in _inventory.Slots)
+        {
+            ownsTarget |= ReferenceEquals(slot, target);
+            if (!slot.IsEmpty && slot.item.itemId == item.itemId)
+                source ??= slot;
+        }
+
+        if (!ownsTarget || source == null)
+            return false;
+
+        if (target.IsEmpty || target.item.itemId != item.itemId)
+            _inventory.SwapItems(source, target);
+
+        return Clear(index);
     }
 
     public bool Clear(int index)

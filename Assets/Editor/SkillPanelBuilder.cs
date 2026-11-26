@@ -46,7 +46,11 @@ public static class SkillPanelBuilder
             Label(content, "Title", "SKILLS LIBRARY", -330, 290, 430, 48, 30);
             Picture(content, "PointsPanel", "skill_points_panel_v1", 360, 288, 300, 74);
             Label(content, "PointsText", "Skill Points: --", 360, 288, 250, 40, 22);
-            var close = Picture(content, "Close", "skill_close_button_v1", 550, 303, 44, 44).gameObject.AddComponent<Button>();
+            Sprite closeSprite = AssetDatabase.LoadAssetAtPath<Sprite>(MapUIAuthoring.CloseButtonPath);
+            Image closeImage = SpriteImage(content, "Close", closeSprite, 555, 302, 44, 44);
+            closeImage.rectTransform.anchorMin = closeImage.rectTransform.anchorMax = Vector2.one;
+            closeImage.rectTransform.anchoredPosition = new Vector2(-35f, -53f);
+            var close = closeImage.gameObject.AddComponent<Button>();
             close.targetGraphic = close.GetComponent<Image>(); close.targetGraphic.raycastTarget = true;
             var socket = Crop(Art + "skill_hex_socket_v1.png");
             var badge = Crop(Art + "skill_cost_badge_v1.png");

@@ -136,24 +136,26 @@ DecisionRegister.md 2026-11-01):
 
 ```text
 Wigheard (npc.town.guildmaster)
-  quest.act1.new_journey        Talk/train Wigheard           -> reward: Training Sword (sword_lvl1)
+  quest.act1.new_journey        Accept Training Sword, equip it, then turn in to Wigheard
 Cuthbert (npc.town.mixologist)
   quest.act1.drink_before_road  Talk + buy 5 Carrot then 5 Grape Juice (manual turn-in)
 Oswin (npc.town.gastronome)
   quest.act1.stocking_up_oswin  Talk Oswin (2-1a, manual turn-in)
 Eadric (npc.town.chapman)
   quest.act1.stocking_up_eadric Talk Eadric (2-1b, manual turn-in)
-(no giver -- auto-accepted by TrainingAreaQuestFlow on stocking_up_eadric turn-in)
-  quest.act1.back_to_fields     Harvest 15 + Replant 5 each of Carrot/Grape/Lemon (2-2, autoTurnIn)
+Leofrun (npc.leofrun, available after stocking_up_eadric turn-in)
+  quest.act1.back_to_fields     Plant 5 each of Carrot/Grape/Lemon (2-2, autoTurnIn)
+  quest.act1.harvest_the_fields Harvest 15 each after planting (2-2b, auto-start, manual turn-in at Leofrun)
 Eadric (npc.town.chapman)
   quest.act1.back_to_eadric     Talk Eadric (2-3a) -> reward: 5 Carrot, 10 Meat (manual turn-in)
 Oswin (npc.town.gastronome)
   quest.act1.back_to_oswin      Talk Oswin (2-3b) -> reward: Harvest Stew (manual turn-in; D-120)
   quest.act1.cast_a_line        Fish x5 -> return to Oswin -> reward: Trailrunner Fish Broth (manual turn-in; D-120)
 Merric (npc.town.artificer)
-  quest.act1.ring_of_forge      Visit (Talk) Merric -> reward: 5 Gold Bar; IsSmithingStationUnlocked
+  quest.act1.ring_of_forge      Visit (Talk) Merric -> reward: 10 Gold Bars; IsSmithingStationUnlocked
+  quest.act1.forge_brasstan_edge Auto-starts after Quest 4; craft Brasstan Edge and turn in to Merric before Agnes
 Agnes (npc.town.hermetist)
-  quest.act1.far_from_your_kind Visit (Talk) Agnes; IsBlackArtsStationUnlocked
+  quest.act1.far_from_your_kind Visit Agnes, then open Skills through her training dialogue; IsBlackArtsStationUnlocked
 ```
 
 No quest in this Act carries `isMainQuest`/`isTutorialQuest`; the Main Quest gate stays locked
@@ -163,23 +165,12 @@ physical station GameObject exists yet. `QuestManager.IsSmithingStationUnlocked`
 `IsBlackArtsStationUnlocked` expose completion of Quest 4/5 for whatever station interactable is
 built later.
 
-Every quest in this chain -- except `quest.act1.back_to_fields`, which has no giver NPC -- is
-accepted and turned in purely through that NPC's own dialogue (`QuestNpcInteractionUI`): talking to
-its giver while the quest is `Available` opens that quest's `_questDialogues` entry, which closes
-into a `QuestAcceptPopupUI` accept/decline card; accepting immediately reports the conversation,
-which can satisfy a same-visit Talk objective (status becomes `ReadyToTurnIn` right there). All 8 of
-these quests have `AutoTurnIn` off, and `QuestNpcInteractionUI` deliberately never turns in during
-the same interaction that just accepted the quest (see its `offered == null` guard in
-`CompleteDialogueInteraction`/`HandleQuestDecision`) -- turning in always needs a separate, later
-visit to the giver, even one whose only objective is talking to that same NPC: the reward and
-`Completed` status only land on that second conversation. `quest.act1.cast_a_line` is the same
-pattern for a different reason (fishing happens away from Oswin, so a return visit is unavoidable
-regardless). Only `quest.act1.back_to_fields` auto-completes itself with no NPC visit at all, since
-it has no giver to return to. A giver NPC shows a "!" over its head while it has something
-`Available` to offer and a "?" while a tracked quest is `ReadyToTurnIn` there
-(`QuestNpcInteractionUI`'s marker, driven by `QuestNpcInteractionService`) -- this, plus the forced
-second visit, is how the player is led NPC-to-NPC through the chain with a real "hand it in" beat
-each time, not narration or a UI arrow. Do not auto-accept a quest that still has a giver (via
+A quest offered by an NPC opens their quest dialogue and an accept/decline card. The same
+interaction can satisfy a Talk objective and move the quest to `ReadyToTurnIn`. For manual
+hand-ins, the previous NPC grants rewards and unlocks the next quest after a separate conversation.
+The tracker points to the hand-in NPC while the quest is ready. Wigheard's quest is ready to turn in after
+equipping the sword. Planting starts the harvest quest automatically at the farm, and Agnes's
+quest completes when her training dialogue opens Skills. Do not auto-accept a quest that still has a giver (via
 `TrainingAreaQuestFlow`, `TutorialManager`'s `WaitForQuest` step, or similar glue): doing so skips
 the `Available` state the marker and dialogue resolution both depend on, so the giver falls back to
 its generic greeting instead of that quest's line, and a same-NPC two-objective quest (e.g. "Talk A,
@@ -220,23 +211,9 @@ flow above (stable quest IDs, save V13 and NPC dialogue → accept popup → sec
 - **Trigger "Frawand enters the village".** Equivalent to the current behaviour: New Game starts at
   the bridge into Heorte (Intro Timeline Scene 01), and `quest.act1.new_journey` is Available from
   the first playable frame; no extra trigger is authored.
-- **Cuthbert (Quest 1b).** Buy five Carrot Juice at 10–12 G each, then five Grape
-  Juice at 14–16 G each. Standard paid purchases continue to emit ItemPurchased.
-  Wigheard awards 140 G at Quest 1a turn-in, covering the maximum cost. The objective
-  order and purchase counters are unchanged. Saved completions do not replay rewards.
-- **Quest 2-2 farm supply.** `QuestFarmSupply` (MapNhat `FarmingFeature`) fills 15 authored starter
-  plots with ripe Carrot/Grape/Lemon (5 plots each × yield 3 = 15) when `back_to_fields` is accepted
-  and deposits the seeds the Replant objectives need into Farm Storage (Leofrun). It re-checks after
-  every harvest/plant/storage change and after loading a save, topping up only *seeds* for whatever
-  the remaining objectives still need (`QuestFarmSupplyPlanner`). Harvesting the wrong crop (which the
-  ordered runtime does not count) or loading a save whose farm is empty therefore never soft-locks the
-  quest, and the supply is capped by quest need so it is not a free farming source. No save field was
-  added. It replaces Codex's unfinished New-Game farm seeding, which put ripe crops on the farm from
-  minute one (harvestable — and wasted — before the quest) and re-seeded on every scene reload of a
-  New Game session.
-- **Tracking at chained auto-accept.** `QuestManager.TryTurnIn` now clears tracking before raising
-  `QuestCompleted`/`QuestTurnedIn`; `back_to_fields`, auto-accepted inside Eadric's turn-in, is
-  tracked immediately instead of leaving the tracker empty.
+- **Wigheard and Cuthbert.** Wigheard gives the sword on Accept. Open Inventory and equip it, then return to Wigheard to turn in before meeting Cuthbert. Cuthbert supplies 140 G on Accept for five Carrot Juice and five Grape Juice. Purchases and his 20 G completion reward use the existing flow.
+- **Tutorial handoffs.** The Tutorial banner uses offer directions for Cuthbert, Oswin, Eadric and Leofrun. Oswin and Eadric unlock the next offer when they receive the hand-in.
+- **Quest 2-2.** Leofrun offers the planting quest and supplies seeds for five Carrots, five Grapes and five Lemons. Planting all 15 starts the separate harvest quest automatically. Harvest 15 produce of each crop after it ripens. Remaining seed needs may use Farm Storage as overflow. V16 preserves the counters of both stages for saves with the former combined quest.
 - **Stations (Quest 4/5).** Merric's / Agnes's Crafting outcome is gated by
   `_craftingUnlockQuestId` (`quest.act1.ring_of_forge` / `quest.act1.far_from_your_kind`); an early
   attempt shows `Act1SmithingLocked` / `Act1BlackArtsLocked` naming the quest that unlocks it. This is
@@ -349,7 +326,7 @@ thể nhận Main Quest.
 ### Quest completion gold
 
 Production quest completions grant gold through the existing QuestRewardDefinition.
-Act I awards 140 G (A New Journey), 20 G (A Drink Before the Road), 8 G (Stocking Up,
+Act I supplies 140 G on accepting A Drink Before the Road, then awards 20 G for completing it, 8 G (Stocking Up,
 Oswin), 10 G (Stocking Up, Eadric), 24 G (Back to the Fields), 12 G (Back to Eadric),
 18 G (Back to Oswin), 30 G (Cast a Line), 25 G (The Ring of the Forge), and 30 G
 (Far From Your Kind). Potion Supply awards 28 G against its 20 G purchase.
@@ -358,3 +335,9 @@ purchases at maximum quotes. The mandatory stages between the drinks and fishing
 enough gold to buy Worm Bait at up to 3 G each, including spare bait for failed attempts.
 
 Quest Log shows the next available guidance offer between quests. The offer appears as NEW with the giver directions and remains available for acceptance through NPC dialogue. Completed quests are collected in the collapsible history.
+
+The Tutorial banner points to Eadric after the harvest, then to Oswin after the report. It explains bait and the dock during Quest 3, points back to Oswin when five fish are caught, and points to Merric and Agnes when their offers unlock. Nine pre-forge quest completions award 1,450 XP in total. Agnes teaches the player to open Skills through the dialogue option “Teach me a skill.”
+
+Quest 2-2b Gather objectives also accept 15 of the matching produce already in Inventory. Each crop counts in any order. The quest checks Inventory on quest start, objective changes, Inventory additions and save restore. Turn-in still goes through Leofrun and does not consume produce.
+
+Quest 2-2 opts into any-order planting. Each crop counter is saved separately. The tracker and Tutorial guide the first unfinished objective, while the Quest Log reflects all three counters.

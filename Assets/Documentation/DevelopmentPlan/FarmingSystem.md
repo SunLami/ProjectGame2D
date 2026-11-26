@@ -88,15 +88,8 @@ Carrot/Grape/Cucumber/Chillie/Mushroom/Lemon/Apple use 60-second maturity and ex
 - MapNhat `FarmingFeature/FarmingManager._catalog` is wired to `Assets/Game/Farming/Definitions/FarmingCatalog.asset`
   (it was null: restore reported every saved crop as unresolved and harvest items were not treated as
   farming items by Farm Storage).
-- `QuestFarmSupply` on the same object serves `quest.act1.back_to_fields`. Starter layout (ripe on
-  quest accept): Carrot `plot.006–010`, Grape `plot.016–020`, Lemon `plot.002–005, 012`; the other six
-  plots stay empty for replanting. Replant seeds (5 each) go to Farm Storage (Leofrun → "I'd like to
-  store some things").
-- Rule (`QuestFarmSupplyPlanner`): per crop, remaining harvest need ÷ yield vs plots already growing
-  that crop; on quest start missing plots become ripe plots; later (and on restore) held seeds
-  (storage + inventory) count first and only the shortfall is added as seeds. Never overwrites a
-  player crop, never raises `CropPlanted`/`CropReplanted`, raises `FarmStateChanged` for dirty/save.
-- No new save data. The previous WIP fields `_newGameCrops/_newGameSeeds` were removed.
+- Leofrun offers the planting quest after Eadric. Plant five of each crop from the quest seeds. The harvest quest auto-starts after the final required planting and waits for actual crop maturity. Existing crops in saves are retained.
+- `QuestFarmSupply` checks the active planting or harvest objectives and supplies missing seeds to Inventory, with Farm Storage as overflow. It counts held seeds and crops already planted. Quest 2-2 planting objectives accept all three crops in any order. On a live farm, matching existing plots can recover missing progress up to the objective target. Seed supply uses each crop’s remaining count. Each successful planting consumes one seed.
 
 ### Farm shop assortment
 
@@ -118,3 +111,7 @@ payout when the player sells are listed below, in gold.
 One seed yields three produce after maturity. Selling all three yields a net 0–2 G,
 1–3 G or 2–4 G by seed-price tier. Each produce payout is below its cheapest Buy quote.
 Seed sell values are 1–2, 2–3 or 3–4 G by tier for any shop that accepts seeds.
+
+A planted crop displays progress and UTC seconds to harvest above its sprite. The seven production crops have 60 seconds of growth followed by a five-second harvest cooldown. A downward arrow replaces the timer once harvesting is allowed. The deadline is derived from the saved planting timestamp.
+
+Quest 2-2b credits a crop objective when the required produce quantity is already in Inventory, including after Continue. Each harvest counts through the Gather event in any crop order.

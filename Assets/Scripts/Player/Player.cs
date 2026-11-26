@@ -19,6 +19,8 @@ public partial class Player : MonoBehaviour, IDamageable
     [SerializeField] private bool _isDead;
 
     private bool _deathPending;
+    private AnimatorUpdateMode _standingAnimationMode;
+    private float _deathAnimationDeadline;
 
     [Header("Hurt feedback")]
     [Tooltip("Seconds after a hit during which further damage is ignored (the sprite blinks). 0 = off. Stops multi-hit boss moves from stacking in a few frames.")]
@@ -67,6 +69,14 @@ public partial class Player : MonoBehaviour, IDamageable
 
     private void Update()
     {
+        if (_stats.IsDead)
+        {
+            if (!_isDead && GameStateManager.AllowsGameplayInput
+                && (!_deathPending || Time.unscaledTime >= _deathAnimationDeadline))
+                Die();
+            return;
+        }
+
         _stats.TickRegeneration(Time.deltaTime);
         bool isActivelySprinting = _isRunning && _isMoving && GameStateManager.AllowsGameplayInput;
         _stats.TickStamina(isActivelySprinting, Time.deltaTime);
@@ -102,6 +112,8 @@ public partial class Player : MonoBehaviour, IDamageable
         _hurtInvulnerableUntil = Time.time + _hurtInvulnerabilitySeconds;
         CombatFeedback.PlayerHurt(this, result.DamageTaken, _hurtInvulnerabilitySeconds);
         _deathPending = result.Outcome == PlayerDamageOutcome.Killed;
+        if (_deathPending)
+            _deathAnimationDeadline = Time.unscaledTime + 0.75f;
         _isHit = true;
         _isAttacking = false;
         DisableAttackHitbox();
@@ -128,6 +140,9 @@ public partial class Player : MonoBehaviour, IDamageable
 
     private void Die()
     {
+        if (_isDead)
+            return;
+
         _deathPending = false;
         _isDead = true;
         _isHit = false;
@@ -135,11 +150,35 @@ public partial class Player : MonoBehaviour, IDamageable
         if (_isBlocking)
             StopBlocking();
         DisableAttackHitbox();
+        CancelAimSkill();
+        CancelGroundTargetSkill();
+        CancelDash();
         StopMovement();
         SoundFXManager.PlaySfx(SfxIds.CombatPlayerDeath);
 
         _animator.ResetTrigger(IsHitHash);
         _animator.ResetTrigger(AttackHash);
         _animator.SetBool(IsDeadHash, true);
+        _standingAnimationMode = _animator.updateMode;
+        _animator.updateMode = AnimatorUpdateMode.UnscaledTime;
+        GameStateManager.Instance?.ReplaceState(GameState.PlayerDead);
+        PlayerDeathPopupUI.Show(this);
+    }
+
+    internal void Revive()
+    {
+        if (!_isDead)
+            return;
+
+        _isDead = false;
+        _stats.RestoreHealth(-1f);
+        _stats.RestoreStamina(_stats.MaxStamina);
+        _stats.RestoreMana(_stats.MaxMana);
+        _hurtInvulnerableUntil = Time.time + 1.5f;
+        _animator.SetBool(IsDeadHash, false);
+        _animator.Play("Idle", 0, 0f);
+        _animator.updateMode = _standingAnimationMode;
+        GameSessionManager.Instance?.MarkDirty();
+        GameStateManager.Instance?.ResetToPlaying();
     }
 }

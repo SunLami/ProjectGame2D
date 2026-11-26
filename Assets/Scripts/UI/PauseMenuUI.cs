@@ -2,7 +2,6 @@ using System;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
-using UnityEngine.InputSystem;
 using UnityEngine.UI;
 
 // Pause/gameplay menu presentation. Save/load/return/quit orchestration belongs to GameplaySessionController.
@@ -29,6 +28,7 @@ public class PauseMenuUI : MonoBehaviour
 
     [Header("Existing Pause Menu")]
     [SerializeField] private GameObject _windowRoot;
+    [SerializeField] private GameObject _pausePanel;
     [SerializeField] private InventoryWindowUI _inventoryWindow;
 
     [Header("Phase 9 Contract")]
@@ -66,17 +66,22 @@ public class PauseMenuUI : MonoBehaviour
 
     public bool IsOpen => _windowRoot != null && _windowRoot.activeSelf;
 
-    private void Update()
+    internal bool TryHandleCancel()
     {
-        bool cancel = Keyboard.current != null && Keyboard.current.escapeKey.wasPressedThisFrame;
-        cancel |= Gamepad.current != null && Gamepad.current.buttonEast.wasPressedThisFrame;
-        if (!cancel || IsBusy())
-            return;
+        bool hasConfirmation = _confirmationPopup != null && _confirmationPopup.activeInHierarchy;
+        bool hasSlotPicker = _loadOverlay != null && _loadOverlay.activeInHierarchy;
+        if (!hasConfirmation && !hasSlotPicker)
+            return false;
 
-        if (_confirmationPopup.activeSelf)
-            CancelConfirmation();
-        else if (_loadOverlay.activeSelf)
-            CloseLoadOverlay();
+        if (!IsBusy())
+        {
+            if (hasConfirmation)
+                CancelConfirmation();
+            else
+                CloseLoadOverlay();
+        }
+
+        return true;
     }
 
     private void OnEnable()
@@ -159,6 +164,7 @@ public class PauseMenuUI : MonoBehaviour
         if (_slotOverlayTitleBanner != null)
             _slotOverlayTitleBanner.sprite = saveMode ? _saveSlotTitleBanner : _loadSlotTitleBanner;
         _loadOverlay.SetActive(true);
+        _pausePanel.SetActive(false);
         SoundFXManager.PlaySfx("sfx.ui.popup_open");
         RebuildLoadSlots(_sessionController.RefreshSlots());
         SelectFirstSlotAction();
@@ -169,6 +175,7 @@ public class PauseMenuUI : MonoBehaviour
         bool wasSaveMode = _isSaveSlotMode;
         bool wasOpen = _loadOverlay.activeSelf;
         _loadOverlay.SetActive(false);
+        _pausePanel.SetActive(true);
         if (wasOpen)
             SoundFXManager.PlaySfx("sfx.ui.popup_close");
         _isSaveSlotMode = false;
@@ -283,6 +290,8 @@ public class PauseMenuUI : MonoBehaviour
     {
         _feedbackText.text = string.IsNullOrWhiteSpace(message) ? "The operation could not be completed." : message;
         SoundFXManager.PlaySfx("sfx.ui.error");
+        if (_loadOverlay.activeSelf)
+            CloseLoadOverlay();
         Refresh();
     }
 
@@ -395,6 +404,12 @@ public class PauseMenuUI : MonoBehaviour
 
     private void HandleStateChanged(GameStateChange change)
     {
+        if (_loadOverlay.activeSelf && (change.Current.State is GameState.Playing or GameState.Loading))
+        {
+            CloseConfirmation();
+            CloseLoadOverlay();
+        }
+
         EnsureSessionController();
         Refresh();
     }

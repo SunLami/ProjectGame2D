@@ -90,10 +90,15 @@ public static class DevPanelPrefabBuilder
         title.alignment = TextAlignmentOptions.MidlineLeft;
 
         Button close = CreateButton(header, "CloseButton", "X", new Color(0.3f, 0.1f, 0.1f, 1f));
+        Image closeIcon = close.GetComponent<Image>();
+        closeIcon.sprite = AssetDatabase.LoadAssetAtPath<Sprite>(MapUIAuthoring.CloseButtonPath);
+        closeIcon.color = Color.white;
+        closeIcon.preserveAspect = true;
+        close.GetComponentInChildren<TMP_Text>().gameObject.SetActive(false);
         RectTransform closeRect = (RectTransform)close.transform;
         closeRect.anchorMin = closeRect.anchorMax = closeRect.pivot = new Vector2(1f, 0.5f);
-        closeRect.sizeDelta = new Vector2(28f, 28f);
-        closeRect.anchoredPosition = new Vector2(-2f, 0f);
+        closeRect.sizeDelta = new Vector2(26f, 26f);
+        closeRect.anchoredPosition = new Vector2(-4f, 0f);
         UnityEventTools.AddPersistentListener(close.onClick, controller.ClosePanel);
 
         // Feedback strip -- fixed under the header (not scrolling content) so the result of any

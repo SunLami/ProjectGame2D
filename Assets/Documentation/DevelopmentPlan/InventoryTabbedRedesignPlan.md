@@ -246,3 +246,5 @@ Gate hoàn tất: code + prefab + asset + tests + screenshots + documentation đ
 - Tạo item icon/content mới cho Food/Potion/Seed/Bait.
 - Thay save schema, item quantity contract hoặc Inventory capacity.
 - Redesign Character Popup, Shop/Crafting hay BottomHUD ngoài phần cần giữ visual compatibility.
+
+GridScrollView has a transparent raycast surface so the wheel scrolls over cells, gaps, and the side margins inside the grid.

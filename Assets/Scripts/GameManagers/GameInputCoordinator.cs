@@ -12,6 +12,7 @@ public sealed class GameInputCoordinator : MonoBehaviour
     [SerializeField] private InputActionAsset _projectActions;
     [SerializeField] private InventoryWindowUI _inventoryWindow;
 
+    private PauseMenuUI _pauseMenu;
     private InputAction _inventoryAction;
     private InputAction _cancelAction;
     private InputActionAsset _runtimeActions;
@@ -85,7 +86,7 @@ public sealed class GameInputCoordinator : MonoBehaviour
         if (_runtimeActions != null)
             _runtimeActions.FindActionMap(GameplayMapName, false)?.Disable();
 
-        if (_playerInput == null)
+        if (_playerInput == null || !_playerInput.isActiveAndEnabled)
             return;
 
         if (GameStateManager.AllowsGameplayInput)
@@ -132,6 +133,12 @@ public sealed class GameInputCoordinator : MonoBehaviour
                 GameStateManager.Instance.Pause();
                 break;
             case GameState.Paused:
+                if (_pauseMenu == null)
+                    _pauseMenu = FindAnyObjectByType<PauseMenuUI>();
+                if (_pauseMenu != null && _pauseMenu.TryHandleCancel())
+                    break;
+                GameStateManager.Instance.ReturnToPreviousState();
+                break;
             case GameState.GameplayMenu:
                 GameStateManager.Instance.ReturnToPreviousState();
                 break;

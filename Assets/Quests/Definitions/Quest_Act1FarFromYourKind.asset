@@ -15,7 +15,7 @@ MonoBehaviour:
   _questId: quest.act1.far_from_your_kind
   _displayName: "5: Far From Your Kind..."
   _prerequisiteQuestIds:
-  - quest.act1.ring_of_forge
+  - quest.act1.forge_brasstan_edge
   _objectives:
   - _type: 0
     _targetId: npc.town.hermetist
@@ -23,6 +23,15 @@ MonoBehaviour:
     _targetCount: 1
     _obtainMode: 0
     _description: "Visit Agnes at the Black Arts stall."
+  - _type: 0
+    _targetId: npc.town.hermetist
+    _requiredDialogueOutcomeId: skills.training
+    _targetAreaId:
+    _targetCount: 1
+    _obtainMode: 0
+    _description: "Open the Skills panel through Agnes."
+    _controlHint: "Talk to Agnes and choose Teach me a skill. Continue her dialogue to open the Skills panel."
+    _navigationNpcId: npc.town.hermetist
   _rewards:
     _items: []
     _gold: 30
@@ -32,7 +41,8 @@ MonoBehaviour:
   _isDailyQuest: 0
   _isDebugQuest: 0
   _giverNpcId: npc.town.hermetist
-  _turnInNpcId: npc.town.hermetist
-  _autoTurnIn: 0
+  _turnInNpcId:
+  _autoTurnIn: 1
+  _showOfferTutorial: 1
   _offerDirections: "Find Agnes at the Black Arts stall."
-  _turnInDirections: "Speak to Agnes again to unlock Black Arts."
+  _turnInDirections:

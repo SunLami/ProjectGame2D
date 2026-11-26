@@ -25,7 +25,7 @@ public static class DarkFantasyUIStyleGuideBuilder
         Sprite panel = LoadSprite(InventoryRoot + "QuestStyle1920/inventory_tooltip_subtle_v2.png");
         Sprite slot = LoadSprite(InventoryRoot + "QuestStyle1920/inventory_slot_reference_v4.png");
         Sprite action = LoadSprite(QuestRoot + "quest_log_action_button.png");
-        Sprite close = LoadSprite(InventoryRoot + "LightFantasy/inventory_close_thin_hd.png");
+        Sprite close = LoadSprite(MapUIAuthoring.CloseButtonPath);
         Sprite coin = LoadSprite(InventoryRoot + "LightFantasy/inventory_gold_badge_hd.png");
 
         SavePanelPrefab(panel);

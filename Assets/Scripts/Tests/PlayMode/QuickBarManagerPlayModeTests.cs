@@ -63,7 +63,7 @@ public sealed class QuickBarManagerPlayModeTests
     }
 
     [Test]
-    public void DragAssignedSlotOutsideQuickBar_ClearsOnlyTheAssignment()
+    public void DragAssignedSlotOutsideInventory_PreservesAssignment()
     {
         GameObject eventSystemObject = null;
         if (EventSystem.current == null)
@@ -82,11 +82,43 @@ public sealed class QuickBarManagerPlayModeTests
         slot.OnBeginDrag(eventData);
         slot.OnEndDrag(eventData);
 
-        Assert.IsNull(QuickBarManager.Instance.GetAssignedItemId(0));
+        Assert.AreEqual(_item.itemId, QuickBarManager.Instance.GetAssignedItemId(0));
         Assert.AreSame(_item, _resolver.Resolve(_item.itemId));
 
         Object.DestroyImmediate(slotObject);
         if (eventSystemObject != null) Object.DestroyImmediate(eventSystemObject);
+    }
+
+    [Test]
+    public void ReturnToInventory_SwapsWithTheExactDestinationAndPreservesItsBinding()
+    {
+        ItemSO other = ScriptableObject.CreateInstance<ItemSO>();
+        other.itemId = "item.test.other_quickbar";
+        other.usedItems = true;
+        try
+        {
+            InventoryManager inventory = InventoryManager.Instance;
+            Assert.IsTrue(inventory.AddItem(other, 1));
+            InventorySlot source = inventory.Slots[0];
+            InventorySlot destination = inventory.Slots[1];
+            Assert.AreSame(_item, source.item);
+            Assert.AreSame(other, destination.item);
+
+            QuickBarManager quickBar = QuickBarManager.Instance;
+            Assert.IsTrue(quickBar.Assign(0, _item));
+            Assert.IsTrue(quickBar.Assign(1, other));
+            Assert.IsTrue(quickBar.ReturnToInventory(0, destination));
+
+            Assert.AreSame(_item, destination.item);
+            Assert.AreSame(other, source.item);
+            Assert.IsNull(quickBar.GetAssignedItemId(0));
+            Assert.AreEqual(other.itemId, quickBar.GetAssignedItemId(1));
+            Assert.AreEqual(1, destination.quantity);
+        }
+        finally
+        {
+            Object.DestroyImmediate(other);
+        }
     }
 
     [Test]

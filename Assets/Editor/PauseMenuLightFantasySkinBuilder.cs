@@ -46,7 +46,6 @@ public static class PauseMenuLightFantasySkinBuilder
 
         Sprite board = ImportSprite(PauseRoot + "pause_menu_board_v1.png");
         Sprite primaryButton = ImportSprite(DialogueRoot + "dialogue_action_button_v1.png");
-        Sprite close = ImportSprite(InventoryRoot + "inventory_close_thin_hd.png");
 
         Transform root = pauseMenu.transform;
         GameObject panel = Find(root, "Panel");
@@ -54,11 +53,6 @@ public static class PauseMenuLightFantasySkinBuilder
         panel.GetComponent<RectTransform>().sizeDelta = new Vector2(164f, 340f);
         PopupViewportFit.Configure(panel, new Vector2(560f, 720f));
         EnsurePauseTitle(panel.transform);
-
-        GameObject closeButton = Find(root, "CloseBtn");
-        SetImage(closeButton, close, true);
-        closeButton.GetComponent<RectTransform>().sizeDelta = new Vector2(28f, 28f);
-        StyleCloseButton(closeButton);
 
         GameObject shopButton = TryFind(root, "ShopBtn");
         if (shopButton != null) shopButton.SetActive(false);
@@ -155,23 +149,6 @@ public static class PauseMenuLightFantasySkinBuilder
             ? new Color(1f, 0.94f, 0.72f, 1f)
             : new Color(0.38f, 0.31f, 0.22f, 0.78f);
         text.raycastTarget = false;
-    }
-
-    private static void StyleCloseButton(GameObject target)
-    {
-        Button button = target.GetComponent<Button>();
-        if (button == null) return;
-        button.targetGraphic = target.GetComponent<Image>();
-        button.transition = Selectable.Transition.ColorTint;
-        ColorBlock colors = button.colors;
-        colors.normalColor = Color.white;
-        colors.highlightedColor = new Color(1f, 0.86f, 0.38f, 1f);
-        colors.pressedColor = new Color(0.66f, 0.48f, 0.18f, 1f);
-        colors.disabledColor = new Color(0.45f, 0.42f, 0.34f, 0.65f);
-        colors.colorMultiplier = 1f;
-        colors.fadeDuration = 0.08f;
-        button.colors = colors;
-        EditorUtility.SetDirty(button);
     }
 
     private static void EnsurePauseTitle(Transform panel)

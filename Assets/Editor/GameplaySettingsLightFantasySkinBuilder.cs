@@ -29,7 +29,7 @@ public static class GameplaySettingsLightFantasySkinBuilder
         Sprite sliderHandle = ImportSprite(MainMenuRoot + "settings_slider_handle.png");
         Sprite toggleOff = ImportSprite(MainMenuRoot + "settings_checkbox_unchecked.png");
         Sprite toggleOn = ImportSprite(MainMenuRoot + "settings_checkbox_checked.png");
-        Sprite close = ImportSprite(InventoryRoot + "inventory_close_thin_hd.png");
+        Sprite close = AssetDatabase.LoadAssetAtPath<Sprite>(MapUIAuthoring.CloseButtonPath);
         Sprite sfxIcon = ImportSprite(IconRoot + "settings-1.png");
         Sprite musicIcon = ImportSprite(IconRoot + "settings-2.png");
 
@@ -40,7 +40,9 @@ public static class GameplaySettingsLightFantasySkinBuilder
         GameObject closeButton = Find(root, "CloseBtn");
         SetImage(closeButton, close, true);
         StyleCloseButton(closeButton);
-        closeButton.GetComponent<RectTransform>().anchoredPosition = new Vector2(-24f, -34f);
+        RectTransform closeRect = closeButton.GetComponent<RectTransform>();
+        closeRect.anchoredPosition = new Vector2(-28f, -34f);
+        closeRect.sizeDelta = new Vector2(30f, 30f);
         GameObject titleObject = Find(root, "Title");
         RectTransform titleRect = titleObject.GetComponent<RectTransform>();
         titleRect.anchoredPosition = new Vector2(titleRect.anchoredPosition.x, -30f);

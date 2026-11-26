@@ -5,7 +5,7 @@ internal static class EquipFeedback
 {
     public static string BuildEquipFailureMessage(EquipmentItemSO item)
     {
-        if (PlayerStat.Instance != null && PlayerStat.Instance.Level < item.requiredLevel)
+        if (item.RequiresHigherLevel(PlayerStat.Instance))
             return $"Cannot equip {item.itemName}: requires level {item.requiredLevel}.";
 
         return $"Cannot equip {item.itemName}: inventory is full.";

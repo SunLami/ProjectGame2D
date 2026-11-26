@@ -18,16 +18,17 @@ public class SettingsUI : MonoBehaviour
 
     public bool IsOpen => _windowRoot != null && _windowRoot.activeSelf;
 
-    private void Awake()
-    {
-        ApplyToUIWithoutNotify(SettingsService.Instance.Current);
-    }
-
     private void OnEnable()
     {
-        GameStateManager.Instance.StateChanged += HandleStateChanged;
-        SettingsService.Instance.Changed += HandleSettingsChanged;
-        ApplyToUIWithoutNotify(SettingsService.Instance.Current);
+        if (GameStateManager.Instance != null)
+            GameStateManager.Instance.StateChanged += HandleStateChanged;
+
+        if (SettingsService.Instance != null)
+        {
+            SettingsService.Instance.Changed += HandleSettingsChanged;
+            ApplyToUIWithoutNotify(SettingsService.Instance.Current);
+        }
+
         RefreshVisibility();
     }
 
@@ -42,6 +43,9 @@ public class SettingsUI : MonoBehaviour
 
     public void OpenWindow()
     {
+        if (SettingsService.Instance == null || GameStateManager.Instance == null)
+            return;
+
         _openSnapshot = SettingsService.Instance.Current;
         ApplyToUIWithoutNotify(_openSnapshot);
         GameStateManager.Instance.OpenMenu(GameplayMenuPage.Settings);
@@ -52,7 +56,7 @@ public class SettingsUI : MonoBehaviour
         if (_windowRoot != null)
             _windowRoot.SetActive(false);
 
-        if (GameStateManager.Instance.CurrentState == GameState.GameplayMenu
+        if (GameStateManager.Instance?.CurrentState == GameState.GameplayMenu
             && GameStateManager.Instance.CurrentMenuPage == GameplayMenuPage.Settings)
         {
             GameStateManager.Instance.ReturnToPreviousState();
@@ -61,37 +65,37 @@ public class SettingsUI : MonoBehaviour
 
     public void OnSfxSliderChanged(float value)
     {
-        SettingsService.Instance.SetSfxVolume(value);
+        SettingsService.Instance?.SetSfxVolume(value);
     }
 
     public void OnMusicSliderChanged(float value)
     {
-        SettingsService.Instance.SetMusicVolume(value);
+        SettingsService.Instance?.SetMusicVolume(value);
     }
 
     public void OnFullScreenToggled(bool isOn)
     {
         RefreshToggleImages();
         if (isOn)
-            SettingsService.Instance.SetFullScreen(true);
+            SettingsService.Instance?.SetFullScreen(true);
     }
 
     public void OnWindowModeToggled(bool isOn)
     {
         RefreshToggleImages();
         if (isOn)
-            SettingsService.Instance.SetFullScreen(false);
+            SettingsService.Instance?.SetFullScreen(false);
     }
 
     public void OnSaveClicked()
     {
-        SettingsService.Instance.Save();
+        SettingsService.Instance?.Save();
         CloseWindow();
     }
 
     public void OnDeclineClicked()
     {
-        SettingsService.Instance.Restore(_openSnapshot);
+        SettingsService.Instance?.Restore(_openSnapshot);
         CloseWindow();
     }
 
@@ -122,7 +126,7 @@ public class SettingsUI : MonoBehaviour
 
     private void RefreshVisibility()
     {
-        bool shouldBeOpen = GameStateManager.Instance.CurrentState == GameState.GameplayMenu
+        bool shouldBeOpen = GameStateManager.Instance?.CurrentState == GameState.GameplayMenu
             && GameStateManager.Instance.CurrentMenuPage == GameplayMenuPage.Settings;
 
         if (_windowRoot != null && _windowRoot.activeSelf != shouldBeOpen)

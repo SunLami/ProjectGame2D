@@ -1,9 +1,10 @@
+using System;
 using UnityEngine;
 
 /// <summary>
 /// Runtime progress for one accepted quest, separate from the QuestDefinition asset and from the
-/// save DTO (DataDrivenDevelopment.md three-layer model). Objectives are completed strictly in
-/// authored order (index-based), matching the save contract (currentObjectiveIndex + counters).
+/// save DTO (DataDrivenDevelopment.md three-layer model). The current index points to the first unfinished objective.
+/// Authored quests can opt into counting later objectives before that index advances.
 /// </summary>
 public sealed class QuestRuntimeState
 {
@@ -33,16 +34,47 @@ public sealed class QuestRuntimeState
     /// this objective before calling.</summary>
     public bool TryProgressCurrentObjective(int amount)
     {
-        QuestObjectiveDefinition objective = CurrentObjective;
-        if (objective == null || amount <= 0)
+        return CurrentObjective != null && TryProgressObjective(CurrentObjectiveIndex, amount);
+    }
+
+    public bool TryProgressMatchingObjective(Func<QuestObjectiveDefinition, bool> matches, int amount)
+    {
+        if (Status != QuestStatus.Active)
+            return false;
+        if (!Definition.ObjectivesInAnyOrder)
+            return matches(CurrentObjective) && TryProgressCurrentObjective(amount);
+
+        for (int i = CurrentObjectiveIndex; i < ObjectiveCounters.Length; i++)
+            if (matches(Definition.Objectives[i]) && TryProgressObjective(i, amount))
+                return true;
+
+        return false;
+    }
+
+    public bool ReconcilePlantingCounts(Func<string, string, int> countPlants)
+    {
+        if (Status != QuestStatus.Active || !Definition.ObjectivesInAnyOrder)
             return false;
 
-        ObjectiveCounters[CurrentObjectiveIndex] = Mathf.Min(
-            objective.TargetCount, ObjectiveCounters[CurrentObjectiveIndex] + amount);
+        bool progressed = false;
+        for (int i = CurrentObjectiveIndex; i < ObjectiveCounters.Length; i++)
+        {
+            QuestObjectiveDefinition objective = Definition.Objectives[i];
+            if (objective.Type == QuestObjectiveType.Replant && ObjectiveCounters[i] < objective.TargetCount)
+                progressed |= TryProgressObjective(i, countPlants(objective.TargetId, objective.TargetAreaId) - ObjectiveCounters[i]);
+        }
 
-        if (ObjectiveCounters[CurrentObjectiveIndex] >= objective.TargetCount)
-            AdvanceToNextObjective();
+        return progressed;
+    }
 
+    private bool TryProgressObjective(int index, int amount)
+    {
+        int target = Definition.Objectives[index].TargetCount;
+        if (amount <= 0 || ObjectiveCounters[index] >= target)
+            return false;
+
+        ObjectiveCounters[index] += Mathf.Min(amount, target - ObjectiveCounters[index]);
+        AdvancePastCompletedObjectives();
         return true;
     }
 
@@ -56,13 +88,35 @@ public sealed class QuestRuntimeState
             return false;
 
         ObjectiveCounters[CurrentObjectiveIndex] = objective.TargetCount;
-        AdvanceToNextObjective();
+        AdvancePastCompletedObjectives();
         return true;
     }
 
-    private void AdvanceToNextObjective()
+    public bool ReconcileGatherPossession(Func<string, int, bool> hasItem)
     {
-        CurrentObjectiveIndex++;
+        bool progressed = false;
+        for (int i = CurrentObjectiveIndex; Status == QuestStatus.Active && i < ObjectiveCounters.Length; i++)
+        {
+            if (!Definition.ObjectivesInAnyOrder && i != CurrentObjectiveIndex)
+                break;
+
+            QuestObjectiveDefinition objective = Definition.Objectives[i];
+            int remaining = objective.TargetCount - ObjectiveCounters[i];
+            if (remaining > 0 && !string.IsNullOrEmpty(objective.GatherPossessionItemId)
+                && hasItem(objective.GatherPossessionItemId, objective.TargetCount))
+            {
+                progressed |= TryProgressObjective(i, remaining);
+            }
+        }
+
+        return progressed;
+    }
+
+    private void AdvancePastCompletedObjectives()
+    {
+        while (CurrentObjectiveIndex < ObjectiveCounters.Length
+               && ObjectiveCounters[CurrentObjectiveIndex] >= Definition.Objectives[CurrentObjectiveIndex].TargetCount)
+            CurrentObjectiveIndex++;
         if (CurrentObjectiveIndex >= Definition.Objectives.Count)
             Status = QuestStatus.ReadyToTurnIn;
     }

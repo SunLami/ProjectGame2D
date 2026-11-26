@@ -44,27 +44,17 @@ public sealed class WorldMessagePopupUI : MonoBehaviour
         Image dim = CreateImage("Dim", parent, Color.black * new Color(1f, 1f, 1f, 0.55f));
         Stretch(dim.rectTransform);
 
-        Image board = CreateImage("Board", parent, new Color(0.12f, 0.09f, 0.07f, 0.98f));
-        RectTransform boardRect = board.rectTransform;
-        boardRect.anchorMin = boardRect.anchorMax = new Vector2(0.5f, 0.5f);
-        boardRect.sizeDelta = new Vector2(480f, 224f);
-        PopupViewportFit.Configure(board.gameObject, new Vector2(480f, 224f));
-        Sprite[] boardSprites = Resources.LoadAll<Sprite>(BoardResource);
-        if (boardSprites.Length > 0)
-        {
-            board.sprite = boardSprites[0];
-            board.preserveAspect = true;
-        }
+        RectTransform board = CreateBoard(parent, new Vector2(480f, 224f));
 
-        TMP_Text title = CreateText("Title", board.transform, "AREA UNAVAILABLE", 28f,
+        TMP_Text title = CreateText("Title", board, "AREA UNAVAILABLE", 28f,
             new Color(1f, 0.83f, 0.34f, 1f));
         SetRect(title.rectTransform, new Vector2(0f, 55f), new Vector2(380f, 44f));
 
-        TMP_Text body = CreateText("Message", board.transform, string.Empty, 25f,
+        TMP_Text body = CreateText("Message", board, string.Empty, 25f,
             new Color(0.94f, 0.9f, 0.78f, 1f));
         SetRect(body.rectTransform, new Vector2(0f, 5f), new Vector2(380f, 52f));
 
-        Image buttonImage = CreateImage("OkButton", board.transform,
+        Image buttonImage = CreateImage("OkButton", board,
             new Color(0.05f, 0.22f, 0.43f, 1f));
         SetRect(buttonImage.rectTransform, new Vector2(0f, -62f), new Vector2(130f, 40f));
         Button button = buttonImage.gameObject.AddComponent<Button>();
@@ -113,7 +103,30 @@ public sealed class WorldMessagePopupUI : MonoBehaviour
         Destroy(gameObject);
     }
 
-    private static Image CreateImage(string name, Transform parent, Color color)
+    internal static RectTransform CreateBoard(Transform parent, Vector2 size, Sprite sprite = null)
+    {
+        Image board = CreateImage("Board", parent, new Color(0.12f, 0.09f, 0.07f, 0.98f));
+        RectTransform boardRect = board.rectTransform;
+        boardRect.anchorMin = boardRect.anchorMax = new Vector2(0.5f, 0.5f);
+        boardRect.sizeDelta = size;
+        PopupViewportFit.Configure(board.gameObject, size);
+        if (sprite == null)
+        {
+            Sprite[] boardSprites = Resources.LoadAll<Sprite>(BoardResource);
+            if (boardSprites.Length > 0)
+                sprite = boardSprites[0];
+        }
+
+        if (sprite != null)
+        {
+            board.sprite = sprite;
+            board.preserveAspect = true;
+        }
+
+        return boardRect;
+    }
+
+    internal static Image CreateImage(string name, Transform parent, Color color)
     {
         GameObject child = new(name, typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
         child.transform.SetParent(parent, false);
@@ -122,7 +135,7 @@ public sealed class WorldMessagePopupUI : MonoBehaviour
         return image;
     }
 
-    private static TMP_Text CreateText(string name, Transform parent, string value, float size,
+    internal static TMP_Text CreateText(string name, Transform parent, string value, float size,
         Color color)
     {
         GameObject child = new(name, typeof(RectTransform), typeof(CanvasRenderer),
@@ -137,14 +150,14 @@ public sealed class WorldMessagePopupUI : MonoBehaviour
         return text;
     }
 
-    private static void SetRect(RectTransform rect, Vector2 position, Vector2 size)
+    internal static void SetRect(RectTransform rect, Vector2 position, Vector2 size)
     {
         rect.anchorMin = rect.anchorMax = new Vector2(0.5f, 0.5f);
         rect.anchoredPosition = position;
         rect.sizeDelta = size;
     }
 
-    private static void Stretch(RectTransform rect)
+    internal static void Stretch(RectTransform rect)
     {
         rect.anchorMin = Vector2.zero;
         rect.anchorMax = Vector2.one;

@@ -51,7 +51,7 @@ public sealed class GameplaySessionController : MonoBehaviour
     /// <summary>True while a Save or Load transition is in flight -- UI must block double-submit
     /// (Save/Load/Return/Quit buttons) while this is true. Backed by GameStateManager, not a
     /// separate flag, so it can never drift from the actual state machine.</summary>
-    public bool IsBusy => GameStateManager.Instance.CurrentState is GameState.Saving or GameState.Loading;
+    public bool IsBusy => GameStateManager.Instance?.CurrentState is GameState.Saving or GameState.Loading;
 
     private IApplicationQuitter Quitter => _quitter ??= new UnityApplicationQuitter();
 
@@ -259,6 +259,12 @@ public sealed class GameplaySessionController : MonoBehaviour
             playerData.location.areaId = "area.mapduy";
             playerData.location.fallbackSpawnId = "spawn.mapduy.south_entry";
         }
+        else if (SceneTravel.IsBossArena(gameObject.scene.name))
+        {
+            playerData.location.sceneId = gameObject.scene.name;
+            playerData.location.areaId = gameObject.scene.name;
+            playerData.location.fallbackSpawnId = "arena_entry";
+        }
         else if (gameObject.scene.name == "MapNhat")
         {
             playerData.location.sceneId = "MapNhat";
@@ -278,7 +284,9 @@ public sealed class GameplaySessionController : MonoBehaviour
             equipment = EquipmentManager.Instance != null ? EquipmentManager.Instance.ToSaveData() : session.SaveData.equipment,
             tutorial = TutorialManager.Instance != null ? TutorialManager.Instance.ToSaveData() : session.SaveData.tutorial,
             quests = QuestManager.Instance != null ? QuestManager.Instance.ToSaveData() : session.SaveData.quests,
-            world = _worldRegistry != null ? _worldRegistry.ToSaveData() : session.SaveData.world,
+            world = _worldRegistry != null
+                ? WorldSaveData.Merge(session.SaveData.world, _worldRegistry.ToSaveData())
+                : session.SaveData.world,
             quickBar = QuickBarManager.Instance != null ? QuickBarManager.Instance.ToSaveData() : session.SaveData.quickBar,
             farming = (_farmingManager != null ? _farmingManager : FarmingManager.Instance) != null
                 ? (_farmingManager != null ? _farmingManager : FarmingManager.Instance).ToSaveData()

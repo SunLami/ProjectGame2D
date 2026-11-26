@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -113,12 +112,14 @@ public sealed class QuickBarSlotUI : MonoBehaviour, IPointerClickHandler, IDropH
 
     public void OnEndDrag(PointerEventData eventData)
     {
-        bool shouldClear = _isDragging && !IsPointerOverQuickBarSlot(eventData);
         CleanupDragGhost();
         _isDragging = false;
+    }
 
-        if (shouldClear)
-            QuickBarManager.Instance?.Clear(_slotIndex);
+    internal void ReturnToInventory(InventorySlot target)
+    {
+        if (_isDragging)
+            QuickBarManager.Instance?.ReturnToInventory(_slotIndex, target);
     }
 
     private void Subscribe()
@@ -152,18 +153,6 @@ public sealed class QuickBarSlotUI : MonoBehaviour, IPointerClickHandler, IDropH
         if (RectTransformUtility.ScreenPointToLocalPointInRectangle(
                 _dragCanvasRect, eventData.position, eventData.pressEventCamera, out Vector2 localPoint))
             _dragGhost.localPosition = localPoint;
-    }
-
-    private static bool IsPointerOverQuickBarSlot(PointerEventData eventData)
-    {
-        if (EventSystem.current == null) return false;
-
-        var results = new List<RaycastResult>();
-        EventSystem.current.RaycastAll(eventData, results);
-        foreach (RaycastResult result in results)
-            if (result.gameObject.GetComponentInParent<QuickBarSlotUI>() != null)
-                return true;
-        return false;
     }
 
     private void CleanupDragGhost()

@@ -18,3 +18,5 @@
 - Trong cảnh, `GameState.Cutscene` khóa gameplay input. Timeline dùng unscaled time vì Cutscene pause world.
 - Kết thúc Timeline trả state về `Playing`.
 - Chưa thêm NPC, dialogue, camera shot hoặc save progress; các scene sau được author tuần tự theo yêu cầu.
+
+Player actor doubles receive the shared walking clip footstep event while the director is playing.

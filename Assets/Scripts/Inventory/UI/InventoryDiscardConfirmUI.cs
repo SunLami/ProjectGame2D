@@ -2,12 +2,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-/// <summary>Modal opened when an inventory item is dragged out past the Inventory window's bounds
-/// (InventorySlotUI.OnEndDrag) -- asks "discard this?" and, if the stack has more than one unit,
-/// a follow-up quantity input before actually calling InventoryManager.DiscardFromSlot. Sits as a
-/// raycast-blocking overlay on top of the already-open Inventory window instead of pushing a new
-/// GameState -- Inventory (GameplayMenuPage.Inventory) already blocks gameplay input/world time, so
-/// there is nothing additional to pause.</summary>
+/// <summary>Shows a discard confirmation over Inventory, with an editable quantity for stacks.</summary>
 public sealed class InventoryDiscardConfirmUI : MonoBehaviour
 {
     public static InventoryDiscardConfirmUI Instance { get; private set; }
@@ -31,6 +26,8 @@ public sealed class InventoryDiscardConfirmUI : MonoBehaviour
     [SerializeField] private Button _quantityCancelButton;
 
     private InventorySlot _slot;
+    private ItemSO _item;
+    private FishInstanceData _fish;
     private int _maxQuantity;
 
     public bool IsOpen => _root != null && _root.activeSelf;
@@ -70,69 +67,66 @@ public sealed class InventoryDiscardConfirmUI : MonoBehaviour
             Instance = null;
     }
 
-    /// <summary>Opens the "discard this?" confirm step for the given inventory slot. The slot
-    /// reference is held live (not a snapshot), so InventoryManager.DiscardFromSlot always acts on
-    /// whatever that slot currently holds when the player finally confirms.</summary>
     public bool Open(InventorySlot slot)
     {
-        if (slot == null || slot.IsEmpty || IsOpen)
+        if (slot == null || slot.IsEmpty || slot.quantity < 1 || IsOpen)
+            return false;
+
+        bool chooseQuantity = slot.item.isStackable && slot.quantity > 1;
+        if (chooseQuantity && _quantityInput == null)
             return false;
 
         _slot = slot;
-        _confirmIcon.sprite = slot.item.icon;
-        _confirmIcon.enabled = slot.item.icon != null;
-        _confirmMessageText.text = slot.quantity > 1
-            ? $"Discard {slot.item.itemName} x{slot.quantity}?"
-            : $"Discard {slot.item.itemName}?";
+        _item = slot.item;
+        _fish = slot.fish;
+        _maxQuantity = slot.quantity;
 
+        Image icon = chooseQuantity ? _quantityIcon : _confirmIcon;
+        icon.sprite = _item.icon;
+        icon.enabled = icon.sprite != null;
+
+        if (chooseQuantity)
+        {
+            _quantityItemNameText.text = $"Discard {_item.itemName} (1-{_maxQuantity})";
+            _quantityInput.SetTextWithoutNotify("1");
+        }
+        else
+        {
+            _confirmMessageText.text = $"Discard {_item.itemName}?";
+        }
+
+        _confirmPage.SetActive(!chooseQuantity);
+        _quantityPage.SetActive(chooseQuantity);
         _root.SetActive(true);
-        _confirmPage.SetActive(true);
-        _quantityPage.SetActive(false);
+        if (chooseQuantity)
+            FocusQuantityInput();
         return true;
     }
 
-    private void HandleConfirmYes()
-    {
-        if (_slot == null || _slot.IsEmpty)
-        {
-            Close();
-            return;
-        }
-
-        if (_slot.item.isStackable && _slot.quantity > 1)
-        {
-            _maxQuantity = _slot.quantity;
-            _quantityIcon.sprite = _slot.item.icon;
-            _quantityIcon.enabled = _slot.item.icon != null;
-            _quantityItemNameText.text = _slot.item.itemName;
-            _quantityInput.text = "1";
-
-            _confirmPage.SetActive(false);
-            _quantityPage.SetActive(true);
-            _quantityInput.Select();
-            _quantityInput.ActivateInputField();
-            return;
-        }
-
-        DoDiscard(_slot.quantity);
-    }
+    private void HandleConfirmYes() => DoDiscard(_maxQuantity);
 
     private void HandleQuantityConfirm()
     {
         if (!int.TryParse(_quantityInput.text, out int amount) || amount < 1 || amount > _maxQuantity)
         {
             _quantityInput.text = Mathf.Clamp(amount, 1, _maxQuantity).ToString();
-            _quantityInput.Select();
-            _quantityInput.ActivateInputField();
+            FocusQuantityInput();
             return;
         }
 
         DoDiscard(amount);
     }
 
+    private void FocusQuantityInput()
+    {
+        _quantityInput.Select();
+        _quantityInput.ActivateInputField();
+    }
+
     private void DoDiscard(int amount)
     {
-        if (_slot != null)
+        if (_slot != null && _slot.item == _item && ReferenceEquals(_slot.fish, _fish)
+            && amount <= _slot.quantity)
             InventoryManager.Instance?.DiscardFromSlot(_slot, amount);
         Close();
     }
@@ -141,6 +135,8 @@ public sealed class InventoryDiscardConfirmUI : MonoBehaviour
     {
         _root.SetActive(false);
         _slot = null;
+        _item = null;
+        _fish = null;
     }
 
     private void EnsureQuantityInput()
@@ -158,7 +154,10 @@ public sealed class InventoryDiscardConfirmUI : MonoBehaviour
             ?? inputObject.AddComponent<TMP_InputField>();
         _quantityInput.textViewport = _quantityValueText.rectTransform;
         _quantityInput.textComponent = _quantityValueText;
-        _quantityValueText.raycastTarget = true;
+        Image background = inputObject.GetComponent<Image>() ?? inputObject.AddComponent<Image>();
+        background.color = new Color(0.07f, 0.055f, 0.04f, 0.92f);
+        _quantityInput.targetGraphic = background;
+        _quantityValueText.raycastTarget = false;
         _quantityInput.contentType = TMP_InputField.ContentType.IntegerNumber;
         _quantityInput.lineType = TMP_InputField.LineType.SingleLine;
         _quantityInput.characterLimit = 6;
