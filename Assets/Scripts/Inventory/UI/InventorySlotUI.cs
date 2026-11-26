@@ -12,33 +12,111 @@ public class InventorySlotUI : MonoBehaviour, IPointerClickHandler, IPointerEnte
     private InventorySlot _slot;
     private GameObject _dragIcon;
     private Image _quantityBackground;
+    private TMP_Text _levelBadge;
+    private PlayerStat _observedPlayer;
+    private bool _requiresHigherLevel;
+    private bool _showItem;
     private bool _dropWasHandled;
 
     public ItemSO Item => _slot?.item;
     public InventorySlot Slot => _slot;
 
-    private void OnDisable() => InventoryItemTooltipUI.Instance?.Hide();
+    private void OnEnable() => RefreshLevelRequirement();
 
-    public void SetSlot(InventorySlot slot)
+    private void OnDisable()
     {
-        _slot = slot;
+        ObservePlayer(null);
+        InventoryItemTooltipUI.Instance?.Hide();
+    }
 
-        if (slot == null || slot.IsEmpty)
+    private InventorySlot _gridDropTarget;
+
+    public void SetSlot(InventorySlot slot, bool hideAssignedItem = false)
+    {
+        _gridDropTarget = slot;
+        _slot = hideAssignedItem ? null : slot;
+
+        if (_slot == null || _slot.IsEmpty)
         {
             Clear();
             return;
         }
 
+        _showItem = true;
         _iconImage.sprite = slot.item.icon;
         _iconImage.enabled = slot.item.icon != null;
         SetQuantity(slot.quantity);
+        RefreshLevelRequirement();
     }
 
     public void Clear()
     {
+        _showItem = false;
         _iconImage.sprite = null;
         _iconImage.enabled = false;
         SetQuantity(0);
+        RefreshLevelRequirement();
+    }
+
+    private void ObservePlayer(PlayerStat player)
+    {
+        if (ReferenceEquals(_observedPlayer, player)) return;
+        if (_observedPlayer != null) _observedPlayer.OnStatsChanged -= RefreshLevelRequirement;
+        _observedPlayer = player;
+        if (_observedPlayer != null) _observedPlayer.OnStatsChanged += RefreshLevelRequirement;
+    }
+
+    private void RefreshLevelRequirement()
+    {
+        var equipment = _showItem ? Item as EquipmentItemSO : null;
+        ObservePlayer(isActiveAndEnabled && equipment != null ? PlayerStat.Instance : null);
+        _requiresHigherLevel = equipment != null && equipment.RequiresHigherLevel(PlayerStat.Instance);
+        UpdateIconTint();
+
+        if (_requiresHigherLevel)
+        {
+            if (_levelBadge == null) _levelBadge = CreateLevelBadge();
+            _levelBadge.text = $"LV {equipment.requiredLevel}";
+        }
+        if (_levelBadge != null) _levelBadge.transform.parent.gameObject.SetActive(_requiresHigherLevel);
+    }
+
+    private TMP_Text CreateLevelBadge()
+    {
+        var badge = new GameObject("LevelRequirementBadge", typeof(RectTransform), typeof(Image));
+        var rect = (RectTransform)badge.transform;
+        rect.SetParent(_iconImage.transform.parent, false);
+        rect.anchorMin = new Vector2(0.17f, 0.65f);
+        rect.anchorMax = new Vector2(0.83f, 0.85f);
+        rect.offsetMin = rect.offsetMax = Vector2.zero;
+        var background = badge.GetComponent<Image>();
+        background.color = new Color32(100, 34, 32, 245);
+        background.raycastTarget = false;
+
+        var label = new GameObject("Level", typeof(RectTransform), typeof(TextMeshProUGUI))
+            .GetComponent<TextMeshProUGUI>();
+        label.transform.SetParent(rect, false);
+        label.rectTransform.anchorMin = Vector2.zero;
+        label.rectTransform.anchorMax = Vector2.one;
+        label.rectTransform.offsetMin = label.rectTransform.offsetMax = Vector2.zero;
+        label.font = _quantityText.font;
+        label.fontSize = 32f;
+        label.fontSizeMax = 32f;
+        label.fontSizeMin = 2f;
+        label.enableAutoSizing = true;
+        label.alignment = TextAlignmentOptions.Center;
+        label.textWrappingMode = TextWrappingModes.NoWrap;
+        label.color = new Color32(255, 224, 216, 255);
+        label.raycastTarget = false;
+        return label;
+    }
+
+    private void UpdateIconTint()
+    {
+        if (_iconImage == null) return;
+        Color tint = _requiresHigherLevel ? new Color(0.72f, 0.61f, 0.61f, 1f) : Color.white;
+        if (_dragIcon != null) tint.a = 0.4f;
+        _iconImage.color = tint;
     }
 
     private void SetQuantity(int quantity)
@@ -95,9 +173,16 @@ public class InventorySlotUI : MonoBehaviour, IPointerClickHandler, IPointerEnte
 
     public void OnDrop(PointerEventData eventData)
     {
-        if (_slot == null) return;
         if (eventData.pointerDrag == null) return;
 
+        if (eventData.pointerDrag.TryGetComponent(out QuickBarSlotUI quickBarSlot))
+        {
+            if (GetComponentInParent<InventoryUI>() != null)
+                quickBarSlot.ReturnToInventory(_gridDropTarget);
+            return;
+        }
+
+        if (_slot == null) return;
         InventorySlotUI sourceSlot = eventData.pointerDrag.GetComponent<InventorySlotUI>();
         if (sourceSlot != null)
         {
@@ -143,7 +228,7 @@ public class InventorySlotUI : MonoBehaviour, IPointerClickHandler, IPointerEnte
         _dragIcon.GetComponent<CanvasGroup>().blocksRaycasts = false;
         _dragIcon.transform.position = eventData.position;
 
-        _iconImage.color = new Color(1f, 1f, 1f, 0.4f);
+        UpdateIconTint();
     }
 
     public void OnDrag(PointerEventData eventData)
@@ -162,7 +247,7 @@ public class InventorySlotUI : MonoBehaviour, IPointerClickHandler, IPointerEnte
             _dragIcon = null;
         }
 
-        _iconImage.color = Color.white;
+        UpdateIconTint();
 
         // Drag-to-discard: released past the Inventory window's own bounds (out into the world),
         // not just onto empty space between slots inside the window -- that still just snaps back.

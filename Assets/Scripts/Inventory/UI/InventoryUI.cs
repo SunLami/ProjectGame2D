@@ -33,6 +33,7 @@ public class InventoryUI : MonoBehaviour
         _currentPage = 0;
         if (InventoryManager.Instance == null) return;
         InventoryManager.Instance.OnInventoryChanged += Refresh;
+        if (QuickBarManager.Instance != null) QuickBarManager.Instance.Changed += HandleQuickBarChanged;
 
         if (_slotUIs.Count == 0)
         {
@@ -56,8 +57,15 @@ public class InventoryUI : MonoBehaviour
         if (scroll != null) scroll.verticalNormalizedPosition = 1f;
     }
 
+    private void HandleQuickBarChanged()
+    {
+        InventoryItemTooltipUI.Instance?.Hide();
+        Refresh();
+    }
+
     private void OnDisable()
     {
+        if (QuickBarManager.Instance != null) QuickBarManager.Instance.Changed -= HandleQuickBarChanged;
         if (InventoryManager.Instance != null)
         {
             InventoryManager.Instance.OnInventoryChanged -= Refresh;
@@ -93,7 +101,8 @@ public class InventoryUI : MonoBehaviour
         {
             int globalIndex = offset + i;
             InventorySlot slot = globalIndex < _visibleSlots.Count ? _visibleSlots[globalIndex] : null;
-            _slotUIs[i].SetSlot(slot);
+            bool assigned = QuickBarManager.Instance?.IsAssigned(slot?.item?.itemId) == true;
+            _slotUIs[i].SetSlot(slot, hideAssignedItem: assigned);
             int visibleCells = Mathf.Max(30, Mathf.CeilToInt(Mathf.Min(_visibleSlots.Count - offset, SlotsPerPage) / 6f) * 6);
             _slotUIs[i].gameObject.SetActive(i < visibleCells);
         }

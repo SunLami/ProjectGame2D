@@ -148,11 +148,18 @@ public sealed class SkillPanelUI : MonoBehaviour
     }
     private void OnStateChanged(GameStateChange change) => Refresh();
 
-    public static void OpenFromTrainer()
+    public static bool OpenFromTrainer()
     {
         GameStateManager state = GameStateManager.Instance;
-        if (state != null && state.CurrentState == GameState.Playing)
-            state.OpenMenu(GameplayMenuPage.Skills);
+        if (state == null || state.CurrentState != GameState.Playing)
+            return false;
+
+        SkillPanelUI panel = FindAnyObjectByType<SkillPanelUI>();
+        if (panel == null || !panel.isActiveAndEnabled || panel._window == null)
+            return false;
+
+        state.OpenMenu(GameplayMenuPage.Skills);
+        return panel.IsOpen && panel._window.activeInHierarchy;
     }
 
     public void Close()

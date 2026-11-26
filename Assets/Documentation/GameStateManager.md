@@ -34,7 +34,7 @@ Kiến trúc này giải quyết ba vấn đề:
 | `Dialogue` | Player đang hội thoại, world vẫn có thể chạy. |
 | `Cutscene` | Cutscene đang nắm quyền điều khiển. |
 | `Saving` | Đóng băng world trong lúc chụp/ghi snapshot an toàn. |
-| `PlayerDead` | Player chết, chờ load save hoặc hồi sinh. |
+| `PlayerDead` | Player chết. Popup Return to Village cho về làng miễn phí ngay hoặc tự về làng sau 30 giây. |
 
 Không đưa `EnemyState`, `PlayerState` hoặc từng loại UI vào enum này. Chúng là state cục bộ.
 

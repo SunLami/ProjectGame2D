@@ -364,3 +364,7 @@ Tổng ước tính **≈ 20–30 gen**, còn dư.
 **Đã kiểm chứng Play Mode:** nạp scene, platform + biển mây + đảo + mây trôi + lá hiển thị đúng; `Rigidbody2D.Cast` từ 3 hướng đều trúng `BorderMap` đúng mép chữ thập; nghi lễ (zoom ra toàn sân) + tượng biến mất + boss xuất hiện chạy với **boss Earth làm thay thế tạm trong lúc test** (không lưu vào scene); `BossController.ClampInside` đưa 6 điểm thử trong/ngoài chữ thập về trong sân. EditMode test `ArenaPolygonTests`.
 **Chưa có:** boss Cú (xem `WindBossCombatPlan.md`), nên shrine/ngọc/nghi lễ có nhưng `TrySummon` không làm gì (không tiêu ngọc); Wind Orb (`item.material.orb_wind`) đã tạo nhưng chưa có nguồn nhận; minimap vẫn hiện Heart Village (như Earth/Water).
 **Art đã dùng (Pixellab, D-081):** nền 3 + biển 2 + tượng cú 3 (+3 gen animation) + trụ gió 2 (+1) + đảo 1 + mây 2 + gió (bỏ) 1 + ngọc 1 ≈ 21 generation.
+
+### Trụ dịch chuyển ở MapDuy
+
+MapDuy dùng mẫu trụ từ DemoScene tại tọa độ x = −182.5, y = 88.5, phía trước Ruined Temple. Trụ mở bảng chọn Earth, Water và Wind, đi vào từng đấu trường tại `arena_entry`. Cả phiên có save và Development đi được tuyến này. Trụ ở cả ba arena đưa người chơi về điểm `spawn.mapduy.boss_pillar_return` cạnh trụ Ruined Temple, với khóa trong lúc đánh boss.

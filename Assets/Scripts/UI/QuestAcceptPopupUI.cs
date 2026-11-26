@@ -109,18 +109,18 @@ public sealed class QuestAcceptPopupUI : MonoBehaviour
     {
         ClearSpawned(_spawnedRewardSlots);
         QuestRewardDefinition rewards = quest.Rewards;
-        if (rewards == null)
-        {
-            if (_rewardSummaryText != null)
-                _rewardSummaryText.text = string.Empty;
-            return;
-        }
+        QuestRewardDefinition supplies = quest.AcceptanceSupplies;
+        var items = new List<QuestRewardItemEntry>();
+        if (supplies != null)
+            items.AddRange(supplies.Items);
+        if (rewards != null)
+            items.AddRange(rewards.Items);
 
         if (_rewardContainer != null && _rewardSlotTemplate != null)
         {
             _itemResolver ??= new ResourcesItemResolver();
             int visibleItemCount = 0;
-            foreach (QuestRewardItemEntry entry in rewards.Items)
+            foreach (QuestRewardItemEntry entry in items)
                 if (!string.IsNullOrEmpty(entry.ItemId))
                     visibleItemCount++;
 
@@ -128,7 +128,7 @@ public sealed class QuestAcceptPopupUI : MonoBehaviour
                 ? Mathf.Clamp((244f - (Mathf.Max(0, visibleItemCount - 1) * 6f)) / visibleItemCount, 24f, 42f)
                 : 42f;
 
-            foreach (QuestRewardItemEntry entry in rewards.Items)
+            foreach (QuestRewardItemEntry entry in items)
             {
                 if (string.IsNullOrEmpty(entry.ItemId))
                     continue;
@@ -147,15 +147,19 @@ public sealed class QuestAcceptPopupUI : MonoBehaviour
                 icon.enabled = resolved;
                 if (resolved)
                     icon.sprite = item.icon;
-                qty.text = $"x{entry.Quantity}";
+                qty.text = $"<mark=#151019F5 padding=\"2,2,1,1\">x{entry.Quantity}</mark>";
                 _spawnedRewardSlots.Add(slot);
             }
         }
 
         var extras = new List<string>();
-        if (rewards.Gold > 0)
+        if (supplies?.Gold > 0)
+            extras.Add($"{supplies.Gold} Gold on Accept");
+        if (supplies?.Items.Count > 0)
+            extras.Add("Item on Accept");
+        if (rewards?.Gold > 0)
             extras.Add($"{rewards.Gold} Gold");
-        if (rewards.Experience > 0)
+        if (rewards?.Experience > 0)
             extras.Add($"{rewards.Experience} XP");
         if (_rewardSummaryText != null)
             _rewardSummaryText.text = string.Join("     ", extras);

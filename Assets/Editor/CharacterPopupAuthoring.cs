@@ -66,7 +66,7 @@ public static class CharacterPopupAuthoring
         if (board == null && AssetImporter.GetAtPath(DossierBoardPath) != null)
             board = LoadSprite(DossierBoardPath);
         Sprite slot = LoadSprite(SlotPath);
-        Sprite close = LoadSprite("Assets/Resources/UI/Inventory/LightFantasy/inventory_close_thin_hd.png");
+        Sprite close = LoadSprite(MapUIAuthoring.CloseButtonPath);
 
         RectTransform window = CreateRect("Window", popup, Vector2.zero, new Vector2(720f, 405f));
         window.gameObject.AddComponent<PopupViewportFit>();
@@ -202,9 +202,10 @@ public static class CharacterPopupAuthoring
 
     private static void BuildCloseButton(GameObject root, RectTransform window, Sprite closeSprite)
     {
-        RectTransform closeRect = CreateRect("CloseButton", window, Vector2.one, Vector2.one, new Vector2(-34f, -32f), new Vector2(30f, 30f));
+        RectTransform closeRect = CreateRect("CloseButton", window, Vector2.one, Vector2.one, new Vector2(-29f, -22f), new Vector2(30f, 30f));
         Image closeImage = closeRect.gameObject.AddComponent<Image>();
         closeImage.sprite = closeSprite;
+        closeImage.preserveAspect = true;
         Button closeButton = closeRect.gameObject.AddComponent<Button>();
         closeButton.targetGraphic = closeImage;
         UnityEventTools.AddPersistentListener(closeButton.onClick, root.GetComponent<UnifiedGameplayHudController>().ClosePopup);

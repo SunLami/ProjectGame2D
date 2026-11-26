@@ -51,24 +51,16 @@ public class MapManager : MonoBehaviour
 
     public AudioClip GetCurrentTileAudioClip(Vector2 worldPosition)
     {
-        Vector3Int gridPosition = _tilemap.WorldToCell(worldPosition);
-        TileBase tile = _tilemap.GetTile(gridPosition);
+        if (_tilemap == null || _dataFromTiles == null)
+            return null;
 
-        if (tile == null) return null;
+        TileBase tile = _tilemap.GetTile(_tilemap.WorldToCell(worldPosition));
+        if (tile == null || !_dataFromTiles.TryGetValue(tile, out TileDataSO data))
+            return null;
 
-        int index;
-        AudioClip currentTileAudioClip;
-
-        if (_player.IsRunning)
-        {
-            index = Random.Range(0, _dataFromTiles[tile].runAudioClip.Length);
-            currentTileAudioClip = _dataFromTiles[tile].runAudioClip[index];
-            return currentTileAudioClip;
-        }
-
-        index = Random.Range(0, _dataFromTiles[tile].walkAudioClip.Length);
-        currentTileAudioClip = _dataFromTiles[tile].walkAudioClip[index];
-
-        return currentTileAudioClip;
+        AudioClip[] clips = _player != null && _player.IsRunning && data.runAudioClip?.Length > 0
+            ? data.runAudioClip
+            : data.walkAudioClip;
+        return clips?.Length > 0 ? clips[Random.Range(0, clips.Length)] : null;
     }
 }

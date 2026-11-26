@@ -2233,17 +2233,17 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: ProjectGame2D.Runtime::TeleportPillarInteractable
   _destinations:
-  - id: return.demo
-    displayName: Heart Village
-    description: Leave the arena and return to the village.
-    sceneName: DemoScene
-    spawnId: teleport_pillar_return
+  - id: return.mapduy
+    displayName: Ruined Temple
+    description: Leave the arena and return to the Ruined Temple.
+    sceneName: MapDuy
+    spawnId: spawn.mapduy.boss_pillar_return
     available: 1
     icon: {fileID: 0}
     accent: {r: 0.55, g: 0.85, b: 0.5, a: 1}
   _ui: {fileID: 1250279399}
   _title: LEAVE THE ARENA
-  _subtitle: Return to the village.
+  _subtitle: Return to the Ruined Temple.
   _lockWhileFighting: {fileID: 714692380}
 --- !u!114 &724593311
 MonoBehaviour:
@@ -5191,7 +5191,7 @@ MonoBehaviour:
   ShowCameraFrustum: 1
   IgnoreTimeScale: 0
   WorldUpOverride: {fileID: 0}
-  ChannelMask: -1
+  ChannelMask: 16383
   UpdateMethod: 2
   BlendUpdateMethod: 1
   LensModeOverride:

@@ -609,3 +609,45 @@ Quest Log displays the next offer between quests and separates completed history
 Restored the shared Minimap prefab and moved the Quest Tracker to the middle-left at the owner’s request.
 
 Character Stats UI rebuild uses new board art, Inventory styling and live vital meters. Unity gameplay acceptance remains owner-led.
+
+MapNhat live map pilot added for Minimap and Full Map (M). Unity gameplay and frame-cost verification remain owner-led.
+
+Extended the live Minimap and Full Map pilot from MapNhat to MapDuy and the three boss arenas. Owner-led Play Mode validation remains pending.
+
+2026-11-26 — Placed the DemoScene boss teleport pillar and its destination picker in MapDuy in front of Ruined Temple. Owner Play Mode validation pending.
+
+2026-11-26 — Authored 27 initial ordinary enemy prefab placements in MapDuy under `Enemy Spawn Points`. The two red clearings contain 6 Goblin1, the western orange region contains 4 Ent, and the blue regions contain 9 Slime1 and 8 Slime2. Initial positions follow the supplied map and avoid occupied terrain tiles. As with existing ordinary enemies, the scene re-creates them on load. Owner Play Mode validation pending.
+
+2026-11-26 — Increased MapDuy enemy placements to 40 at the owner's request. The established zones now contain 8 Goblin1, 6 Ent, 13 Slime1 and 13 Slime2. The 27 original positions were retained.
+
+2026-11-26 — Increased MapDuy enemy placements from 40 to 60. The existing positions were retained, and 20 new points were spread across the same zones, with 12 Goblin1, 9 Ent, 19 Slime1 and 20 Slime2 in total. Owner Play Mode validation pending.
+
+2026-11-26 — Added two Goblin1 to the small western clearing in MapDuy, bringing that clearing to five, Goblin1 to 14, and the scene total to 62. Other placements were retained.
+
+2026-11-26 — Act I grants the sword and drink budget on quest acceptance, adds Tutorial handoffs to the next NPC, and separates Leofrun’s planting and harvest quests. V16 maps old farm counters to both stages. Owner Play Mode validation pending.
+
+2026-11-26 — Extended Act I Tutorial handoffs through fishing, Merric and Agnes. Quest 4b tracks the Brasstan Edge craft, and pre-forge XP reaches level 5. V17 upgrades existing saves. Owner Play Mode validation pending.
+
+2026-11-26 — Inventory hides Loadout stacks until returned, crop indicators show the harvest countdown and ready marker, and Agnes requires opening the Skills Panel. Owner Play Mode validation pending.
+
+2026-11-26 — Stack discard opens the quantity input immediately. Act I requires hand-ins to Oswin, Eadric, Leofrun and Merric before their next NPC handoffs. Unity Play Mode verification pending.
+
+2026-11-26 — A New Journey now requires a Wigheard hand-in after equipping the Training Sword and before the Cuthbert handoff.
+
+2026-11-26 — Quest 2-2 seed supply accounts for existing plantings of later objectives, preventing immediate seed refunds when planting ahead of the tracker.
+
+2026-11-26 — Harvest the Fields credits produce already in Inventory and reconciles in-progress saves on Continue.
+
+2026-11-26 — Quest 2-2 records all three crops independently, including previously uncredited plants still on the farm.
+
+2026-11-26 — Quest 2-2b counts each crop harvest and checks held produce in any order.
+
+2026-11-26 — Enabled saved-session travel from MapDuy to Earth, Water and Wind and return to the Ruined Temple pillar. Quest Offer quantity badges use larger white text over a dark background.
+
+2026-11-26 — Player death opens Return to Village, with immediate free return or automatic return to MapNhat after 30 seconds.
+
+2026-11-26 — Fixed Inventory wheel scrolling over grid gaps, and addressed transition listener overlap, inactive PlayerInput calls, Timeline footstep receivers, and unmapped tile audio.
+
+2026-11-26 — Enabled the existing Player Dash in MapDuy.
+
+2026-11-26 — Hardened Settings, Quest Log, Pause and live-map teardown against Unity script reload during scene transitions.

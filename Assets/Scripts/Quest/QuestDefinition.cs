@@ -15,6 +15,9 @@ public sealed class QuestDefinition : ScriptableObject
     [SerializeField] private string[] _prerequisiteQuestIds;
     [SerializeField] private QuestObjectiveDefinition[] _objectives;
     [SerializeField] private QuestRewardDefinition _rewards;
+    [SerializeField] private QuestRewardDefinition _acceptanceSupplies;
+    [SerializeField] private bool _showOfferTutorial;
+    [SerializeField] private string _autoStartQuestId;
     [SerializeField] private bool _isTutorialQuest;
     [SerializeField] private bool _isMainQuest;
     [Tooltip("Presentation category used to place Daily Quests after Main and Side Quests. Daily reset/generation is owned by a future system.")]
@@ -25,6 +28,9 @@ public sealed class QuestDefinition : ScriptableObject
     [Tooltip("Stable npcId that offers this quest while it is Available.")]
     [SerializeField] private string _giverNpcId;
 
+    [Tooltip("Prevent restarting quests that supply items or world state on acceptance.")]
+    [SerializeField] private bool _preventAbandon;
+
     [Tooltip("Stable npcId that accepts turn-in while this quest is ReadyToTurnIn.")]
     [SerializeField] private string _turnInNpcId;
 
@@ -32,6 +38,7 @@ public sealed class QuestDefinition : ScriptableObject
         + "required -- for a quest whose completion is itself the signal (e.g. \"equip a weapon\"), "
         + "as opposed to one meant to be handed in face-to-face.")]
     [SerializeField] private bool _autoTurnIn;
+    [SerializeField] private bool _objectivesInAnyOrder;
 
     [Tooltip("QuestTracker line while this quest is Available and nothing is in progress: who to "
         + "meet and where. Presentation only -- the quest is still accepted through the giver's dialogue.")]
@@ -46,11 +53,16 @@ public sealed class QuestDefinition : ScriptableObject
     public IReadOnlyList<string> PrerequisiteQuestIds => _prerequisiteQuestIds ?? Array.Empty<string>();
     public IReadOnlyList<QuestObjectiveDefinition> Objectives => _objectives ?? Array.Empty<QuestObjectiveDefinition>();
     public QuestRewardDefinition Rewards => _rewards;
+    public QuestRewardDefinition AcceptanceSupplies => _acceptanceSupplies;
+    public bool ShowOfferTutorial => _showOfferTutorial;
+    public string AutoStartQuestId => _autoStartQuestId;
     public bool IsTutorialQuest => _isTutorialQuest;
     public bool IsMainQuest => _isMainQuest;
     public bool IsDailyQuest => _isDailyQuest;
     public bool IsDebugQuest => _isDebugQuest;
     public string GiverNpcId => _giverNpcId;
+    public bool CanAbandon => !_preventAbandon && !string.IsNullOrEmpty(_giverNpcId);
     public string TurnInNpcId => _turnInNpcId;
     public bool AutoTurnIn => _autoTurnIn;
+    public bool ObjectivesInAnyOrder => _objectivesInAnyOrder;
 }

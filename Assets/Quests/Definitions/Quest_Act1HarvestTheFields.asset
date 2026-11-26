@@ -1,0 +1,65 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2a7a75faac2e50c44ac9f79fb2dfa85e, type: 3}
+  m_Name: Quest_Act1HarvestTheFields
+  m_EditorClassIdentifier: ProjectGame2D.Runtime::QuestDefinition
+  _questId: quest.act1.harvest_the_fields
+  _displayName: "2-2b: Harvest the Fields"
+  _prerequisiteQuestIds:
+  - quest.act1.back_to_fields
+  _objectives:
+  - _type: 4
+    _targetId: crop.carrot
+    _targetAreaId: area.farm
+    _targetCount: 15
+    _obtainMode: 0
+    _gatherPossessionItemId: item.crop.carrot
+    _description: "Harvest or have 15 Carrots."
+    _controlHint: "Left-click ripe crops at the farm. Harvest or have 15 of each crop: Carrots, Grapes and Lemons, in any order."
+    _navigationAreaId: area.farm
+    _navigationNpcId:
+  - _type: 4
+    _targetId: crop.grape
+    _targetAreaId: area.farm
+    _targetCount: 15
+    _obtainMode: 0
+    _gatherPossessionItemId: item.crop.grape
+    _description: "Harvest or have 15 Grapes."
+    _controlHint: "Left-click ripe crops at the farm. Harvest or have 15 of each crop: Carrots, Grapes and Lemons, in any order."
+    _navigationAreaId: area.farm
+    _navigationNpcId:
+  - _type: 4
+    _targetId: crop.lemon
+    _targetAreaId: area.farm
+    _targetCount: 15
+    _obtainMode: 0
+    _gatherPossessionItemId: item.crop.lemon
+    _description: "Harvest or have 15 Lemons."
+    _controlHint: "Left-click ripe crops at the farm. Harvest or have 15 of each crop: Carrots, Grapes and Lemons, in any order."
+    _navigationAreaId: area.farm
+    _navigationNpcId:
+  _rewards:
+    _items: []
+    _gold: 24
+    _experience: 260
+  _isTutorialQuest: 0
+  _isMainQuest: 0
+  _isDailyQuest: 0
+  _isDebugQuest: 0
+  _giverNpcId:
+  _preventAbandon: 1
+  _turnInNpcId: npc.leofrun
+  _autoTurnIn: 0
+  _objectivesInAnyOrder: 1
+  _showOfferTutorial: 1
+  _offerDirections:
+  _turnInDirections: "Return to Leofrun at the farm to report your harvest."

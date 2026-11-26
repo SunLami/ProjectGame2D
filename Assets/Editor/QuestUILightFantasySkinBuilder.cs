@@ -27,7 +27,7 @@ public static class QuestUILightFantasySkinBuilder
         Sprite logBoard = ImportSprite(QuestRoot + "quest_log_board_hd.png");
         Sprite innerPanel = ImportSprite(QuestRoot + "quest_inner_panel_hd.png");
         Sprite titleBanner = ImportSprite(QuestRoot + "quest_title_banner_hd.png");
-        Sprite closeSprite = ImportSprite(InventoryRoot + "inventory_close_thin_hd.png");
+        Sprite closeSprite = AssetDatabase.LoadAssetAtPath<Sprite>(MapUIAuthoring.CloseButtonPath);
         Sprite primaryButton = ImportSprite(MainMenuRoot + "landing_action_button.png");
         Sprite hoverButton = ImportSprite(MainMenuRoot + "landing_action_button_hover.png");
 
@@ -67,8 +67,8 @@ public static class QuestUILightFantasySkinBuilder
         SetImage(close.gameObject, closeSprite, true, true);
         close.transition = Selectable.Transition.None;
         RectTransform closeRect = close.GetComponent<RectTransform>();
-        closeRect.sizeDelta = new Vector2(36f, 36f);
-        closeRect.anchoredPosition = new Vector2(-18f, -18f);
+        closeRect.sizeDelta = new Vector2(30f, 30f);
+        closeRect.anchoredPosition = new Vector2(-18f, -15f);
         TMP_Text closeLabel = close.GetComponentInChildren<TMP_Text>(true);
         if (closeLabel != null) closeLabel.enabled = false;
 

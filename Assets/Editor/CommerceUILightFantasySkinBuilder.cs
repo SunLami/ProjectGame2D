@@ -21,7 +21,7 @@ public static class CommerceUILightFantasySkinBuilder
         Sprite innerPanel = ImportSprite(CommerceRoot + "commerce_inner_panel_hd.png");
         Sprite primary = ImportSprite(MainMenuRoot + "landing_action_button.png");
         Sprite hover = ImportSprite(MainMenuRoot + "landing_action_button_hover.png");
-        Sprite close = ImportSprite(InventoryRoot + "inventory_close_thin_hd.png");
+        Sprite close = AssetDatabase.LoadAssetAtPath<Sprite>(MapUIAuthoring.CloseButtonPath);
         Sprite goldBadge = ImportSprite(InventoryRoot + "inventory_gold_badge_hd.png");
 
         Transform backdrop = RequireChild(commerceUI.transform, "Backdrop");

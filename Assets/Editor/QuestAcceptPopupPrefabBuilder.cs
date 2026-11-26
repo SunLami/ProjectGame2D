@@ -157,8 +157,8 @@ public static class QuestAcceptPopupPrefabBuilder
         Stretch(rewardIcon.rectTransform, 5f);
         rewardIcon.preserveAspect = true;
         TMP_Text qty = Require(slot, "Qty").GetComponent<TMP_Text>();
-        Style(qty, 7f, Cream, TextAlignmentOptions.BottomRight);
-        Stretch(qty.rectTransform, 1f);
+        Style(qty, 10f, Color.white, TextAlignmentOptions.BottomRight);
+        Stretch(qty.rectTransform, 5f);
 
         TMP_Text summary = Require(rewards, "RewardSummaryText").GetComponent<TMP_Text>();
         Style(summary, 8f, Cream, TextAlignmentOptions.Center);

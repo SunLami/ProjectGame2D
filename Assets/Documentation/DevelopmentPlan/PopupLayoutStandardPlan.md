@@ -40,7 +40,7 @@ vì kích thước thực tế còn phụ thuộc Canvas và hierarchy.
 | Full Map | Đo khung và viewport trên instance trước chuyển | 1600×900 | Neo nút đóng và cụm zoom độc lập với vùng ảnh. Kiểm tra pan, zoom và marker khớp ảnh. |
 | Pause | 164×340, panel scale 0.65 | 560×720 | Dùng stack nút dọc, giữ vị trí chọn và Back. Kiểm tra chuyển Settings, Save và Return to Main Menu. |
 | Settings | 200×300 trong GameplayUIRoot | 560×720 | Header và footer cố định, các nhóm slider/toggle cuộn. Áp dụng chung cấu trúc cho Main Menu và gameplay, giữ lifecycle riêng. |
-| Save Slot Picker | Đo khung trên MainMenu và gameplay trước chuyển | 960×640 | Giữ đúng ba slot, header và footer dùng chung. Kiểm tra Empty, Continue, Save As, Overwrite và Delete. |
+| Save Slot Picker | Đo khung trên MainMenu và gameplay trước chuyển | 1440×810 ở Main Menu, 1440×810 trong gameplay | Giữ đúng ba slot, header và footer dùng chung. Kiểm tra Empty, Continue, Save As, Overwrite và Delete. |
 | Quest Offer | Card 320×400 | 720×800 | Header/portrait cố định, objective và reward cuộn, Accept/Decline bám đáy. Kiểm tra nội dung dài và controller focus. |
 | Xác nhận lưu, xóa save, bỏ quest, bỏ tutorial, vứt item | Panel lưu/vứt item đã đo 500×245; đo riêng các biến thể khác trước chuyển | 640×320 | Một cấu trúc header/body/actions; bước nhập số dùng cùng khung. Kiểm tra thông báo dài, Cancel, xác nhận và việc trả focus. |
 | Dialogue NPC | 700×270, scale 0.50 | 960×280 | Neo dưới trong safe area. Vùng choice riêng, co phần body khi có choice. Kiểm tra hội thoại ngắn, dài và đủ bốn lựa chọn. |
@@ -121,9 +121,9 @@ toàn cục. Kiểm thử trong Unity do chủ dự án thực hiện.
 
 ## Save Slot Picker, Main Menu Settings và số lượng GridSlot
 
-- Save Slot Picker ở Main Menu và gameplay dùng cùng vùng mục tiêu 960×640. Main Menu giữ
+- Save Slot Picker dùng vùng 1440×810 ở Main Menu cho cả New Game và Continue, và 1440×810 trong gameplay. Main Menu giữ
   ba thẻ và bố cục gốc 1920×1080 làm hệ tọa độ nội dung. Gameplay dùng hệ tọa độ 776×430
-  theo vùng tham chiếu 16:9 hiện tại. Controller và các tham chiếu nút giữ nguyên.
+  theo vùng tham chiếu 16:9 hiện tại. Khi chọn Save hoặc Load, khung Pause ẩn. Back hoặc Cancel đóng trình chọn slot và hiện lại Pause.
 - Settings Main Menu dùng vùng 560×720. Bố cục gốc nằm trong rect 900×950 để tiêu đề và
   nội dung co cùng nhau. Settings gameplay đã dùng cùng vùng mục tiêu.
 - Badge Inventory, Shop và Crafting được chỉnh theo tỷ lệ board sau khi fit, nhắm cỡ chữ
@@ -197,3 +197,7 @@ khi thay bằng khung ngoài và panel con riêng. Kiểm thử Unity do chủ d
 - Phần triển khai đã đưa vào nguồn. Chưa chạy kiểm thử Unity theo phân công của chủ dự án.
   Ưu tiên kiểm tra HUD không chồng, lệnh mở/đóng và drag ở Inventory, Full Map pan/zoom,
   Shop/Crafting không lệch vách ở tỷ lệ rộng, và luồng New Game/Continue.
+
+Thanh vàng của Crafting neo ở đáy CompactInventory với offset 48 để biểu tượng và số vàng nằm giữa khung footer. Prefab và builder dùng cùng vị trí.
+
+Nút X dùng sprite `map_close_button_v1` chung. Vị trí và kích thước của nút được author theo khung của Inventory, Character Stats, Quest Log, Skills, Settings, Shop, Crafting và Farm Storage. Căn nút theo góc trên phải của khung hoặc header tương ứng, giữ hình vuông và tránh chồng lên góc trang trí. Hộp lỗi Main Menu, Boss Teleport và Dev Panel dùng cùng sprite.

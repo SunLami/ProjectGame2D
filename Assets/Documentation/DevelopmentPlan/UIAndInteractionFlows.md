@@ -319,14 +319,14 @@ scene Style Guide riêng; mỗi UI được migration trực tiếp trên prefab
 - PauseMenu trình bày Resume/Inventory/Save/Load/Settings/Back to Menu/Exit; Shop và Craft không xuất hiện vì
   hai popup này được mở từ interaction context của NPC/crafting station theo kiến trúc tương tác gameplay.
 - Resume/Settings/Inventory/Save/Load/Back to Menu dùng button pixel-art tách riêng khỏi board; Exit dùng
-  danger tint đỏ, Close dùng icon thin chung với Inventory. Reskin không thay ownership save/session.
+  danger tint đỏ. Resume hoặc Esc đưa người chơi về gameplay.
 - Các action button PauseMenu dùng `ColorTint`: hover/Selected sapphire rõ ràng, pressed nâu-vàng và danger
   hover đỏ. State không thay đổi RectTransform hoặc thứ tự layout; tất cả button/text đã kiểm tra nằm trong board.
 
 ### SessionUX Save/Load overlay visual direction
 
 - `MenuWindow/SessionUX/LoadOverlay` giữ nguyên `PauseMenuUI` slot binding, save/load/delete action,
-  confirmation và session ownership; reskin chỉ thay presentation trên DemoScene.
+  confirmation và session ownership. Cả Save và Load dùng vùng hiển thị 1440×810. Khi trình chọn slot mở, khung Pause ẩn và hiện lại khi người chơi quay về bằng Back hoặc Cancel. Nếu thao tác với slot thất bại, trình chọn slot đóng để hiện thông báo lỗi trên Pause.
 - `LoadPanel` dùng anchor cố định giữa màn hình và bố cục compact `430×250`; ba slot card `116×165`
   tại X `-130/0/130`, đủ safe-area nhưng không để khoảng trống dư thừa. Builder chuẩn hóa local scale
   của panel/card/button về `1` để scale legacy không phóng khung hoặc co card sai tỉ lệ. Slot action dùng
@@ -717,3 +717,21 @@ The C window now places a live player preview in a textless portrait alcove, wit
 read-only equipment sockets around it. Vitals use full-width bars, with Combat above the
 more compact Mobility and Recovery groups. The preview renderer is shared with Inventory
 and initializes after a menu transition has released any previous preview.
+
+GridSlot shows an inset red level badge and dims the icon when equipment requires a higher
+level. Tooltip Required level is red below the requirement and white when met. Both use
+the same level check as equipping. The visuals refresh when PlayerStat progression changes.
+
+MapNhat Minimap follows the player with SmoothDamp and clamps to BorderMap. Full Map opens with the entire BorderMap in view, supports wheel zoom and bounded pan at gameplay pause, and renders to the existing exclusive Map popup. Separate RenderTextures are released when their views hide. Other maps retain snapshots.
+
+Live Minimap and Full Map also support MapDuy and the Earth, Water and Wind boss arenas. Each feed uses BorderMap and the gameplay camera of the active scene.
+
+Stack đã gán Loadout chỉ hiện ở Loadout và HUD trong màn Inventory. Kéo về lưới bỏ gán và chuyển stack vào GridSlot được thả. Thả ra ngoài lưới giữ gán; nhấp phải vẫn bỏ gán. Inventory giữ quyền sở hữu stack cho các thao tác sử dụng, mua bán và lưu.
+
+Quest Offer reward icons show an inset quantity badge with white text on a dark background.
+
+PlayerDead freezes the world and opens a blocking popup with a real-time 30-second countdown. The centered Return to Village button returns to the MapNhat spawn for free. Return is automatic at zero.
+
+The death popup displays its bronze and crimson board art at full sprite color over a dimmed backdrop, with a centered blue return button. TextMeshPro renders the title, countdown, and button label.
+
+Quest Log resolves filter controls whenever it enables. Settings and save UI tolerate temporarily absent services during Editor script reload.

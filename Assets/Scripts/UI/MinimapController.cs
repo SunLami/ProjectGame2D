@@ -3,12 +3,10 @@ using System.Globalization;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using Unity.Cinemachine;
+using UnityEngine.SceneManagement;
 
-// Presentation only. Shows a scrolling crop of the static map snapshot baked by
-// MapSnapshotBaker (Tools/ProjectGame2D/UI/Bake Map Snapshot), centered on the Player via
-// RawImage.uvRect, with a fixed marker icon repositioned to stay accurate even when the crop
-// clamps near a map edge. No live camera/RenderTexture -- matches the standard genre pattern
-// (static map art + moving icon) instead of rendering the world every frame.
+// Supported scenes use a live orthographic feed. Other scenes retain the snapshot and marker.
 public sealed class MinimapController : MonoBehaviour
 {
     [SerializeField] private RawImage _mapImage;
@@ -19,6 +17,12 @@ public sealed class MinimapController : MonoBehaviour
     [SerializeField] private Image _maskImage;
     [SerializeField, Range(0.05f, 1f)] private float _viewFraction = 0.22f;
 
+    private LiveMapCamera _liveMap;
+    private Texture _snapshot;
+    private Scene _scene;
+    private Vector2 _smoothedFocus;
+    private Vector2 _followVelocity;
+
     private Player _player;
     private Bounds _mapBounds;
     private bool _hasBounds;
@@ -27,6 +31,7 @@ public sealed class MinimapController : MonoBehaviour
 
     private void Awake()
     {
+        if (_mapImage != null) _snapshot = _mapImage.texture;
         // Dark Inventory Style circular frame/mask art now ships via MapUIAuthoring
         // (minimap_frame_v1 / minimap_mask_v1). Only fall back to the procedurally drawn circle
         // (not an authored bitmap) when a field is wired but its sprite is missing, so this never
@@ -49,19 +54,73 @@ public sealed class MinimapController : MonoBehaviour
         RefreshDateText(force: true);
     }
 
-    private void OnDisable() => UnbindZoneManager();
+    private void OnDisable()
+    {
+        ReleaseLiveMap();
+        UnbindZoneManager();
+    }
+
+    private void ReleaseLiveMap()
+    {
+        if (_liveMap == null) return;
+        if (_mapImage != null) _mapImage.texture = _snapshot;
+        _liveMap.Dispose();
+        _liveMap = null;
+    }
 
     private void LateUpdate()
     {
-        if (!_hasBounds)
-            _hasBounds = MapWorldBounds.TryGet(out _mapBounds);
+        Scene scene = SceneManager.GetActiveScene();
+        if (_scene != scene)
+        {
+            _scene = scene;
+            _hasBounds = false;
+            _player = null;
+            ReleaseLiveMap();
+        }
         if (_player == null)
             _player = FindAnyObjectByType<Player>();
-        if (_player == null || !_hasBounds)
-            return;
+        if (_player == null) return;
 
-        UpdateViewport(_player.transform.position);
+        if (_mapImage != null && LiveMapCamera.TryGetSource(out Camera source, out Bounds bounds))
+            UpdateLiveViewport(source, bounds);
+        else
+        {
+            ReleaseLiveMap();
+            if (!_hasBounds)
+                _hasBounds = MapWorldBounds.TryGet(out _mapBounds);
+            if (_hasBounds)
+                UpdateViewport(_player.transform.position);
+        }
         RefreshDateText(force: false);
+    }
+
+    private void UpdateLiveViewport(Camera source, Bounds bounds)
+    {
+        Vector2 position = _player.transform.position;
+        if (_liveMap == null)
+        {
+            _liveMap = new LiveMapCamera(source, OutputChannels.Channel14, 256, 256);
+            _mapImage.texture = _liveMap.Texture;
+            _mapImage.uvRect = new Rect(0f, 0f, 1f, 1f);
+            _smoothedFocus = position;
+            _followVelocity = Vector2.zero;
+        }
+
+        _smoothedFocus = Vector2.SmoothDamp(_smoothedFocus, position, ref _followVelocity,
+            0.10f, Mathf.Infinity, Time.unscaledDeltaTime);
+        float size = Mathf.Min(bounds.extents.x, bounds.extents.y) * _viewFraction;
+        Vector2 center = LiveMapCamera.ClampCenter(_smoothedFocus, bounds, size, _liveMap.Aspect);
+        _liveMap.Frame(center, size, source.transform.position.z);
+        PositionMarker(_liveMap.Project(_player.transform.position));
+    }
+
+    private void PositionMarker(Vector2 normalized)
+    {
+        if (_playerMarker == null || _mapImage == null) return;
+        _playerMarker.anchoredPosition = Vector2.Scale(normalized - Vector2.one * 0.5f, _mapImage.rectTransform.rect.size);
+        _playerMarker.localEulerAngles = new Vector3(0f, 0f,
+            MapWorldBounds.FacingToMarkerRotationZ(_player.FacingDirection));
     }
 
     private void UpdateViewport(Vector3 worldPosition)
@@ -74,18 +133,7 @@ public sealed class MinimapController : MonoBehaviour
         if (_mapImage != null)
             _mapImage.uvRect = new Rect(u0, v0, _viewFraction, _viewFraction);
 
-        if (_playerMarker != null && _mapImage != null)
-        {
-            Vector2 withinView = new(
-                (normalized.x - u0) / _viewFraction,
-                (normalized.y - v0) / _viewFraction);
-            Vector2 size = _mapImage.rectTransform.rect.size;
-            _playerMarker.anchoredPosition = new Vector2(
-                (withinView.x - 0.5f) * size.x,
-                (withinView.y - 0.5f) * size.y);
-            _playerMarker.localEulerAngles = new Vector3(0f, 0f,
-                MapWorldBounds.FacingToMarkerRotationZ(_player.FacingDirection));
-        }
+        PositionMarker(new Vector2((normalized.x - u0) / _viewFraction, (normalized.y - v0) / _viewFraction));
     }
 
     private void BindZoneManager()

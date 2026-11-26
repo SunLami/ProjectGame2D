@@ -16,18 +16,24 @@ MonoBehaviour:
   _displayName: "1: A New Journey"
   _prerequisiteQuestIds: []
   _objectives:
-  - _type: 0
-    _targetId: npc.town.guildmaster
+  - _type: 6
+    _targetId: sword_lvl1
     _targetAreaId:
     _targetCount: 1
     _obtainMode: 0
-    _description: "Speak with Wigheard at the training yard."
-  _rewards:
+    _description: "Equip Wigheard's sword."
+    _controlHint: "Press I to open Inventory, then equip the sword Wigheard gave you."
+  _preventAbandon: 1
+  _acceptanceSupplies:
     _items:
     - _itemId: sword_lvl1
       _quantity: 1
-    _gold: 140
+    _gold: 0
     _experience: 0
+  _rewards:
+    _items: []
+    _gold: 0
+    _experience: 100
   _isTutorialQuest: 0
   _isMainQuest: 0
   _isDailyQuest: 0
@@ -35,5 +41,6 @@ MonoBehaviour:
   _giverNpcId: npc.town.guildmaster
   _turnInNpcId: npc.town.guildmaster
   _autoTurnIn: 0
+  _showOfferTutorial: 1
   _offerDirections: "Meet Wigheard at the training yard."
-  _turnInDirections: "Speak to Wigheard again for your sword and travel gold."
+  _turnInDirections: "Return to Wigheard at the training yard to turn in the quest."

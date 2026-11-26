@@ -15,7 +15,7 @@ MonoBehaviour:
   _questId: quest.act1.back_to_eadric
   _displayName: "2-3: Back to Eadric"
   _prerequisiteQuestIds:
-  - quest.act1.back_to_fields
+  - quest.act1.harvest_the_fields
   _objectives:
   - _type: 0
     _targetId: npc.town.chapman
@@ -30,7 +30,7 @@ MonoBehaviour:
     - _itemId: item.material.meat
       _quantity: 10
     _gold: 12
-    _experience: 0
+    _experience: 140
   _isTutorialQuest: 0
   _isMainQuest: 0
   _isDailyQuest: 0
@@ -38,5 +38,6 @@ MonoBehaviour:
   _giverNpcId: npc.town.chapman
   _turnInNpcId: npc.town.chapman
   _autoTurnIn: 0
+  _showOfferTutorial: 1
   _offerDirections: "Return to Eadric at the supplies stall."
   _turnInDirections: "Report back to Eadric for your reward."

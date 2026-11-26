@@ -76,8 +76,8 @@ public static class QuestLogWindowPrefabBuilder
         RectTransform closeRect = close.GetComponent<RectTransform>();
         closeRect.anchorMin = closeRect.anchorMax = closeRect.pivot = new Vector2(1f, 1f);
         closeRect.sizeDelta = new Vector2(30f, 30f);
-        closeRect.anchoredPosition = new Vector2(-14f, -14f);
-        EnsureImage(close.gameObject, Load("Assets/Resources/UI/Inventory/LightFantasy/inventory_close_thin_hd.png")).preserveAspect = true;
+        closeRect.anchoredPosition = new Vector2(-18f, -15f);
+        EnsureImage(close.gameObject, Load(MapUIAuthoring.CloseButtonPath)).preserveAspect = true;
         TMP_Text label = close.GetComponentInChildren<TMP_Text>(true);
         if (label != null) label.enabled = false;
 

@@ -59,6 +59,7 @@ public static class FarmingAuthoring
         cropSo.FindProperty("_harvestItem").objectReferenceValue = harvest;
         cropSo.FindProperty("_minimumHarvestQuantity").intValue = label == "Carrot" ? 3 : 1;
         cropSo.FindProperty("_maximumHarvestQuantity").intValue = 3;
+        cropSo.FindProperty("_harvestCooldownSeconds").floatValue = 5f;
         SerializedProperty stageArray = cropSo.FindProperty("_stages");
         stageArray.arraySize = stages.Length;
         for (int i = 0; i < stages.Length; i++)

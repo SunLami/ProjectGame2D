@@ -41,10 +41,15 @@ MonoBehaviour:
     _controlHint: "In Cuthbert's shop select Grape Juice, press + to 5, then Buy. Esc closes the shop."
     _navigationAreaId:
     _navigationNpcId: npc.town.mixologist
+  _preventAbandon: 1
+  _acceptanceSupplies:
+    _items: []
+    _gold: 140
+    _experience: 0
   _rewards:
     _items: []
     _gold: 20
-    _experience: 0
+    _experience: 150
   _isTutorialQuest: 0
   _isMainQuest: 0
   _isDailyQuest: 0
@@ -52,5 +57,6 @@ MonoBehaviour:
   _giverNpcId: npc.town.mixologist
   _turnInNpcId: npc.town.mixologist
   _autoTurnIn: 0
+  _showOfferTutorial: 1
   _offerDirections: "Meet Cuthbert at the drinks stall."
   _turnInDirections: "Close the shop and speak to Cuthbert again to hand in."

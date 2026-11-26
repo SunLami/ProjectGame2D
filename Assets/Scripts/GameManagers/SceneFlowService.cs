@@ -57,6 +57,24 @@ public sealed class SceneFlowService : MonoBehaviour
         BuildTransitionOverlay();
     }
 
+    private void OnEnable()
+    {
+        // A script reload can interrupt an additive load before its old scene is unloaded.
+        // Keep one listener, preferring the active scene, while the scenes are still overlapping.
+        AudioListener[] listeners = FindObjectsByType<AudioListener>(FindObjectsSortMode.None);
+        Scene activeScene = SceneManager.GetActiveScene();
+        AudioListener owner = null;
+        foreach (AudioListener listener in listeners)
+        {
+            if (listener.isActiveAndEnabled && (owner == null || listener.gameObject.scene == activeScene))
+                owner = listener;
+        }
+
+        foreach (AudioListener listener in listeners)
+            if (listener != owner && listener.isActiveAndEnabled)
+                listener.enabled = false;
+    }
+
     private void BuildTransitionOverlay()
     {
         var canvasObject = new GameObject("SceneTransitionOverlay", typeof(Canvas), typeof(CanvasGroup));
@@ -229,7 +247,7 @@ public sealed class SceneFlowService : MonoBehaviour
             yield break;
         }
 
-        yield return TrackSceneLoad(operation, sceneName, enterMainMenu);
+        yield return TrackSceneLoad(operation, sceneName, enterMainMenu, outgoingContentScenes);
 
         // The incoming scene is activated at this point, but GameState is typically still
         // Loading -- its own IGameplayReadinessSource(s) (inventory/equipment/world restore,
@@ -317,7 +335,8 @@ public sealed class SceneFlowService : MonoBehaviour
         }
     }
 
-    private IEnumerator TrackSceneLoad(AsyncOperation operation, string sceneName, bool enterMainMenu)
+    private IEnumerator TrackSceneLoad(AsyncOperation operation, string sceneName, bool enterMainMenu,
+        List<Scene> outgoingContentScenes)
     {
         operation.allowSceneActivation = false;
         float displayedProgress = 0f;
@@ -343,6 +362,17 @@ public sealed class SceneFlowService : MonoBehaviour
 
         TransitionProgressChanged?.Invoke(1f);
         yield return new WaitForSecondsRealtime(0.25f);
+
+        // Outgoing cameras remain visible until the new scene is ready, but their audio must
+        // stop before the incoming camera's listener becomes active.
+        foreach (Scene scene in outgoingContentScenes)
+        {
+            if (!scene.isLoaded)
+                continue;
+            foreach (GameObject root in scene.GetRootGameObjects())
+                foreach (AudioListener listener in root.GetComponentsInChildren<AudioListener>(true))
+                    listener.enabled = false;
+        }
 
         operation.allowSceneActivation = true;
         while (!operation.isDone)

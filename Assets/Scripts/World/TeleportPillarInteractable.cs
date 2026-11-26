@@ -52,12 +52,12 @@ public sealed class TeleportPillarInteractable : MonoBehaviour
         return _ui.Open(_destinations, OnDestinationChosen, _title, _subtitle);
     }
 
-    private static void OnDestinationChosen(TeleportDestination destination)
+    private void OnDestinationChosen(TeleportDestination destination)
     {
         if (destination == null)
             return;
 
-        if (!SceneTravel.TryTravel(destination.sceneName, destination.spawnId, out string reason))
+        if (!SceneTravel.TryTravelThroughBossPillar(gameObject.scene, destination.sceneName, destination.spawnId, out string reason))
             WorldMessagePopupUI.Show(reason);
     }
 }

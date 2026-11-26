@@ -49,6 +49,13 @@ public sealed class TimelineActorMotion : MonoBehaviour
         transform.localPosition = local;
     }
 
+    // Shared walking clips send this animation event to the Timeline actor instead of the live Player.
+    public void PlayFootSteps()
+    {
+        if (Application.isPlaying && _director != null && _director.state == PlayState.Playing)
+            SoundFXManager.PlaySfxAt(SfxIds.StepGrass, transform.position);
+    }
+
     private Vector2 Evaluate(float time)
     {
         if (time <= _keyframes[0].time)

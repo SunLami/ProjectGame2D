@@ -18,6 +18,7 @@ public class EquipmentItemSO : ItemSO
     [Header("Equipment")]
     public EquipSlot slot;
     [Min(1)] public int requiredLevel = 1;
+
     public SpriteLibraryAsset spriteLibraryAsset;
 
     // Optional: only used when slot == Body, for armor sets that also swap a head accessory (helmet/visor).
@@ -41,4 +42,6 @@ public class EquipmentItemSO : ItemSO
         maxStackSize = 1;
         requiredLevel = Mathf.Max(1, requiredLevel);
     }
+
+    public bool RequiresHigherLevel(PlayerStat player) => player != null && player.Level < requiredLevel;
 }

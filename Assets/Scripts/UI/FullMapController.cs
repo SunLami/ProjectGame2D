@@ -1,15 +1,10 @@
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
+using Unity.Cinemachine;
 
 // Presentation only, opened/closed by UnifiedGameplayHudController via GameplayMenuPage.Map.
-// Shows the static map snapshot baked by MapSnapshotBaker (Tools/ProjectGame2D/UI/Bake Map
-// Snapshot) full-screen, scaled to "cover" the viewport (fills edge-to-edge, no letterbox bars,
-// no distortion) with a Player icon overlay -- no live camera/RenderTexture. Zoom scales the
-// image's RectTransform around its own center; a RectMask2D on the viewport clips the overflow.
-// Once zoomed in, the scaled image is bigger than the viewport, so it also needs to be draggable
-// (IDragHandler) to reach corners the zoom pushed outside the visible area -- panning is clamped
-// so the image can never reveal empty space past its own edge.
+// Supported scenes use an orthographic live feed. Other maps use the authored snapshot.
 [RequireComponent(typeof(Canvas), typeof(GraphicRaycaster))]
 public sealed class FullMapController : MonoBehaviour, IScrollHandler, IBeginDragHandler, IDragHandler
 {
@@ -24,6 +19,11 @@ public sealed class FullMapController : MonoBehaviour, IScrollHandler, IBeginDra
     private bool _hasBounds;
     private float _zoom = 1f;
     private Canvas _canvas;
+    private LiveMapCamera _liveMap;
+    private Camera _liveSource;
+    private RawImage _liveImage;
+    private Vector2 _liveCenter;
+    private Vector2 _liveViewportSize;
 
     // Scene overlays and popup canvases can sort above the shared gameplay canvas.
     // Give only the fullscreen map its own draw layer.
@@ -52,13 +52,94 @@ public sealed class FullMapController : MonoBehaviour, IScrollHandler, IBeginDra
         UpdateMarker();
     }
 
-    private void Update()
+    private void OnDisable()
     {
-        if (!_hasBounds)
-            _hasBounds = MapWorldBounds.TryGet(out _mapBounds);
+        ReleaseLiveMap();
+        _liveSource = null;
+    }
+
+    private void LateUpdate()
+    {
         if (_player == null)
             _player = FindAnyObjectByType<Player>();
+
+        if (_mapImage != null && _viewport != null
+            && LiveMapCamera.TryGetSource(out Camera source, out Bounds bounds))
+        {
+            UpdateLiveMap(source, bounds);
+            return;
+        }
+        if (_liveMap != null)
+        {
+            ReleaseLiveMap();
+            FitToViewport();
+            ApplyZoom();
+        }
+        if (!_hasBounds)
+            _hasBounds = MapWorldBounds.TryGet(out _mapBounds);
         UpdateMarker();
+    }
+
+    private void UpdateLiveMap(Camera source, Bounds bounds)
+    {
+        Vector2 size = _viewport.rect.size;
+        if (size.x <= 0f || size.y <= 0f) return;
+        if (_liveSource != source)
+        {
+            ReleaseLiveMap();
+            _liveSource = source;
+        }
+        if (_liveMap == null || size != _liveViewportSize)
+        {
+            bool firstFrame = _liveMap == null;
+            ReleaseLiveMap();
+            _liveViewportSize = size;
+            int width = Mathf.Clamp(Mathf.RoundToInt(576f * size.x / size.y), 256, 1920);
+            _liveMap = new LiveMapCamera(source, OutputChannels.Channel15, width, 576);
+            if (firstFrame)
+                _liveCenter = bounds.center;
+
+            var surface = new GameObject("LiveMapView", typeof(RectTransform), typeof(RawImage));
+            _liveImage = surface.GetComponent<RawImage>();
+            _liveImage.texture = _liveMap.Texture;
+            _liveImage.raycastTarget = false;
+            var rect = _liveImage.rectTransform;
+            rect.SetParent(_mapImage.rectTransform, false);
+            rect.SetAsFirstSibling();
+            rect.anchorMin = Vector2.zero;
+            rect.anchorMax = Vector2.one;
+            rect.offsetMin = rect.offsetMax = Vector2.zero;
+
+            _mapImage.enabled = false;
+            var mapRect = _mapImage.rectTransform;
+            mapRect.sizeDelta = size;
+            mapRect.localScale = Vector3.one;
+            mapRect.anchoredPosition = Vector2.zero;
+        }
+        _mapBounds = bounds;
+        _hasBounds = true;
+        float ortho = LiveOrthographicSize();
+        _liveCenter = LiveMapCamera.ClampCenter(_liveCenter, bounds, ortho, _liveMap.Aspect);
+        _liveMap.Frame(_liveCenter, ortho, source.transform.position.z);
+        if (_player != null)
+            PositionMarker(_liveMap.Project(_player.transform.position));
+    }
+
+    private float LiveOrthographicSize() =>
+        Mathf.Max(_mapBounds.extents.y, _mapBounds.extents.x / _liveMap.Aspect) / _zoom;
+
+    private void ReleaseLiveMap()
+    {
+        if (_liveMap == null) return;
+        if (_liveImage != null)
+        {
+            _liveImage.gameObject.SetActive(false);
+            Destroy(_liveImage.gameObject);
+        }
+        _liveMap.Dispose();
+        _liveMap = null;
+        if (_mapImage != null)
+            _mapImage.enabled = true;
     }
 
     public void OnScroll(PointerEventData eventData)
@@ -68,7 +149,8 @@ public sealed class FullMapController : MonoBehaviour, IScrollHandler, IBeginDra
 
         float factor = 1f + Mathf.Sign(delta) * _zoomStep;
         _zoom = Mathf.Clamp(_zoom * factor, 1f, _maxZoom);
-        ApplyZoom();
+        if (_liveMap == null)
+            ApplyZoom();
     }
 
     public void OnBeginDrag(PointerEventData eventData) { }
@@ -84,8 +166,17 @@ public sealed class FullMapController : MonoBehaviour, IScrollHandler, IBeginDra
             !RectTransformUtility.ScreenPointToLocalPointInRectangle(_viewport, eventData.position - eventData.delta, camera, out Vector2 previous))
             return;
 
+        Vector2 delta = current - previous;
+        if (_liveMap != null)
+        {
+            float size = LiveOrthographicSize();
+            _liveCenter -= new Vector2(delta.x / _liveViewportSize.x * size * _liveMap.Aspect,
+                delta.y / _liveViewportSize.y * size) * 2f;
+            return;
+        }
+
         _mapImage.rectTransform.anchoredPosition =
-            ClampPan(_mapImage.rectTransform.anchoredPosition + current - previous);
+            ClampPan(_mapImage.rectTransform.anchoredPosition + delta);
     }
 
     private void ApplyZoom()
@@ -134,7 +225,13 @@ public sealed class FullMapController : MonoBehaviour, IScrollHandler, IBeginDra
         if (_player == null || !_hasBounds || _playerMarker == null || _mapImage == null)
             return;
 
-        Vector2 normalized = MapWorldBounds.WorldToNormalized(_mapBounds, _player.transform.position);
+        PositionMarker(MapWorldBounds.WorldToNormalized(_mapBounds, _player.transform.position));
+    }
+
+    private void PositionMarker(Vector2 normalized)
+    {
+        if (_playerMarker == null) return;
+
         Vector2 size = _mapImage.rectTransform.rect.size;
         _playerMarker.anchoredPosition = new Vector2(
             (normalized.x - 0.5f) * size.x,

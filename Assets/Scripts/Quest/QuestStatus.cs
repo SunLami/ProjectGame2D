@@ -1,5 +1,5 @@
 // Runtime-only quest lifecycle. Never serialized as a save-contract-facing bool; Locked/Available
-// are always derived from prerequisites, not stored.
+// normally derive from prerequisites. V16 migration uses Locked to defer existing harvest counters.
 public enum QuestStatus
 {
     Locked,

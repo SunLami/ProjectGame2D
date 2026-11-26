@@ -24,7 +24,8 @@ public sealed class MainMenuController : MonoBehaviour
 
     public SaveSlotInfo[] RefreshSlots()
     {
-        SaveSlotInfo[] slots = GameSessionManager.Instance.SaveRepository.GetAllSlotInfo();
+        SaveSlotInfo[] slots = GameSessionManager.Instance?.SaveRepository?.GetAllSlotInfo()
+            ?? Array.Empty<SaveSlotInfo>();
         OnSaveSlotListChanged?.Invoke(slots);
         return slots;
     }

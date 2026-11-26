@@ -18,7 +18,7 @@ public static class InventoryLightFantasySkinBuilder
         Sprite board = ImportSprite(QuestStyleRoot + "inventory_unified_reference_v5.png");
         Sprite equipment = ImportSprite(QuestStyleRoot + "inventory_tooltip_subtle_v2.png");
         Sprite slot = ImportSprite(QuestStyleRoot + "inventory_slot_reference_v4.png");
-        Sprite close = ImportSprite(SkinRoot + "inventory_close_thin_hd.png");
+        Sprite close = AssetDatabase.LoadAssetAtPath<Sprite>(MapUIAuthoring.CloseButtonPath);
         Sprite title = ImportSprite(SkinRoot + "inventory_title_hd.png");
         Sprite gridFrame = ImportSprite(SkinRoot + "inventory_grid_border_hd.png");
         Sprite goldBadge = ImportSprite(SkinRoot + "inventory_gold_badge_hd.png");
@@ -182,6 +182,8 @@ public static class InventoryLightFantasySkinBuilder
         {
             scrollViewImage.sprite = null;
             scrollViewImage.color = new Color(1f, 1f, 1f, 0f);
+            scrollViewImage.raycastTarget = true;
+            scrollViewImage.canvasRenderer.cullTransparentMesh = false;
         }
 
         Image viewportImage = viewport.GetComponent<Image>();
@@ -374,7 +376,8 @@ public static class InventoryLightFantasySkinBuilder
         RectTransform title = Find(root, "TitleInventory").GetComponent<RectTransform>();
         title.anchoredPosition = new Vector2(0f, 145f);
         RectTransform close = Find(root, "CloseBtn").GetComponent<RectTransform>();
-        close.anchoredPosition = new Vector2(270f, 145f);
+        close.anchorMin = close.anchorMax = Vector2.one;
+        close.anchoredPosition = new Vector2(-53f, -31f);
         close.sizeDelta = new Vector2(24f, 24f);
 
         string[] names = { "HeadSlot", "BodySlot", "FootSlot", "WeaponSlot", "ShieldSlot", "NecklaceSlot", "RingSlot" };

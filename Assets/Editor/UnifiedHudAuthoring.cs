@@ -102,8 +102,8 @@ public static class UnifiedHudAuthoring
             Place(mapPreview.rectTransform, 0f, -15f, 230f, 230f);
             mapPreview.preserveAspect = true;
 
-            AddCloseButton(characterPopup.transform, controller, font);
-            AddCloseButton(mapPopup.transform, controller, font);
+            AddCloseButton(characterPopup.transform, controller);
+            AddCloseButton(mapPopup.transform, controller);
             characterPopup.SetActive(false);
             mapPopup.SetActive(false);
 
@@ -175,16 +175,18 @@ public static class UnifiedHudAuthoring
         return popup.gameObject;
     }
 
-    private static void AddCloseButton(Transform popup, UnifiedGameplayHudController controller, TMP_FontAsset font)
+    private static void AddCloseButton(Transform popup, UnifiedGameplayHudController controller)
     {
         RectTransform rect = CreateRect("CloseButton", popup);
-        Place(rect, 151f, 176f, 34f, 34f);
+        rect.anchorMin = rect.anchorMax = rect.pivot = Vector2.one;
+        rect.anchoredPosition = new Vector2(-30f, -30f);
+        rect.sizeDelta = new Vector2(34f, 34f);
         Image image = rect.gameObject.AddComponent<Image>();
-        image.color = new Color(0.08f, 0.22f, 0.52f, 0.95f);
+        image.sprite = LoadSprite(MapUIAuthoring.CloseButtonPath);
+        image.preserveAspect = true;
         Button button = rect.gameObject.AddComponent<Button>();
+        button.targetGraphic = image;
         UnityEventTools.AddPersistentListener(button.onClick, controller.ClosePopup);
-        TMP_Text label = CreateText("Label", rect, font, "X", 20f);
-        Stretch(label.rectTransform);
     }
 
     private static Button CreateIconButton(string name, Transform parent, Sprite icon, float x, float y, float size)

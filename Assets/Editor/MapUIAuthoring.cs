@@ -18,7 +18,7 @@ public static class MapUIAuthoring
     private const string ArtRoot = "Assets/Resources/UI/Map/DarkInventoryStyle/";
     private const string FramePath = ArtRoot + "minimap_frame_v1.png";
     private const string MaskPath = ArtRoot + "minimap_mask_v1.png";
-    private const string CloseButtonPath = ArtRoot + "map_close_button_v1.png";
+    internal const string CloseButtonPath = ArtRoot + "map_close_button_v1.png";
     private const string MarkerPath = ArtRoot + "player_marker_v1.png";
     private const string TagPath = ArtRoot + "minimap_tag_v1.png";
 

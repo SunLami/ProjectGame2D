@@ -23,7 +23,7 @@ MonoBehaviour:
     _targetCount: 5
     _obtainMode: 0
     _description: "Catch 5 fish at the fishing dock."
-    _controlHint: "Buy Worm Bait from Dunstan (sell produce to Eadric for gold). Select it on the quick bar, click the fishing spot."
+    _controlHint: "Buy Worm Bait from Dunstan. Assign it to the quick bar, select it, then click a fishing spot at the dock."
     _navigationAreaId: area.fishing_dock
     _navigationNpcId:
   _rewards:
@@ -31,7 +31,7 @@ MonoBehaviour:
     - _itemId: item.drink.trailrunner_tonic
       _quantity: 1
     _gold: 30
-    _experience: 0
+    _experience: 320
   _isTutorialQuest: 0
   _isMainQuest: 0
   _isDailyQuest: 0
@@ -39,5 +39,6 @@ MonoBehaviour:
   _giverNpcId: npc.town.gastronome
   _turnInNpcId: npc.town.gastronome
   _autoTurnIn: 0
+  _showOfferTutorial: 1
   _offerDirections: "Speak to Oswin at the food stall."
   _turnInDirections: "Return to Oswin at the food stall."

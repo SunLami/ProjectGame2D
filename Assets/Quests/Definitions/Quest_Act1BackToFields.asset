@@ -13,44 +13,17 @@ MonoBehaviour:
   m_Name: Quest_Act1BackToFields
   m_EditorClassIdentifier: ProjectGame2D.Runtime::QuestDefinition
   _questId: quest.act1.back_to_fields
-  _displayName: "2-2: Back to the Fields"
+  _displayName: "2-2: Back to the Fields: Planting"
   _prerequisiteQuestIds:
   - quest.act1.stocking_up_eadric
   _objectives:
-  - _type: 4
-    _targetId: crop.carrot
-    _targetAreaId: area.farm
-    _targetCount: 15
-    _obtainMode: 0
-    _description: "Harvest 15 Carrots at the farm."
-    _controlHint: "Left-click a ripe Carrot plant to harvest. Only the crop in the tracker counts now."
-    _navigationAreaId: area.farm
-    _navigationNpcId:
-  - _type: 4
-    _targetId: crop.grape
-    _targetAreaId: area.farm
-    _targetCount: 15
-    _obtainMode: 0
-    _description: "Harvest 15 Grapes at the farm."
-    _controlHint: "Left-click a ripe Grape plant to harvest. Only the crop in the tracker counts now."
-    _navigationAreaId: area.farm
-    _navigationNpcId:
-  - _type: 4
-    _targetId: crop.lemon
-    _targetAreaId: area.farm
-    _targetCount: 15
-    _obtainMode: 0
-    _description: "Harvest 15 Lemons at the farm."
-    _controlHint: "Left-click a ripe Lemon plant to harvest. Only the crop in the tracker counts now."
-    _navigationAreaId: area.farm
-    _navigationNpcId:
   - _type: 7
     _targetId: crop.carrot
     _targetAreaId: area.farm
     _targetCount: 5
     _obtainMode: 0
-    _description: "Replant 5 Carrots at the farm."
-    _controlHint: "Seeds: Leofrun > I'd like to store some things. Put Carrot Seeds on the quick bar, select, click an empty plot."
+    _description: "Plant 5 Carrots at the farm."
+    _controlHint: "Put Carrot Seeds from Inventory on the quick bar, select them, then click an empty plot. Check Leofrun's Farm Storage for overflow."
     _navigationAreaId: area.farm
     _navigationNpcId:
   - _type: 7
@@ -58,8 +31,8 @@ MonoBehaviour:
     _targetAreaId: area.farm
     _targetCount: 5
     _obtainMode: 0
-    _description: "Replant 5 Grapes at the farm."
-    _controlHint: "Seeds: Leofrun > I'd like to store some things. Put Grape Seeds on the quick bar, select, click an empty plot."
+    _description: "Plant 5 Grapes at the farm."
+    _controlHint: "Put Grape Seeds from Inventory on the quick bar, select them, then click an empty plot. Check Leofrun's Farm Storage for overflow."
     _navigationAreaId: area.farm
     _navigationNpcId:
   - _type: 7
@@ -67,20 +40,24 @@ MonoBehaviour:
     _targetAreaId: area.farm
     _targetCount: 5
     _obtainMode: 0
-    _description: "Replant 5 Lemons at the farm."
-    _controlHint: "Seeds: Leofrun > I'd like to store some things. Put Lemon Seeds on the quick bar, select, click an empty plot."
+    _description: "Plant 5 Lemons at the farm."
+    _controlHint: "Put Lemon Seeds from Inventory on the quick bar, select them, then click an empty plot. Check Leofrun's Farm Storage for overflow."
     _navigationAreaId: area.farm
     _navigationNpcId:
   _rewards:
     _items: []
-    _gold: 24
-    _experience: 0
+    _gold: 0
+    _experience: 180
   _isTutorialQuest: 0
   _isMainQuest: 0
   _isDailyQuest: 0
   _isDebugQuest: 0
-  _giverNpcId:
+  _giverNpcId: npc.leofrun
+  _preventAbandon: 1
   _turnInNpcId:
   _autoTurnIn: 1
-  _offerDirections: ""
+  _objectivesInAnyOrder: 1
+  _autoStartQuestId: quest.act1.harvest_the_fields
+  _showOfferTutorial: 1
+  _offerDirections: "Meet Leofrun at the farm to get seeds."
   _turnInDirections: ""

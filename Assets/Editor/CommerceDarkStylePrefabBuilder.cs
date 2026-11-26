@@ -16,7 +16,7 @@ public static class CommerceDarkStylePrefabBuilder
     private const string CraftBoardPath = "Assets/Resources/UI/Commerce/DarkInventoryStyle/commerce_crafting_board_v3.png";
     private const string SlotPrefabPath = "Assets/Prefabs/InventorySlotUI.prefab";
     private const string InventoryControllerPrefabPath = "Assets/Prefabs/InventoryUIController.prefab";
-    private const string CloseSpritePath = "Assets/Resources/UI/Inventory/LightFantasy/inventory_close_hd.png";
+    private const string CloseSpritePath = MapUIAuthoring.CloseButtonPath;
     private const string WideButtonSpritePath = "Assets/Resources/UI/Commerce/DarkInventoryStyle/commerce_button_wide.png";
     private const string SquareButtonSpritePath = "Assets/Resources/UI/Commerce/DarkInventoryStyle/commerce_button_square.png";
 
@@ -182,7 +182,7 @@ public static class CommerceDarkStylePrefabBuilder
         TMP_Text title = Text("Title", window.transform, "SHOP", 38, TextAlignmentOptions.Center, Ivory);
         Place(title.gameObject, new Vector2(-315, 426), new Vector2(330, 60));
         Button close = ButtonObject("CloseButton", window.transform, "X", 34);
-        Place(close.gameObject, new Vector2(718, 430), new Vector2(64, 64));
+        Place(close.gameObject, new Vector2(706, 430), new Vector2(64, 64));
         ApplyCloseAsset(close);
 
         GameObject buyPanel = Rect("BuyPanel", window.transform, Vector2.zero, Vector2.zero);
@@ -289,7 +289,7 @@ public static class CommerceDarkStylePrefabBuilder
         TMP_Text title = Text("Title", window.transform, "CRAFTING", 38, TextAlignmentOptions.Center, Ivory);
         Place(title.gameObject, new Vector2(0, 330), new Vector2(330, 58));
         Button close = ButtonObject("CloseButton", window.transform, "X", 32);
-        Place(close.gameObject, new Vector2(680, 330), new Vector2(60, 60));
+        Place(close.gameObject, new Vector2(672, 331), new Vector2(60, 60));
         ApplyCloseAsset(close);
 
         GameObject viewport = Rect("RecipeViewport", window.transform, new Vector2(-558, -5), new Vector2(270, 545));
@@ -342,7 +342,7 @@ public static class CommerceDarkStylePrefabBuilder
         Place(craft.gameObject, new Vector2(-155, -240), new Vector2(340, 56));
         CommerceInventoryPanelUI inventory = BuildCompactInventory(
             window.transform, new Vector2(400, -5), new Vector2(570, 448),
-            new Vector2(80, 80), new Vector2(13, 12), true, false, -240);
+            new Vector2(80, 80), new Vector2(13, 12), true, false, -252);
 
         PopupLayoutAuthoring.Reanchor(title.transform, new Vector2(0.5f, 1f), new Vector2(0.5f, 1f));
         PopupLayoutAuthoring.Reanchor(close.transform, new Vector2(1f, 1f), new Vector2(1f, 1f));
@@ -471,7 +471,7 @@ public static class CommerceDarkStylePrefabBuilder
 
     private static void ApplyCloseAsset(Button button)
     {
-        Sprite closeSprite = ImportSprite(CloseSpritePath);
+        Sprite closeSprite = AssetDatabase.LoadAssetAtPath<Sprite>(CloseSpritePath);
         Image image = button.GetComponent<Image>();
         image.sprite = closeSprite;
         image.color = Color.white;
