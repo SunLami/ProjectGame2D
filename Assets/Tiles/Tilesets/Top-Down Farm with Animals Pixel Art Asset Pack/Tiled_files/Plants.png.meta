@@ -1146,15 +1146,15 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Plants_31
+      name: CarrotPlant_Stage0
       rect:
         serializedVersion: 2
-        x: 3
-        y: 131
-        width: 9
-        height: 10
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+        x: 0
+        y: 128
+        width: 15
+        height: 16
+      alignment: 9
+      pivot: {x: 0.4666667, y: 0.375}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -1168,15 +1168,15 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Plants_32
+      name: CarrotPlant_Stage1
       rect:
         serializedVersion: 2
-        x: 18
-        y: 132
-        width: 11
-        height: 13
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+        x: 16
+        y: 129
+        width: 15
+        height: 19
+      alignment: 9
+      pivot: {x: 0.5294118, y: 0.31578946}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -1190,15 +1190,15 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Plants_33
+      name: CarrotPlant_Stage2
       rect:
         serializedVersion: 2
-        x: 32
-        y: 131
-        width: 14
-        height: 20
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+        x: 30
+        y: 128
+        width: 18
+        height: 26
+      alignment: 9
+      pivot: {x: 0.5, y: 0.30769232}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -1811,7 +1811,7 @@ TextureImporter:
         serializedVersion: 2
         x: 64
         y: 82
-        width: 64
+        width: 32
         height: 34
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
@@ -3059,6 +3059,28 @@ TextureImporter:
       indices: 
       edges: []
       weights: []
+    - serializedVersion: 2
+      name: Plants_118
+      rect:
+        serializedVersion: 2
+        x: 96
+        y: 82
+        width: 32
+        height: 34
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 363c6502160b3494682cf70a91b3170a
+      internalID: 1182983953
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     outline: []
     customData: 
     physicsShape: []
@@ -3073,8 +3095,11 @@ TextureImporter:
     spriteCustomMetadata:
       entries:
       - key: SpriteEditor.SliceSettings
-        value: '{"sliceOnImport":false,"gridCellCount":{"x":1.0,"y":1.0},"gridSpriteSize":{"x":64.0,"y":64.0},"gridSpriteOffset":{"x":0.0,"y":0.0},"gridSpritePadding":{"x":0.0,"y":0.0},"pivot":{"x":0.5,"y":0.5},"pivotPixels":{"x":0.0,"y":0.0},"autoSlicingMethod":0,"spriteAlignment":0,"pivotUnitMode":0,"slicingType":0,"keepEmptyRects":false,"isAlternate":false}'
+        value: '{"sliceOnImport":false,"gridCellCount":{"x":1.0,"y":1.0},"gridSpriteSize":{"x":32.0,"y":32.0},"gridSpriteOffset":{"x":0.0,"y":0.0},"gridSpritePadding":{"x":0.0,"y":0.0},"pivot":{"x":0.5,"y":0.5},"pivotPixels":{"x":0.0,"y":0.0},"autoSlicingMethod":0,"spriteAlignment":0,"pivotUnitMode":0,"slicingType":0,"keepEmptyRects":false,"isAlternate":false}'
     nameFileIdTable:
+      CarrotPlant_Stage0: -4574371936455361759
+      CarrotPlant_Stage1: 31694560097805967
+      CarrotPlant_Stage2: 4652486491411619603
       Plants_0: 1352955200029874055
       Plants_1: -4881008103234269068
       Plants_10: -5981771769347585550
@@ -3097,6 +3122,7 @@ TextureImporter:
       Plants_115: 1489504111
       Plants_116: -712057708
       Plants_117: 682920845
+      Plants_118: 1182983953
       Plants_12: -3293256711928181663
       Plants_13: 3771794143540122796
       Plants_14: 1382702579413758816
@@ -3118,9 +3144,6 @@ TextureImporter:
       Plants_29: 5847049274800468493
       Plants_3: -7391759607893831176
       Plants_30: -3267802180754169167
-      Plants_31: -4574371936455361759
-      Plants_32: 31694560097805967
-      Plants_33: 4652486491411619603
       Plants_34: -4875957200950293933
       Plants_35: 5451708962410280881
       Plants_36: 673361343155567652
