@@ -49,6 +49,10 @@ public sealed class EnemyUniversal : MonoBehaviour, IDamageable, ISlowable, IPul
 
         [NonSerialized] public float lastUsedTime = float.NegativeInfinity;
         [NonSerialized] public int animatorTriggerHash;
+        /// <summary>Directional melee hitbox rects (Down, Left, Right, Up) relative to the enemy
+        /// pivot in world units; used to attack only when the swing can actually connect.</summary>
+        [NonSerialized] public Rect[] meleeReach;
+        [NonSerialized] public bool hasMeleeReach;
 
         public void InitializeRuntime()
         {
@@ -70,7 +74,11 @@ public sealed class EnemyUniversal : MonoBehaviour, IDamageable, ISlowable, IPul
         "require a specific area. Empty matches an objective with no area requirement.")]
     [SerializeField] private string _areaId;
 
+    [SerializeField] private string _displayName;
+
     [Header("Stats")]
+    [Tooltip("Inclusive minimum and maximum encounter level.")]
+    [SerializeField] private Vector2Int _levelRange = Vector2Int.one;
     [SerializeField, Min(1f)] private float _maxHealth = 100f;
     [SerializeField, Min(0f)] private float _patrolSpeed = 1f;
     [SerializeField, Min(0f)] private float _chaseSpeed = 2f;
@@ -83,6 +91,15 @@ public sealed class EnemyUniversal : MonoBehaviour, IDamageable, ISlowable, IPul
     [SerializeField, Min(0f)] private float _chaseRange = 8f;
     [SerializeField, Min(0f)] private float _patrolRadius = 3f;
     [SerializeField, Min(0f)] private float _idleDuration = 2f;
+    [Tooltip("Detection and continued chase need an unobstructed line to the player (D-109).")]
+    [SerializeField] private bool _requireLineOfSight = true;
+    [Tooltip("Within this distance the enemy notices the player even without line of sight " +
+        "(hearing / close awareness), so a thin tree trunk cannot hide the player point-blank.")]
+    [SerializeField, Min(0f)] private float _awarenessRadius = 2.5f;
+    [Tooltip("Seconds the enemy keeps hunting the last seen player position after losing sight.")]
+    [SerializeField, Min(0f)] private float _loseSightMemory = 3f;
+    [Tooltip("How fast velocity ramps toward the steering target (units/s²). Higher = snappier.")]
+    [SerializeField, Min(1f)] private float _acceleration = 14f;
     [SerializeField] private AttackProfile[] _attacks;
 
     private static readonly int InputX = Animator.StringToHash("InputX");
@@ -108,9 +125,24 @@ public sealed class EnemyUniversal : MonoBehaviour, IDamageable, ISlowable, IPul
     private Vector2 _launchVelocity;
     private float _currentHealth;
     private bool _experienceGranted;
+    private PathFollower _navigator;
+    private FacingFilter _facing;
+    private Vector2 _lastSeenPlayer;
+    private float _lastSeenPlayerAt = float.NegativeInfinity;
+    private bool _separationRegistered;
+    private bool _started;
+    private Collider2D _playerBody;
+
+    private const float MaxPatrolDuration = 8f;
+    /// <summary>Safety net: an attack state that outlives this (e.g. the animator could not enter the
+    /// attack clip, so FinishAttackAnimation never fired) is finished from code.</summary>
+    private const float AttackWatchdogSeconds = 2.5f;
 
     public float Health => _currentHealth;
-    public float MaxHealth => _maxHealth;
+    public float MaxHealth => _maxHealth * EncounterLevel.HealthMultiplier(Level);
+    public int Level { get; private set; } = 1;
+    public string DisplayName => string.IsNullOrWhiteSpace(_displayName) ? gameObject.name : _displayName;
+    private float AttackDamageMultiplier => EncounterLevel.DamageMultiplier(Level);
     public bool IsDead => _state == State.Dead;
     public event Action<float, float> HealthChanged;
     public event Action ReturnedHome;
@@ -123,9 +155,13 @@ public sealed class EnemyUniversal : MonoBehaviour, IDamageable, ISlowable, IPul
     {
         if (_rigidbody == null) _rigidbody = GetComponent<Rigidbody2D>();
         if (_animator == null) _animator = GetComponent<Animator>();
-        _currentHealth = _maxHealth;
+        Level = EncounterLevel.Roll(_levelRange);
+        _currentHealth = MaxHealth;
+        _navigator = new PathFollower(_rigidbody);
+        _facing = new FacingFilter(Vector2.down);
         InitializeAttacks();
         InitializeHitboxes();
+        InitializeMeleeReach();
     }
 
     private void Start()
@@ -133,7 +169,29 @@ public sealed class EnemyUniversal : MonoBehaviour, IDamageable, ISlowable, IPul
         _home = transform.position;
         ResolvePlayer();
         EnterState(State.Idle);
-        HealthChanged?.Invoke(_currentHealth, _maxHealth);
+        HealthChanged?.Invoke(_currentHealth, MaxHealth);
+        _started = true;
+        RegisterSeparation();
+    }
+
+    private void OnEnable()
+    {
+        if (_started && !_separationRegistered)
+            RegisterSeparation();
+    }
+
+    private void OnDisable()
+    {
+        CrowdSeparation.Unregister(_rigidbody);
+        _separationRegistered = false;
+    }
+
+    private void RegisterSeparation()
+    {
+        if (_rigidbody == null || _state == State.Dead)
+            return;
+        CrowdSeparation.Register(_rigidbody, _navigator.Footprint.HalfExtents.x);
+        _separationRegistered = true;
     }
 
     private void Update()
@@ -154,6 +212,10 @@ public sealed class EnemyUniversal : MonoBehaviour, IDamageable, ISlowable, IPul
             case State.Patrol: UpdatePatrol(); break;
             case State.Chase: UpdateChase(); break;
             case State.ReturnHome: UpdateReturnHome(); break;
+            case State.Attack:
+                if (Time.time - _stateEnteredAt > AttackWatchdogSeconds)
+                    FinishAttackAnimation();
+                break;
         }
     }
 
@@ -166,10 +228,17 @@ public sealed class EnemyUniversal : MonoBehaviour, IDamageable, ISlowable, IPul
         // TakeDamage enters on every tick -- otherwise the per-tick damage would repeatedly block
         // velocity sync here and the pull would stutter instead of reading as continuous.
         bool isPulling = Time.time < _pullUntil;
-        if (isPulling || _state != State.Hurt)
-            _rigidbody.linearVelocity = _state == State.Dead
-                ? Vector2.zero
-                : _launchRoutine != null ? _launchVelocity : _desiredVelocity;
+        if (!isPulling && _state == State.Hurt)
+            return;
+
+        if (_state == State.Dead)
+            _rigidbody.linearVelocity = Vector2.zero;
+        else if (_launchRoutine != null || isPulling)
+            _rigidbody.linearVelocity = _launchRoutine != null ? _launchVelocity : _desiredVelocity;
+        else
+            // Ramp toward the steering velocity: no instant snaps when turning or stopping.
+            _rigidbody.linearVelocity = Vector2.MoveTowards(_rigidbody.linearVelocity, _desiredVelocity,
+                _acceleration * Time.fixedDeltaTime);
     }
 
     /// <summary>Restore-only: removes an already-defeated boss silently on scene load -- no
@@ -287,7 +356,7 @@ public sealed class EnemyUniversal : MonoBehaviour, IDamageable, ISlowable, IPul
         if (_state == State.Dead || damage <= 0f) return;
         damage *= CurrentDamageTakenMultiplier;
         _currentHealth = Mathf.Max(0f, _currentHealth - damage);
-        HealthChanged?.Invoke(_currentHealth, _maxHealth);
+        HealthChanged?.Invoke(_currentHealth, MaxHealth);
         if (_currentHealth <= 0f) { EnterState(State.Dead); return; }
 
         EnemySfx.Hurt(this);
@@ -307,7 +376,7 @@ public sealed class EnemyUniversal : MonoBehaviour, IDamageable, ISlowable, IPul
         if (CanSeePlayer()) { EnterState(State.Chase); return; }
         if (Time.time - _stateEnteredAt >= _idleDuration)
         {
-            _patrolTarget = _home + UnityEngine.Random.insideUnitCircle * _patrolRadius;
+            _patrolTarget = PickPatrolTarget();
             EnterState(State.Patrol);
         }
     }
@@ -315,7 +384,12 @@ public sealed class EnemyUniversal : MonoBehaviour, IDamageable, ISlowable, IPul
     private void UpdatePatrol()
     {
         if (CanSeePlayer()) { EnterState(State.Chase); return; }
-        MoveTowards(_patrolTarget, false);
+        // Unreachable or blocked patrol point: rest and pick another instead of pushing into it.
+        if (!MoveTowards(_patrolTarget, false) || Time.time - _stateEnteredAt > MaxPatrolDuration)
+        {
+            EnterState(State.Idle);
+            return;
+        }
         if (IsNear(_patrolTarget, 0.1f)) EnterState(State.Idle);
     }
 
@@ -327,14 +401,241 @@ public sealed class EnemyUniversal : MonoBehaviour, IDamageable, ISlowable, IPul
             return;
         }
 
-        AttackProfile attack = SelectReadyAttack();
-        if (attack != null) { BeginAttack(attack); return; }
-        MoveTowards(_playerTransform.position, true);
+        bool visible = HasLineOfSightToPlayer();
+        if (visible)
+        {
+            _lastSeenPlayer = _playerTransform.position;
+            _lastSeenPlayerAt = Time.time;
+        }
+        else if (Time.time - _lastSeenPlayerAt > _loseSightMemory)
+        {
+            // Lost the player behind cover for too long: give up and go home.
+            EnterState(State.ReturnHome);
+            return;
+        }
+
+        if (visible)
+        {
+            AttackProfile attack = SelectReadyAttack(out Vector2 attackFacing);
+            if (attack != null) { BeginAttack(attack, attackFacing); return; }
+
+            // Melee with known hitboxes: walk to a spot where the swing actually overlaps the
+            // player's body, then hold there while the attack cools down.
+            AttackProfile melee = PrimaryMeleeWithReach();
+            if (melee != null && IsNear(PlayerAimPoint(), melee.activationRange + 2f))
+            {
+                if (WouldMeleeHit(melee, CurrentPosition, out Vector2 facing))
+                {
+                    HoldFacing(facing);
+                    return;
+                }
+
+                if (TryGetAttackSlot(melee, out Vector2 slot))
+                {
+                    if (IsNear(slot, 0.08f))
+                    {
+                        HoldFacing(FacingFilter.ToCardinal(PlayerAimPoint() - CurrentPosition));
+                        return;
+                    }
+                    if (MoveTowards(slot, true))
+                        return;
+                }
+            }
+            else if (IsHoldingAtAttackRange())
+            {
+                // Other attack types: hold at range facing the player instead of shoving into them.
+                HoldFacing((Vector2)_playerTransform.position - CurrentPosition);
+                return;
+            }
+        }
+
+        // Not visible: hunt the last seen position, then wait there until memory runs out.
+        Vector2 target = visible ? (Vector2)_playerTransform.position : _lastSeenPlayer;
+        if (!visible && IsNear(target, 0.4f))
+        {
+            _desiredVelocity = Vector2.zero;
+            _animator.SetBool(IsWalking, false);
+            _animator.SetBool(IsRunning, false);
+            return;
+        }
+
+        if (!MoveTowards(target, true))
+            EnterState(State.ReturnHome);
     }
+
+    private Vector2 CurrentPosition => _rigidbody != null ? _rigidbody.position : (Vector2)transform.position;
+
+    private void HoldFacing(Vector2 direction)
+    {
+        _desiredVelocity = Vector2.zero;
+        Face(direction);
+        _animator.SetBool(IsWalking, false);
+        _animator.SetBool(IsRunning, false);
+    }
+
+    private AttackProfile PrimaryMeleeWithReach()
+    {
+        if (_attacks == null) return null;
+        foreach (AttackProfile attack in _attacks)
+            if (attack != null && attack.type == AttackType.Melee && attack.hasMeleeReach)
+                return attack;
+        return null;
+    }
+
+    private static int ReachIndex(Vector2 cardinal)
+        => cardinal.x < 0f ? 1 : cardinal.x > 0f ? 2 : cardinal.y > 0f ? 3 : 0;
+
+    /// <summary>True if the directional hitbox (toward the player) would overlap the player's body
+    /// collider with the enemy pivot at <paramref name="pivot"/>.</summary>
+    private bool WouldMeleeHit(AttackProfile attack, Vector2 pivot, out Vector2 facing)
+    {
+        facing = _lastDirection;
+        if (!attack.hasMeleeReach || !HasLivingPlayer())
+            return false;
+
+        Bounds body = PlayerBodyBounds();
+        Rect target = new(body.min.x - 0.05f, body.min.y - 0.05f, body.size.x + 0.1f, body.size.y + 0.1f);
+        Vector2 toPlayer = (Vector2)body.center - pivot;
+        Vector2 primary = FacingFilter.ToCardinal(toPlayer);
+        Vector2 secondary = Mathf.Abs(toPlayer.x) > Mathf.Abs(toPlayer.y)
+            ? new Vector2(0f, toPlayer.y >= 0f ? 1f : -1f)
+            : new Vector2(toPlayer.x >= 0f ? 1f : -1f, 0f);
+        foreach (Vector2 candidate in new[] { primary, secondary })
+        {
+            Rect reach = attack.meleeReach[ReachIndex(candidate)];
+            reach.position += pivot;
+            if (reach.width > 0f && reach.Overlaps(target))
+            {
+                facing = candidate;
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /// <summary>Pivot position that centres the hitbox facing the player on the player's body,
+    /// choosing the nearest reachable of the four sides.</summary>
+    private bool TryGetAttackSlot(AttackProfile attack, out Vector2 slot)
+    {
+        slot = default;
+        Vector2 bodyCenter = PlayerBodyBounds().center;
+        Vector2 position = CurrentPosition;
+        PathGridBuilder grid = PathGridBuilder.Active;
+        float best = float.MaxValue;
+        Vector2[] sides = { Vector2.down, Vector2.left, Vector2.right, Vector2.up };
+        foreach (Vector2 side in sides)
+        {
+            Rect reach = attack.meleeReach[ReachIndex(side)];
+            if (reach.width <= 0f)
+                continue;
+            Vector2 candidate = bodyCenter - reach.center;
+            if (grid != null && !grid.IsWalkable(candidate, _navigator.Footprint))
+                continue;
+            float cost = (candidate - position).sqrMagnitude;
+            if (cost < best)
+            {
+                best = cost;
+                slot = candidate;
+            }
+        }
+        return best < float.MaxValue;
+    }
+
+    private Bounds PlayerBodyBounds()
+    {
+        if (_playerBody != null && _playerBody.enabled)
+            return _playerBody.bounds;
+        return new Bounds(_playerTransform.position, new Vector3(0.5f, 0.3f, 0f));
+    }
+
+    private void InitializeMeleeReach()
+    {
+        if (_attacks == null) return;
+        foreach (AttackProfile attack in _attacks)
+        {
+            if (attack == null || attack.type != AttackType.Melee) continue;
+            attack.meleeReach = new Rect[4];
+            bool any = false;
+            any |= TryGetLocalReach(attack.meleeHitboxDown, out attack.meleeReach[0]);
+            any |= TryGetLocalReach(attack.meleeHitboxLeft, out attack.meleeReach[1]);
+            any |= TryGetLocalReach(attack.meleeHitboxRight, out attack.meleeReach[2]);
+            any |= TryGetLocalReach(attack.meleeHitboxUp, out attack.meleeReach[3]);
+            attack.hasMeleeReach = any;
+        }
+    }
+
+    /// <summary>Hitbox shape rect relative to this enemy's pivot (works while the collider is
+    /// disabled, since it reads the shape rather than runtime bounds).</summary>
+    private bool TryGetLocalReach(UniversalEnemyAttackHitbox hitbox, out Rect rect)
+    {
+        rect = default;
+        if (hitbox == null || !hitbox.TryGetComponent(out Collider2D collider))
+            return false;
+
+        Vector2 min, max;
+        switch (collider)
+        {
+            case BoxCollider2D box:
+                min = box.offset - box.size * 0.5f; max = box.offset + box.size * 0.5f; break;
+            case CircleCollider2D circle:
+                min = circle.offset - Vector2.one * circle.radius; max = circle.offset + Vector2.one * circle.radius; break;
+            case CapsuleCollider2D capsule:
+                min = capsule.offset - capsule.size * 0.5f; max = capsule.offset + capsule.size * 0.5f; break;
+            case PolygonCollider2D polygon when polygon.points.Length > 0:
+                min = max = polygon.points[0];
+                foreach (Vector2 point in polygon.points) { min = Vector2.Min(min, point); max = Vector2.Max(max, point); }
+                min += polygon.offset; max += polygon.offset; break;
+            default:
+                return false;
+        }
+
+        Vector2 a = (Vector2)collider.transform.TransformPoint(min) - (Vector2)transform.position;
+        Vector2 b = (Vector2)collider.transform.TransformPoint(max) - (Vector2)transform.position;
+        rect = Rect.MinMaxRect(Mathf.Min(a.x, b.x), Mathf.Min(a.y, b.y), Mathf.Max(a.x, b.x), Mathf.Max(a.y, b.y));
+        return true;
+    }
+
+    private bool IsHoldingAtAttackRange()
+    {
+        if (_attacks == null) return false;
+        foreach (AttackProfile attack in _attacks)
+        {
+            if (attack != null && IsNear(_playerTransform.position, attack.activationRange * 0.9f)
+                && HasAttackLineOfSight(attack))
+                return true;
+        }
+        return false;
+    }
+
+    private bool HasLineOfSightToPlayer()
+    {
+        if (!HasLivingPlayer()) return false;
+        PathGridBuilder grid = PathGridBuilder.Active;
+        if (!_requireLineOfSight || grid == null) return true;
+        if (IsNear(PlayerAimPoint(), _awarenessRadius)) return true;
+
+        // Two parallel rays half a body apart: only obstacles wider than a trunk hide the player.
+        Vector2 eye = EyePosition();
+        Vector2 aim = PlayerAimPoint();
+        Vector2 side = Vector2.Perpendicular((aim - eye).normalized) * 0.3f;
+        return grid.HasLineOfSight(eye + side, aim + side) || grid.HasLineOfSight(eye - side, aim - side);
+    }
+
+    private Vector2 EyePosition()
+        => _rigidbody != null ? _rigidbody.position + _navigator.Footprint.Offset : (Vector2)transform.position;
+
+    private Vector2 PlayerAimPoint()
+        => _playerBody != null && _playerBody.enabled ? (Vector2)_playerBody.bounds.center : (Vector2)_playerTransform.position;
 
     private void UpdateReturnHome()
     {
-        MoveTowards(_home, true);
+        if (!MoveTowards(_home, true))
+        {
+            // Home unreachable from here (e.g. pushed across water): settle at the current spot.
+            _home = _rigidbody != null ? _rigidbody.position : (Vector2)transform.position;
+            EnterState(State.Idle);
+            return;
+        }
         if (IsNear(_home, 0.1f))
         {
             if (_rigidbody != null)
@@ -347,22 +648,48 @@ public sealed class EnemyUniversal : MonoBehaviour, IDamageable, ISlowable, IPul
         }
     }
 
-    private AttackProfile SelectReadyAttack()
+    private AttackProfile SelectReadyAttack(out Vector2 facing)
     {
+        facing = (Vector2)_playerTransform.position - CurrentPosition;
         if (_attacks == null) return null;
         foreach (AttackProfile attack in _attacks)
         {
-            if (attack != null && IsNear(_playerTransform.position, attack.activationRange)
-                && Time.time - attack.lastUsedTime >= attack.cooldown)
+            if (attack == null || Time.time - attack.lastUsedTime < attack.cooldown
+                || !IsNear(_playerTransform.position, attack.activationRange + (attack.hasMeleeReach ? 1f : 0f)))
+                continue;
+
+            // Melee with known hitboxes: only swing when the swing will actually connect.
+            if (attack.type == AttackType.Melee && attack.hasMeleeReach)
+            {
+                if (WouldMeleeHit(attack, CurrentPosition, out Vector2 meleeFacing))
+                {
+                    facing = meleeFacing;
+                    return attack;
+                }
+                continue;
+            }
+
+            if (IsNear(_playerTransform.position, attack.activationRange) && HasAttackLineOfSight(attack))
                 return attack;
         }
         return null;
     }
 
-    private void BeginAttack(AttackProfile attack)
+    /// <summary>Melee/projectile attacks need a clear line to the player so enemies walk around a
+    /// tree instead of swinging through it (D-109). Area attacks and scenes without a grid skip this.</summary>
+    private bool HasAttackLineOfSight(AttackProfile attack)
+    {
+        PathGridBuilder grid = PathGridBuilder.Active;
+        if (grid == null || attack.type == AttackType.Area)
+            return true;
+
+        return grid.HasLineOfSight(EyePosition(), PlayerAimPoint());
+    }
+
+    private void BeginAttack(AttackProfile attack, Vector2 facing)
     {
         _activeAttack = attack;
-        Face(_playerTransform.position - transform.position);
+        Face(facing, true);
         EnterState(State.Attack);
         EnemySfx.Attack(this);
         _animator.SetTrigger(attack.animatorTriggerHash);
@@ -449,7 +776,7 @@ public sealed class EnemyUniversal : MonoBehaviour, IDamageable, ISlowable, IPul
     private void OpenDirectionalMeleeHitbox()
     {
         UniversalEnemyAttackHitbox hitbox = GetDirectionalMeleeHitbox(_activeAttack, _lastDirection);
-        hitbox?.Open(_activeAttack.damage, _activeAttack.knockbackForce);
+        hitbox?.Open(_activeAttack.damage * AttackDamageMultiplier, _activeAttack.knockbackForce);
     }
 
     private static UniversalEnemyAttackHitbox GetDirectionalMeleeHitbox(
@@ -470,7 +797,7 @@ public sealed class EnemyUniversal : MonoBehaviour, IDamageable, ISlowable, IPul
         foreach (UniversalEnemyAttackHitbox hitbox in _activeAttack.hitboxes)
         {
             if (hitbox == null) continue;
-            hitbox.Open(_activeAttack.damage, _activeAttack.knockbackForce);
+            hitbox.Open(_activeAttack.damage * AttackDamageMultiplier, _activeAttack.knockbackForce);
         }
     }
 
@@ -490,7 +817,7 @@ public sealed class EnemyUniversal : MonoBehaviour, IDamageable, ISlowable, IPul
             if (player == null || player.IsDead || !damagedPlayers.Add(player)) continue;
 
             Vector2 direction = (player.transform.position - transform.position).normalized;
-            player.TakeDamage(attack.damage, direction, attack.knockbackForce);
+            player.TakeDamage(attack.damage * AttackDamageMultiplier, direction, attack.knockbackForce);
         }
     }
 
@@ -540,7 +867,7 @@ public sealed class EnemyUniversal : MonoBehaviour, IDamageable, ISlowable, IPul
             _activeAttack.projectilePrefab,
             spawnPosition,
             Quaternion.identity);
-        projectile.Launch(_lastDirection, _activeAttack.projectileSpeed, _activeAttack.damage, _activeAttack.knockbackForce);
+        projectile.Launch(_lastDirection, _activeAttack.projectileSpeed, _activeAttack.damage * AttackDamageMultiplier, _activeAttack.knockbackForce);
     }
 
     private static Vector2 RotateFromDown(Vector2 value, Vector2 direction)
@@ -573,11 +900,21 @@ public sealed class EnemyUniversal : MonoBehaviour, IDamageable, ISlowable, IPul
         CloseAttackWindow();
         if (_state == State.Attack && state != State.Attack)
         {
+            // Drop an unconsumed attack trigger so a stale one cannot replay the swing later.
+            if (_activeAttack != null)
+                _animator.ResetTrigger(_activeAttack.animatorTriggerHash);
             StopLaunch();
             _activeAttack = null;
         }
         _state = state;
         _stateEnteredAt = Time.time;
+        _navigator?.Reset();
+        if (state == State.Chase && HasLivingPlayer())
+        {
+            // Entering a chase (spotted, or hit from behind cover): remember where the player is.
+            _lastSeenPlayer = _playerTransform.position;
+            _lastSeenPlayerAt = Time.time;
+        }
         _desiredVelocity = Vector2.zero;
         _animator.SetBool(IsWalking, state is State.Patrol or State.Chase or State.ReturnHome);
         _animator.SetBool(IsRunning, state is State.Chase or State.ReturnHome);
@@ -601,6 +938,7 @@ public sealed class EnemyUniversal : MonoBehaviour, IDamageable, ISlowable, IPul
         _rigidbody.linearVelocity = Vector2.zero;
         _rigidbody.simulated = false;
         foreach (Collider2D collider in GetComponentsInChildren<Collider2D>()) collider.enabled = false;
+        CrowdSeparation.Unregister(_rigidbody);
         Destroy(gameObject, _deathLifetime);
     }
 
@@ -613,23 +951,55 @@ public sealed class EnemyUniversal : MonoBehaviour, IDamageable, ISlowable, IPul
         PlayerStat.Instance?.AddExperience(_experienceReward);
     }
 
-    private void MoveTowards(Vector2 target, bool running)
+    /// <summary>Steers toward <paramref name="target"/> around obstacles (D-109). Returns false when
+    /// the navigator reports the target unreachable; the caller decides the fallback state.</summary>
+    private bool MoveTowards(Vector2 target, bool running)
     {
-        Vector2 direction = (target - (Vector2)transform.position).normalized;
+        Vector2 position = _rigidbody != null ? _rigidbody.position : (Vector2)transform.position;
+        PathFollower.Status status = _navigator.Steer(position, target, out Vector2 direction);
+        if (status == PathFollower.Status.NoPath)
+        {
+            _desiredVelocity = Vector2.zero;
+            return false;
+        }
+
+        if (direction.sqrMagnitude < 0.0001f)
+        {
+            _desiredVelocity = Vector2.zero;
+            return true;
+        }
+
+        if (status != PathFollower.Status.Legacy)
+            direction = CrowdSeparation.Apply(_rigidbody, _navigator.Footprint.HalfExtents.x, direction);
         Face(direction);
         float speed = running ? _chaseSpeed : _patrolSpeed;
         _desiredVelocity = direction * speed * CurrentSlowMultiplier;
         _animator.SetBool(IsWalking, true);
         _animator.SetBool(IsRunning, running);
+        return true;
     }
 
-    private void Face(Vector2 direction)
+    private Vector2 PickPatrolTarget()
     {
-        _lastDirection = Mathf.Abs(direction.x) > Mathf.Abs(direction.y)
-            ? new Vector2(Mathf.Sign(direction.x), 0f)
-            : new Vector2(0f, Mathf.Sign(direction.y));
-        _animator.SetFloat(InputX, direction.x);
-        _animator.SetFloat(InputY, direction.y);
+        PathGridBuilder grid = PathGridBuilder.Active;
+        Vector2 candidate = _home + UnityEngine.Random.insideUnitCircle * _patrolRadius;
+        if (grid == null)
+            return candidate;
+
+        for (int attempt = 0; attempt < 6 && !grid.IsWalkable(candidate, _navigator.Footprint); attempt++)
+            candidate = _home + UnityEngine.Random.insideUnitCircle * _patrolRadius;
+        return candidate;
+    }
+
+    /// <summary>Turns the sprite with hysteresis (see <see cref="FacingFilter"/>); pass
+    /// <paramref name="immediate"/> for attack wind-ups so the swing aims at the player.</summary>
+    private void Face(Vector2 direction, bool immediate = false)
+    {
+        _lastDirection = _facing != null
+            ? _facing.Update(direction, Time.time, immediate)
+            : FacingFilter.ToCardinal(direction);
+        _animator.SetFloat(InputX, _lastDirection.x);
+        _animator.SetFloat(InputY, _lastDirection.y);
         _animator.SetFloat(LastInputX, _lastDirection.x);
         _animator.SetFloat(LastInputY, _lastDirection.y);
     }
@@ -664,10 +1034,18 @@ public sealed class EnemyUniversal : MonoBehaviour, IDamageable, ISlowable, IPul
         if (_player == null) _player = GameObject.FindGameObjectWithTag("Player");
         _playerComponent = _player != null ? _player.GetComponent<Player>() : null;
         _playerTransform = _player != null ? _player.transform : null;
+        _playerBody = null;
+        if (_player != null)
+            foreach (Collider2D collider in _player.GetComponents<Collider2D>())
+                if (!collider.isTrigger) { _playerBody = collider; break; }
     }
 
     private bool HasLivingPlayer() => _playerTransform != null && (_playerComponent == null || !_playerComponent.IsDead);
-    private bool CanSeePlayer() { if (_playerTransform == null) ResolvePlayer(); return HasLivingPlayer() && IsNear(_playerTransform.position, _detectionRange); }
+    private bool CanSeePlayer()
+    {
+        if (_playerTransform == null) ResolvePlayer();
+        return HasLivingPlayer() && IsNear(_playerTransform.position, _detectionRange) && HasLineOfSightToPlayer();
+    }
     private bool IsNear(Vector2 target, float range) => ((Vector2)transform.position - target).sqrMagnitude <= range * range;
 
     private void OnValidate()

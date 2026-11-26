@@ -107,3 +107,19 @@ and hurt triggers, and keeps the animated body alive through its death clip. Exi
 combat values and one-time quest kill handling still come from the corresponding definitions.
 Hare is the visual prefab for `animal.rabbit`. Prefabs remain available for DemoScene-first
 placement and do not add instances to a production scene.
+
+The animated Boar, Deer and Hare share the enemy health bar art. Their bars appear after
+damage, update from WildlifeActor health and hide on death. Boar stops while playing
+Attack or Hurt. Each directional attack applies contact damage once at its animation
+event if the player is still in range. A hit that interrupts the windup cancels its damage.
+
+### MapDuy encounter levels — 2026-11-26
+
+MapDuy ordinary enemies and wildlife roll one inclusive random level when the actor initializes.
+The scene stores both ends of each range as prefab instance overrides. The roll is independent
+of position and remains fixed for that actor's lifetime. Slime and Hare use 1–4, Goblin and Deer
+use 4–7, and Ent and Boar use 7–10. The same prefabs default to level 1 elsewhere.
+
+Each level above 1 adds 10% of base maximum HP and 5% of base attack damage. Passive animals
+continue to flee. Existing XP, loot and quest identities stay the same. The shared world-space
+health bar shows the authored display name and rolled level above the fill when the bar appears.

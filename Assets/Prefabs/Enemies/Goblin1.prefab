@@ -243,6 +243,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::EnemyHealthBar
   _owner: {fileID: 1826510080629407483}
   _fill: {fileID: 2728907587183293577}
+  _wildlifeOwner: {fileID: 0}
 --- !u!1 &4005319658716323276
 GameObject:
   m_ObjectHideFlags: 0
@@ -485,14 +486,16 @@ MonoBehaviour:
   _player: {fileID: 0}
   _enemyId: 
   _areaId: 
+  _displayName: Goblin
+  _levelRange: {x: 1, y: 1}
   _maxHealth: 100
   _patrolSpeed: 1
   _chaseSpeed: 2
   _hurtDuration: 0.3
   _deathLifetime: 3
   _experienceReward: 25
-  _detectionRange: 3
-  _chaseRange: 5
+  _detectionRange: 5
+  _chaseRange: 12
   _patrolRadius: 2
   _idleDuration: 2
   _attacks:

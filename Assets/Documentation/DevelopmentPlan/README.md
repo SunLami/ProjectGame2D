@@ -102,7 +102,7 @@ cập nhật tài liệu liên quan trước hoặc cùng lúc với code.
 37. [Water Boss Combat Plan](WaterBossCombatPlan.md): đề xuất combat boss Thủy (cua D) — cơ chế triều, 5 skill, đợt, art/kiến trúc cần thêm;
     chờ user duyệt (D-101 sau khi duyệt).
 38. [SFX Pipeline & Full-Game SFX](SfxPipeline.md): pipeline Tools/sfx (Freesound → WAV/OGG, QA, CREDITS), hạ tầng runtime, điểm gọi và kiểm chứng SFX toàn game (D-103); Boss Water/Wind làm sau.
-39. [Enemy Pathfinding Plan](EnemyPathfindingPlan.md): kế hoạch A* grid tự viết cho enemy thường (D-109) — kiến trúc, data, gate, test; chưa implement, chờ user duyệt.
+39. [Enemy Pathfinding Plan](EnemyPathfindingPlan.md): A* grid tự viết cho enemy thường + wildlife (D-109) — đã implement 2026-11-26, prefab `PathGrid` trong MapDuy; chờ owner test Play Mode.
 40. [Wind Boss Combat Plan](WindBossCombatPlan.md): boss Cú Thần Thiên Phong (D-111) — 6 skill, 3 phase, map Thiên Đài `BossArena_Wind` (D-110), art cắt lớp + clip cast; chờ user duyệt trước khi code skill.
 41. [Boss Combat Audit](BossCombatAudit.md): kiểm tra combat Earth/Water/Wind (số đo Play Mode, lỗi, so với game chuyên nghiệp, đề xuất code + asset); chờ user chọn việc làm.
 42. [Inventory Tabbed Redesign Plan](InventoryTabbedRedesignPlan.md): kế hoạch độ lại toàn bộ
