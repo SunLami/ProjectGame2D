@@ -252,6 +252,7 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
+  - component: {fileID: 8157000000000000001}
   - component: {fileID: 8473714414749543737}
   - component: {fileID: 5351590834226417083}
   - component: {fileID: 3537561604737137591}
@@ -493,7 +494,8 @@ MonoBehaviour:
   _chaseSpeed: 2
   _hurtDuration: 0.3
   _deathLifetime: 3
-  _experienceReward: 25
+  _experienceReward: 50
+  _goldReward: 100
   _detectionRange: 5
   _chaseRange: 12
   _patrolRadius: 2
@@ -908,3 +910,24 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 0.59878063, y: 0.2026949}
   m_EdgeRadius: 0
+--- !u!114 &8157000000000000001
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4005319658716323276}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 055fcf02b9a166b408636b65e41eade0, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: ProjectGame2D.Runtime::ActorLootDrop
+  _loot:
+  - _item: {fileID: 11400000, guid: f81e4b3de6f27d64a969ea18ccfd4479, type: 2}
+    _chance: 1
+    _minimumQuantity: 3
+    _maximumQuantity: 3
+  - _item: {fileID: 11400000, guid: 0ff3cd5e6f1cfb84daa37c826ef1d158, type: 2}
+    _chance: 0.05
+    _minimumQuantity: 1
+    _maximumQuantity: 1

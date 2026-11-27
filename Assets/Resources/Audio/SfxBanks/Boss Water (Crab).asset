@@ -33,7 +33,7 @@ MonoBehaviour:
     - {fileID: 8300000, guid: 4b0970c3f0db3b44bb7b693d978faaa3, type: 3}
     - {fileID: 8300000, guid: 925917c0718622e448227216ca22df9a, type: 3}
     - {fileID: 8300000, guid: 7438322ce1281314fbc6d0e3cc82ff06, type: 3}
-    volume: 0.75
+    volume: 1
     pitchJitter: 0.05
     minInterval: 0.05
     maxVoices: 4
@@ -46,7 +46,7 @@ MonoBehaviour:
     - {fileID: 8300000, guid: b76b1267de086c847b753bbf5bec5517, type: 3}
     - {fileID: 8300000, guid: 1be1052447f22bd4c830dd0dfa8fdfcc, type: 3}
     - {fileID: 8300000, guid: 849d174060da5484c9309a0b9bec353b, type: 3}
-    volume: 0.7
+    volume: 1
     pitchJitter: 0.04
     minInterval: 0.1
     maxVoices: 3
@@ -57,7 +57,7 @@ MonoBehaviour:
     description: Crab sinks into the sand
     clips:
     - {fileID: 8300000, guid: c0c4715d2f17f114bbbad9340a4750da, type: 3}
-    volume: 0.85
+    volume: 1
     pitchJitter: 0
     minInterval: 0.3
     maxVoices: 0
@@ -68,7 +68,7 @@ MonoBehaviour:
     description: 'Both claws land: player held'
     clips:
     - {fileID: 8300000, guid: 80570ddffd842d0479b04eafe84ca502, type: 3}
-    volume: 0.7
+    volume: 1
     pitchJitter: 0
     minInterval: 0.3
     maxVoices: 0
@@ -81,7 +81,7 @@ MonoBehaviour:
     - {fileID: 8300000, guid: b516f8da09d3bb4448ff6c38aed90e19, type: 3}
     - {fileID: 8300000, guid: 13e58c3f95555dc49973e0f61a608866, type: 3}
     - {fileID: 8300000, guid: 6bdf33b3594f4fa4abd322fcbab4d776, type: 3}
-    volume: 0.9
+    volume: 1
     pitchJitter: 0.03
     minInterval: 0.1
     maxVoices: 3
@@ -92,7 +92,7 @@ MonoBehaviour:
     description: Claws raise before the clamp
     clips:
     - {fileID: 8300000, guid: 1e0aae34b41a1bc4abdf090de05e944f, type: 3}
-    volume: 0.7
+    volume: 1
     pitchJitter: 0
     minInterval: 0.2
     maxVoices: 0
@@ -128,7 +128,7 @@ MonoBehaviour:
     - {fileID: 8300000, guid: 60a51d6a7fbde2a40abc73cf861e8361, type: 3}
     - {fileID: 8300000, guid: da9d3e18f2c2f1c46942816c7dd469ca, type: 3}
     - {fileID: 8300000, guid: 8138518ba9f0787439be2ab936cb84b5, type: 3}
-    volume: 0.65
+    volume: 1
     pitchJitter: 0.05
     minInterval: 0.06
     maxVoices: 3
@@ -139,7 +139,7 @@ MonoBehaviour:
     description: Sand mound chasing the player
     clips:
     - {fileID: 8300000, guid: d24a448ee47e18048a5037f48e1d8143, type: 3}
-    volume: 0.6
+    volume: 1
     pitchJitter: 0
     minInterval: 0
     maxVoices: 0
@@ -162,9 +162,31 @@ MonoBehaviour:
     description: Crab slumps and recovers
     clips:
     - {fileID: 8300000, guid: 77de86cbdf1dc9944845743c216e51a2, type: 3}
-    volume: 0.7
+    volume: 1
     pitchJitter: 0
     minInterval: 0
+    maxVoices: 0
+    loop: 0
+  - label: Tide loop
+    id: sfx.bossw.tide_loop
+    category: Ambience
+    description: Lapping water, level follows the tide
+    clips:
+    - {fileID: 8300000, guid: c43873dad86e74fe081c333d83ccf7a6, type: 3}
+    volume: 1
+    pitchJitter: 0
+    minInterval: 0
+    maxVoices: 0
+    loop: 1
+  - label: Tide rise
+    id: sfx.bossw.tide_rise
+    category: Boss
+    description: Tide starts coming in (Water arena)
+    clips:
+    - {fileID: 8300000, guid: a5521d81a3c5f426383d7b3cf4d1a18d, type: 3}
+    volume: 1
+    pitchJitter: 0
+    minInterval: 2
     maxVoices: 0
     loop: 0
   - label: Wave hit
@@ -173,7 +195,7 @@ MonoBehaviour:
     description: Wave hits the player
     clips:
     - {fileID: 8300000, guid: 0a9c18612d6d95e4ab69f5c940655c6d, type: 3}
-    volume: 0.9
+    volume: 1
     pitchJitter: 0
     minInterval: 0.3
     maxVoices: 0
@@ -184,7 +206,7 @@ MonoBehaviour:
     description: Tidal wave sweeps the arena
     clips:
     - {fileID: 8300000, guid: b558485ce56a82b4191d75e91207d93a, type: 3}
-    volume: 0.85
+    volume: 1
     pitchJitter: 0
     minInterval: 0.4
     maxVoices: 0
@@ -195,7 +217,7 @@ MonoBehaviour:
     description: Conch horn before the wave
     clips:
     - {fileID: 8300000, guid: bf693a038900e8045b09c72657ef1c6d, type: 3}
-    volume: 0.8
+    volume: 1
     pitchJitter: 0
     minInterval: 0.4
     maxVoices: 0
@@ -206,7 +228,7 @@ MonoBehaviour:
     description: Whirlpool opens
     clips:
     - {fileID: 8300000, guid: 32cd7f1c183393e4a9ed6cb3590cd233, type: 3}
-    volume: 0.8
+    volume: 1
     pitchJitter: 0
     minInterval: 0.5
     maxVoices: 0
@@ -218,7 +240,7 @@ MonoBehaviour:
     clips:
     - {fileID: 8300000, guid: 194ad9f3109e7914cbe4c0e9a59457d9, type: 3}
     - {fileID: 8300000, guid: b276a8fcbec867342860831a089a19b6, type: 3}
-    volume: 0.8
+    volume: 1
     pitchJitter: 0.04
     minInterval: 0.1
     maxVoices: 3
@@ -229,7 +251,7 @@ MonoBehaviour:
     description: Whirlpool pulling
     clips:
     - {fileID: 8300000, guid: 205a5287bc7b96d48b8c20dbdbdc3b8e, type: 3}
-    volume: 0.7
+    volume: 1
     pitchJitter: 0
     minInterval: 0
     maxVoices: 0

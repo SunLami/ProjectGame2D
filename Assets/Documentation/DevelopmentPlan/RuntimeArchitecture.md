@@ -291,3 +291,5 @@ Mỗi gameplay scene có một scene composition root/installer chịu trách nh
 Application service tồn tại xuyên scene không được serialize reference trực tiếp tới object thuộc
 DemoScene. Khi unload scene, scene context phải unregister; khi load scene mới, installer bind context
 mới. Feature prefab cần báo lỗi authoring rõ nếu thiếu dependency thay vì âm thầm tìm object theo tên.
+
+Trader NPCs can omit legacy prompt and button references. Bootstrap owns a temporary listener during initial additive loading until an active scene listener is available.

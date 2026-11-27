@@ -108,7 +108,7 @@ public sealed class SheetContentPlayModeTests
             drop=UnityEngine.Object.FindObjectsByType<DroppedLootPickup>().Single();
             foreach(var slot in _inventory.Slots){slot.item=meat;slot.quantity=99;}
             var update=typeof(DroppedLootPickup).GetMethod("Update",BindingFlags.NonPublic|BindingFlags.Instance);
-            update.Invoke(drop,null);Assert.IsNotNull(drop);
+            Field(drop,"_nextAttempt",0f);update.Invoke(drop,null);Assert.IsNotNull(drop);
             foreach(var slot in _inventory.Slots)slot.Clear();Field(drop,"_nextAttempt",0f);update.Invoke(drop,null);
             Assert.AreEqual(2,_inventory.GetTotalQuantity(meat.itemId));
         }

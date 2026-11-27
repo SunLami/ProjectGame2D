@@ -930,6 +930,7 @@ to the village just below its north exit. This activates D-064 and extends D-089
 these two world gates, including New Game and Continue. Travel preserves live persistent
 managers and snapshots scene-owned world and farming state in memory before unloading.
 Regular saves in MapDuy record its scene name for Continue. Travel does not write a slot.
+The destination Player rebinds and reapplies the live equipment appearance, including weapon visibility.
 Boss pillar policy is independent.
 
 ## Quick Bar assignment update (Accepted, 2026-11-25)
@@ -1047,3 +1048,106 @@ D-109 Ent beside-a-tree fix (2026-11-26):
 - An attack watchdog ends stuck attacks after 2.5 s.
 
 Details: [EnemyPathfindingPlan.md](EnemyPathfindingPlan.md) §8.4.
+
+## D-121 — Boss level bands and balance pass (Accepted, owner 2026-11-26)
+
+Owner chose the "full plan" after a Play Mode test of all three arenas. Supersedes the HP/B values of
+D-086 (Earth 2400/14), D-111 (Wind 2400/14) and D-112 (Water 3000/14) and the Earth P3 combo G of
+`EarthBossCombatPlan.md` §5.
+
+- **Why:** player Defense subtracts flat (`max(1, raw − Defense) × (1 − DR)`) and B=14 never scaled,
+  so from level ~20 with gate gear (Defense ≈ 22) almost every boss hit dealt 1 damage. Before this
+  pass no document named the level a boss is meant for.
+- **Level bands (fight order):** Earth **Lv 10** → Wind **Lv 20** → Water **Lv 30** (Water stays the
+  hardest, D-112). Reference player at the band with gate gear (EquipmentContent.md): Lv10 143 HP /
+  Def 8.35 / Atk 22.5; Lv20 191 / 21.85 / 35.5; Lv30 249 / 40.35 / 53.5.
+- **Rule:** a 1.0 B hit costs ≈ 12% of the reference player's HP after armor; HP is sized for 3–4 min
+  at ~45% uptime.
+
+| | Earth | Wind | Water |
+|---|---|---|---|
+| maxHealth | 2400 → **3000** | 2400 → **5000** | 3000 → **7800** |
+| baseDamage B | 14 → **26** | 14 → **45** | 14 → **55** (×1.3 kept) |
+| Other | Resonance bullet telegraph 0.5 → **0.7 s**; P3 combo G `Resonance→Slam→Slam` → **`SlamDouble→SpikeLanes→Slam`** (bug fix: two ultimates ran ~1 s apart) | — | Claw fan telegraph floor 0.5 → **0.65 s**; Shell Roll leg floor 0.45 → **0.6 s**; P3 recovery 1.3 → **1.8 s** |
+
+Data in the three `BossDefinition` assets and mirrored in `Create*Defaults`; EditMode tests updated
+(18/18 pass). Measurements: `BossCombatAudit.md` §9. Known side effect: low-multiplier hits
+(≤ 0.5 B: feathers, Whirlpool ticks) become chip damage at the band because Defense is flat.
+
+D-053 binding follow-up: Bootstrap remains the sole owner of the Minimap and M popup. The shared controllers resolve the loaded gameplay world independently of Bootstrap’s active-scene status.
+
+D-089 presentation follow-up: Boss Teleport and Leave the Arena share the generated board, card and button artwork. Earth, Water and Wind reference the same Ruined Temple portrait for their MapDuy return destination. The one-card layout uses a 620×700 reference frame.
+
+D-060 artwork follow-up: Farm Storage uses a thin walnut and gold outer board, separate Inventory grid frames, and the existing shared slot sprite. Transfers and storage capacity follow the existing D-060 rules.
+
+D-047 readability follow-up: enlarge the shared bottom-anchored NPC dialogue target to 1240×478 and increase body, speaker and choice typography.
+
+Knacker in MapDuy now owns the Slime, Bone and Bone Ash buy/sell lists and the existing Bone Ash recipe. The earlier unassigned NPC and station fields for Bone Ash are superseded.
+
+The MapDuy Herbalist now trades the four Health/Mana potions and both herbs, and owns the four existing potion recipes. Herbalist trading extends the earlier Cenhelm-only Small Health Potion placement. Cenhelm retains the existing price.
+
+The owner’s Slaughter Drops table supersedes the prior Slime quantity and default enemy EXP for Goblin and Ent. Shared enemy prefabs and wildlife definitions author the new fixed rewards and independent orb chances.
+
+The owner approved a Heart Village safe zone with ordinary attacks limited to targeted training dummies in the training yard. Skills remain blocked throughout MapNhat.
+
+The owner extended the Heart Village safe-zone rules to Shield block (D-118).
+
+The owner approved Main Menu-only background music. Gameplay maps use their existing environmental SFX profiles.
+
+## D-122 — Whole-game SFX re-sourced from Pixabay + missing SFX added (Accepted, owner 2026-11-27)
+
+Owner request: replace every SFX with better-matching sounds from Pixabay, give bare hands and the sword different
+sounds, and add sounds wherever a scene (all build scenes except DemoScene) is silent. Supersedes the *source* part of
+D-103/D-104/D-111 (Freesound previews + `synth.py`); runtime, banks, ids and call sites of D-103 are unchanged.
+
+- Source: Pixabay sound effects under the Pixabay Content License (game use, no attribution required; provenance kept
+  in `CREDITS.md`). Search runs in a browser (pixabay.com refuses scripted requests); the build fetches the chosen files
+  from `cdn.pixabay.com`. Catalog: `Tools/sfx/catalog_pixabay.py` (+ `px_settings.py`, `px.py`); the six Freesound/synth
+  catalogs were removed. All 199 bank ids + the 7 legacy UI scene-group clips (rebuilt in place, same GUID) were
+  replaced; bank rows were reset from the catalog (earlier per-row Inspector edits are overwritten).
+- New ids and hooks (27): bare-hand swing/hit/crit vs sword (`PlayerCombat`, by equipped Weapon slot), training dummy
+  wood hit, Shield raise + block (`PlayerShieldBlock`, `Player.TakeDamage`), Ent attack/hurt/death (`EnemySfx`),
+  Deer/Boar/Rabbit hurt/death + Boar attack (`WildlifeSfx` from `WildlifeActor`), eat/drink/potion from the quick bar
+  (`ConsumableUseHandler`), skill learned / skill assigned / skill not ready (`SkillPanelUI`,
+  `SkillTestHarness`), bag sound for the Inventory page and paper sound for the Map page (`GameStateManager`), item
+  discard (`InventoryDiscardConfirmUI`), loot drop (`ActorLootDrop`), Water-arena tide loop + "tide coming in"
+  (`TideController`).
+- Clips were chosen from title/tags/duration/popularity and checked by waveform/spectrogram, not by ear: the owner
+  listens in game and reports ids to swap (one `P(...)` line each, rebuild that id).
+
+Details: `SfxPipeline.md` §1b and §3.
+
+D-122 follow-up (owner 2026-11-27, "đánh tay nghe kì, một số SFX quá to"): bare-hand swing/hit/crit replaced with short
+dry punches aligned on the impact; every file is now normalised to a perceived-loudness tier (`Tools/sfx/px_loudness.py`,
+frequent sounds quieter, rare event sounds on top) and all SfxBank row volumes were reset to 1.0. See `SfxPipeline.md` §1b.
+Measured in game afterwards (AudioListener capture of all 210 sounds): no clipping, every id within 2 dB of its tier;
+crowd sounds now cap at 2–3 voices and enemy/animal deaths have a 60 ms cooldown (6 simultaneous deaths measured +6 dB
+before, 0 dB after).
+
+D-122 follow-up 2 (owner 2026-11-27, "tiếng đánh tay không chưa chuẩn, SFX quái/thú chưa đủ"): the bare-hand set was
+inconsistent (one swing was a flat hiss block, one a low rumble; hits mixed boomy and thin punches). Replaced with three
+shaped swishes, one author's punch family (Punch 2/3/5/7) for hits and punch + body-thud mixes for crits. Enemies and
+wildlife gained two reactions through `MobVoiceTimer`: `*_alert` when they spot the player (EnemyUniversal entering Chase
+from Idle/Patrol/ReturnHome; wildlife entering its reaction range), max once per 4 s per actor, and rare `*_idle` voices
+(every 8–16 s, only within 8 units of the player; rabbits have no idle). Deer death is now a bleat + body fall instead of
+a stag mating call; ent/boar/rabbit/deer deaths got a second variant. New ids: `enemy.slime/goblin/ent_alert|idle`,
+`wildlife.boar/deer_alert|idle`, `wildlife.rabbit_alert`. Generic (non-family) enemies stay silent for alert/idle.
+
+## D-123 — Cutscene speech bubble sizing (Accepted, owner request 2026-11-27)
+
+Owner screenshot: the IntroCutscene speech bubble (speaker + body) was too small to read next to the 48-PPU actors.
+Only the bubble's size changed; dialogue text, timing, clip flips and the typewriter/advance flow are unchanged.
+
+- Reference: ortho 8 at 1920×1080 = 67.5 screen px per world unit. Bubble = sprite `dialogbox_2` at 1 texel per screen
+  px (507 px = 7.511 units wide, also the max line width). Speaker and body text = Digital Disco 32 px (0.474 unit),
+  i.e. 2 screen px per font pixel (font grid is 16 px/em); body was 17.5 px (≈1.8× larger now).
+- The bubble grows to fit: `ActorSpeechBubble` sets `_root` height from the wrapped body text (`_fitHeightToText`,
+  `_minHeight` 144 px). `dialogbox_2` got 9-slice borders L/B/R/T 52/92/52/52 so only the straight middle band stretches;
+  corners and tail keep their art. `_root` pivot moved to the tail tip (0.5, 0) and positions were recomputed so the
+  tail tip stays where it was authored (CutsceneTimeline.md pitfall #8 still holds: no runtime offset).
+- Checked in Play Mode: every intro line ≤3 lines, no overflow, longest line on screen. Only `IntroCutscene` uses the
+  bubble. Details: `IntroCutscene.md` "Bong bóng thoại Gameplay Timeline".
+
+Act I fishing guidance follow-up: use inventory possession of Worm Bait to select the tutorial hint and navigation target. Keep the five-fish objective and existing save IDs. Reserve screen space for the HUD when positioning off-screen direction arrows.
+
+D-106 follow-up: align the Water Arena tide overlay to the walkable beach width and use a continuous foam edge at the gameplay water line. Enable continuous player collision and a Water-only containment fallback.

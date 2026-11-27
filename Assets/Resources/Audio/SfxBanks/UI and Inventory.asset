@@ -20,9 +20,21 @@ MonoBehaviour:
     description: Inventory closes
     clips:
     - {fileID: 8300000, guid: ad3f0dd19535b2a408a1ab61f73b9e66, type: 3}
-    volume: 0.7
+    volume: 1
     pitchJitter: 0.03
     minInterval: 0.1
+    maxVoices: 0
+    loop: 0
+  - label: Drink
+    id: sfx.inventory.drink
+    category: UI
+    description: Drink from the quick bar
+    clips:
+    - {fileID: 8300000, guid: e2715a27c3ba744e99872d4c4b497c4d, type: 3}
+    - {fileID: 8300000, guid: b0f22960b08094087baa4cb38964ff29, type: 3}
+    volume: 1
+    pitchJitter: 0.06
+    minInterval: 0.2
     maxVoices: 0
     loop: 0
   - label: Drop
@@ -31,10 +43,21 @@ MonoBehaviour:
     description: Item dropped / moved
     clips:
     - {fileID: 8300000, guid: b9316c2bd9efa974f9359cbd7633c1d1, type: 3}
-    - {fileID: 8300000, guid: 3e412c876da0843448a21d9e93f61c8e, type: 3}
-    volume: 0.65
+    volume: 1
     pitchJitter: 0.08
     minInterval: 0.05
+    maxVoices: 0
+    loop: 0
+  - label: Eat
+    id: sfx.inventory.eat
+    category: UI
+    description: Eat food from the quick bar
+    clips:
+    - {fileID: 8300000, guid: de5e6efb8497c47bbb333a96dd1d099b, type: 3}
+    - {fileID: 8300000, guid: 66d798a42acc44375af2970be36d5752, type: 3}
+    volume: 1
+    pitchJitter: 0.06
+    minInterval: 0.2
     maxVoices: 0
     loop: 0
   - label: Equip
@@ -44,7 +67,7 @@ MonoBehaviour:
     clips:
     - {fileID: 8300000, guid: 2a348862c9c678542988f969fa83dbeb, type: 3}
     - {fileID: 8300000, guid: 3e6a799f3f51db24bb57d908e534c6e1, type: 3}
-    volume: 0.7
+    volume: 1
     pitchJitter: 0.05
     minInterval: 0.08
     maxVoices: 0
@@ -55,7 +78,7 @@ MonoBehaviour:
     description: Inventory opens
     clips:
     - {fileID: 8300000, guid: 0bcec40383643e344926b6e8ea2d32b2, type: 3}
-    volume: 0.7
+    volume: 1
     pitchJitter: 0.03
     minInterval: 0.1
     maxVoices: 0
@@ -67,7 +90,7 @@ MonoBehaviour:
     clips:
     - {fileID: 8300000, guid: 494600bfbf6da3743a04972d9019f276, type: 3}
     - {fileID: 8300000, guid: 1aa1a76b5310586478103624ff4c9e89, type: 3}
-    volume: 0.7
+    volume: 1
     pitchJitter: 0.08
     minInterval: 0.05
     maxVoices: 3
@@ -78,7 +101,7 @@ MonoBehaviour:
     description: Unequip item
     clips:
     - {fileID: 8300000, guid: 1363f18d695de2049a3f663f9911b292, type: 3}
-    volume: 0.6
+    volume: 1
     pitchJitter: 0.05
     minInterval: 0.08
     maxVoices: 0
@@ -90,7 +113,7 @@ MonoBehaviour:
     clips:
     - {fileID: 8300000, guid: a6c0bc82a68ea7c4e83402b82c17a466, type: 3}
     - {fileID: 8300000, guid: d89714313fe2be447852aabe9fbe3d65, type: 3}
-    volume: 0.7
+    volume: 1
     pitchJitter: 0.04
     minInterval: 0.2
     maxVoices: 0
@@ -101,9 +124,31 @@ MonoBehaviour:
     description: Dialogue typewriter
     clips:
     - {fileID: 8300000, guid: 7df2f140cb6842648967d6a5f46d312a, type: 3}
-    volume: 0.35
+    volume: 1
     pitchJitter: 0.12
     minInterval: 0.04
+    maxVoices: 0
+    loop: 0
+  - label: Map close
+    id: sfx.ui.map_close
+    category: UI
+    description: Map closes
+    clips:
+    - {fileID: 8300000, guid: ca1b18a5e9e314404ba20df6563144dc, type: 3}
+    volume: 1
+    pitchJitter: 0.03
+    minInterval: 0
+    maxVoices: 0
+    loop: 0
+  - label: Map open
+    id: sfx.ui.map_open
+    category: UI
+    description: Map opens
+    clips:
+    - {fileID: 8300000, guid: c4bc08e2db6874d619f8f1951ad64cfc, type: 3}
+    volume: 1
+    pitchJitter: 0.03
+    minInterval: 0
     maxVoices: 0
     loop: 0
   - label: Notification
@@ -113,7 +158,7 @@ MonoBehaviour:
     clips:
     - {fileID: 8300000, guid: e93bb01185ec6b147aad8db4105903f4, type: 3}
     - {fileID: 8300000, guid: ce14469e28247ac44aa916aa67cbdb66, type: 3}
-    volume: 0.6
+    volume: 1
     pitchJitter: 0
     minInterval: 0.3
     maxVoices: 0
@@ -124,9 +169,42 @@ MonoBehaviour:
     description: Game saved
     clips:
     - {fileID: 8300000, guid: f430fc89d3e10e14db6a078a73ec8a06, type: 3}
-    volume: 0.55
+    volume: 1
     pitchJitter: 0
     minInterval: 0.5
+    maxVoices: 0
+    loop: 0
+  - label: Skill assign
+    id: sfx.ui.skill_assign
+    category: UI
+    description: Skill dropped into a loadout slot
+    clips:
+    - {fileID: 8300000, guid: c997bb28ed1de46c9aaba2b355b91f8b, type: 3}
+    volume: 1
+    pitchJitter: 0.03
+    minInterval: 0
+    maxVoices: 0
+    loop: 0
+  - label: Skill cooldown
+    id: sfx.ui.skill_cooldown
+    category: UI
+    description: Skill / potion not ready (cooldown or no mana)
+    clips:
+    - {fileID: 8300000, guid: e4519919000ce47edaf6773470777d2d, type: 3}
+    volume: 1
+    pitchJitter: 0
+    minInterval: 0.3
+    maxVoices: 0
+    loop: 0
+  - label: Skill learn
+    id: sfx.ui.skill_learn
+    category: UI
+    description: Skill learned in the Skill panel
+    clips:
+    - {fileID: 8300000, guid: 4b5a235db5f904edcbfa63f2e0e14c7b, type: 3}
+    volume: 1
+    pitchJitter: 0
+    minInterval: 0
     maxVoices: 0
     loop: 0
   - label: Tab
@@ -136,7 +214,7 @@ MonoBehaviour:
     clips:
     - {fileID: 8300000, guid: 42980802042569b44a6791f63c8d835d, type: 3}
     - {fileID: 8300000, guid: 2e0e03c24ce96d843a84f14c4d1b5487, type: 3}
-    volume: 0.6
+    volume: 1
     pitchJitter: 0.04
     minInterval: 0.05
     maxVoices: 0

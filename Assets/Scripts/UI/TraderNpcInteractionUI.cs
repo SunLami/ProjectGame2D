@@ -27,13 +27,17 @@ public sealed class TraderNpcInteractionUI : MonoBehaviour
 
     private void OnEnable()
     {
-        _interactionButton.onClick.AddListener(TryInteract);
+        QuestNpcRegistry.Register(_npcId, transform);
+        if (_interactionButton != null)
+            _interactionButton.onClick.AddListener(TryInteract);
         Refresh();
     }
 
     private void OnDisable()
     {
-        _interactionButton.onClick.RemoveListener(TryInteract);
+        QuestNpcRegistry.Unregister(_npcId, transform);
+        if (_interactionButton != null)
+            _interactionButton.onClick.RemoveListener(TryInteract);
         _playerColliders.Clear();
         _playerInput = null;
     }
@@ -64,7 +68,7 @@ public sealed class TraderNpcInteractionUI : MonoBehaviour
             return;
 
         if (DialogueUI.Instance.Open(_dialogue, HandleOutcome))
-            _promptRoot.SetActive(false);
+            Refresh();
     }
 
     private void HandleOutcome(string outcomeId)
@@ -87,5 +91,9 @@ public sealed class TraderNpcInteractionUI : MonoBehaviour
     // already communicates that this NPC is interactable, and TryInteract above still works the
     // same on left click regardless. _promptRoot/_promptText stay wired (prefab-authored fields)
     // in case a future NPC needs an explicit prompt again, but this capability never shows one.
-    private void Refresh() => _promptRoot.SetActive(false);
+    private void Refresh()
+    {
+        if (_promptRoot != null)
+            _promptRoot.SetActive(false);
+    }
 }

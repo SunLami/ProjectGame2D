@@ -453,6 +453,34 @@ public sealed class QuestManagerPlayModeTests
     }
 
     [Test]
+    public void TrackedFishingQuest_GuidesToFisherUntilBaitIsInInventory()
+    {
+        const string fisher = "npc.dunstan";
+        const string bait = "item.consumable.bait_small";
+        const string dock = "area.fishing_dock";
+        QuestObjectiveDefinition objective = MakeObjective(QuestObjectiveType.Fish, "fish.any", 5);
+        SetPrivate(objective, "_navigationNpcId", fisher);
+        SetPrivate(objective, "_navigationAreaId", dock);
+        SetPrivate(objective, "_navigationMissingItemId", bait);
+        SetPrivate(objective, "_navigationMissingItemHint", "Buy Worm Bait.");
+        SetPrivate(objective, "_controlHint", "Fish at the dock.");
+        QuestDefinition quest = MakeDefinition("quest.fishing", new[] { objective });
+        _manager.ConfigureForTests(MakeCatalog(quest));
+        Assert.IsTrue(_manager.TryAcceptQuest(quest.QuestId));
+
+        CollectionAssert.AreEqual(new[] { fisher }, _manager.GetActionableNpcIds(includeOffers: false));
+        CollectionAssert.IsEmpty(_manager.GetActionableAreaIds());
+        Assert.AreEqual("Buy Worm Bait.", _manager.GetTrackedControlHint());
+
+        InventoryManager.Instance.AddItem(MakeItem(bait), 1);
+
+        CollectionAssert.IsEmpty(_manager.GetActionableNpcIds(includeOffers: false));
+        CollectionAssert.AreEqual(new[] { dock }, _manager.GetActionableAreaIds());
+        Assert.AreEqual("Fish at the dock.", _manager.GetTrackedControlHint());
+        Assert.AreEqual(QuestStatus.Active, _manager.GetStatus(quest.QuestId));
+    }
+
+    [Test]
     public void Abandon_ResetsProgressAndRequiresNpcGiverToAcceptAgain()
     {
         const string questId = "quest.abandon";

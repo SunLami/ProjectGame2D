@@ -37,6 +37,17 @@ public static class CombatFeedback
         SkillScreenFX.HitStopAndSlowMo(weak ? 0.055f : 0.035f, 1f, 0.01f);
     }
 
+    public static void MapDuyActorHit(Transform actor, float damage)
+    {
+        var scene = actor.gameObject.scene;
+        if (!Application.isPlaying || scene.name != "MapDuy" || !(damage > 0f))
+            return;
+
+        Vector2 position = (Vector2)actor.position + new Vector2(Random.Range(-0.25f, 0.25f), 1.25f);
+        var number = DamageNumber.Spawn(position, Mathf.Max(1, Mathf.RoundToInt(damage)).ToString(), Color.white, 1f);
+        UnityEngine.SceneManagement.SceneManager.MoveGameObjectToScene(number.gameObject, scene);
+    }
+
     /// <summary>The player was hurt by a boss: element spark on them.</summary>
     public static void PlayerHitSpark(Vector2 playerPosition, Element element)
     {

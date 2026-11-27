@@ -1,6 +1,7 @@
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.InputSystem;
 using UnityEngine.UI;
 
 /// <summary>
@@ -21,6 +22,7 @@ public sealed class TutorialOverlayUI : MonoBehaviour
 
     private TutorialManager _tutorialManager;
     private TutorialStepDefinition _pendingStep;
+    private bool _hiddenByPlayer;
 
     private void OnEnable()
     {
@@ -42,17 +44,28 @@ public sealed class TutorialOverlayUI : MonoBehaviour
 
     private void LateUpdate()
     {
-        if (_pendingStep != null && _pendingStep.Type != TutorialStepType.WaitForQuest)
-            return;
+        bool freeGameplay = GameStateManager.Instance?.CurrentState == GameState.Playing
+            && !IsCommerceWindowOpen;
+        if (freeGameplay && !_skipConfirmation.activeSelf
+            && Keyboard.current != null && Keyboard.current.pKey.wasPressedThisFrame)
+        {
+            _hiddenByPlayer = !_hiddenByPlayer;
+        }
 
-        // Quest control hints (from the tracked quest's current objective) share this banner. They
-        // only show during free gameplay: not in dialogue/menus/fishing, and not over the Shop/
-        // Crafting/Farm Storage windows, which keep GameState.Playing but occupy the same screen area.
-        string hint = QuestManager.Instance?.GetTrackedControlHint();
-        bool showHint = GameStateManager.Instance?.CurrentState == GameState.Playing
-            && !IsCommerceWindowOpen
-            && !string.IsNullOrEmpty(hint);
-        _instructionPanel.SetActive(showHint);
+        UpdateBanner(freeGameplay);
+    }
+
+    private void UpdateBanner(bool freeGameplay)
+    {
+        bool hasActiveStep = _pendingStep != null && _pendingStep.Type != TutorialStepType.WaitForQuest;
+        bool showStep = hasActiveStep && !_hiddenByPlayer && !IsGameplayMenuOpen;
+        string hint = !hasActiveStep && !_hiddenByPlayer && freeGameplay
+            ? QuestManager.Instance?.GetTrackedControlHint()
+            : null;
+        bool showHint = !string.IsNullOrEmpty(hint);
+
+        _instructionPanel.SetActive(showStep || showHint);
+        _skipButton.gameObject.SetActive(showStep);
 
         if (showHint && _instructionText.text != hint)
             _instructionText.text = hint;
@@ -134,16 +147,10 @@ public sealed class TutorialOverlayUI : MonoBehaviour
         _pendingStep = step;
         _skipConfirmation.SetActive(false);
 
-        // A WaitForQuest step hands instruction/progress display off to the Quest Tracker UI
-        // instead of this banner -- it is real Quest content (e.g. "talk to an NPC" with a real
-        // reward), not filler input guidance, so it gets the real quest UI language instead of
-        // duplicating the same text through the Tutorial banner too.
-        bool hasActiveStep = step != null && step.Type != TutorialStepType.WaitForQuest && !IsGameplayMenuOpen;
-        _instructionPanel.SetActive(hasActiveStep);
-        _skipButton.gameObject.SetActive(hasActiveStep);
-
         if (step != null && step.Type != TutorialStepType.WaitForQuest)
             _instructionText.text = step.InstructionText;
+
+        UpdateBanner(GameStateManager.Instance?.CurrentState == GameState.Playing && !IsCommerceWindowOpen);
     }
 
     private void OpenSkipConfirmation()

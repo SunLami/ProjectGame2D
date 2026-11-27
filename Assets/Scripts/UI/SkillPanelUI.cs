@@ -184,8 +184,9 @@ public sealed class SkillPanelUI : MonoBehaviour
 
     public void LearnSelected()
     {
-        if (IsOpen && _tooltip.activeSelf && _player != null && _selected >= 0)
-            _player.Skills.Learn(_catalog, _entries[_selected].id);
+        if (!IsOpen || !_tooltip.activeSelf || _player == null || _selected < 0)
+            return;
+        SoundFXManager.PlaySfx(_player.Skills.Learn(_catalog, _entries[_selected].id) ? SfxIds.UiSkillLearn : "sfx.ui.error");
     }
 
     private void RefreshSkills()
@@ -249,7 +250,12 @@ public sealed class SkillPanelUI : MonoBehaviour
         if (_dragGhost != null && RectTransformUtility.ScreenPointToLocalPointInRectangle((RectTransform)transform,screenPosition,null,out var point))
             _dragGhost.rectTransform.localPosition = point + new Vector2(18,-18);
     }
-    public bool DropSkill(int slot) => IsOpen && _player != null && _dragId != null && _player.Skills.Equip(_catalog,slot,_dragId);
+    public bool DropSkill(int slot)
+    {
+        bool equipped = IsOpen && _player != null && _dragId != null && _player.Skills.Equip(_catalog, slot, _dragId);
+        if (equipped) SoundFXManager.PlaySfx(SfxIds.UiSkillAssign);
+        return equipped;
+    }
     public void CancelDrag()
     {
         if (_dragGhost != null) Destroy(_dragGhost.gameObject);

@@ -21,8 +21,7 @@ MonoBehaviour:
     clips:
     - {fileID: 8300000, guid: e4e69bbafab41ae4b914859aa28181fa, type: 3}
     - {fileID: 8300000, guid: 2cbd2123a1748974d80c9e15e128eef6, type: 3}
-    - {fileID: 8300000, guid: 1f6558ffe499a0a4db43b18dcbb2e6a8, type: 3}
-    volume: 0.7
+    volume: 1
     pitchJitter: 0.07
     minInterval: 0.12
     maxVoices: 0
@@ -33,8 +32,7 @@ MonoBehaviour:
     description: Footstep on sand
     clips:
     - {fileID: 8300000, guid: bd57ff9b5bfcb054a8b2d3e25d36ef92, type: 3}
-    - {fileID: 8300000, guid: 23ecfab2325a2bb419c5131927e5fb1e, type: 3}
-    volume: 0.7
+    volume: 1
     pitchJitter: 0.07
     minInterval: 0.12
     maxVoices: 0
@@ -47,7 +45,7 @@ MonoBehaviour:
     - {fileID: 8300000, guid: 6b1b326a2131ef64389af296e413ef5e, type: 3}
     - {fileID: 8300000, guid: 80a3bf4f3d77a594b96abe5d24dfeb10, type: 3}
     - {fileID: 8300000, guid: 492d42b52f1fb344399e97e6250ee950, type: 3}
-    volume: 0.7
+    volume: 1
     pitchJitter: 0.07
     minInterval: 0.12
     maxVoices: 0
@@ -59,7 +57,7 @@ MonoBehaviour:
     clips:
     - {fileID: 8300000, guid: 1a4102feb757e33468b0d2896b0e96d0, type: 3}
     - {fileID: 8300000, guid: 108a9ec830326af40bb1966bb8b8664c, type: 3}
-    volume: 0.8
+    volume: 1
     pitchJitter: 0.04
     minInterval: 0.3
     maxVoices: 0
@@ -70,7 +68,7 @@ MonoBehaviour:
     description: Scene transition
     clips:
     - {fileID: 8300000, guid: b50d6775e4f9b2e45ae30be623db79ac, type: 3}
-    volume: 0.6
+    volume: 1
     pitchJitter: 0
     minInterval: 0.5
     maxVoices: 0
@@ -83,7 +81,7 @@ MonoBehaviour:
     - {fileID: 8300000, guid: 1c17e62bf58d2ae4895bd6bf52c0b4d9, type: 3}
     - {fileID: 8300000, guid: ebf628316bf9ed140bbf0bc03f8d5dbb, type: 3}
     - {fileID: 8300000, guid: c83277ae079f57c4fa12f8229a09f707, type: 3}
-    volume: 0.7
+    volume: 1
     pitchJitter: 0.08
     minInterval: 0.1
     maxVoices: 0
@@ -96,7 +94,7 @@ MonoBehaviour:
     - {fileID: 8300000, guid: 2c0122f15620c7548bb8776a2b7edde3, type: 3}
     - {fileID: 8300000, guid: 5030e82f0ed35774691cd85e64bd7f0b, type: 3}
     - {fileID: 8300000, guid: e52d23e5297466141adfea3a08977f86, type: 3}
-    volume: 0.8
+    volume: 1
     pitchJitter: 0.07
     minInterval: 0.1
     maxVoices: 0
@@ -108,10 +106,22 @@ MonoBehaviour:
     clips:
     - {fileID: 8300000, guid: 1d83bcbef7774a747ac5befb33f1d9cd, type: 3}
     - {fileID: 8300000, guid: 0567d015e6303f7488b36ca5eea5d78f, type: 3}
-    volume: 0.8
+    - {fileID: 8300000, guid: 9267c445826e142a69965c2e996b934e, type: 3}
+    volume: 1
     pitchJitter: 0.07
     minInterval: 0.1
     maxVoices: 0
+    loop: 0
+  - label: Loot drop
+    id: sfx.world.loot_drop
+    category: World
+    description: Loot drops from an enemy / animal
+    clips:
+    - {fileID: 8300000, guid: 5c251fe74fe8d4f9fb3d0ffb5704ce15, type: 3}
+    volume: 1
+    pitchJitter: 0.06
+    minInterval: 0.05
+    maxVoices: 2
     loop: 0
   - label: Resource depleted
     id: sfx.world.resource_depleted
@@ -119,7 +129,7 @@ MonoBehaviour:
     description: Resource node depleted
     clips:
     - {fileID: 8300000, guid: 15730feb1f5defa41bb84eef64932111, type: 3}
-    volume: 0.6
+    volume: 1
     pitchJitter: 0
     minInterval: 0.2
     maxVoices: 0
@@ -130,7 +140,7 @@ MonoBehaviour:
     description: Unique item pickup
     clips:
     - {fileID: 8300000, guid: ba3685ee9a5937a48aa4218f32531802, type: 3}
-    volume: 0.8
+    volume: 1
     pitchJitter: 0
     minInterval: 0.3
     maxVoices: 0

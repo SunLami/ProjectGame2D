@@ -204,6 +204,7 @@ public static class SheetContentAuthoring
             var so=new SerializedObject(def);
             so.FindProperty("_animalId").stringValue="animal."+name.ToLowerInvariant();
             so.FindProperty("_health").floatValue=name=="Rabbit"?15:name=="Deer"?30:50;
+            so.FindProperty("_experienceReward").intValue = name == "Rabbit" ? 10 : name == "Deer" ? 5 : 20;
             so.FindProperty("_speed").floatValue=name=="Rabbit"?2.5f:2f;
             so.FindProperty("_aggressive").boolValue=name=="Boar";
             so.FindProperty("_contactDamage").floatValue=name=="Boar"?8f:0f;
@@ -250,7 +251,11 @@ public static class SheetContentAuthoring
             try
             {
                 var drop=root.GetComponent<ActorLootDrop>()??root.AddComponent<ActorLootDrop>();
-                var so=new SerializedObject(drop);WriteLoot(so.FindProperty("_loot"),(FindItem("item.material.slime"),1,3));so.ApplyModifiedPropertiesWithoutUndo();
+                var so = new SerializedObject(drop);
+                var loot = so.FindProperty("_loot");
+                WriteLoot(loot, (FindItem("item.material.slime"), 3, 3), (FindItem("item.material.orb_water"), 1, 1));
+                loot.GetArrayElementAtIndex(1).FindPropertyRelative("_chance").floatValue = 0.05f;
+                so.ApplyModifiedPropertiesWithoutUndo();
                 PrefabUtility.SaveAsPrefabAsset(root,path);
             }
             finally{PrefabUtility.UnloadPrefabContents(root);}

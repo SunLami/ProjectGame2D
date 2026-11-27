@@ -6,7 +6,11 @@ public sealed class DroppedLootPickup : MonoBehaviour
 {
     private List<InventoryItemGrant> _grants;
     private float _nextAttempt;
-    public void Initialize(List<InventoryItemGrant> grants) => _grants = grants;
+    public void Initialize(List<InventoryItemGrant> grants, float pickupDelay = 0f)
+    {
+        _grants = grants;
+        _nextAttempt = Time.time + pickupDelay;
+    }
     private void Update()
     {
         if (_grants == null || Time.time < _nextAttempt || PlayerStat.Instance == null

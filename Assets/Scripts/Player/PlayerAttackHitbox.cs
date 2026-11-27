@@ -116,6 +116,9 @@ public sealed class PlayerAttackHitbox : MonoBehaviour
                 _owner.DamageTargetFromHitbox(target, candidate.transform);
             return;
         }
+        if (Player.IsVillageSafeZone())
+            return;
+
         ResourceNodeInteractable resource = other.GetComponentInParent<ResourceNodeInteractable>();
         if (resource != null && _hitEnemies.Add(resource))
             resource.TryApplyHarvestHit();

@@ -33,3 +33,19 @@ class Synth:
 def S(cat, clips, vol=1.0, jitter=0.0, cooldown=0.0, voices=0, loop=False, desc="", rms=None):
     """`rms` = target loudness (dBFS RMS of the active part) of this id; default comes from the category."""
     return dict(cat=cat, clips=clips, vol=vol, jitter=jitter, cooldown=cooldown, voices=voices, loop=loop, desc=desc, rms=rms)
+
+
+def P(pixabay_id, cdn_path, name="", user="", align=None, **kw):
+    """A clip from Pixabay: `cdn_path` is the part of the CDN url between /audio/ and .mp3 (e.g.
+    "2022/06/07/audio_b9bd4170e4"). `align` = start this many seconds before the loudest sample (for impacts and
+    whooshes with a quiet lead-in). Other kwargs are the same as C()."""
+    import px
+    clip_id = f"px:{cdn_path}#{pixabay_id}"
+    if name:
+        px.NAMES[clip_id] = name
+    if user:
+        px.USERS[clip_id] = user
+    kw.setdefault("note", name)
+    clip = C(clip_id, lic="pixabay", **kw)
+    clip.align = align  # seconds of pre-roll before the loudest sample; None = keep the source start
+    return clip

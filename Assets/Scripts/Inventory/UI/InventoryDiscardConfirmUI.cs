@@ -126,8 +126,11 @@ public sealed class InventoryDiscardConfirmUI : MonoBehaviour
     private void DoDiscard(int amount)
     {
         if (_slot != null && _slot.item == _item && ReferenceEquals(_slot.fish, _fish)
-            && amount <= _slot.quantity)
-            InventoryManager.Instance?.DiscardFromSlot(_slot, amount);
+            && amount <= _slot.quantity && InventoryManager.Instance != null)
+        {
+            if (InventoryManager.Instance.DiscardFromSlot(_slot, amount))
+                SoundFXManager.PlaySfx(SfxIds.InventoryDrop);
+        }
         Close();
     }
 

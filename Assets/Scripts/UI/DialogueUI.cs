@@ -204,7 +204,7 @@ public sealed class DialogueUI : MonoBehaviour
             ? _bodyTextWithChoicesSize
             : _bodyTextWithoutChoicesSize;
         _bodyText.enableAutoSizing = true;
-        _bodyText.fontSizeMin = 8f;
+        _bodyText.fontSizeMin = 12f;
         _bodyText.fontSizeMax = hasChoices
             ? _bodyTextWithChoicesFontSize
             : _bodyTextWithoutChoicesFontSize;
@@ -251,9 +251,6 @@ public sealed class DialogueUI : MonoBehaviour
             button.gameObject.SetActive(true);
             TMP_Text label = button.GetComponentInChildren<TMP_Text>(true);
             label.text = choice.Text;
-            label.enableAutoSizing = true;
-            label.fontSizeMin = 7f;
-            label.fontSizeMax = 10f;
             label.enableWordWrapping = false;
             label.overflowMode = TextOverflowModes.Ellipsis;
             string nextNodeId = choice.NextNodeId;

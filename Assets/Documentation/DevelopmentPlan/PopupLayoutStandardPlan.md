@@ -124,8 +124,8 @@ toàn cục. Kiểm thử trong Unity do chủ dự án thực hiện.
 - Save Slot Picker dùng vùng 1440×810 ở Main Menu cho cả New Game và Continue, và 1440×810 trong gameplay. Main Menu giữ
   ba thẻ và bố cục gốc 1920×1080 làm hệ tọa độ nội dung. Gameplay dùng hệ tọa độ 776×430
   theo vùng tham chiếu 16:9 hiện tại. Back trong Main Menu dùng khung 440×124, nằm giữa bên dưới ba thẻ ở cả New Game và Continue. Khung tiêu đề mỗi slot dùng 358×126 và nhãn căn giữa phần mặt bảng. Khi chọn Save hoặc Load, khung Pause ẩn. Back hoặc Cancel đóng trình chọn slot và hiện lại Pause.
-- Settings Main Menu dùng vùng 560×720. Bố cục gốc nằm trong rect 900×950 để tiêu đề và
-  nội dung co cùng nhau. Settings gameplay đã dùng cùng vùng mục tiêu.
+- Settings Main Menu dùng rect gốc 560×720 khớp vùng fit 560×720. Tiêu đề, các điều khiển
+  và footer nằm trong cùng khung. Settings gameplay dùng cùng kích thước vùng mục tiêu.
 - Badge Inventory, Shop và Crafting được chỉnh theo tỷ lệ board sau khi fit, nhắm cỡ chữ
   hiệu dụng khoảng 24 đơn vị ở 1920×1080 và dùng cùng nền nâu đậm. Đây là kích thước dự
   kiến từ hình học prefab, chờ kiểm tra trong game với số 1, 10 và 99.
@@ -201,3 +201,19 @@ khi thay bằng khung ngoài và panel con riêng. Kiểm thử Unity do chủ d
 Thanh vàng của Crafting neo ở đáy CompactInventory với offset 48 để biểu tượng và số vàng nằm giữa khung footer. Prefab và builder dùng cùng vị trí.
 
 Nút X dùng sprite `map_close_button_v1` chung. Vị trí và kích thước của nút được author theo khung của Inventory, Character Stats, Quest Log, Skills, Settings, Shop, Crafting và Farm Storage. Căn nút theo góc trên phải của khung hoặc header tương ứng, giữ hình vuông và tránh chồng lên góc trang trí. Hộp lỗi Main Menu, Boss Teleport và Dev Panel dùng cùng sprite.
+
+Boss Teleport uses a 1180×700 layout for the three arena cards and a 620×700 layout for the single Ruined Temple return card. Both use the shared safe-area scaler and Close sprite.
+
+The Boss Teleport board uses thinner trim and reserves at least 40 horizontal and 50 vertical UI units between its border and the three action buttons in both layouts.
+
+Farm Storage uses a 1280×800 Inventory-style board with independent scroll frames, a close button inset from the trim, and five columns by four visible rows per side. The builder and Bootstrap prefab share these dimensions.
+
+The shared NPC dialogue scales to a 1240×478 safe-area target on the 1920×1080 reference canvas. Larger body, speaker and choice text retains the bottom anchor and four-choice layout.
+
+The shared NPC speaker label is centered on the usable interior of the lower-right nameplate. Long names fit within the inner width using bounded auto-sizing.
+
+Farm Storage uses separate pixel-art heading plaques and column trim. Both 530×448 viewports use RectMask2D inside the decorative trim, with five columns and four full rows at the top of each scroll.
+
+The DEV toggle is anchored to the bottom-right of its full-size HUD root. Bootstrap inherits the prefab position and scale.
+
+The bottom-right DEV toggle uses a compact 34×13 button with an 8-unit right inset and 4-unit bottom inset to leave room below SkillHUD.

@@ -99,6 +99,7 @@ public partial class Player : MonoBehaviour, IDamageable
         PlayerDamageResult result = _stats.ReceiveDamage(damageAmount);
         if (result.Outcome == PlayerDamageOutcome.Blocked)
         {
+            SoundFXManager.PlaySfx(SfxIds.CombatShieldBlock); // the shield absorbs one hit, then breaks
             if (!_stats.IsBlocking) StopBlocking();
             return; // No hurt animation, knockback, hurt sound or hurt invulnerability on a blocked hit.
         }

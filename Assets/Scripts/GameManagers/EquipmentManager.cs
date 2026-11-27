@@ -17,42 +17,50 @@ public class EquipmentManager : MonoBehaviour
     public SpriteLibraryAsset[] headEquipmentAssets;
     public SpriteLibraryAsset[] swordEquipmentAssets;
 
-    private int currentBodyIndex = 0;
-    private int currentSwordIndex = 0;
-    private int currentHeadIndex = 0;
+    // Store the resolved look independently of scene-owned components. This also preserves
+    // body-driven head overrides and the legacy index-based preview controls across a rebind.
+    private readonly Dictionary<EquipSlot, SpriteLibraryAsset> _visualAssets = new();
+    private bool _swordVisible;
 
-    /// <summary>Rebinds to the current scene's own Player visuals -- EquipmentManager is a shared
-    /// Bootstrap singleton now, so an Inspector-time reference to one scene's Player would break
-    /// the moment another map's Player becomes active. Called by Player.Awake().</summary>
+    /// <summary>Binds a newly spawned Player and reapplies the current appearance.</summary>
     public void BindPlayerVisuals(SpriteLibrary body, SpriteLibrary head, SpriteLibrary sword)
     {
         bodySpriteLibrary = body;
         headSpriteLibrary = head;
         swordSpriteLibrary = sword;
+        _swordRenderer = sword != null ? sword.GetComponent<SpriteRenderer>() : null;
 
-        // Awake() only wires _swordRenderer up once, from whichever scene happened to be loaded
-        // first -- every later scene's Player rebinds a different SpriteLibrary/SpriteRenderer
-        // here, so re-resolve it and re-sync its enabled state to the actual equipped item, or a
-        // freshly loaded scene's sword renderer is left at its own Inspector-time default
-        // (typically enabled) instead of reflecting "nothing equipped yet".
-        _swordRenderer = swordSpriteLibrary != null ? swordSpriteLibrary.GetComponent<SpriteRenderer>() : null;
-        SetSwordVisible(GetEquipped(EquipSlot.Weapon) != null);
+        RestoreVisual(EquipSlot.Body, body);
+        RestoreVisual(EquipSlot.Head, head);
+        RestoreVisual(EquipSlot.Weapon, sword);
+        SetSwordVisible(_swordVisible);
+    }
+
+    private void RestoreVisual(EquipSlot slot, SpriteLibrary library)
+    {
+        if (library != null && _visualAssets.TryGetValue(slot, out SpriteLibraryAsset asset))
+            library.spriteLibraryAsset = asset;
+    }
+
+    private void SetVisual(EquipSlot slot, SpriteLibrary library, SpriteLibraryAsset asset)
+    {
+        _visualAssets[slot] = asset;
+        if (library != null)
+            library.spriteLibraryAsset = asset;
     }
 
     public void EquipBodyByIndex(int index)
     {
         if (bodyEquipmentAssets == null || index < 0 || index >= bodyEquipmentAssets.Length) return;
 
-        currentBodyIndex = index;
-        bodySpriteLibrary.spriteLibraryAsset = bodyEquipmentAssets[index];
+        SetVisual(EquipSlot.Body, bodySpriteLibrary, bodyEquipmentAssets[index]);
     }
 
     public void EquipSwordByIndex(int index)
     {
         if (swordEquipmentAssets == null || index < 0 || index >= swordEquipmentAssets.Length) return;
 
-        currentSwordIndex = index;
-        swordSpriteLibrary.spriteLibraryAsset = swordEquipmentAssets[index];
+        SetVisual(EquipSlot.Weapon, swordSpriteLibrary, swordEquipmentAssets[index]);
         SetSwordVisible(true);
     }
 
@@ -60,8 +68,7 @@ public class EquipmentManager : MonoBehaviour
     {
         if (headEquipmentAssets == null || index < 0 || index >= headEquipmentAssets.Length) return;
 
-        currentHeadIndex = index;
-        headSpriteLibrary.spriteLibraryAsset = headEquipmentAssets[index];
+        SetVisual(EquipSlot.Head, headSpriteLibrary, headEquipmentAssets[index]);
     }
 
     // --- Data-driven Equipment System (Inventory-integrated) ---
@@ -109,6 +116,7 @@ public class EquipmentManager : MonoBehaviour
 
     private void SetSwordVisible(bool visible)
     {
+        _swordVisible = visible;
         if (_swordRenderer != null)
             _swordRenderer.enabled = visible;
     }
@@ -253,19 +261,19 @@ public class EquipmentManager : MonoBehaviour
         switch (item.slot)
         {
             case EquipSlot.Head:
-                headSpriteLibrary.spriteLibraryAsset = item.spriteLibraryAsset;
+                SetVisual(EquipSlot.Head, headSpriteLibrary, item.spriteLibraryAsset);
                 break;
 
             case EquipSlot.Body:
-                bodySpriteLibrary.spriteLibraryAsset = item.spriteLibraryAsset;
+                SetVisual(EquipSlot.Body, bodySpriteLibrary, item.spriteLibraryAsset);
                 if (item.headSpriteLibraryAsset != null)
                 {
-                    headSpriteLibrary.spriteLibraryAsset = item.headSpriteLibraryAsset;
+                    SetVisual(EquipSlot.Head, headSpriteLibrary, item.headSpriteLibraryAsset);
                 }
                 break;
 
             case EquipSlot.Weapon:
-                swordSpriteLibrary.spriteLibraryAsset = item.spriteLibraryAsset;
+                SetVisual(EquipSlot.Weapon, swordSpriteLibrary, item.spriteLibraryAsset);
                 SetSwordVisible(true);
                 break;
         }
@@ -276,14 +284,14 @@ public class EquipmentManager : MonoBehaviour
         switch (slot)
         {
             case EquipSlot.Head:
-                headSpriteLibrary.spriteLibraryAsset = _defaultHeadAsset;
+                SetVisual(EquipSlot.Head, headSpriteLibrary, _defaultHeadAsset);
                 break;
 
             case EquipSlot.Body:
-                bodySpriteLibrary.spriteLibraryAsset = _defaultBodyAsset;
+                SetVisual(EquipSlot.Body, bodySpriteLibrary, _defaultBodyAsset);
                 // Restore whatever the Head slot has equipped on its own, since Body may have been overriding it visually.
                 EquipmentItemSO currentHead = GetEquipped(EquipSlot.Head);
-                headSpriteLibrary.spriteLibraryAsset = currentHead != null ? currentHead.spriteLibraryAsset : _defaultHeadAsset;
+                SetVisual(EquipSlot.Head, headSpriteLibrary, currentHead != null ? currentHead.spriteLibraryAsset : _defaultHeadAsset);
                 break;
 
             case EquipSlot.Weapon:

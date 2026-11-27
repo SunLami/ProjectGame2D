@@ -429,6 +429,10 @@ public sealed class BossDefinition : ScriptableObject
     {
         var definition = CreateInstance<BossDefinition>();
         definition.name = "EarthGolemBoss";
+        // D-121 (2026-11-26): balanced for a level-10 player in level-10 gear (143 HP, Defense 8.35)
+        definition.maxHealth = 3000f;
+        definition.baseDamage = 26f;
+        definition.resonanceBurstTelegraphSeconds = 0.7f;
         definition.phases = new[]
         {
             new BossPhase
@@ -459,7 +463,9 @@ public sealed class BossDefinition : ScriptableObject
                 combos = new[]
                 {
                     Combo("F", new BossComboStep(BossSkillId.StoneRain, true), new BossComboStep(BossSkillId.SpikeLanes), new BossComboStep(BossSkillId.RocketFist)),
-                    Combo("G", new BossComboStep(BossSkillId.CoreResonance), new BossComboStep(BossSkillId.Slam), new BossComboStep(BossSkillId.Slam)),
+                    // Core Resonance only comes from the ultimate beat (every 2 combos); opening G with it made two
+                    // ultimates run ~1 s apart (Play Mode 2026-11-26), the same bug the Wind owl had with Sky Storm.
+                    Combo("G", new BossComboStep(BossSkillId.SlamDouble), new BossComboStep(BossSkillId.SpikeLanes), new BossComboStep(BossSkillId.Slam)),
                 },
             },
         };
@@ -474,7 +480,9 @@ public sealed class BossDefinition : ScriptableObject
         definition.bossId = "boss.water_crab";
         definition.displayName = "Tidal Crab";
         definition.moveSpeed = 3.4f;
-        definition.maxHealth = 3000f;
+        // D-121 (2026-11-26): last boss, balanced for a level-30 player in level-30 gear (249 HP, Defense 40.35)
+        definition.maxHealth = 7800f;
+        definition.baseDamage = 55f;
         definition.difficultyDamageScale = 1.3f;
         definition.clampWindup = 0.7f;
         definition.bubbleSpeed = 4.5f;
@@ -513,7 +521,7 @@ public sealed class BossDefinition : ScriptableObject
             },
             new BossPhase
             {
-                name = "Phase 3 - Flood", startsBelowHealth = 0.30f, telegraphScale = 0.65f, telegraphMinSeconds = 0.5f, recoverySeconds = 1.3f,
+                name = "Phase 3 - Flood", startsBelowHealth = 0.30f, telegraphScale = 0.65f, telegraphMinSeconds = 0.5f, recoverySeconds = 1.8f,
                 gapBetweenSkills = 0.2f, ultimateEveryCombos = 2,
                 combos = new[]
                 {
@@ -535,6 +543,9 @@ public sealed class BossDefinition : ScriptableObject
         definition.bossId = "boss.wind_owl";
         definition.displayName = "Sky Owl";
         definition.moveSpeed = 3.4f;
+        // D-121 (2026-11-26): second boss, balanced for a level-20 player in level-20 gear (191 HP, Defense 21.85)
+        definition.maxHealth = 5000f;
+        definition.baseDamage = 45f;
         definition.ultimateSkill = BossSkillId.SkyStorm;
         definition.ultimateRecoverySeconds = 4f;
         definition.impactVfx = "Wind/WindImpact_Burst";

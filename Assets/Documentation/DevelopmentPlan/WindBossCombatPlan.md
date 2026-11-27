@@ -119,3 +119,6 @@ Cách thử: spawn cú bằng code ở trạng thái `Fighting` (không chạy v
 ### 10.6 SFX Cú + sửa dash (2026-10-05)
 - **SFX:** 24 id `sfx.bossowl.*` (33 file) tổng hợp bằng code (`Tools/sfx/synth_owl.py`, `catalog_bossowl.py`), bank "Boss Wind (Owl)". Gắn vào `BossSkillsWind` qua `OwlSfx(...)` (báo/tung/trúng của từng skill, loop lốc, sàn nháy/vỡ, bão), sự kiện chung (awaken/hit/recovery/phase/death) qua `OwlEventId` trong `BossSkills.cs`. Chưa nghe thử. Sửa lỗi `reverb()` lệch 1 mẫu khi độ dài lẻ.
 - **Dash không dùng được ở Water/Wind:** `Player._dashScenes` (serialize trong từng scene) chỉ liệt kê `DemoScene` và `BossArena_Earth` — Water/Wind copy từ Earth nên thừa hưởng danh sách đó (D-089/D-093 chỉ bật cho Earth). Sửa: thêm `BossArena_Water`, `BossArena_Wind` vào cả ba scene arena và `EnableDash()` trong builder Water/Wind để rebuild không mất.
+
+### 10.7 Cân bằng theo cấp (2026-11-26, D-121)
+Cú là boss thứ hai, **cho người chơi cấp 20** (191 HP, Def 21.85, atk 35.5): HP 2400 → **5000**, B 14 → **45**; các hệ số skill giữ nguyên. Đo lại: hạ 120 s (bot), mất 1.3 thanh, Lao Vuốt 22.4 (11.7% máu). Mưa Lông Vũ (0.5 B) chỉ còn 1 sát thương/lông vì Defense trừ thẳng — ghi nhận, chưa đổi. Chạy cả trận không lỗi runtime; Bão Táp: bot đứng trong mắt bão không mất máu.

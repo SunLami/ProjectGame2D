@@ -15,6 +15,7 @@ public sealed class FullMapController : MonoBehaviour, IScrollHandler, IBeginDra
     [SerializeField] private float _maxZoom = 3f;
 
     private Player _player;
+    private UnityEngine.SceneManagement.Scene _scene;
     private Bounds _mapBounds;
     private bool _hasBounds;
     private float _zoom = 1f;
@@ -41,6 +42,11 @@ public sealed class FullMapController : MonoBehaviour, IScrollHandler, IBeginDra
 
     private void OnEnable()
     {
+        bool useSnapshot = !LiveMapCamera.SupportsScene(LiveMapCamera.ResolveWorldScene());
+        if (_mapImage != null)
+            _mapImage.enabled = useSnapshot;
+        if (_playerMarker != null)
+            _playerMarker.gameObject.SetActive(useSnapshot);
         _hasBounds = MapWorldBounds.TryGet(out _mapBounds);
         if (_canvas == null)
             _canvas = GetComponentInParent<Canvas>();
@@ -60,11 +66,18 @@ public sealed class FullMapController : MonoBehaviour, IScrollHandler, IBeginDra
 
     private void LateUpdate()
     {
+        var scene = LiveMapCamera.ResolveWorldScene();
+        if (_scene != scene)
+        {
+            _scene = scene;
+            _player = null;
+            _hasBounds = false;
+        }
         if (_player == null)
             _player = FindAnyObjectByType<Player>();
 
         if (_mapImage != null && _viewport != null
-            && LiveMapCamera.TryGetSource(out Camera source, out Bounds bounds))
+            && LiveMapCamera.TryGetSource(scene, out Camera source, out Bounds bounds))
         {
             UpdateLiveMap(source, bounds);
             return;
@@ -75,6 +88,13 @@ public sealed class FullMapController : MonoBehaviour, IScrollHandler, IBeginDra
             FitToViewport();
             ApplyZoom();
         }
+        bool useSnapshot = !LiveMapCamera.SupportsScene(scene);
+        if (_mapImage != null)
+            _mapImage.enabled = useSnapshot;
+        if (_playerMarker != null)
+            _playerMarker.gameObject.SetActive(useSnapshot);
+        if (!useSnapshot)
+            return;
         if (!_hasBounds)
             _hasBounds = MapWorldBounds.TryGet(out _mapBounds);
         UpdateMarker();
@@ -121,6 +141,8 @@ public sealed class FullMapController : MonoBehaviour, IScrollHandler, IBeginDra
         float ortho = LiveOrthographicSize();
         _liveCenter = LiveMapCamera.ClampCenter(_liveCenter, bounds, ortho, _liveMap.Aspect);
         _liveMap.Frame(_liveCenter, ortho, source.transform.position.z);
+        if (_playerMarker != null)
+            _playerMarker.gameObject.SetActive(_player != null);
         if (_player != null)
             PositionMarker(_liveMap.Project(_player.transform.position));
     }

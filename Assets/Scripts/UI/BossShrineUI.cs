@@ -29,7 +29,7 @@ public sealed class BossShrineUI : MonoBehaviour
     private Button _placeButton;
     private Button _takeBackButton;
     private Button _awakenButton;
-    private Image _awakenImage;
+    private Sprite _socketArtwork;
     private TMP_Text _awakenLabel;
     private readonly List<Socket> _sockets = new List<Socket>();
 
@@ -155,26 +155,24 @@ public sealed class BossShrineUI : MonoBehaviour
 
     private Socket BuildSocket(int index)
     {
-        Image frame = NewImage("Socket" + index, _socketRow, GoldDim);
-        var layout = frame.gameObject.AddComponent<LayoutElement>();
-        layout.preferredWidth = 150f;
-        layout.preferredHeight = 150f;
+        Image frame = NewImage("Socket" + index, _socketRow, Color.white);
+        frame.sprite = _socketArtwork;
+        frame.preserveAspect = true;
+        frame.rectTransform.sizeDelta = new Vector2(116f, 116f);
 
-        Image inner = NewImage("Inner", frame.transform, new Color(0.07f, 0.06f, 0.05f, 1f));
-        Inset(inner.rectTransform, 3f);
-
-        Image icon = NewImage("Icon", inner.transform, Color.white);
+        Image icon = NewImage("Icon", frame.transform, Color.white);
         Inset(icon.rectTransform, 18f);
         icon.preserveAspect = true;
+        icon.raycastTarget = false;
         icon.enabled = false;
 
-        TMP_Text plus = NewText("Plus", inner.transform, "+", 64, new Color(1f, 1f, 1f, 0.18f), TextAlignmentOptions.Center);
+        TMP_Text plus = NewText("Plus", frame.transform, "+", 44, Ivory, TextAlignmentOptions.Center);
         Inset(plus.rectTransform, 0f);
 
         var socket = new Socket { Frame = frame, Icon = icon, Plus = plus };
         int captured = index;
         var button = frame.gameObject.AddComponent<Button>();
-        button.transition = Selectable.Transition.None;
+        button.targetGraphic = frame;
         button.onClick.AddListener(() =>
         {
             if (captured < _placed)
@@ -205,7 +203,9 @@ public sealed class BossShrineUI : MonoBehaviour
         {
             bool filled = i < _placed;
             Socket socket = _sockets[i];
-            socket.Frame.color = filled ? Gold : GoldDim;
+            socket.Frame.color = _socketArtwork != null
+                ? (filled ? Color.white : new Color(0.72f, 0.66f, 0.57f))
+                : (filled ? Gold : Walnut);
             socket.Icon.enabled = filled && item != null;
             socket.Icon.sprite = item != null ? item.icon : null;
             socket.Plus.enabled = !filled;
@@ -222,36 +222,51 @@ public sealed class BossShrineUI : MonoBehaviour
         _takeBackButton.interactable = _placed > 0;
         bool ready = _placed >= required;
         _awakenButton.interactable = ready;
-        _awakenImage.color = ready ? Sapphire : Disabled;
         _awakenLabel.color = ready ? Ivory : WarmGray;
     }
 
     private void Build()
     {
         Canvas canvas = NewOverlayCanvas("BossShrineCanvas", transform, 900);
+        PopupViewportFit.ConfigureCanvas(canvas.GetComponent<CanvasScaler>());
         _root = canvas.gameObject;
 
-        Image dim = NewImage("Dim", _root.transform, new Color(0f, 0f, 0f, 0.62f));
+        Image dim = NewImage("Dim", _root.transform, new Color(0f, 0f, 0f, 0.43f));
         Inset(dim.rectTransform, 0f);
 
-        Image frame = NewImage("PanelFrame", _root.transform, Gold);
-        SetRect(frame.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), Vector2.zero, new Vector2(960f, 600f));
-        Image panel = NewImage("Panel", frame.transform, Charcoal);
-        Inset(panel.rectTransform, 3f);
+        Vector2 panelSize = new Vector2(960f, 600f);
+        Image frame = NewImage("PanelFrame", _root.transform, Charcoal);
+        frame.sprite = Resources.Load<Sprite>("UI/BossShrine/summoning_shrine_board_v1");
+        if (frame.sprite != null)
+            frame.color = Color.white;
+        SetRect(frame.rectTransform, Vector2.one * 0.5f, Vector2.one * 0.5f,
+            Vector2.one * 0.5f, Vector2.zero, panelSize);
+        PopupViewportFit.Configure(frame.gameObject, panelSize);
 
-        TMP_Text title = NewText("Title", panel.transform, "SUMMONING SHRINE", 30, Gold, TextAlignmentOptions.Center);
-        SetRect(title.rectTransform, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(0.5f, 1f), new Vector2(0f, -24f), new Vector2(-120f, 44f));
-        _subtitle = NewText("Subtitle", panel.transform, "", 17, WarmGray, TextAlignmentOptions.Center);
-        SetRect(_subtitle.rectTransform, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(0.5f, 1f), new Vector2(0f, -70f), new Vector2(-120f, 30f));
+        Transform panel = frame.transform;
+        TMP_Text title = NewText("Title", panel, "SUMMONING SHRINE", 36, Gold, TextAlignmentOptions.Center);
+        SetRect(title.rectTransform, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(0.5f, 1f), new Vector2(0f, -86f), new Vector2(-210f, 44f));
+        _subtitle = NewText("Subtitle", panel, "", 23, Ivory, TextAlignmentOptions.Center);
+        SetRect(_subtitle.rectTransform, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(0.5f, 1f), new Vector2(0f, -132f), new Vector2(-200f, 38f));
 
-        Button close = NewButton("Close", panel.transform, "X", 24, Walnut, Gold, out _);
-        SetRect(close.GetComponent<RectTransform>(), new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(-16f, -16f), new Vector2(44f, 44f));
+        Button close = NewButton("Close", panel, "X", 24, Walnut, Gold, out TMP_Text closeLabel);
+        Image closeImage = close.GetComponent<Image>();
+        closeImage.sprite = Resources.Load<Sprite>("UI/Map/DarkInventoryStyle/map_close_button_v1");
+        if (closeImage.sprite != null)
+        {
+            closeImage.color = Color.white;
+            closeLabel.enabled = false;
+        }
+        close.targetGraphic = closeImage;
+        SetRect(closeImage.rectTransform, Vector2.one, Vector2.one, Vector2.one,
+            new Vector2(-62f, -80f), new Vector2(44f, 44f));
         close.onClick.AddListener(Close);
 
+        _socketArtwork = Resources.Load<Sprite>("UI/Inventory/DarkInventoryTabbed/Processed/inventory_slot_v5");
         var row = new GameObject("Sockets", typeof(RectTransform), typeof(HorizontalLayoutGroup));
         _socketRow = row.GetComponent<RectTransform>();
-        _socketRow.SetParent(panel.transform, false);
-        SetRect(_socketRow, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, 40f), new Vector2(860f, 170f));
+        _socketRow.SetParent(panel, false);
+        SetRect(_socketRow, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, 38f), new Vector2(800f, 140f));
         var layout = row.GetComponent<HorizontalLayoutGroup>();
         layout.spacing = 24f;
         layout.childAlignment = TextAnchor.MiddleCenter;
@@ -260,16 +275,16 @@ public sealed class BossShrineUI : MonoBehaviour
         layout.childForceExpandWidth = false;
         layout.childForceExpandHeight = false;
 
-        _status = NewText("Status", panel.transform, "", 20, Ivory, TextAlignmentOptions.Center);
+        _status = NewText("Status", panel, "", 23, Ivory, TextAlignmentOptions.Center);
         SetRect(_status.rectTransform, new Vector2(0f, 0.5f), new Vector2(1f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, -78f), new Vector2(-80f, 32f));
-        _hint = NewText("Hint", panel.transform, "", 16, WarmGray, TextAlignmentOptions.Center);
+        _hint = NewText("Hint", panel, "", 19, WarmGray, TextAlignmentOptions.Center);
         SetRect(_hint.rectTransform, new Vector2(0f, 0.5f), new Vector2(1f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, -112f), new Vector2(-80f, 30f));
 
         // bottom action row
         var actions = new GameObject("Actions", typeof(RectTransform), typeof(HorizontalLayoutGroup));
         var actionsRect = actions.GetComponent<RectTransform>();
-        actionsRect.SetParent(panel.transform, false);
-        SetRect(actionsRect, new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0f, 28f), new Vector2(880f, 60f));
+        actionsRect.SetParent(panel, false);
+        SetRect(actionsRect, new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0f, 70f), new Vector2(800f, 52f));
         var actionLayout = actions.GetComponent<HorizontalLayoutGroup>();
         actionLayout.spacing = 16f;
         actionLayout.childAlignment = TextAnchor.MiddleCenter;
@@ -278,23 +293,28 @@ public sealed class BossShrineUI : MonoBehaviour
         actionLayout.childForceExpandWidth = false;
         actionLayout.childForceExpandHeight = false;
 
-        Button cancel = ActionButton(actionsRect, "Cancel", "CANCEL", 150f, Walnut, Gold, out _);
+        Sprite secondary = Resources.Load<Sprite>("UI/BossTeleport/boss_teleport_cancel_v1");
+        Sprite primary = Resources.Load<Sprite>("UI/BossTeleport/boss_teleport_confirm_v1");
+        Button cancel = ActionButton(actionsRect, "Cancel", "CANCEL", secondary, Walnut, out _);
         cancel.onClick.AddListener(Close);
-        _takeBackButton = ActionButton(actionsRect, "TakeBack", "TAKE BACK", 190f, Walnut, Gold, out _);
+        _takeBackButton = ActionButton(actionsRect, "TakeBack", "TAKE BACK", secondary, Walnut, out _);
         _takeBackButton.onClick.AddListener(TakeBackOne);
-        _placeButton = ActionButton(actionsRect, "Place", "PLACE ORB", 210f, Walnut, Ivory, out _);
+        _placeButton = ActionButton(actionsRect, "Place", "PLACE ORB", secondary, Walnut, out _);
         _placeButton.onClick.AddListener(PlaceOne);
-        _awakenButton = ActionButton(actionsRect, "Awaken", "AWAKEN", 260f, Sapphire, Ivory, out _awakenLabel);
-        _awakenImage = _awakenButton.GetComponent<Image>();
+        _awakenButton = ActionButton(actionsRect, "Awaken", "AWAKEN", primary, Sapphire, out _awakenLabel);
         _awakenButton.onClick.AddListener(Awaken);
     }
 
-    private static Button ActionButton(RectTransform parent, string name, string label, float width, Color background, Color labelColor, out TMP_Text text)
+    private static Button ActionButton(RectTransform parent, string name, string label, Sprite artwork, Color background, out TMP_Text text)
     {
-        Button button = NewButton(name, parent, label, 22, background, labelColor, out text);
-        var element = button.gameObject.AddComponent<LayoutElement>();
-        element.preferredWidth = width;
-        element.preferredHeight = 58f;
+        Button button = NewButton(name, parent, label, 22, background, Ivory, out text);
+        Image image = button.GetComponent<Image>();
+        image.sprite = artwork;
+        if (artwork != null)
+            image.color = Color.white;
+        button.targetGraphic = image;
+        image.rectTransform.sizeDelta = new Vector2(176f, 52f);
+        Inset(text.rectTransform, 8f);
         return button;
     }
 }

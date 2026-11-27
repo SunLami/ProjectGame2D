@@ -25,7 +25,7 @@ Sprite boss đã chốt: `Assets/Art/BossArena/Earth/Boss/EarthGolem_Final_256.p
 
 ## 3. Chỉ số mặc định (ScriptableObject, chỉnh một chỗ — user: "sát thương config sau")
 
-- `B` (sát thương cơ sở) = **14**; HP boss **2400** (mục tiêu ~4–5 phút, player ~45% thời gian trong cửa sổ đánh, DPS bền ~20).
+- **D-121 (2026-11-26): boss cho người chơi cấp 10** (143 HP, Def 8.35, atk 22.5 với đồ gate cấp 10): `B` = **26**, HP **3000** (1.0 B ≈ 12% máu sau giáp; bot hạ trong ~100 s, người thật ~3–4 phút). Giá trị gốc (B 14, HP 2400) bị thay vì Defense trừ thẳng làm đòn boss chỉ còn ~4% máu ở cấp 10.
 - Hệ số sát thương theo đòn nhân với `B`. Boss nhận sát thương ×1.25 trong Recovery (×1.5 sau tuyệt kỹ), ×1.15 khi nắm đấm đang bay.
 - CC: Làm chậm hiệu lực 50%; Choáng chỉ ăn trong Recovery (kéo dài thêm tối đa 1 s/lần); Kéo/Hất tung miễn nhiễm.
 
@@ -37,7 +37,7 @@ Sprite boss đã chốt: `Assets/Art/BossArena/Earth/Boss/EarthGolem_Final_256.p
 | 2 | **Mưa Đá Vỡ** | 6/9/12 vòng bán kính 2.0, báo 0.9 s, cách nhau 0.22 s; 2 vòng đầu nhắm vị trí dự đoán, còn lại ngẫu nhiên quanh player ≤ 9 (cách nhau ≥ 2.4) | đá rơi; **0.7 B** mỗi viên (dùng VFX thiên thạch hệ Địa) | đi len giữa các vòng; không cần dash |
 | 3 | **Địa Mạch Gai** | 3/5/7 vệt cách nhau **22°** (khe đi được ≥ 1.6 ở cách boss 8 đơn vị), rộng 1.4, dài 22, báo 0.9 s | gai trồi dọc vệt (tốc độ lan 40 đơn vị/s); **0.9 B**, gai còn nguy hiểm khi còn hiển thị (~1.2 s) nhưng mỗi lần cast chỉ trúng player một lần (2026-10-03: trước đó chỉ trúng lúc trồi nên đi xuyên qua gai không sao); làm chậm player chưa có hook nên bỏ | bước ngang 1 dash là qua khe |
 | 4 | **Phi Quyền** | vệt rộng 2.0 tới mép sân, báo 0.8 s | nắm đấm phải bay 24 đơn vị/s: **1.3 B**, rồi quay về thẳng sau 3 s: **0.6 B**; boss nhận ×1.15 khi nắm đấm xa | né sang bên cả hai chiều |
-| 5 | **Cộng Hưởng Lõi** (tuyệt kỹ, đổi 2026-10-03 — D-095) | boss bay về tâm sân, lõi tụ 1.8 s; rồi **4 / 5 / 6 đợt đạn đá** (theo phase; tuyệt kỹ chỉ xuất hiện từ P2) cách nhau 0.9 s, mỗi đợt **20 / 24 / 28 viên bắn toả đều 360°**, tốc độ 8, mỗi đợt xoay lệch nửa bước nên làn an toàn đổi chỗ; nan hoa đỏ báo 0.5 s trước mỗi đợt | mỗi viên **0.8 B**, mỗi đợt chỉ trúng player một lần; sau đó **Recovery 4.5 s ×1.5** | đứng giữa hai viên (khe ≈ 2.6 đơn vị ở bán kính 10 với 24 viên), đổi làn khi đợt sau lệch nửa bước, hoặc dash i-frame xuyên qua |
+| 5 | **Cộng Hưởng Lõi** (tuyệt kỹ, đổi 2026-10-03 — D-095) | boss bay về tâm sân, lõi tụ 1.8 s; rồi **4 / 5 / 6 đợt đạn đá** (theo phase; tuyệt kỹ chỉ xuất hiện từ P2) cách nhau 0.9 s, mỗi đợt **20 / 24 / 28 viên bắn toả đều 360°**, tốc độ 8, mỗi đợt xoay lệch nửa bước nên làn an toàn đổi chỗ; nan hoa đỏ báo 0.7 s (D-121, trước 0.5 s) trước mỗi đợt | mỗi viên **0.8 B**, mỗi đợt chỉ trúng player một lần; sau đó **Recovery 4.5 s ×1.5** | đứng giữa hai viên (khe ≈ 2.6 đơn vị ở bán kính 10 với 24 viên), đổi làn khi đợt sau lệch nửa bước, hoặc dash i-frame xuyên qua |
 
   *(Bản cũ — vòng sóng khe an toàn 40° — bị bỏ vì user thấy gần như không né được; code `ResonanceRing` vẫn còn nhưng không dùng.)*
 
@@ -46,7 +46,7 @@ Sprite boss đã chốt: `Assets/Art/BossArena/Earth/Boss/EarthGolem_Final_256.p
 - **Đợt (wave)** = Combo (2–4 skill, nghỉ giữa skill 0.6 s → 0.4 s ở P3) → **Recovery** → boss bay lại vị trí → Đợt kế.
 - **P1 (100–65%):** `A = Nghiền → Gai`, `B = Mưa → Nghiền`, xen kẽ; Recovery 3.0 s.
 - **P2 (65–30%):** gầm chuyển phase 2 s (bất tử, vòng rune sàn bùng sáng); báo hiệu ×0.9; `C = Phi Quyền → Gai → Nghiền`, `D = Mưa → Phi Quyền`, `E = Nghiền kép → Gai`; **Cộng Hưởng Lõi sau mỗi 3 Đợt**; Recovery 2.5 s.
-- **P3 (<30%, nứt xanh lan rộng):** báo hiệu ×0.8 (tối thiểu 0.6 s); `F = Mưa + Gai đồng thời → Phi Quyền`, `G = Cộng Hưởng → Nghiền → Nghiền`; tuyệt kỹ sau mỗi 2 Đợt; Recovery 1.8 s.
+- **P3 (<30%, nứt xanh lan rộng):** báo hiệu ×0.8 (tối thiểu 0.6 s); `F = Mưa + Gai đồng thời → Phi Quyền`, `G = Nghiền kép → Gai → Nghiền` (D-121: bản cũ mở bằng Cộng Hưởng làm hai tuyệt kỹ chạy cách nhau ~1 s); tuyệt kỹ sau mỗi 2 Đợt; Recovery 1.8 s.
 - Mở rộng (đã chốt "đánh lại để farm"): hệ số độ khó (tốc độ, HP, telegraph) nằm trong SO.
 
 ## 6. Kiến trúc (Data-Driven, không sửa `EnemyUniversal`)

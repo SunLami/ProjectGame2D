@@ -123,3 +123,21 @@ use 4–7, and Ent and Boar use 7–10. The same prefabs default to level 1 else
 Each level above 1 adds 10% of base maximum HP and 5% of base attack damage. Passive animals
 continue to flee. Existing XP, loot and quest identities stay the same. The shared world-space
 health bar shows the authored display name and rolled level above the fill when the bar appears.
+
+### Knacker in MapDuy
+
+Knacker trades Slime (buy 6–8 G, sell 2–3 G), Bone (buy 10–12 G, sell 4–5 G), and Bone Ash (buy 4–5 G, sell 1–2 G). His dialogue opens the shop or the crafting window. His crafting station converts one Bone into three Bone Ash.
+
+### Herbalist in MapDuy
+
+Herbalist buys and sells all four Health/Mana potion variants and both herbs. Crafting offers exactly the four potion recipes at station.herbalist using their existing ingredients. Herbs trade at 5–7 G buy and 2–3 G sell, small potions at 20/10 G, large potions at 42–48/16–19 G. The Small Health Potion quote preserves Cenhelm’s existing 20 G purchase and 10 G sell-back.
+
+Wildlife death loot displays a ground icon for each item type, with a short delay before proximity pickup. The full bundle still uses one atomic inventory grant and stays in the scene when inventory is full. Hare drops 1 Meat and 1 Leather, Deer 2 Meat, 3 Leather and 1 Bone, and Boar 3 Meat, 2 Leather and 1 Bone.
+
+### Slaughter drops
+
+Goblin awards 50 EXP and 100 G, drops 3 Bone, and has a 5% chance to drop Earth Orb.
+Slime awards 25 EXP and 50 G, drops 3 Slime, and has a 5% chance to drop Water Orb.
+Ent (Woodling) awards 100 EXP and 150 G, drops 10 Wood Log, and has a 10% chance to drop Wind Orb.
+Hare (Rabbit), Deer and Boar award 10, 5 and 20 EXP respectively. Their item quantities follow the existing wildlife table.
+EXP and gold are granted on death. Items use the ground-loot pickup.

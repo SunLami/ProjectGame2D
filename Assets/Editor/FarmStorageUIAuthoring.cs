@@ -15,15 +15,19 @@ public static class FarmStorageUIAuthoring
     private const string PrefabPath = "Assets/Prefabs/UI/FarmStorageUI.prefab";
     private const string ScenePath = "Assets/Scenes/Bootstrap.unity";
     private const string ArtFolder = "Assets/Resources/UI/Farming/DarkInventoryStyle";
-    private const string PanelSpritePath = ArtFolder + "/farm_storage_inventory_board_v4.png";
+    private const string PanelSpritePath = ArtFolder + "/farm_storage_inventory_board_v5.png";
     private const string InventoryArtFolder = "Assets/Resources/UI/Inventory";
     private const string SlotSpritePath = InventoryArtFolder + "/QuestStyle1920/inventory_slot_reference_v4.png";
+    private const string GridSpritePath = ArtFolder + "/farm_storage_column_frame_v1.png";
+    private const string PlaqueSpritePath = ArtFolder + "/farm_storage_heading_v1.png";
     private const string CloseSpritePath = MapUIAuthoring.CloseButtonPath;
 
-    private const int GridColumns = 6;
+    private const int GridColumns = 5;
     private const int GridRows = 5;
-    private const float SlotSize = 48f;
-    private const float SlotSpacing = 10f;
+    private const float SlotSize = 92f;
+    private const float SlotSpacing = 16f;
+
+    private static readonly Vector2 BoardSize = new(1280f, 800f);
 
     private static readonly Color GoldText = new(0.87f, 0.78f, 0.59f, 1f);
     private static readonly Color BodyText = new(0.92f, 0.9f, 0.85f, 1f);
@@ -33,10 +37,14 @@ public static class FarmStorageUIAuthoring
     {
         EnsureFolder("Assets/Prefabs/UI");
         ConfigureSpriteImporter(PanelSpritePath);
+        ConfigureSpriteImporter(GridSpritePath);
+        ConfigureSpriteImporter(PlaqueSpritePath);
         ConfigureSpriteImporter(SlotSpritePath);
         ConfigureSpriteImporter(CloseSpritePath);
         Sprite panelSprite = LoadSprite(PanelSpritePath);
         Sprite slotSprite = LoadSprite(SlotSpritePath);
+        Sprite plaqueSprite = LoadSprite(PlaqueSpritePath);
+        Sprite gridSprite = LoadSprite(GridSpritePath);
         Sprite closeSprite = LoadSprite(CloseSpritePath);
         TMP_FontAsset font = AssetDatabase.LoadAssetAtPath<TMP_FontAsset>("Assets/Fonts/DigitalDisco SDF v3.asset");
 
@@ -52,24 +60,23 @@ public static class FarmStorageUIAuthoring
         Image blocker = backdrop.AddComponent<Image>();
         blocker.color = new Color(0f, 0f, 0f, 0.55f);
 
-        GameObject panel = Panel("Panel", backdrop.transform, panelSprite, new Vector2(900f, 600f));
-        PopupBoardArtwork.Configure(panel.GetComponent<Image>(), new Vector2(900f, 600f),
-            new Vector2(0.17f, 0.13f), 0.5f);
-        panel.AddComponent<PopupViewportFit>();
+        GameObject panel = Panel("Panel", backdrop.transform, panelSprite, BoardSize);
+        PopupViewportFit.Configure(panel, BoardSize);
 
-        TMP_Text title = Text("Title", panel.transform, font, 22f, TextAlignmentOptions.Center, GoldText);
-        SetRect(title.rectTransform, new Vector2(0f, 248f), new Vector2(360f, 34f));
+        AddPlaque(panel.transform, plaqueSprite, new Vector2(0f, 326f), new Vector2(420f, 60f));
+        TMP_Text title = Text("Title", panel.transform, font, 34f, TextAlignmentOptions.Center, GoldText);
+        SetRect(title.rectTransform, new Vector2(0f, 326f), new Vector2(520f, 48f));
         title.text = "Farm Storage";
 
         Button closeButton = Button("CloseButton", panel.transform, closeSprite);
-        SetRect(closeButton.GetComponent<RectTransform>(), new Vector2(416f, 264f), new Vector2(34f, 34f));
+        SetRect(closeButton.GetComponent<RectTransform>(), new Vector2(580f, 326f), new Vector2(44f, 44f));
 
-        TMP_Text feedback = Text("Feedback", panel.transform, font, 13f, TextAlignmentOptions.Center, GoldText);
-        SetRect(feedback.rectTransform, new Vector2(0f, -214f), new Vector2(760f, 24f));
+        TMP_Text feedback = Text("Feedback", panel.transform, font, 21f, TextAlignmentOptions.Center, GoldText);
+        SetRect(feedback.rectTransform, new Vector2(0f, -339f), new Vector2(1140f, 38f));
         feedback.text = string.Empty;
 
-        Transform inventoryContent = BuildColumn(panel.transform, "InventoryColumn", "Inventory", new Vector2(-205f, 0f), font, slotSprite);
-        Transform storageContent = BuildColumn(panel.transform, "StorageColumn", "Storage", new Vector2(205f, 0f), font, slotSprite);
+        Transform inventoryContent = BuildColumn(panel.transform, "InventoryColumn", "Inventory", new Vector2(-303f, -15f), font, slotSprite, gridSprite, plaqueSprite);
+        Transform storageContent = BuildColumn(panel.transform, "StorageColumn", "Storage", new Vector2(303f, -15f), font, slotSprite, gridSprite, plaqueSprite);
 
         PopupLayoutAuthoring.Reanchor(title.transform, new Vector2(0.5f, 1f), new Vector2(0.5f, 1f));
         PopupLayoutAuthoring.Reanchor(closeButton.transform, new Vector2(1f, 1f), new Vector2(1f, 1f));
@@ -100,21 +107,22 @@ public static class FarmStorageUIAuthoring
         Debug.Log("Farm Storage UI prefab built and installed in Bootstrap._UI.");
     }
 
-    private static Transform BuildColumn(Transform parent, string name, string header, Vector2 anchoredPosition, TMP_FontAsset font, Sprite slotSprite)
+    private static Transform BuildColumn(Transform parent, string name, string header, Vector2 anchoredPosition, TMP_FontAsset font, Sprite slotSprite, Sprite gridSprite, Sprite plaqueSprite)
     {
         GameObject column = UI(name, parent);
         RectTransform columnRect = column.GetComponent<RectTransform>();
-        SetRect(columnRect, anchoredPosition, new Vector2(420f, 460f));
+        SetRect(columnRect, anchoredPosition, new Vector2(582f, 590f));
 
-        TMP_Text headerText = Text("Header", column.transform, font, 15f, TextAlignmentOptions.Center, GoldText);
-        SetRect(headerText.rectTransform, new Vector2(0f, 188f), new Vector2(380f, 30f));
+        AddPlaque(column.transform, plaqueSprite, new Vector2(0f, 245f), new Vector2(320f, 44f));
+        TMP_Text headerText = Text("Header", column.transform, font, 25f, TextAlignmentOptions.Center, GoldText);
+        SetRect(headerText.rectTransform, new Vector2(0f, 245f), new Vector2(510f, 36f));
         headerText.text = header;
 
         GameObject scrollGO = UI("ScrollView", column.transform);
         RectTransform scrollRect = scrollGO.GetComponent<RectTransform>();
-        SetRect(scrollRect, new Vector2(0f, -20f), new Vector2(380f, 280f));
+        SetRect(scrollRect, new Vector2(0f, -38f), new Vector2(574f, 512f));
         Image scrollBg = scrollGO.AddComponent<Image>();
-        scrollBg.color = Color.clear;
+        scrollBg.sprite = gridSprite;
         ScrollRect scroll = scrollGO.AddComponent<ScrollRect>();
         scroll.horizontal = false;
         scroll.vertical = true;
@@ -124,9 +132,9 @@ public static class FarmStorageUIAuthoring
             : FarmStorageGridSide.Storage);
 
         GameObject viewport = UI("Viewport", scrollGO.transform);
-        Stretch(viewport.GetComponent<RectTransform>());
-        viewport.AddComponent<Image>().color = new Color(0f, 0f, 0f, 0.01f);
-        viewport.AddComponent<Mask>().showMaskGraphic = false;
+        Stretch(viewport.GetComponent<RectTransform>(), 22f, 22f, 32f, 32f);
+        viewport.AddComponent<Image>().color = Color.clear;
+        viewport.AddComponent<RectMask2D>();
 
         GameObject scrollContent = UI("ScrollContent", viewport.transform);
         RectTransform scrollContentRect = scrollContent.GetComponent<RectTransform>();
@@ -158,6 +166,13 @@ public static class FarmStorageUIAuthoring
         return content.transform;
     }
 
+    private static void AddPlaque(Transform parent, Sprite sprite, Vector2 position, Vector2 size)
+    {
+        Image plaque = Image("HeadingFrame", parent, sprite, Color.white);
+        SetRect(plaque.rectTransform, position, size);
+        plaque.raycastTarget = false;
+    }
+
     private static GameObject BuildRowTemplate(Transform parent, TMP_FontAsset font, Sprite rowSprite)
     {
         GameObject row = UI("RowTemplate", parent);
@@ -178,17 +193,17 @@ public static class FarmStorageUIAuthoring
         icon.rectTransform.anchorMin = icon.rectTransform.anchorMax = new Vector2(0.5f, 0.5f);
         icon.rectTransform.pivot = new Vector2(0.5f, 0.5f);
         icon.rectTransform.anchoredPosition = Vector2.zero;
-        icon.rectTransform.sizeDelta = new Vector2(36f, 36f);
+        icon.rectTransform.sizeDelta = new Vector2(64f, 64f);
         icon.preserveAspect = true;
         icon.enabled = false;
 
-        TMP_Text label = Text("Label", row.transform, font, 11f, TextAlignmentOptions.BottomRight, BodyText);
+        TMP_Text label = Text("Label", row.transform, font, 20f, TextAlignmentOptions.BottomRight, BodyText);
         RectTransform labelRect = label.rectTransform;
         labelRect.anchorMin = new Vector2(1f, 0f);
         labelRect.anchorMax = new Vector2(1f, 0f);
         labelRect.pivot = new Vector2(1f, 0f);
-        labelRect.anchoredPosition = new Vector2(-4f, 3f);
-        labelRect.sizeDelta = new Vector2(30f, 16f);
+        labelRect.anchoredPosition = new Vector2(-9f, 7f);
+        labelRect.sizeDelta = new Vector2(48f, 24f);
         label.fontStyle = FontStyles.Bold;
         label.raycastTarget = false;
 
@@ -207,7 +222,7 @@ public static class FarmStorageUIAuthoring
 
     private static void ConfigureGridLayout(GridLayoutGroup layout)
     {
-        layout.padding = new RectOffset(21, 21, 20, 20);
+        layout.padding = new RectOffset(3, 3, 8, 8);
         layout.cellSize = new Vector2(SlotSize, SlotSize);
         layout.spacing = new Vector2(SlotSpacing, SlotSpacing);
         layout.startCorner = GridLayoutGroup.Corner.UpperLeft;

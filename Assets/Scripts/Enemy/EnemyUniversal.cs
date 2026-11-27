@@ -85,6 +85,7 @@ public sealed class EnemyUniversal : MonoBehaviour, IDamageable, ISlowable, IPul
     [SerializeField, Min(0f)] private float _hurtDuration = 0.3f;
     [SerializeField, Min(0f)] private float _deathLifetime = 3f;
     [SerializeField, Min(0)] private int _experienceReward = 25;
+    [SerializeField, Min(0)] private int _goldReward;
 
     [Header("AI")]
     [SerializeField, Min(0f)] private float _detectionRange = 4f;
@@ -117,6 +118,7 @@ public sealed class EnemyUniversal : MonoBehaviour, IDamageable, ISlowable, IPul
     private Vector2 _desiredVelocity;
     private Vector2 _lastDirection = Vector2.down;
     private float _stateEnteredAt;
+    private readonly MobVoiceTimer _voice = new();
     private AttackProfile _activeAttack;
     private Player _playerComponent;
     private Transform _playerTransform;
@@ -124,7 +126,7 @@ public sealed class EnemyUniversal : MonoBehaviour, IDamageable, ISlowable, IPul
     private Coroutine _launchRoutine;
     private Vector2 _launchVelocity;
     private float _currentHealth;
-    private bool _experienceGranted;
+    private bool _killRewardsGranted;
     private PathFollower _navigator;
     private FacingFilter _facing;
     private Vector2 _lastSeenPlayer;
@@ -205,6 +207,9 @@ public sealed class EnemyUniversal : MonoBehaviour, IDamageable, ISlowable, IPul
 
         if (TryApplyPullMovement())
             return;
+
+        if ((_state == State.Idle || _state == State.Patrol) && _voice.TryIdle(transform.position))
+            EnemySfx.Idle(this);
 
         switch (_state)
         {
@@ -355,6 +360,7 @@ public sealed class EnemyUniversal : MonoBehaviour, IDamageable, ISlowable, IPul
     {
         if (_state == State.Dead || damage <= 0f) return;
         damage *= CurrentDamageTakenMultiplier;
+        CombatFeedback.MapDuyActorHit(transform, damage);
         _currentHealth = Mathf.Max(0f, _currentHealth - damage);
         HealthChanged?.Invoke(_currentHealth, MaxHealth);
         if (_currentHealth <= 0f) { EnterState(State.Dead); return; }
@@ -906,6 +912,9 @@ public sealed class EnemyUniversal : MonoBehaviour, IDamageable, ISlowable, IPul
             StopLaunch();
             _activeAttack = null;
         }
+        // Spotted the player (not re-entering a chase after Hurt/Attack, which already have their own sounds).
+        if (state == State.Chase && (_state is State.Idle or State.Patrol or State.ReturnHome) && _voice.TryAlert())
+            EnemySfx.Alert(this);
         _state = state;
         _stateEnteredAt = Time.time;
         _navigator?.Reset();
@@ -923,7 +932,7 @@ public sealed class EnemyUniversal : MonoBehaviour, IDamageable, ISlowable, IPul
         if (state != State.Dead) return;
 
         EnemySfx.Death(this);
-        GrantExperience();
+        GrantKillRewards();
         if (!string.IsNullOrEmpty(_enemyId))
             QuestDomainEvents.RaiseEnemyKilled(_enemyId, _areaId);
         Died?.Invoke();
@@ -942,13 +951,16 @@ public sealed class EnemyUniversal : MonoBehaviour, IDamageable, ISlowable, IPul
         Destroy(gameObject, _deathLifetime);
     }
 
-    private void GrantExperience()
+    private void GrantKillRewards()
     {
-        if (_experienceGranted || _experienceReward <= 0)
+        if (_killRewardsGranted)
             return;
 
-        _experienceGranted = true;
-        PlayerStat.Instance?.AddExperience(_experienceReward);
+        _killRewardsGranted = true;
+        if (_experienceReward > 0)
+            PlayerStat.Instance?.AddExperience(_experienceReward);
+        if (_goldReward > 0)
+            InventoryManager.Instance?.AddGold(_goldReward);
     }
 
     /// <summary>Steers toward <paramref name="target"/> around obstacles (D-109). Returns false when

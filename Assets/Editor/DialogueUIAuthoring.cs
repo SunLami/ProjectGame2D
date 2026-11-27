@@ -40,8 +40,7 @@ public static class DialogueUIAuthoring
         panelRect.pivot = new Vector2(0.5f, 0f);
         panelRect.anchoredPosition = new Vector2(0f, 24f);
         panelRect.sizeDelta = new Vector2(700f, 270f);
-        PopupViewportFit.Configure(panel, new Vector2(960f, 280f), verticalAlignment: 0f);
-        panelRect.localScale = new Vector3(0.5f, 0.5f, 1f);
+        PopupViewportFit.Configure(panel, new Vector2(1240f, 478f), verticalAlignment: 0f);
 
         Image portrait = Image("Portrait", panel.transform, null, Color.white);
         SetRect(portrait.rectTransform, new Vector2(-278f, 10f), new Vector2(96f, 96f));
@@ -54,18 +53,21 @@ public static class DialogueUIAuthoring
         frameImage.preserveAspect = true;
         frameImage.raycastTarget = false;
 
-        TMP_Text speaker = Text("SpeakerName", panel.transform, font, 10f, TextAlignmentOptions.Center, new Color32(244, 220, 166, 255));
-        SetRect(speaker.rectTransform, new Vector2(235f, -112f), new Vector2(160f, 18f));
+        TMP_Text speaker = Text("SpeakerName", panel.transform, font, 14f, TextAlignmentOptions.Center, new Color32(244, 220, 166, 255));
+        SetRect(speaker.rectTransform, new Vector2(233f, -102f), new Vector2(112f, 22f));
+        speaker.enableAutoSizing = true;
+        speaker.fontSizeMin = 11f;
+        speaker.fontSizeMax = 14f;
         speaker.textWrappingMode = TextWrappingModes.NoWrap;
         speaker.overflowMode = TextOverflowModes.Ellipsis;
         speaker.text = "VILLAGE ELDER";
 
-        TMP_Text body = Text("BodyText", panel.transform, font, 12f, TextAlignmentOptions.TopLeft, new Color32(244, 232, 200, 255));
+        TMP_Text body = Text("BodyText", panel.transform, font, 17f, TextAlignmentOptions.TopLeft, new Color32(244, 232, 200, 255));
         RectTransform bodyRect = body.rectTransform;
         bodyRect.anchorMin = bodyRect.anchorMax = new Vector2(0.5f, 0.5f);
         bodyRect.pivot = new Vector2(0.5f, 0.5f);
-        bodyRect.anchoredPosition = new Vector2(0f, 30f);
-        bodyRect.sizeDelta = new Vector2(600f, 64f);
+        bodyRect.anchoredPosition = new Vector2(0f, 40f);
+        bodyRect.sizeDelta = new Vector2(600f, 76f);
         body.textWrappingMode = TextWrappingModes.Normal;
         body.overflowMode = TextOverflowModes.Ellipsis;
         body.lineSpacing = 1f;
@@ -108,11 +110,11 @@ public static class DialogueUIAuthoring
             Button button = templateObject.AddComponent<Button>();
             if (choiceButton == null) choiceButton = button;
             button.transition = Selectable.Transition.None;
-            TMP_Text choiceLabel = Text("Label", templateObject.transform, font, 10f, TextAlignmentOptions.MidlineLeft, Color.white);
+            TMP_Text choiceLabel = Text("Label", templateObject.transform, font, 15f, TextAlignmentOptions.MidlineLeft, Color.white);
             Stretch(choiceLabel.rectTransform, 24f, 12f, 3f, 3f);
             choiceLabel.enableAutoSizing = true;
-            choiceLabel.fontSizeMin = 7f;
-            choiceLabel.fontSizeMax = 10f;
+            choiceLabel.fontSizeMin = 12f;
+            choiceLabel.fontSizeMax = 15f;
             choiceLabel.textWrappingMode = TextWrappingModes.NoWrap;
             choiceLabel.overflowMode = TextOverflowModes.Ellipsis;
             choiceLabel.raycastTarget = false;
@@ -125,10 +127,10 @@ public static class DialogueUIAuthoring
         data.FindProperty("_portrait").objectReferenceValue = portrait;
         data.FindProperty("_speakerName").objectReferenceValue = speaker;
         data.FindProperty("_bodyText").objectReferenceValue = body;
-        data.FindProperty("_bodyTextWithChoicesPosition").vector2Value = new Vector2(0f, 30f);
-        data.FindProperty("_bodyTextWithChoicesSize").vector2Value = new Vector2(600f, 64f);
-        data.FindProperty("_bodyTextWithChoicesFontSize").floatValue = 12f;
-        data.FindProperty("_bodyTextWithoutChoicesFontSize").floatValue = 14f;
+        data.FindProperty("_bodyTextWithChoicesPosition").vector2Value = new Vector2(0f, 40f);
+        data.FindProperty("_bodyTextWithChoicesSize").vector2Value = new Vector2(600f, 76f);
+        data.FindProperty("_bodyTextWithChoicesFontSize").floatValue = 17f;
+        data.FindProperty("_bodyTextWithoutChoicesFontSize").floatValue = 19f;
         data.FindProperty("_bodyTextWithoutChoicesPosition").vector2Value = new Vector2(0f, -5f);
         data.FindProperty("_bodyTextWithoutChoicesSize").vector2Value = new Vector2(600f, 130f);
         data.FindProperty("_continueIndicator").objectReferenceValue = continueImage.gameObject;

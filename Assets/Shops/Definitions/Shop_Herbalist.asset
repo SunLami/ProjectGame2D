@@ -1,0 +1,33 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b80bd874f097d3c41be52989ec7c4d98, type: 3}
+  m_Name: Shop_Herbalist
+  m_EditorClassIdentifier: ProjectGame2D.Runtime::ShopDefinition
+  _shopId: shop.forest.herbalist
+  _displayName: Herbalist's Supplies
+  _npcId: npc.herbalist
+  _stock: []
+  _buyItems:
+  - {fileID: 11400000, guid: d368049b45f13c44e91116d31daa696b, type: 2}
+  - {fileID: 11400000, guid: 216098d9784449744aae263a58aa1a61, type: 2}
+  - {fileID: 11400000, guid: 210ab923ab167894296bd8223e84f410, type: 2}
+  - {fileID: 11400000, guid: dd224a5edece2e7468ef8077d36a7b96, type: 2}
+  - {fileID: 11400000, guid: 4486439e0f5b02946b8c93047dead110, type: 2}
+  - {fileID: 11400000, guid: 9fc3f2b3a7fa986499ed49582c98148e, type: 2}
+  _sellItems:
+  - {fileID: 11400000, guid: d368049b45f13c44e91116d31daa696b, type: 2}
+  - {fileID: 11400000, guid: 216098d9784449744aae263a58aa1a61, type: 2}
+  - {fileID: 11400000, guid: 210ab923ab167894296bd8223e84f410, type: 2}
+  - {fileID: 11400000, guid: dd224a5edece2e7468ef8077d36a7b96, type: 2}
+  - {fileID: 11400000, guid: 4486439e0f5b02946b8c93047dead110, type: 2}
+  - {fileID: 11400000, guid: 9fc3f2b3a7fa986499ed49582c98148e, type: 2}
+  _sellPriceMultiplier: 0.5

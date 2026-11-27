@@ -1,9 +1,8 @@
 using NUnit.Framework;
 using UnityEngine;
 
-// Uses non-visual slots (Ring/Necklace/Shield) throughout so tests don't need real SpriteLibrary
-// components wired up -- ApplyVisual/ClearVisual only handle Head/Body/Weapon, which is existing
-// presentation behavior outside Phase 4's scope.
+using UnityEngine.U2D.Animation;
+
 public sealed class EquipmentManagerPlayModeTests
 {
     private GameObject _root;
@@ -38,6 +37,70 @@ public sealed class EquipmentManagerPlayModeTests
         Object.DestroyImmediate(_root);
         Object.DestroyImmediate(_ring);
         Object.DestroyImmediate(_necklace);
+    }
+
+    [Test]
+    public void BindPlayerVisuals_ReappliesEquippedLookAfterPreviousPlayerIsDestroyed()
+    {
+        var manager = EquipmentManager.Instance;
+        var source = new GameObject("Source map visuals");
+        var destination = new GameObject("Destination map visuals");
+        source.transform.SetParent(_root.transform);
+        destination.transform.SetParent(_root.transform);
+
+        var body = ScriptableObject.CreateInstance<EquipmentItemSO>();
+        var head = ScriptableObject.CreateInstance<EquipmentItemSO>();
+        var sword = ScriptableObject.CreateInstance<EquipmentItemSO>();
+        var bodyAsset = ScriptableObject.CreateInstance<SpriteLibraryAsset>();
+        var headAsset = ScriptableObject.CreateInstance<SpriteLibraryAsset>();
+        var swordAsset = ScriptableObject.CreateInstance<SpriteLibraryAsset>();
+        try
+        {
+            manager.BindPlayerVisuals(CreateVisual(source, "Body"), CreateVisual(source, "Head"),
+                CreateVisual(source, "Weapon"));
+            body.slot = EquipSlot.Body;
+            body.spriteLibraryAsset = bodyAsset;
+            body.headSpriteLibraryAsset = bodyAsset;
+            head.slot = EquipSlot.Head;
+            head.spriteLibraryAsset = headAsset;
+            sword.slot = EquipSlot.Weapon;
+            sword.spriteLibraryAsset = swordAsset;
+            manager.RestoreEquipped(EquipSlot.Body, body);
+            manager.RestoreEquipped(EquipSlot.Head, head);
+            manager.RestoreEquipped(EquipSlot.Weapon, sword);
+            Object.DestroyImmediate(source);
+
+            var destinationBody = CreateVisual(destination, "Body");
+            var destinationHead = CreateVisual(destination, "Head");
+            var destinationSword = CreateVisual(destination, "Weapon");
+            manager.BindPlayerVisuals(destinationBody, destinationHead, destinationSword);
+
+            Assert.AreSame(bodyAsset, destinationBody.spriteLibraryAsset);
+            Assert.AreSame(headAsset, destinationHead.spriteLibraryAsset);
+            Assert.AreSame(swordAsset, destinationSword.spriteLibraryAsset);
+            Assert.IsTrue(destinationSword.GetComponent<SpriteRenderer>().enabled);
+
+            Assert.IsTrue(manager.Unequip(EquipSlot.Weapon, InventoryManager.Instance.Slots[0]));
+            var returnSword = CreateVisual(destination, "Return Weapon");
+            manager.BindPlayerVisuals(destinationBody, destinationHead, returnSword);
+            Assert.IsFalse(returnSword.GetComponent<SpriteRenderer>().enabled);
+        }
+        finally
+        {
+            Object.DestroyImmediate(body);
+            Object.DestroyImmediate(head);
+            Object.DestroyImmediate(sword);
+            Object.DestroyImmediate(bodyAsset);
+            Object.DestroyImmediate(headAsset);
+            Object.DestroyImmediate(swordAsset);
+        }
+    }
+
+    private static SpriteLibrary CreateVisual(GameObject root, string part)
+    {
+        var visual = new GameObject(part, typeof(SpriteRenderer), typeof(SpriteLibrary));
+        visual.transform.SetParent(root.transform);
+        return visual.GetComponent<SpriteLibrary>();
     }
 
     [Test]

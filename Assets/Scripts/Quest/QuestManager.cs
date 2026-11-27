@@ -213,7 +213,7 @@ public sealed class QuestManager : MonoBehaviour
     /// position itself (e.g. via a scene registry) and should walk this list in order, since not
     /// every actionable NPC is necessarily present/resolvable in the player's current scene -- this
     /// method only knows quest state, not world placement, so it can't filter for that itself.</summary>
-    public IEnumerable<string> GetActionableNpcIds()
+    public IEnumerable<string> GetActionableNpcIds(bool includeOffers = true)
     {
         if (_catalog == null)
             yield break;
@@ -232,9 +232,20 @@ public sealed class QuestManager : MonoBehaviour
                 yield return objective.TargetId;
             // Non-Talk objectives that still happen at an NPC (e.g. Purchase at a shop keeper) name
             // that NPC explicitly as authored navigation data instead of guessing from the type.
-            if (!string.IsNullOrEmpty(objective?.NavigationNpcId))
+            if (!string.IsNullOrEmpty(objective?.NavigationNpcId)
+                && (string.IsNullOrEmpty(objective.NavigationMissingItemId) || IsNavigationItemMissing(objective)))
                 yield return objective.NavigationNpcId;
         }
+
+        if (includeOffers)
+            foreach (string npcId in GetAvailableOfferNpcIds())
+                yield return npcId;
+    }
+
+    public IEnumerable<string> GetAvailableOfferNpcIds()
+    {
+        if (_catalog == null)
+            yield break;
 
         foreach (QuestDefinition quest in _catalog.AllQuests)
         {
@@ -242,6 +253,10 @@ public sealed class QuestManager : MonoBehaviour
                 yield return quest.GiverNpcId;
         }
     }
+
+    private static bool IsNavigationItemMissing(QuestObjectiveDefinition objective) =>
+        !string.IsNullOrEmpty(objective?.NavigationMissingItemId)
+        && !HasInventoryItem(objective.NavigationMissingItemId, 1);
 
     /// <summary>Read-model for a direction indicator: every areaId the current objective of some
     /// Active quest points at (Kill/Gather with a TargetAreaId set) -- a location the player needs
@@ -254,6 +269,9 @@ public sealed class QuestManager : MonoBehaviour
             yield break;
 
         QuestObjectiveDefinition objective = state.CurrentObjective;
+        if (IsNavigationItemMissing(objective))
+            yield break;
+
         if (!string.IsNullOrEmpty(objective?.NavigationAreaId))
         {
             yield return objective.NavigationAreaId;
@@ -292,7 +310,10 @@ public sealed class QuestManager : MonoBehaviour
             if (state.Status == QuestStatus.ReadyToTurnIn && state.Definition.ShowOfferTutorial)
                 return state.Definition.TurnInDirections;
 
-            string hint = state.CurrentObjective?.ControlHint;
+            QuestObjectiveDefinition objective = state.CurrentObjective;
+            string hint = IsNavigationItemMissing(objective) && !string.IsNullOrEmpty(objective.NavigationMissingItemHint)
+                ? objective.NavigationMissingItemHint
+                : objective?.ControlHint;
             if (!string.IsNullOrEmpty(hint))
                 return hint;
         }

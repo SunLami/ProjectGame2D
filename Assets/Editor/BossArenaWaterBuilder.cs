@@ -220,8 +220,8 @@ public static class BossArenaWaterBuilder
         var tide = go.AddComponent<TideController>();
         var serialized = new SerializedObject(tide);
         serialized.FindProperty("_lowTideY").floatValue = WalkTop;
-        serialized.FindProperty("_minX").floatValue = -WalkHalfWidth - 2f;
-        serialized.FindProperty("_maxX").floatValue = WalkHalfWidth + 2f;
+        serialized.FindProperty("_minX").floatValue = -WalkHalfWidth;
+        serialized.FindProperty("_maxX").floatValue = WalkHalfWidth;
         serialized.ApplyModifiedPropertiesWithoutUndo();
     }
 
@@ -254,6 +254,7 @@ public static class BossArenaWaterBuilder
         serialized.FindProperty("_bossPrefab").objectReferenceValue = AssetDatabase.LoadAssetAtPath<GameObject>(CrabBossBuilder.PrefabPath);
         serialized.FindProperty("_definition").objectReferenceValue = AssetDatabase.LoadAssetAtPath<BossDefinition>(CrabBossBuilder.DefinitionPath);
         serialized.FindProperty("_bossSpawnPoint").objectReferenceValue = spawn.transform;
+        serialized.FindProperty("_containPlayer").boolValue = true;
         serialized.FindProperty("_walkableBounds").rectValue = new Rect(-WalkHalfWidth, WalkBottom, WalkHalfWidth * 2f, WalkTop - WalkBottom);
         serialized.ApplyModifiedPropertiesWithoutUndo();
 
@@ -324,6 +325,9 @@ public static class BossArenaWaterBuilder
         var dash = Object.FindAnyObjectByType<Player>(FindObjectsInactive.Include);
         if (dash == null)
             return;
+
+        if (dash.TryGetComponent(out Rigidbody2D body))
+            body.collisionDetectionMode = CollisionDetectionMode2D.Continuous;
 
         var serialized = new SerializedObject(dash);
         SerializedProperty list = serialized.FindProperty("_dashScenes");

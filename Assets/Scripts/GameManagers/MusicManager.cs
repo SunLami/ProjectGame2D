@@ -1,6 +1,7 @@
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
-// Persistent background-music controller; each scene can provide the track for its context.
+// Persistent controller for the Main Menu background track.
 [RequireComponent(typeof(AudioSource))]
 public class MusicManager : MonoBehaviour
 {
@@ -19,7 +20,8 @@ public class MusicManager : MonoBehaviour
 
         if (Instance != null && Instance != this)
         {
-            if (_audioSource.clip != null)
+            _audioSource.Stop();
+            if (gameObject.scene.name == "MainMenu" && _audioSource.clip != null)
                 SetClip(_audioSource.clip, _audioSource.loop, _trackVolume);
 
             Destroy(gameObject);
@@ -32,8 +34,9 @@ public class MusicManager : MonoBehaviour
         transform.SetParent(null);
         DontDestroyOnLoad(gameObject);
 
-        if (_backgroundMusicSuppressed)
-            _audioSource.Stop();
+        SceneManager.activeSceneChanged += OnActiveSceneChanged;
+        SceneManager.sceneLoaded += OnSceneLoaded;
+        RefreshPlayback();
 
         if (SettingsService.Instance != null)
             SettingsService.Instance.ApplyAudioSettings();
@@ -59,12 +62,9 @@ public class MusicManager : MonoBehaviour
         source.loop = loop;
         Instance.ApplyVolume();
 
-        if (source.clip == clip && source.isPlaying)
-            return;
-
-        source.clip = clip;
-        if (!_backgroundMusicSuppressed)
-            source.Play();
+        if (source.clip != clip)
+            source.clip = clip;
+        Instance.RefreshPlayback();
     }
 
     /// <summary>Temporarily keeps scene background music silent while a cinematic owns presentation.</summary>
@@ -79,8 +79,23 @@ public class MusicManager : MonoBehaviour
     public static void ResumeBackgroundMusic()
     {
         _backgroundMusicSuppressed = false;
-        if (Instance?._audioSource != null && Instance._audioSource.clip != null)
-            Instance._audioSource.Play();
+        if (Instance != null)
+            Instance.RefreshPlayback();
+    }
+
+    private void OnActiveSceneChanged(Scene previous, Scene next) => RefreshPlayback();
+
+    private void OnSceneLoaded(Scene scene, LoadSceneMode mode) => RefreshPlayback();
+
+    private void RefreshPlayback()
+    {
+        string active = SceneManager.GetActiveScene().name;
+        bool inMainMenu = active == "MainMenu" ||
+            active == "Bootstrap" && SceneManager.GetSceneByName("MainMenu").isLoaded;
+        if (_backgroundMusicSuppressed || !inMainMenu)
+            _audioSource.Stop();
+        else if (_audioSource.clip != null && !_audioSource.isPlaying)
+            _audioSource.Play();
     }
 
     private void ApplyVolume()
@@ -90,7 +105,11 @@ public class MusicManager : MonoBehaviour
 
     private void OnDestroy()
     {
-        if (Instance == this)
-            Instance = null;
+        if (Instance != this)
+            return;
+
+        SceneManager.activeSceneChanged -= OnActiveSceneChanged;
+        SceneManager.sceneLoaded -= OnSceneLoaded;
+        Instance = null;
     }
 }

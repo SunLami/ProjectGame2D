@@ -38,9 +38,10 @@ public static class DevPanelPrefabBuilder
 
             Button toggle = CreateButton(rootRect, "DevToggleButton", "DEV", new Color(0.55f, 0.08f, 0.08f, 0.95f));
             RectTransform toggleRect = (RectTransform)toggle.transform;
-            toggleRect.anchorMin = toggleRect.anchorMax = toggleRect.pivot = new Vector2(1f, 1f);
-            toggleRect.sizeDelta = new Vector2(80f, 32f);
-            toggleRect.anchoredPosition = new Vector2(-18f, -142f); // below the 96x96 Minimap anchored at (-14,-34)
+            toggleRect.anchorMin = toggleRect.anchorMax = toggleRect.pivot = new Vector2(1f, 0f);
+            toggleRect.sizeDelta = new Vector2(34f, 13f);
+            toggleRect.anchoredPosition = new Vector2(-8f, 4f);
+            toggle.GetComponentInChildren<TMP_Text>().fontSize = 8f;
             UnityEventTools.AddPersistentListener(toggle.onClick, controller.TogglePanel);
 
             GameObject panelObject = new("DevPanelRoot", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));

@@ -16,6 +16,7 @@ public sealed class BootstrapSceneLoader : MonoBehaviour
 {
     private const string DefaultEntryScene = "StudioIntro";
     private static bool _suppressNextAutomaticEntryLoad;
+    private AudioListener _startupListener;
 
 #if UNITY_EDITOR
     // Must match PlayModeBootstrap.LastEditedScenePrefKey (Assets/Editor/PlayModeBootstrap.cs).
@@ -34,8 +35,36 @@ public sealed class BootstrapSceneLoader : MonoBehaviour
 
         string targetScene = ResolveTargetScene();
         if (!SceneManager.GetSceneByName(targetScene).isLoaded)
+        {
+            if (!System.Array.Exists(FindObjectsByType<AudioListener>(FindObjectsSortMode.None),
+                    listener => listener.isActiveAndEnabled))
+            {
+                _startupListener = gameObject.AddComponent<AudioListener>();
+                SceneManager.sceneLoaded += ReleaseStartupListener;
+            }
             SceneManager.LoadSceneAsync(targetScene, LoadSceneMode.Additive);
+        }
     }
+
+    private void ReleaseStartupListener(Scene scene, LoadSceneMode mode)
+    {
+        foreach (GameObject root in scene.GetRootGameObjects())
+        {
+            foreach (AudioListener listener in root.GetComponentsInChildren<AudioListener>())
+            {
+                if (!listener.isActiveAndEnabled || listener == _startupListener)
+                    continue;
+
+                _startupListener.enabled = false;
+                Destroy(_startupListener);
+                _startupListener = null;
+                SceneManager.sceneLoaded -= ReleaseStartupListener;
+                return;
+            }
+        }
+    }
+
+    private void OnDestroy() => SceneManager.sceneLoaded -= ReleaseStartupListener;
 
     /// <summary>
     /// SceneFlowService reloads Bootstrap to reset persistent managers between sessions. That

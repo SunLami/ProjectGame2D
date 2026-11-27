@@ -100,6 +100,9 @@ Hai điểm quan trọng dễ gen sai nếu không tra bảng này:
 - Animation clip (`Assets/Animations/PlayerAnimations/*.anim`) keyframe `SpriteResolver.category +
   label` trên 3 GameObject con `Player/Head`, `Player/Body`, `Player/Weapon` — clip dùng chung cho
   mọi level, chỉ đổi `SpriteLibraryAsset` để đổi outfit.
+- Khi đổi map, Player mới bind ba Sprite Library vào EquipmentManager. Manager áp lại asset
+  hiển thị hiện tại và trạng thái ẩn/hiện vũ khí. Inventory Preview dùng chính renderer của Player,
+  nên hiển thị cùng bộ trang bị với nhân vật ngoài map.
 - **AttackFX KHÔNG nằm trong Head/Body/Weapon.** Nó có `SpriteLibraryAsset` riêng
   `PlayerSpriteLib/AttackFXLib.spriteLib`, hiện chỉ có 1 category `Attack_Swing` (16 entry = 4
   hướng × 4 frame, sprite gốc lấy từ file `Swordsman_lvl1_Run_Attack_swing_*.png`).

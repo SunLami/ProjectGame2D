@@ -1864,7 +1864,7 @@ MonoBehaviour:
     sceneName: MapDuy
     spawnId: spawn.mapduy.boss_pillar_return
     available: 1
-    icon: {fileID: 0}
+    icon: {fileID: 21300000, guid: 57d5afb29f5f4c919d3567d315b361eb, type: 3}
     accent: {r: 0.55, g: 0.85, b: 0.5, a: 1}
   _ui: {fileID: 320257894}
   _title: LEAVE THE ARENA
@@ -2634,7 +2634,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 359606b7eaf8cc9498c3ca7b02d00ed1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: ProjectGame2D.Runtime::MapZoneManager
-  _defaultZoneName: Heart Village
+  _defaultZoneName: Water Arena
 --- !u!1 &1177069207
 GameObject:
   m_ObjectHideFlags: 0
@@ -3706,6 +3706,7 @@ MonoBehaviour:
     width: 63.4
     height: 27.15
   _walkablePolygon: []
+  _containPlayer: 1
   _resetDelaySeconds: 4
   _debugHotkeys: 1
 --- !u!114 &1656081227
@@ -4135,7 +4136,7 @@ Rigidbody2D:
     m_Bits: 0
   m_Interpolate: 0
   m_SleepingMode: 1
-  m_CollisionDetection: 0
+  m_CollisionDetection: 1
   m_Constraints: 4
 --- !u!95 &1735715395
 Animator:
@@ -4530,8 +4531,8 @@ AudioSource:
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
   m_audioClip: {fileID: 0}
-  m_Resource: {fileID: 8300000, guid: bb1e9801c1ae4a3992d6cefcafbf291e, type: 3}
-  m_PlayOnAwake: 1
+  m_Resource: {fileID: 0}
+  m_PlayOnAwake: 0
   m_Volume: 0.2
   m_Pitch: 1
   Loop: 1
@@ -4982,9 +4983,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: ProjectGame2D.Runtime::TideController
   _lowTideY: 11.25
-  _minX: -33.7
-  _maxX: 33.7
-  _topY: 30
+  _minX: -31.7
+  _maxX: 31.7
   _waterColor: {r: 0.2, g: 0.62, b: 0.9, a: 0.34}
   _foamColor: {r: 0.92, g: 0.98, b: 1, a: 0.8}
 --- !u!1 &2127486378

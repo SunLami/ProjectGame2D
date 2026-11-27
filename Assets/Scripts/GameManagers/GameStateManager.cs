@@ -136,9 +136,9 @@ public sealed class GameStateManager : MonoBehaviour
         bool popupWasOpen = IsPopupState(previous.State);
         bool popupIsOpen = IsPopupState(Current.State);
         if (!popupWasOpen && popupIsOpen)
-            SoundFXManager.PlaySfx("sfx.ui.popup_open");
+            SoundFXManager.PlaySfx(PopupSfx(Current.MenuPage, true));
         else if (popupWasOpen && !popupIsOpen)
-            SoundFXManager.PlaySfx("sfx.ui.popup_close");
+            SoundFXManager.PlaySfx(PopupSfx(previous.MenuPage, false));
 
         GameStatePolicy policy = CurrentPolicy;
         Time.timeScale = policy.PausesWorld ? 0f : 1f;
@@ -147,6 +147,14 @@ public sealed class GameStateManager : MonoBehaviour
 
         StateChanged?.Invoke(new GameStateChange(previous, Current));
     }
+
+    /// <summary>Bag sound for the Inventory page, paper sound for the Map, generic popup sound otherwise.</summary>
+    private static string PopupSfx(GameplayMenuPage page, bool open) => page switch
+    {
+        GameplayMenuPage.Inventory => open ? SfxIds.InventoryOpen : SfxIds.InventoryClose,
+        GameplayMenuPage.Map => open ? SfxIds.UiMapOpen : SfxIds.UiMapClose,
+        _ => open ? "sfx.ui.popup_open" : "sfx.ui.popup_close",
+    };
 
     private static bool IsPopupState(GameState state) =>
         state == GameState.Paused || state == GameState.GameplayMenu;

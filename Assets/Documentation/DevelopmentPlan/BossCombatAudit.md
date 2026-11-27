@@ -88,3 +88,28 @@ Không còn skill nào "HANG". **Chưa kiểm chứng bằng chơi thật:** c�
 
 ### 8.1 Telegraph theo loại đòn (2026-10-06)
 `BossTelegraph.Line(..., dashable)`: **đỏ** = vùng phải thoát ra ngoài; **hổ phách** (`BossTelegraph.Dashable`) = đường/làn đòn lướt qua mà người chơi có thể **dash xuyên** (Spike Lanes, Rocket Fist, làn Bong Bóng, Sóng Triều, Tường Gió); **xanh** (`BossTelegraph.Safe`) = chỗ an toàn (đã có ở Tường Gió, Resonance). Vòng tròn (Slam, mưa đá, Lao Vuốt…) giữ màu đỏ. Chưa làm: biến thể skill theo phase (nhóm D).
+
+## 9. Play Mode test toàn trận + cân bằng theo cấp (2026-11-26, D-121)
+
+**Cách đo:** `Assets/Scripts/Debug/BossFightBot.cs` (công cụ debug, cùng loại với `BossCombatAudit`) cho người chơi tự đánh cả trận trong scene arena thật: gọi `TrySummon`, né vòng/đường telegraph đỏ/hổ phách sau **0.35 s phản xạ** (chạy, dash khi lối ra xa), áp sát đánh thường khi đủ stamina (0.8 s/nhát), dùng skill tier 1 (18 sát thương) khi đủ mana. Máu người chơi thay bằng một kho lớn để trận luôn kết thúc; log ghi máu mất theo skill, độ dài telegraph, Recovery, phase, thời gian hạ. Chạy ×2.5 tốc độ (số giây trong bảng là thời gian game). Log: `Logs/BossFightBot_<boss>.txt`. **Giới hạn:** bot không né được đạn/lông/bong bóng (không có telegraph dạng vòng/đường) và bám boss gần 100% thời gian, nên thời gian hạ thấp hơn người thật (~45% thời gian đánh) và máu mất cao hơn người né giỏi.
+
+**Lỗi tìm thấy:**
+1. **Earth P3 hai tuyệt kỹ liền nhau (đã sửa).** Combo `G` mở bằng Cộng Hưởng Lõi trong khi P3 còn gọi tuyệt kỹ sau mỗi 2 combo ⇒ đo được Cộng Hưởng ở 96.5 s và 107.5 s, chỉ cách nhau hai cú Slam; chiếm phần lớn máu mất của trận (156 / 216). Tái hiện: đánh Earth xuống < 30% máu, chờ combo thứ hai của P3. Sửa: `G = SlamDouble → SpikeLanes → Slam` (giống cách đã sửa Bão Táp của Wind). Đo lại: mỗi nhịp P3 chỉ còn một Cộng Hưởng.
+2. **B cố định 14 + Defense trừ thẳng ⇒ boss vô hại ở cấp giữa game** (lỗi cân bằng, xem D-121): Lv20 đồ đúng gate có Def 21.85 ⇒ Slam 14 − 21.85 ⇒ 1 sát thương.
+3. **Water Kìm Kẹp báo 0.5 s** (< 0.35 s phản xạ + thời gian thoát quạt bán kính 5) ⇒ gần như chắc trúng với người đánh cận chiến; 420 / 1060 máu mất của trận Water.
+- Đã kiểm tra, **không lỗi:** không có exception ở cả ba trận; boss chết ⇒ dọn sạch telegraph, cua con, bong bóng, thanh máu; arena về `StatueIdle` sau 4 s và triệu hồi lại được; người chơi chết ⇒ boss đứng chờ, popup "Return to Village" (tự về sau ~26 s) ⇒ về MapNhat, máu đầy (D-112). Popup Tutorial "Use WASD…" vẫn hiện trong arena khi vào thẳng scene từ Play Mode (không qua save) — không ảnh hưởng combat.
+- `BossDefeatTracker` chỉ dành cho boss `EnemyUniversal` (DemoScene); boss arena không có cờ đã-hạ/EXP/loot — đúng thiết kế "đánh lại để farm", ghi lại để làm phần thưởng sau.
+
+**Trước → sau (bot, cùng hành vi):**
+| Boss | Trước: người chơi Lv1 (atk 12, def 2, 100 HP) | Sau: người chơi đúng cấp mục tiêu |
+|---|---|---|
+| Earth (Lv10: atk 22.5, def 8.35, 143 HP) | hạ 128 s, mất 216 = 2.2 thanh; Slam 12 | hạ 101 s, mất 240 = **1.7 thanh**; Slam **17.5 (12.2%)**; Cộng Hưởng 2 lần (không còn liền nhau), báo 0.7 s |
+| Wind (Lv20: atk 35.5, def 21.85, 191 HP) | hạ 143 s, mất 251 = 2.5 thanh | hạ 120 s, mất 244 = **1.3 thanh**; Lao Vuốt **22.4 (11.7%)**; lông vũ còn 1/nhát (chip) |
+| Water (Lv30: atk 53.5, def 40.35, 249 HP) | hạ 182 s, mất 1060 = **10.6 thanh**; Kìm Kẹp báo 0.5 s | hạ 152 s, mất 985 = **4.0 thanh**; quạt Kìm Kẹp báo **0.65 s**, nhát ~23 (9%); Recovery P3 1.8 s |
+Nếu giữ số cũ, ở đúng cấp mục tiêu: Earth Slam = 5.6 (3.9% máu), Wind Lao Vuốt = 1, Water mọi đòn = 1.
+
+Thời gian hạ của người thật ước tính ≈ thời gian bot × 2 (≈ 3.5 / 4 / 5 phút). Thứ tự độ khó sau cân bằng: Earth < Wind < Water (Water vẫn khó nhất theo D-112). **Chưa kiểm chứng bằng tay người:** cảm giác của mức máu mới, độ đọc của telegraph Water 0.65 s, mức hồi máu/bình máu cần mang theo khi đánh Water.
+
+MapDuy enemies and wildlife show the shared boss-style floating damage number for accepted hits, including finishing hits. Enemy vulnerability modifiers are reflected in the number.
+
+MapDuy damage numbers are only created during Play Mode because the TextMeshPro outline creates a renderer material instance.

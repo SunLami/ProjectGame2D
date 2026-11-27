@@ -677,3 +677,53 @@ Extended the live Minimap and Full Map pilot from MapNhat to MapDuy and the thre
 2026-11-26 — Thinned harvestable trees in the eastern pond clearing from 61 to 40, opening routes through the clearing for enemies and wildlife.
 
 2026-11-26: implemented D-109 obstacle-aware movement for MapDuy enemies and wildlife. It adds a lazy Physics2D grid, A* waypoints, stuck detection and give-up fallbacks, and the `PathGrid` prefab is placed in MapDuy. The Ent prefab is scaled 1.6×. EditMode tests pass. Play Mode acceptance is pending owner testing. Details: [EnemyPathfindingPlan.md](EnemyPathfindingPlan.md) §8.
+
+2026-11-26 — Fixed Bootstrap live map binding for direct additive play and authored MapDuy and boss arena zone labels.
+
+2026-11-26 — Added generated pixel-art Boss Teleport frames, cards and buttons, plus a Ruined Temple return portrait in all three boss arenas. The one-destination panel uses a compact layout.
+
+2026-11-26 — Switched Boss Teleport to a thinner board and moved its buttons inside the frame in both layouts.
+
+2026-11-26 — Refreshed the Farm Storage board in the Inventory art style and aligned both grids to five columns by four visible rows.
+
+2026-11-26 — Enlarged the shared NPC dialogue and its typography in the Bootstrap prefab and authoring builder.
+
+2026-11-26 — Centered the NPC speaker label inside the dialogue nameplate.
+
+2026-11-26 — Added Farm Storage heading plaques and column frames, and inset rectangular clipping to keep scrolling slots inside the trim.
+
+2026-11-26 — Moved the DEV toggle to the bottom-right of the HUD and removed stale Bootstrap positioning and scale overrides.
+
+2026-11-26 — Added Knacker dialogue, trading, and Bone Ash crafting in MapDuy.
+
+2026-11-26 — Added Herbalist dialogue, potion and herb trading, and four potion recipes in MapDuy.
+
+2026-11-26 — Added hover outlines to Knacker and Herbalist and aligned Knacker’s interaction collider with its imported sprite.
+
+2026-11-26 — Guarded optional trader prompt references with Unity object checks and supplied a temporary audio listener during initial Bootstrap loading.
+
+2026-11-26 — Enabled floating damage numbers for ordinary enemies and wildlife in MapDuy using the shared boss presentation.
+
+2026-11-27 — Displayed all wildlife drop icons on the ground before pickup.
+
+2026-11-27 — Updated Goblin, Slime, Ent, Hare, Deer and Boar kill rewards to match the owner’s Slaughter Drops table.
+
+2026-11-27 — Reduced the bottom-right DEV toggle to avoid covering the SkillHUD.
+
+2026-11-27 — Disabled player skill casting in Heart Village.
+
+2026-11-27 — Restricted Heart Village melee to targeted training dummies in the training yard and clarified the tutorial hint.
+
+2026-11-27 — Disabled Shield block in Heart Village.
+
+2026-11-27 — Restricted background music to Main Menu and removed gameplay music assignments.
+
+2026-11-27 — Restored MapNhat walk/run footstep coverage and balanced local ambience and UI volumes.
+
+Act I fishing guidance now switches between Dunstan and the dock based on Worm Bait possession. Off-screen quest arrows use a HUD-safe inset.
+
+World travel now restores the active equipment appearance on each newly bound Player.
+
+Summoning Shrine uses the shared viewport fit and new frame art in all three boss arenas.
+
+Water Arena tide and shoreline alignment have been revised, and the player now has a boundary recovery fallback for knockback.

@@ -87,7 +87,7 @@ public static class SfxDatabaseTools
                 if (last.StartsWith("wind")) return "Skill Phong (Wind)";
                 return "Skill Common";
             case "combat": case "player": return "Combat Player";
-            case "enemy": return "Enemy";
+            case "enemy": case "wildlife": return "Enemy";
             case "boss": return "Boss Earth";
             case "bossw": return "Boss Water (Crab)";
             case "bossowl": return "Boss Wind (Owl)";

@@ -23,9 +23,11 @@ MonoBehaviour:
     _targetCount: 5
     _obtainMode: 0
     _description: "Catch 5 fish at the fishing dock."
-    _controlHint: "Buy Worm Bait from Dunstan. Assign it to the quick bar, select it, then click a fishing spot at the dock."
+    _controlHint: "Assign bait to the quick bar, select it, then click a fishing spot at the dock."
     _navigationAreaId: area.fishing_dock
-    _navigationNpcId:
+    _navigationNpcId: npc.dunstan
+    _navigationMissingItemId: item.consumable.bait_small
+    _navigationMissingItemHint: Meet Dunstan the Fisher at the dock and buy Worm Bait from his shop.
   _rewards:
     _items:
     - _itemId: item.drink.trailrunner_tonic
