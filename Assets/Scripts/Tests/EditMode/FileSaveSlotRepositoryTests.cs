@@ -24,7 +24,8 @@ public sealed class FileSaveSlotRepositoryTests
     private static GameSaveData MakeSave(string saveId, long playTime = 0) => new()
     {
         saveId = saveId,
-        totalPlayTimeSeconds = playTime
+        totalPlayTimeSeconds = playTime,
+        player = new PlayerSaveData()
     };
 
     [Test]
@@ -147,6 +148,44 @@ public sealed class FileSaveSlotRepositoryTests
         SaveSlotInfo info = _repository.GetSlotInfo(1);
         Assert.AreEqual(SaveSlotStatus.IncompatibleVersion, info.Status);
         Assert.IsFalse(_repository.TryReadSave(1, out _));
+    }
+
+    [Test]
+    public void IncompatiblePrimaryDoesNotSilentlyLoadOlderBackup()
+    {
+        _repository.WriteSave(1, MakeSave("old-backup"));
+        _repository.WriteSave(1, MakeSave("current"));
+        File.WriteAllText(Path.Combine(_rootPath, "Slot1", "save.json"),
+            "{\"saveVersion\":999,\"saveId\":\"future-save\"}");
+
+        Assert.AreEqual(SaveSlotStatus.IncompatibleVersion, _repository.GetSlotInfo(1).Status);
+        Assert.IsFalse(_repository.TryReadSave(1, out _));
+    }
+
+    [Test]
+    public void CurrentSaveWithoutPlayerRecoversFromValidBackup()
+    {
+        _repository.WriteSave(1, MakeSave("backup"));
+        _repository.WriteSave(1, MakeSave("current"));
+        File.WriteAllText(Path.Combine(_rootPath, "Slot1", "save.json"),
+            $"{{\"saveVersion\":{GameSaveData.CurrentSaveVersion},\"saveId\":\"missing-player\"}}");
+
+        Assert.IsTrue(_repository.TryReadSave(1, out GameSaveData save));
+        Assert.AreEqual("backup", save.saveId);
+    }
+
+    [Test]
+    public void BrokenMetadataCacheDoesNotFailCommittedSave()
+    {
+        string slotDir = Path.Combine(_rootPath, "Slot1");
+        Directory.CreateDirectory(Path.Combine(slotDir, "metadata.json.tmp"));
+
+        SaveOperationResult result = _repository.WriteSave(1, MakeSave("committed"));
+
+        Assert.IsTrue(result.Success, result.ErrorMessage);
+        Assert.IsTrue(_repository.TryReadSave(1, out GameSaveData save));
+        Assert.AreEqual("committed", save.saveId);
+        Assert.Greater(_repository.GetSlotInfo(1).Metadata.lastSavedUtcTicks, 0);
     }
 
     [Test]

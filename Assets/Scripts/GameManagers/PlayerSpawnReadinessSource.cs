@@ -282,7 +282,10 @@ public sealed class PlayerSpawnReadinessSource : MonoBehaviour, IGameplayReadine
         if (result.Success)
             GameSessionManager.Instance.ClearDirty();
         else
+        {
+            GameSessionManager.Instance.MarkDirty();
             Debug.LogError($"PlayerSpawnReadinessSource: initial save write failed: {result.ErrorMessage}", this);
+        }
     }
 
     private void MarkReady()

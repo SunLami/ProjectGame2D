@@ -16,7 +16,7 @@ MonoBehaviour:
   _initialNodeId: greeting
   _nodes:
   - _nodeId: greeting
-    _speakerName: Herbalist
+    _speakerName: Edyth
     _portrait: {fileID: 0}
     _text: Welcome. I trade in herbs and brew potions for the road.
     _nextNodeId:
@@ -29,21 +29,21 @@ MonoBehaviour:
     - _text: Just passing by.
       _nextNodeId: leave
   - _nodeId: shop
-    _speakerName: Herbalist
+    _speakerName: Edyth
     _portrait: {fileID: 0}
     _text: I buy and sell healing herbs, mana herbs, and potions.
     _nextNodeId:
     _outcomeId: commerce.shop
     _choices: []
   - _nodeId: craft
-    _speakerName: Herbalist
+    _speakerName: Edyth
     _portrait: {fileID: 0}
     _text: Bring the right herbs and ingredients, and we can brew a potion.
     _nextNodeId:
     _outcomeId: commerce.crafting
     _choices: []
   - _nodeId: leave
-    _speakerName: Herbalist
+    _speakerName: Edyth
     _portrait: {fileID: 0}
     _text: Safe travels.
     _nextNodeId:

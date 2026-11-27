@@ -588,22 +588,20 @@ public sealed class GameplaySessionControllerPlayModeTests
 
     // ---- Return to Main Menu ----
 
-    [UnityTest]
-    public IEnumerator RequestReturnToMainMenu_WhenClean_ReturnsDirectlyWithoutConfirmation()
+    [Test]
+    public void RequestReturnToMainMenu_WhenClean_StillOffersSaveBeforeReturning()
     {
         BeginPausedSession(1, MakeActiveSave());
         var (playerRoot, stat, transform) = BuildPlayerFixture();
         GameplaySessionController controller = BuildController(stat, transform, null, out GameObject controllerObject);
 
-        int confirmationCount = 0;
-        controller.OnConfirmationRequired += _ => confirmationCount++;
+        GameplaySessionConfirmationKind? kind = null;
+        controller.OnConfirmationRequired += value => kind = value;
 
         controller.RequestReturnToMainMenu();
 
-        Assert.AreEqual(0, confirmationCount);
-        Assert.AreEqual(GameState.Loading, GameStateManager.Instance.CurrentState, "A clean session must start the return transition immediately.");
-
-        yield return WaitForState(GameState.MainMenu, 15f);
+        Assert.AreEqual(GameplaySessionConfirmationKind.ReturnToMainMenu, kind);
+        Assert.AreEqual(GameState.Paused, GameStateManager.Instance.CurrentState);
 
         Object.DestroyImmediate(playerRoot);
         Object.Destroy(controllerObject);
@@ -838,15 +836,15 @@ public sealed class GameplaySessionControllerPlayModeTests
         _fakeRepository.WriteSave(1, slotA);
         _fakeRepository.WriteSave(2, slotB);
 
-        Assert.IsTrue(GameSessionManager.Instance.TryStartLoadedGame(1, "DemoScene", slotA));
-        Assert.IsTrue(SceneFlowService.Instance.TryLoadGameplay("DemoScene"));
+        Assert.IsTrue(GameSessionManager.Instance.TryStartLoadedGame(1, "MapNhat", slotA));
+        Assert.IsTrue(SceneFlowService.Instance.TryLoadGameplay("MapNhat"));
         yield return WaitForState(GameState.Playing, 15f);
 
         Assert.AreEqual(111, InventoryManager.Instance.Gold);
 
         GameObject controllerObject = new("GameplaySessionControllerFixture");
         GameplaySessionController controller = controllerObject.AddComponent<GameplaySessionController>();
-        controller.ConfigureForTests(PlayerStat.Instance, PlayerStat.Instance.transform, worldRegistry: null, gameplaySceneName: "DemoScene");
+        controller.ConfigureForTests(PlayerStat.Instance, PlayerStat.Instance.transform, worldRegistry: null, gameplaySceneName: "MapNhat");
         GameStateManager.Instance.Pause();
 
         Assert.IsTrue(controller.RequestLoad(2));

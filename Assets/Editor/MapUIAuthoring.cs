@@ -103,7 +103,7 @@ public static class MapUIAuthoring
         zonePlateImage.preserveAspect = false;
         zonePlateImage.raycastTarget = false;
         TMP_Text zoneText = CreatePointText("ZoneText", zonePlate, new Vector2(0.5f, 0.5f),
-            Vector2.zero, new Vector2(76f, 14f), "Heart Village", 6.5f, TextAlignmentOptions.Center);
+            Vector2.zero, new Vector2(76f, 14f), "Heorte Village", 6.5f, TextAlignmentOptions.Center);
         zoneText.color = new Color(1f, 0.85f, 0.45f, 1f);
         zoneText.fontStyle = FontStyles.Bold;
         AddReadabilityShadow(zoneText);

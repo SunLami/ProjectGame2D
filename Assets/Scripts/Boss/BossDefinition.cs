@@ -76,7 +76,7 @@ public sealed class BossDefinition : ScriptableObject
 {
     [Header("Identity")]
     public string bossId = "boss.earth_golem";
-    public string displayName = "Earth Golem"; // UI font has no extended Vietnamese glyphs (Typography.md)
+    public string displayName = "Runic Golem"; // UI font has no extended Vietnamese glyphs (Typography.md)
 
     [Header("Core stats")]
     [Min(1f)] public float maxHealth = 2400f;
@@ -478,7 +478,7 @@ public sealed class BossDefinition : ScriptableObject
         var definition = CreateInstance<BossDefinition>();
         definition.name = "WaterCrabBoss";
         definition.bossId = "boss.water_crab";
-        definition.displayName = "Tidal Crab";
+        definition.displayName = "Wryshell Warden";
         definition.moveSpeed = 3.4f;
         // D-121 (2026-11-26): last boss, balanced for a level-30 player in level-30 gear (249 HP, Defense 40.35)
         definition.maxHealth = 7800f;
@@ -541,7 +541,7 @@ public sealed class BossDefinition : ScriptableObject
         var definition = CreateInstance<BossDefinition>();
         definition.name = "WindOwlBoss";
         definition.bossId = "boss.wind_owl";
-        definition.displayName = "Sky Owl";
+        definition.displayName = "Galewing Sentinent";
         definition.moveSpeed = 3.4f;
         // D-121 (2026-11-26): second boss, balanced for a level-20 player in level-20 gear (191 HP, Defense 21.85)
         definition.maxHealth = 5000f;

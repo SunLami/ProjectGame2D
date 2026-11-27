@@ -27,7 +27,7 @@ public sealed class BossCombatAudit : MonoBehaviour
 
     public static readonly Kit[] Kits =
     {
-        new Kit { name = "Earth Golem", prefab = "Assets/Bosses/EarthGolem/EarthGolemBoss.prefab", definition = "Assets/Bosses/EarthGolem/EarthGolemBoss.asset",
+        new Kit { name = "Runic Golem", prefab = "Assets/Bosses/EarthGolem/EarthGolemBoss.prefab", definition = "Assets/Bosses/EarthGolem/EarthGolemBoss.asset",
             skills = new[] { BossSkillId.Slam, BossSkillId.SlamDouble, BossSkillId.StoneRain, BossSkillId.SpikeLanes, BossSkillId.RocketFist, BossSkillId.CoreResonance } },
         new Kit { name = "Water Crab", prefab = "Assets/Bosses/WaterCrab/WaterCrabBoss.prefab", definition = "Assets/Bosses/WaterCrab/WaterCrabBoss.asset",
             skills = new[] { BossSkillId.ClawClamp, BossSkillId.BubbleTrap, BossSkillId.SandAmbush, BossSkillId.TidalWave, BossSkillId.Whirlpool, BossSkillId.ShellRoll, BossSkillId.TotemCrossfire, BossSkillId.SummonCrabs } },

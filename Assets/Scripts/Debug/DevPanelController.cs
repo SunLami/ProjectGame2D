@@ -223,6 +223,8 @@ public sealed class DevPanelController : MonoBehaviour
         ["npc.town.hermetist"] = "Hermetist",
         ["npc.leofrun"] = "Yrthling",
         ["npc.town.chapman"] = "Chapman",
+        ["npc.herbalist"] = "Herbalist",
+        ["npc.knacker"] = "Knacker",
     };
 
     private void RefreshTeleportButtons()

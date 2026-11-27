@@ -115,19 +115,19 @@ public static class TeleportPillarBuilder
         {
             new TeleportDestination
             {
-                id = "boss.earth", displayName = "Earth Golem", sceneName = "BossArena_Earth", spawnId = "arena_entry",
+                id = "boss.earth", displayName = "Runic Golem", sceneName = "BossArena_Earth", spawnId = "arena_entry",
                 description = "A sealed stone courtyard guarded by a golem of living rock. Slam, spikes, falling stone and a shockwave ultimate.",
                 available = true, icon = earthIcon, accent = new Color(0.85f, 0.62f, 0.25f, 1f),
             },
             new TeleportDestination
             {
-                id = "boss.water", displayName = "Tidal Crab", sceneName = "BossArena_Water", spawnId = "arena_entry",
+                id = "boss.water", displayName = "Wryshell Warden", sceneName = "BossArena_Water", spawnId = "arena_entry",
                 description = "A tidal beach where an armoured crab burrows, spits bubbles and calls the sea. The water rises and falls as you fight.",
                 available = true, icon = crabIcon, accent = new Color(0.3f, 0.6f, 0.95f, 1f),
             },
             new TeleportDestination
             {
-                id = "boss.wind", displayName = "Sky Owl", sceneName = windAvailable ? "BossArena_Wind" : "", spawnId = windAvailable ? "arena_entry" : "",
+                id = "boss.wind", displayName = "Galewing Sentinent", sceneName = windAvailable ? "BossArena_Wind" : "", spawnId = windAvailable ? "arena_entry" : "",
                 description = windAvailable
                     ? "A cross-shaped terrace floating above a sea of clouds. The sky owl dives, cuts the air with wind blades and calls a storm that shrinks the safe ground."
                     : "A floating terrace above the clouds where the wind decides who falls.",

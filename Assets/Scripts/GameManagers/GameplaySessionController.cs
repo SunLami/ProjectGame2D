@@ -34,8 +34,7 @@ public sealed class GameplaySessionController : MonoBehaviour
     /// could not complete. Never fired for a Cancel -- Cancel is not a failure.</summary>
     public event Action<GameplaySessionOperationResult, string> OnOperationFailed;
 
-    /// <summary>Fired instead of acting immediately when Return/Quit is requested on a dirty
-    /// session. UI must present Save-and-X / X-Without-Saving / Cancel and call the matching
+    /// <summary>Fired instead of acting immediately when returning from a save-backed session or quitting with unsaved changes. UI must present Save-and-X / X-Without-Saving / Cancel and call the matching
     /// Confirm*/Cancel* method -- this event itself changes no GameState (pure UI navigation).</summary>
     public event Action<GameplaySessionConfirmationKind> OnConfirmationRequired;
 
@@ -319,13 +318,19 @@ public sealed class GameplaySessionController : MonoBehaviour
         }
 
         string destination = SceneTravel.ResolveSavedScene(saveData, _gameplaySceneName);
+        if (SceneFlowService.Instance == null || !SceneFlowService.Instance.CanStartTransition(destination))
+        {
+            Fail(GameplaySessionOperationResult.TransitionFailed, "The saved gameplay scene is unavailable.");
+            return false;
+        }
+
         if (!GameSessionManager.Instance.TryStartLoadedGame(slotId, destination, saveData))
         {
             Fail(GameplaySessionOperationResult.TransitionFailed, "Could not start the loaded game session.");
             return false;
         }
 
-        if (!SceneFlowService.Instance.TryLoadGameplay(destination))
+        if (!SceneFlowService.Instance.TryLoadGameplay(destination, resetBootstrap: true))
         {
             Fail(GameplaySessionOperationResult.TransitionFailed, "Could not start loading the gameplay scene.");
             return false;
@@ -352,7 +357,7 @@ public sealed class GameplaySessionController : MonoBehaviour
             return;
         }
 
-        if (!GameSessionManager.Instance.IsDirty)
+        if (!IsValidSlotId(GameSessionManager.Instance.Current.SlotId))
         {
             DoReturnToMainMenu();
             return;

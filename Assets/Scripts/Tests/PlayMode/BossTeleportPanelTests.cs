@@ -16,9 +16,9 @@ public sealed class BossTeleportPanelTests
         try
         {
             var ui = host.AddComponent<BossTeleportSelectUI>();
-            var earth = new TeleportDestination { id = "boss.earth", displayName = "Earth Golem" };
-            var water = new TeleportDestination { id = "boss.water", displayName = "Tidal Crab" };
-            var wind = new TeleportDestination { id = "boss.wind", displayName = "Sky Owl" };
+            var earth = new TeleportDestination { id = "boss.earth", displayName = "Runic Golem" };
+            var water = new TeleportDestination { id = "boss.water", displayName = "Wryshell Warden" };
+            var wind = new TeleportDestination { id = "boss.wind", displayName = "Galewing Sentinent" };
             var returnIcon = Resources.Load<Sprite>("UI/BossTeleport/ruined_temple_portrait_v1");
             Assert.NotNull(returnIcon);
             var temple = new TeleportDestination { id = "return.mapduy", displayName = "Ruined Temple", icon = returnIcon };

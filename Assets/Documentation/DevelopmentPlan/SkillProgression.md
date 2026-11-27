@@ -256,3 +256,5 @@ The P binding was removed. Close or Escape returns to gameplay through GameState
 Quest 5 requires opening the Skills Panel through Agnes. Completing the dialogue option “Teach me a skill” advances the quest only if the panel opened successfully. The quest then completes and unlocks Black Arts.
 
 Heart Village also disables RMB Shield block. Entering the village ends an active block and hides its effects.
+
+The Q/E/R/T loadout bridge in Earth, Water and Wind arenas references the production PlayerSkillCatalog. The Earth kit builder binds the catalog when copying the bridge from DemoScene.

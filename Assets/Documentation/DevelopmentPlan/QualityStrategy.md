@@ -68,6 +68,7 @@ Các class này không nên phụ thuộc MonoBehaviour để chạy test nhanh.
 | Unsupported future version | Không load/overwrite âm thầm |
 | Disk write failure | Save cũ còn nguyên |
 | Double-click Save/Load | Chỉ một operation |
+| Back to Menu ở slot sạch hoặc dirty | Hiện xác nhận. Cancel ở lại. Save and Return chỉ thoát sau khi ghi thành công. |
 | Quit trong lúc Saving | Policy ngăn corruption |
 
 ## Gameplay persistence matrix

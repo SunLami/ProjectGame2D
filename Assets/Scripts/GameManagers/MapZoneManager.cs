@@ -7,9 +7,9 @@ using UnityEngine;
 public sealed class MapZoneManager : MonoBehaviour
 {
     // Fallback shown when the player isn't inside any authored MapZoneTrigger -- authored per
-    // scene (e.g. the whole MapNhat map is "Heart Village" today, before any sub-zone triggers
+    // scene (e.g. the whole MapNhat map is "Heorte Village" today, before any sub-zone triggers
     // are placed) rather than hardcoded, since it's content, not architecture.
-    [SerializeField] private string _defaultZoneName = "Heart Village";
+    [SerializeField] private string _defaultZoneName = "Heorte Village";
 
     public static MapZoneManager Instance { get; private set; }
 
