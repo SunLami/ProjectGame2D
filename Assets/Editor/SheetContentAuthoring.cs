@@ -218,7 +218,8 @@ public static class SheetContentAuthoring
                 var body=root.AddComponent<Rigidbody2D>();body.gravityScale=0f;body.constraints=RigidbodyConstraints2D.FreezeRotation;
                 root.AddComponent<CircleCollider2D>().radius=0.35f;
                 root.AddComponent<SpriteRenderer>().sprite=AssetDatabase.LoadAllAssetsAtPath("Assets/Tiles/Tilesets/Top-Down Farm with Animals Pixel Art Asset Pack/Tiled_files/Pig_animation.png").OfType<Sprite>().FirstOrDefault()??_fallback;
-                root.GetComponent<SpriteRenderer>().sortingOrder=20;
+                // Same layer/order as Player and crops so the Y transparency-sort axis orders them by feet.
+                root.GetComponent<SpriteRenderer>().sortingOrder=0;root.GetComponent<SpriteRenderer>().spriteSortPoint=SpriteSortPoint.Pivot;
                 var actor=root.AddComponent<WildlifeActor>();Set(actor,"_definition",def);root.AddComponent<ActorLootDrop>();
                 AnimalPrefabs.Add(PrefabUtility.SaveAsPrefabAsset(root,path));
             }

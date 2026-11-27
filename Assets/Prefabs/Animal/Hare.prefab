@@ -148,7 +148,7 @@ SpriteRenderer:
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 20
+  m_SortingOrder: 0
   m_MaskInteraction: 0
   m_Sprite: {fileID: 688945977, guid: 4dac67166af6c40708b5f96627259929, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -159,7 +159,7 @@ SpriteRenderer:
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
-  m_SpriteSortPoint: 0
+  m_SpriteSortPoint: 1
   m_BlendShapeWeights: []
 --- !u!95 &3704135770638209151
 Animator:
@@ -195,11 +195,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e004a44dafcd90549a1dbc47841c4926, type: 3}
   m_Name: 
   m_EditorClassIdentifier: ProjectGame2D.Runtime::WildlifeActor
-  _displayName: Hare
-  _levelRange: {x: 1, y: 1}
   _definition: {fileID: 11400000, guid: ab229279ff8eb0f4a81ea8d2f5ff7231, type: 2}
   _animator: {fileID: 3704135770638209151}
   _deathAnimationDuration: 1.0166667
+  _attackOnAnimationEvent: 0
+  _displayName: Hare
+  _levelRange: {x: 1, y: 1}
 --- !u!114 &1585895884597934064
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -286,11 +287,11 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: eb76361a5a1a14c4cac9d686ad4b3b7e, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: ProjectGame2D.Runtime::EnemyHealthBar
   _owner: {fileID: 0}
-  _wildlifeOwner: {fileID: 799980553124569689}
   _fill: {fileID: 7810000000000000009}
+  _wildlifeOwner: {fileID: 799980553124569689}
 --- !u!1 &7810000000000000004
 GameObject:
   m_ObjectHideFlags: 0
@@ -346,7 +347,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
   m_Color: {r: 0.16, g: 0.02, b: 0.02, a: 0.9}
@@ -421,7 +422,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
   m_Color: {r: 0.15, g: 0.85, b: 0.2, a: 1}

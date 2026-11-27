@@ -113,6 +113,12 @@ damage, update from WildlifeActor health and hide on death. Boar stops while pla
 Attack or Hurt. Each directional attack applies contact damage once at its animation
 event if the player is still in range. A hit that interrupts the windup cancels its damage.
 
+Depth sorting (2026-11-27, owner request): every wildlife prefab (`Prefabs/Animal` and
+`Prefabs/SheetContent/Wildlife`) renders on `Default/0` with `Sprite Sort Point = Pivot`, the same
+layer/order as Player, crops and `Forest_Tree` tiles, so the project's Y transparency-sort axis orders
+them by the feet pivot. The world-space health bar canvas stays on `Default/20` above actors.
+`SheetContentAuthoring` writes the same values when it rebuilds the fixtures.
+
 ### MapDuy encounter levels — 2026-11-26
 
 MapDuy ordinary enemies and wildlife roll one inclusive random level when the actor initializes.

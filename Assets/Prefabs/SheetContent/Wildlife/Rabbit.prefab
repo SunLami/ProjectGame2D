@@ -146,7 +146,7 @@ SpriteRenderer:
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 20
+  m_SortingOrder: 0
   m_MaskInteraction: 0
   m_Sprite: {fileID: -8812398253000491891, guid: f46d3f4e3c4dff54097d9a9c022b67d1, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -157,7 +157,7 @@ SpriteRenderer:
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
-  m_SpriteSortPoint: 0
+  m_SpriteSortPoint: 1
   m_BlendShapeWeights: []
 --- !u!114 &3857662133464048243
 MonoBehaviour:
@@ -172,6 +172,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: ProjectGame2D.Runtime::WildlifeActor
   _definition: {fileID: 11400000, guid: ab229279ff8eb0f4a81ea8d2f5ff7231, type: 2}
+  _animator: {fileID: 0}
+  _deathAnimationDuration: 0
+  _attackOnAnimationEvent: 0
+  _displayName: 
+  _levelRange: {x: 1, y: 1}
 --- !u!114 &8670329694166680176
 MonoBehaviour:
   m_ObjectHideFlags: 0
