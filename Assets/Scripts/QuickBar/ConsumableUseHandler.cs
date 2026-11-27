@@ -16,7 +16,7 @@ public sealed class ConsumableUseHandler : MonoBehaviour
     private void HandleUseRequested(ItemSO item)
     {
         if (!TryUse(item, Time.time) && IsPotion(item) && PotionCooldownRemaining > 0f)
-            InventoryActionFeedbackUI.Show($"Potion ready in {Mathf.CeilToInt(PotionCooldownRemaining)}s.");
+            InventoryActionFeedbackUI.Show($"Potion ready in {Mathf.CeilToInt(PotionCooldownRemaining)}s."); // toast plays its own sound
     }
     internal bool TryUse(ItemSO item, float now)
     {
@@ -69,8 +69,17 @@ public sealed class ConsumableUseHandler : MonoBehaviour
                 break;
         }
         if (IsPotion(item)) _potionReadyAt = now + PotionCooldownSeconds;
+        SoundFXManager.PlaySfx(UseSfx(item.consumableEffect));
         return true;
     }
+    /// <summary>Food is chewed, drinks are gulped, everything else (potions) is the potion sound.</summary>
+    private static string UseSfx(ConsumableEffectType effect) => effect switch
+    {
+        ConsumableEffectType.HealthFood => SfxIds.InventoryEat,
+        ConsumableEffectType.ManaDrink or ConsumableEffectType.StaminaDrink or ConsumableEffectType.RestoreStamina
+            => SfxIds.InventoryDrink,
+        _ => SfxIds.InventoryUsePotion,
+    };
     private static bool IsPotion(ItemSO item) => item != null && item.consumableEffect
         is ConsumableEffectType.HealPercent or ConsumableEffectType.RestoreManaPercent;
     private static bool PositiveFinite(float value) => value > 0f && !float.IsInfinity(value) && !float.IsNaN(value);

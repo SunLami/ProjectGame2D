@@ -97,3 +97,8 @@ Combo: P1 `A Kìm→Bong Bóng`, `B Cát Lún→Sóng`, `C Lăn→Bong Bóng`; P
 Audit (người chơi đứng yên, `BossCombatAudit`, kit Water mở rộng): xem `Logs/BossCombatAudit.txt`. Chưa gen art mới (cua lăn/cua con/tia nổ): đang tái dùng clip Whirl/Recovery, sprite thân Cua thu nhỏ và VFX nước/cát có sẵn.
 
 **Kết quả audit v2 (Play Mode, người chơi đứng yên, 0.45 s i-frame):** P1/P3 — Kìm Kẹp 55.7/68.3, Bong Bóng 14.4/26.4, Cát Lún 19.8, Sóng Triều 39.6 (2 đợt), Xoáy 62.8, Cua Lăn 36.0/72.0, Tia Totem 25.1, Cua Con 28.8; không skill nào treo. Tia Totem dài 34 (totem cách người chơi ~24). Chưa kiểm bằng chơi thật: độ đọc của telegraph mới, cảm giác Cua Lăn/Cua Con, cân bằng thời gian choáng.
+
+## 12. Cân bằng theo cấp (2026-11-26, D-121)
+Cua là boss cuối, **cho người chơi cấp 30** (249 HP, Def 40.35, atk 53.5): HP 3000 → **7800**, B 14 → **55** (giữ `difficultyDamageScale` 1.3), quạt Kìm Kẹp báo tối thiểu 0.5 → **0.65 s**, đoạn lăn của Cua Lăn tối thiểu 0.45 → **0.6 s**, Recovery P3 1.3 → **1.8 s**. Đo lại (bot né telegraph, `BossCombatAudit.md` §9): hạ 152 s, mất ≈ 4 thanh máu — vẫn khó nhất trong ba boss.
+
+During the Water fight, the tint and synchronized foam strip share the same water line as shallow-water slowdown. The overlay is limited to the beach width and fades toward the sea. The player uses continuous collision detection, with a rectangular containment fallback for escaped bodies.

@@ -14,6 +14,77 @@ MonoBehaviour:
   m_EditorClassIdentifier: ProjectGame2D.Runtime::SfxBank
   title: Enemy
   rows:
+  - label: Ent alert
+    id: sfx.enemy.ent_alert
+    category: Combat
+    description: Ent notices the player
+    clips:
+    - {fileID: 8300000, guid: 5b1c4fd96563445bf9598e68213babcb, type: 3}
+    volume: 1
+    pitchJitter: 0.06
+    minInterval: 0.3
+    maxVoices: 2
+    loop: 0
+  - label: Ent attack
+    id: sfx.enemy.ent_attack
+    category: Combat
+    description: Ent swings its branches
+    clips:
+    - {fileID: 8300000, guid: 0ab4ffaf5a6994796a406d2784ecf141, type: 3}
+    volume: 1
+    pitchJitter: 0.06
+    minInterval: 0.1
+    maxVoices: 2
+    loop: 0
+  - label: Ent death
+    id: sfx.enemy.ent_death
+    category: Combat
+    description: Ent collapses
+    clips:
+    - {fileID: 8300000, guid: 56ee17ee687f84b5aaeda03611c022cd, type: 3}
+    - {fileID: 8300000, guid: c7a43951ff46944ce9ad22048b97b10d, type: 3}
+    volume: 1
+    pitchJitter: 0.03
+    minInterval: 0.06
+    maxVoices: 2
+    loop: 0
+  - label: Ent hurt
+    id: sfx.enemy.ent_hurt
+    category: Combat
+    description: Ent hit (wood)
+    clips:
+    - {fileID: 8300000, guid: 39bb9de60e2ba44c3b6d10d7b4805ac4, type: 3}
+    - {fileID: 8300000, guid: a8242d6a7721046a0ae781c676100610, type: 3}
+    - {fileID: 8300000, guid: 68f31c9a2013045b4a5f87243c0c6e2c, type: 3}
+    volume: 1
+    pitchJitter: 0.07
+    minInterval: 0.05
+    maxVoices: 2
+    loop: 0
+  - label: Ent idle
+    id: sfx.enemy.ent_idle
+    category: Combat
+    description: Ent idle voice (rare, only near the player)
+    clips:
+    - {fileID: 8300000, guid: 2c2ddddfe155d418087cdc7be33fbc11, type: 3}
+    - {fileID: 8300000, guid: c14f0bc8b18324096b7a35220a2c3ddc, type: 3}
+    volume: 1
+    pitchJitter: 0.08
+    minInterval: 0.8
+    maxVoices: 2
+    loop: 0
+  - label: Goblin alert
+    id: sfx.enemy.goblin_alert
+    category: Combat
+    description: Goblin notices the player
+    clips:
+    - {fileID: 8300000, guid: 16ae6cb7865f4485bbddf0f4e73d4285, type: 3}
+    - {fileID: 8300000, guid: 082fff541ae8a4e34a6129b19e4d6205, type: 3}
+    volume: 1
+    pitchJitter: 0.06
+    minInterval: 0.3
+    maxVoices: 2
+    loop: 0
   - label: Goblin attack
     id: sfx.enemy.goblin_attack
     category: Combat
@@ -21,10 +92,10 @@ MonoBehaviour:
     clips:
     - {fileID: 8300000, guid: 38831a56c9f177941b1ab78c7951a5ab, type: 3}
     - {fileID: 8300000, guid: d399d7eacf34dd245993c756fd4a0b6f, type: 3}
-    volume: 0.75
+    volume: 1
     pitchJitter: 0.07
     minInterval: 0.3
-    maxVoices: 0
+    maxVoices: 2
     loop: 0
   - label: Goblin death
     id: sfx.enemy.goblin_death
@@ -33,10 +104,10 @@ MonoBehaviour:
     clips:
     - {fileID: 8300000, guid: 7deb800abaf5d2346ba0e07496e9c352, type: 3}
     - {fileID: 8300000, guid: 070f04c2326921e4db34ba0ea1fb65f4, type: 3}
-    volume: 0.9
+    volume: 1
     pitchJitter: 0.05
-    minInterval: 0
-    maxVoices: 0
+    minInterval: 0.06
+    maxVoices: 3
     loop: 0
   - label: Goblin hurt
     id: sfx.enemy.goblin_hurt
@@ -45,10 +116,34 @@ MonoBehaviour:
     clips:
     - {fileID: 8300000, guid: 26c8f3f63ae9d6d478a23c0f480702c9, type: 3}
     - {fileID: 8300000, guid: 88a067096d0193f45a6eb38040ee1ade, type: 3}
-    volume: 0.85
+    volume: 1
     pitchJitter: 0.07
     minInterval: 0.1
-    maxVoices: 0
+    maxVoices: 3
+    loop: 0
+  - label: Goblin idle
+    id: sfx.enemy.goblin_idle
+    category: Combat
+    description: Goblin idle voice (rare, only near the player)
+    clips:
+    - {fileID: 8300000, guid: 7bfb410b268524859bb512a595dcf6c1, type: 3}
+    - {fileID: 8300000, guid: 144531c0734e44ab1a2e4ebcf774047b, type: 3}
+    volume: 1
+    pitchJitter: 0.08
+    minInterval: 0.8
+    maxVoices: 2
+    loop: 0
+  - label: Slime alert
+    id: sfx.enemy.slime_alert
+    category: Combat
+    description: Slime notices the player
+    clips:
+    - {fileID: 8300000, guid: 7a1c7894b692d4daa9ad074f7b6cb874, type: 3}
+    - {fileID: 8300000, guid: 86c542759e6d24e0288b78b5ed8ef881, type: 3}
+    volume: 1
+    pitchJitter: 0.06
+    minInterval: 0.3
+    maxVoices: 2
     loop: 0
   - label: Slime attack
     id: sfx.enemy.slime_attack
@@ -57,10 +152,10 @@ MonoBehaviour:
     clips:
     - {fileID: 8300000, guid: 51091eb6ab0067b499e7ca2748658bae, type: 3}
     - {fileID: 8300000, guid: 1d294b3d9760b244e8198f1347217291, type: 3}
-    volume: 0.65
+    volume: 1
     pitchJitter: 0.1
     minInterval: 0.2
-    maxVoices: 0
+    maxVoices: 2
     loop: 0
   - label: Slime death
     id: sfx.enemy.slime_death
@@ -70,10 +165,10 @@ MonoBehaviour:
     - {fileID: 8300000, guid: 8e2611ff9ec658e4eacd0491badeed05, type: 3}
     - {fileID: 8300000, guid: ab28c676b067cf04ca42d3d06db6e537, type: 3}
     - {fileID: 8300000, guid: 2c93c62ebb015ba4b96aa4d2c120b543, type: 3}
-    volume: 0.85
+    volume: 1
     pitchJitter: 0.06
-    minInterval: 0
-    maxVoices: 0
+    minInterval: 0.06
+    maxVoices: 3
     loop: 0
   - label: Slime hurt
     id: sfx.enemy.slime_hurt
@@ -83,8 +178,163 @@ MonoBehaviour:
     - {fileID: 8300000, guid: 902e974a33eda6649b27ca61d9b5d32d, type: 3}
     - {fileID: 8300000, guid: 6289079db29e3334da2f9c089734af89, type: 3}
     - {fileID: 8300000, guid: 6bf548a50e7fb5d4b8a68fcc48aac65b, type: 3}
-    volume: 0.8
+    volume: 1
     pitchJitter: 0.1
     minInterval: 0.06
-    maxVoices: 0
+    maxVoices: 3
+    loop: 0
+  - label: Slime idle
+    id: sfx.enemy.slime_idle
+    category: Combat
+    description: Slime idle voice (rare, only near the player)
+    clips:
+    - {fileID: 8300000, guid: d7d8433b38b474817b2ec0381e20d5f6, type: 3}
+    - {fileID: 8300000, guid: 00113b715152c4597acee9ed0e6fb230, type: 3}
+    volume: 1
+    pitchJitter: 0.08
+    minInterval: 0.8
+    maxVoices: 2
+    loop: 0
+  - label: Boar alert
+    id: sfx.wildlife.boar_alert
+    category: Combat
+    description: Boar notices the player
+    clips:
+    - {fileID: 8300000, guid: 57ddf5c98969e4952b27167fc1415b57, type: 3}
+    - {fileID: 8300000, guid: eddae7e7068c8442da50a4ffc6945022, type: 3}
+    volume: 1
+    pitchJitter: 0.06
+    minInterval: 0.3
+    maxVoices: 2
+    loop: 0
+  - label: Boar attack
+    id: sfx.wildlife.boar_attack
+    category: Combat
+    description: Boar charges / bites
+    clips:
+    - {fileID: 8300000, guid: 9d29dfa10f8354cd9b742f65370abac7, type: 3}
+    - {fileID: 8300000, guid: 3cc83ce79781a4105a002d6de168a88f, type: 3}
+    volume: 1
+    pitchJitter: 0.06
+    minInterval: 0.3
+    maxVoices: 2
+    loop: 0
+  - label: Boar death
+    id: sfx.wildlife.boar_death
+    category: Combat
+    description: Boar dies
+    clips:
+    - {fileID: 8300000, guid: 709abd37dabd94f8ab244c8dd98e5ffd, type: 3}
+    - {fileID: 8300000, guid: ab488ac9232354570af1aefb557ee2d7, type: 3}
+    volume: 1
+    pitchJitter: 0.04
+    minInterval: 0.06
+    maxVoices: 2
+    loop: 0
+  - label: Boar hurt
+    id: sfx.wildlife.boar_hurt
+    category: Combat
+    description: Boar hit
+    clips:
+    - {fileID: 8300000, guid: dddcf67122a894c2db1ef6ffab1a6e5b, type: 3}
+    - {fileID: 8300000, guid: 5f48a1733615349c8b88d8df7b1b4e08, type: 3}
+    volume: 1
+    pitchJitter: 0.06
+    minInterval: 0.1
+    maxVoices: 2
+    loop: 0
+  - label: Boar idle
+    id: sfx.wildlife.boar_idle
+    category: Combat
+    description: Boar idle voice (rare, only near the player)
+    clips:
+    - {fileID: 8300000, guid: 3d4570e6cce8f47fb822fe7df6d63362, type: 3}
+    - {fileID: 8300000, guid: a4759bebd1fcc409db3d0607c8dbd424, type: 3}
+    volume: 1
+    pitchJitter: 0.08
+    minInterval: 0.8
+    maxVoices: 2
+    loop: 0
+  - label: Deer alert
+    id: sfx.wildlife.deer_alert
+    category: Combat
+    description: Deer notices the player
+    clips:
+    - {fileID: 8300000, guid: 4a64a10c50d5d4ce9aa1a69d81ca63be, type: 3}
+    volume: 1
+    pitchJitter: 0.06
+    minInterval: 0.3
+    maxVoices: 2
+    loop: 0
+  - label: Deer death
+    id: sfx.wildlife.deer_death
+    category: Combat
+    description: Deer dies
+    clips:
+    - {fileID: 8300000, guid: 463fdd4e137f04a0abf137274200519f, type: 3}
+    - {fileID: 8300000, guid: 9ab6c8847de61429c94775c85c236ed7, type: 3}
+    volume: 1
+    pitchJitter: 0.04
+    minInterval: 0.06
+    maxVoices: 2
+    loop: 0
+  - label: Deer hurt
+    id: sfx.wildlife.deer_hurt
+    category: Combat
+    description: Deer hit
+    clips:
+    - {fileID: 8300000, guid: 89db88b197c2c4d42880552e7487209f, type: 3}
+    - {fileID: 8300000, guid: 783fb415ea60f447b9bd3268efecb11f, type: 3}
+    volume: 1
+    pitchJitter: 0.06
+    minInterval: 0.1
+    maxVoices: 2
+    loop: 0
+  - label: Deer idle
+    id: sfx.wildlife.deer_idle
+    category: Combat
+    description: Deer idle voice (rare, only near the player)
+    clips:
+    - {fileID: 8300000, guid: 1017b90db07854c3eac888ef11516c9a, type: 3}
+    volume: 1
+    pitchJitter: 0.08
+    minInterval: 0.8
+    maxVoices: 2
+    loop: 0
+  - label: Rabbit alert
+    id: sfx.wildlife.rabbit_alert
+    category: Combat
+    description: Rabbit notices the player
+    clips:
+    - {fileID: 8300000, guid: f61ab0f0286f34620bc925b3887c7a34, type: 3}
+    - {fileID: 8300000, guid: e740b0804bffa443cb7c3efc38217a52, type: 3}
+    volume: 1
+    pitchJitter: 0.06
+    minInterval: 0.3
+    maxVoices: 2
+    loop: 0
+  - label: Rabbit death
+    id: sfx.wildlife.rabbit_death
+    category: Combat
+    description: Rabbit dies
+    clips:
+    - {fileID: 8300000, guid: f1c17faa1c8b4490784fdee4c7879add, type: 3}
+    - {fileID: 8300000, guid: 69b644e4dbaa241fd9e8f65db911f9fd, type: 3}
+    volume: 1
+    pitchJitter: 0.05
+    minInterval: 0.06
+    maxVoices: 2
+    loop: 0
+  - label: Rabbit hurt
+    id: sfx.wildlife.rabbit_hurt
+    category: Combat
+    description: Rabbit hit
+    clips:
+    - {fileID: 8300000, guid: c3911baa6bc054a558535bd82f080afc, type: 3}
+    - {fileID: 8300000, guid: 6d0df80baec1c4c3b8d089259e862c8c, type: 3}
+    - {fileID: 8300000, guid: 948fc41bd6d6c4ed4a68d2b3152848d0, type: 3}
+    volume: 1
+    pitchJitter: 0.08
+    minInterval: 0.1
+    maxVoices: 2
     loop: 0

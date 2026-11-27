@@ -336,8 +336,10 @@ enough gold to buy Worm Bait at up to 3 G each, including spare bait for failed 
 
 Quest Log shows the next available guidance offer between quests. The offer appears as NEW with the giver directions and remains available for acceptance through NPC dialogue. Completed quests are collected in the collapsible history.
 
-The Tutorial banner points to Eadric after the harvest, then to Oswin after the report. It explains bait and the dock during Quest 3, points back to Oswin when five fish are caught, and points to Merric and Agnes when their offers unlock. Nine pre-forge quest completions award 1,450 XP in total. Agnes teaches the player to open Skills through the dialogue option “Teach me a skill.”
+The Tutorial banner points to Eadric after the harvest, then to Oswin after the report. During Quest 3 it guides players without Worm Bait to Dunstan first. With Worm Bait in Inventory, it directs them to the fishing dock. It points back to Oswin when five fish are caught, and points to Merric and Agnes when their offers unlock. Nine pre-forge quest completions award 1,450 XP in total. Agnes teaches the player to open Skills through the dialogue option “Teach me a skill.”
 
 Quest 2-2b Gather objectives also accept 15 of the matching produce already in Inventory. Each crop counts in any order. The quest checks Inventory on quest start, objective changes, Inventory additions and save restore. Turn-in still goes through Leofrun and does not consume produce.
 
 Quest 2-2 opts into any-order planting. Each crop counter is saved separately. The tracker and Tutorial guide the first unfinished objective, while the Quest Log reflects all three counters.
+
+Heart Village permits melee only while the player is inside the training yard and targets a nearby live training dummy. Only the selected dummy may receive the swing. The optional AttackDummy step keeps its existing ID and advances when the permitted swing starts. Skill casts remain disabled.

@@ -22,6 +22,7 @@ public partial class Player
     {
         bool wantsToBlock = Mouse.current != null && Mouse.current.rightButton.isPressed
             && GameStateManager.AllowsGameplayInput
+            && !IsVillageSafeZone()
             && !_isDead && !_isHit && !_isAttacking && !IsAimingSkill && !IsGroundTargeting;
 
         if (_isBlocking && (!wantsToBlock || !_stats.IsBlocking)) StopBlocking();
@@ -33,6 +34,7 @@ public partial class Player
         _isBlocking = true;
         _stats.IsBlocking = true;
         SetShieldFxEnabled(true);
+        SoundFXManager.PlaySfx(SfxIds.CombatShieldRaise);
     }
 
     private void StopBlocking()

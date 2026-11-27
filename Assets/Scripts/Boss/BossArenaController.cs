@@ -57,6 +57,8 @@ public sealed class BossArenaController : MonoBehaviour
     [SerializeField] private Rect _walkableBounds = new Rect(-31.8f, -16f, 63.6f, 31.7f);
     [Tooltip("D-110: optional outline for non-rectangular arenas (Wind's cross-shaped platform); empty = the rectangle only.")]
     [SerializeField] private Vector2[] _walkablePolygon;
+    [Tooltip("Keep the player inside the rectangular arena if knockback bypasses the collision edges.")]
+    [SerializeField] private bool _containPlayer;
 
     [Header("Flow")]
     [SerializeField, Min(0f)] private float _resetDelaySeconds = 4f;
@@ -65,6 +67,7 @@ public sealed class BossArenaController : MonoBehaviour
     private SkillFrameAnimator _statueAnimator;
     private BossController _boss;
     private float _sealAlpha;
+    private Rigidbody2D _playerBody;
 
     public ArenaState State { get; private set; } = ArenaState.StatueIdle;
     public ItemSO SummonItem => _summonItem;
@@ -120,6 +123,40 @@ public sealed class BossArenaController : MonoBehaviour
             TrySummon();
         else if (Keyboard.current.f7Key.wasPressedThisFrame)
             ForceReset();
+    }
+
+    private void LateUpdate()
+    {
+        if (!_containPlayer)
+            return;
+
+        if (_playerBody == null)
+        {
+            foreach (Player player in FindObjectsByType<Player>(FindObjectsSortMode.None))
+            {
+                if (player.gameObject.scene == gameObject.scene && player.TryGetComponent(out _playerBody))
+                    break;
+            }
+        }
+
+        if (_playerBody == null || !_playerBody.simulated)
+            return;
+
+        // Allow room for the player's feet collider so the correction leaves it inside the wall.
+        const float inset = 0.45f;
+        Vector2 position = _playerBody.position;
+        Vector2 corrected = new Vector2(
+            Mathf.Clamp(position.x, _walkableBounds.xMin + inset, _walkableBounds.xMax - inset),
+            Mathf.Clamp(position.y, _walkableBounds.yMin + inset, _walkableBounds.yMax - inset));
+        Vector2 correction = corrected - position;
+        if (correction.sqrMagnitude == 0f)
+            return;
+
+        Vector2 velocity = _playerBody.linearVelocity;
+        if (velocity.x * correction.x < 0f) velocity.x = 0f;
+        if (velocity.y * correction.y < 0f) velocity.y = 0f;
+        _playerBody.position = corrected;
+        _playerBody.linearVelocity = velocity;
     }
 
     /// <summary>Starts the summon if the statue is waiting. Returns false if a summon/fight is running.</summary>

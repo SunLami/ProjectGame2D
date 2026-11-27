@@ -77,7 +77,7 @@ public sealed partial class BossController
 
             Vector2 origin = transform.position;
             float angle = AngleOf(PredictedPlayerPosition(0.15f) - origin);
-            float windup = Mathf.Max(0.5f, Tele(_definition.clampWindup) * 0.65f);
+            float windup = Mathf.Max(0.65f, Tele(_definition.clampWindup) * 0.65f); // D-121: 0.5 s floor was below reaction + escape time
             ShowFan(origin, angle, arc, radius, windup);
             WaterSfx(SfxIds.BosswClawWindup, origin);
             PlayClip(BossClipId.Snap, windup);

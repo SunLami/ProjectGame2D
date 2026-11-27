@@ -18,8 +18,8 @@ using UnityEngine.UI;
 ///   - player is inside (AreaZoneRegistry.IsPlayerInside): direction indicators hide because
 ///     there is nowhere further to walk
 ///
-/// NPC targets take priority over area targets (checked first each frame) since talking to
-/// someone is usually the more immediate action. Hides everything when neither resolves.
+/// Tracked NPC and area targets take priority over unaccepted quest offers.
+/// Hides everything when no target resolves.
 ///
 /// Uses ProceduralArrowSprite as placeholder art until real arrow sprites exist -- only the
 /// Image components' sprite needs swapping later, this script only rotates/positions them.
@@ -121,7 +121,7 @@ public sealed class QuestDirectionIndicator : MonoBehaviour
             return;
         }
 
-        if (TryResolveNpcTarget(out Transform npcTarget))
+        if (TryResolveNpcTarget(_questManager.GetActionableNpcIds(includeOffers: false), out Transform npcTarget))
         {
             UpdateForNpcTarget(npcTarget);
             return;
@@ -133,6 +133,12 @@ public sealed class QuestDirectionIndicator : MonoBehaviour
             return;
         }
 
+        if (TryResolveNpcTarget(_questManager.GetAvailableOfferNpcIds(), out npcTarget))
+        {
+            UpdateForNpcTarget(npcTarget);
+            return;
+        }
+
         HideAll();
     }
 
@@ -140,9 +146,9 @@ public sealed class QuestDirectionIndicator : MonoBehaviour
     // Town Elder quest being offered while the player is off in a Training Area) -- QuestManager
     // only knows quest state, so it can't filter for that; walk its priority-ordered candidates
     // here until one actually resolves to a live Transform via the scene registry.
-    private bool TryResolveNpcTarget(out Transform target)
+    private static bool TryResolveNpcTarget(System.Collections.Generic.IEnumerable<string> npcIds, out Transform target)
     {
-        foreach (string npcId in _questManager.GetActionableNpcIds())
+        foreach (string npcId in npcIds)
         {
             if (QuestNpcRegistry.TryGet(npcId, out target))
                 return true;
@@ -261,12 +267,14 @@ public sealed class QuestDirectionIndicator : MonoBehaviour
         if (fromCenter.sqrMagnitude < 0.001f)
             fromCenter = Vector3.up;
 
-        float halfWidth = Mathf.Max(1f, Screen.width / 2f - _edgeMargin);
-        float halfHeight = Mathf.Max(1f, Screen.height / 2f - _edgeMargin);
-
-        float scaleX = halfWidth / Mathf.Max(0.001f, Mathf.Abs(fromCenter.x));
-        float scaleY = halfHeight / Mathf.Max(0.001f, Mathf.Abs(fromCenter.y));
-        float scale = Mathf.Min(scaleX, scaleY);
+        // Reserve the left tracker, bottom HUD/tutorial and upper-right minimap.
+        // Intersect the original target ray with the inset so its bearing stays accurate.
+        float horizontalInset = fromCenter.x < 0f ? 0.24f : 0.16f;
+        float verticalInset = fromCenter.y < 0f ? 0.38f : 0f;
+        float maxX = Mathf.Max(1f, Screen.width * 0.5f - Mathf.Max(_edgeMargin, Screen.width * horizontalInset));
+        float maxY = Mathf.Max(1f, Screen.height * 0.5f - Mathf.Max(_edgeMargin, Screen.height * verticalInset));
+        float scale = Mathf.Min(maxX / Mathf.Max(0.001f, Mathf.Abs(fromCenter.x)),
+            maxY / Mathf.Max(0.001f, Mathf.Abs(fromCenter.y)));
 
         _edgeIndicator.position = screenCenter + fromCenter * scale;
 

@@ -100,9 +100,9 @@ navigation/state.
   — **không đặt Image và TextMeshProUGUI trên cùng một GameObject cho trường hợp này**, vì cả hai đều bắt
   buộc `CanvasRenderer` riêng và một GameObject chỉ có một `CanvasRenderer` dùng chung, khiến chỉ một trong
   hai render được. Status, metadata và action label vẫn dùng TMP vì là dữ liệu động.
-- `SettingsPage` dùng `settings_board_v1`/`settings_title_v1` (Dark Inventory); slider, toggle và
-  Save/Cancel giữ component tương tác Unity nhưng presentation dùng sprite `_v1` đồng bộ MainMenu. Reskin
-  không chuyển ownership ra khỏi `SettingsService`.
+- `SettingsPage` dùng chung khung `save_slot_card_v1` với New Game và Continue. Tiêu đề SETTINGS
+  dùng TMP/Digital Disco, căn giữa bên trong khung dưới huy hiệu sapphire. Hai nhãn âm lượng và ô tích Fullscreen dùng chung lề trái, với nhãn Fullscreen cách ô tích 16 đơn vị. Footer dùng `landing_action_button_v1` cho cả Cancel và Save,
+  với Save bên phải và nhãn vàng. `SettingsService` tiếp tục sở hữu giá trị và lưu cài đặt.
 - SFX và Music dùng chung `settings_slider_track_v1`/`settings_slider_handle_v1` để hình học, hit target
   và feedback nhất quán; giá trị runtime vẫn do `UnityEngine.UI.Slider` và `SettingsService` sở hữu.
 - Fullscreen dùng cặp `settings_checkbox_unchecked_v1`/`settings_checkbox_checked_v1` cùng hình học;
@@ -351,6 +351,8 @@ scene Style Guide riêng; mỗi UI được migration trực tiếp trên prefab
   danger tint. Popup reskin không thay confirmation kind, callback hoặc session ownership.
 
 ### Tutorial overlay visual direction
+
+- Phím `P` ẩn hoặc hiện khung Tutorial và gợi ý nhiệm vụ trong phiên hiện tại. Tiến độ Tutorial vẫn tiếp tục.
 
 - DemoScene `TutorialOverlayRoot` giữ nguyên `TutorialOverlayUI`, `TutorialManager`, step binding và
   Skip callback; reskin chỉ thay presentation, không sở hữu tutorial progression hoặc `Time.timeScale`.
@@ -709,6 +711,8 @@ Skill HUD is ordered below gameplay popups in the shared HUD prefab. The Quest L
 auto-hides without expanding the viewport past its authored inset. Track/Untrack and Abandon
 use 96×32 buttons with centered labels.
 
+Off-screen quest indicators follow the target bearing inside viewport insets reserved for the Quest Tracker, tutorial banner, minimap and bottom HUD. Tracked objectives take priority over available offers.
+
 Quest direction arrows are hidden during modal UI, including the independent Quest Offer, Shop, Crafting and Farm Storage overlays. Full Map uses a dedicated top Canvas and GraphicRaycaster authored on MapPopup, leaving only the map and its own controls visible.
 
 Character Stats (C) now uses a generated textless walnut/brass/sapphire frame and the Inventory Digital Disco font, close button and equipment slot sprite. The window displays seven read-only equipment rows, a level badge, live Health/Mana/Stamina meters and cards for Combat, Mobility and Recovery.
@@ -735,3 +739,24 @@ PlayerDead freezes the world and opens a blocking popup with a real-time 30-seco
 The death popup displays its bronze and crimson board art at full sprite color over a dimmed backdrop, with a centered blue return button. TextMeshPro renders the title, countdown, and button label.
 
 Quest Log resolves filter controls whenever it enables. Settings and save UI tolerate temporarily absent services during Editor script reload.
+
+The Minimap and M popup share the Bootstrap HUD. Live camera binding prefers the active supported
+world and also resolves a loaded gameplay scene when direct Editor Play leaves Bootstrap active.
+The map feed reads the selected world's Main Camera and BorderMap. Its own Cinemachine channels
+stay isolated from gameplay. Zone labels rebind when the selected world changes.
+
+Knacker and Herbalist in MapDuy use the standard NPC Talk cursor and white hover outline. Knacker’s interaction collider covers the offset imported sprite as well as its feet.
+
+Heart Village (MapNhat) blocks player skill casts, including aimed casts at confirmation, before consuming mana or starting cooldown.
+
+### Summoning Shrine
+
+The shared D-090 popup in the Earth, Water and Wind arenas uses a 960×600 viewport-fitted board.
+`UI/BossShrine/summoning_shrine_board_v1` is a textless sprite with a transparent exterior.
+The empty socket uses Inventory art, the footer uses Boss Teleport button art and the close
+button uses the shared map close sprite. Titles, boss and offering names, item icons, counts,
+and hints are populated by Unity.
+
+ImageGen prompt used:
+
+> Use case: stylized-concept. Create one production-ready textless pixel-art UI panel sprite for the Summoning Shrine in an original 2D fantasy RPG. Landscape rectangular, roughly 1.6:1. Front-on absolutely flat and perfectly symmetric, no perspective. Thin antique-gold beveled trim around a dark walnut and carved slate border, subtle tiny turquoise sapphire at top center, modest gold corner rivets. Opaque deep warm charcoal interior, nearly flat with very faint stone grain, uninterrupted across the central 88% so game controls and text sit on it. Frame thickness about 4% of width, small ornaments stay within the perimeter. Outer edges crisp 16-bit pixel clusters, limited palette, rich warm bronze rim highlights, no bloom or gradient haze. Panel fills the canvas with a narrow evenly transparent gutter outside. Truly transparent exterior. No words, runes, symbols besides top sapphire, buttons, slots, orb, scenery, logo, or characters. One sprite only.

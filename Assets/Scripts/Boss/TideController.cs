@@ -15,8 +15,6 @@ public sealed class TideController : MonoBehaviour
     [SerializeField] private float _lowTideY = 8f;
     [SerializeField] private float _minX = -31.8f;
     [SerializeField] private float _maxX = 31.8f;
-    [Tooltip("Top of the water sheet (somewhere above the visible arena).")]
-    [SerializeField] private float _topY = 30f;
     [SerializeField] private Color _waterColor = new Color(0.2f, 0.62f, 0.9f, 0.34f);
     [SerializeField] private Color _foamColor = new Color(0.92f, 0.98f, 1f, 0.8f);
 
@@ -24,11 +22,16 @@ public sealed class TideController : MonoBehaviour
     private int _phase;
     private bool _active;
     private float _clock;
-    private Transform _sheet;
+    private SpriteRenderer _sheet;
+    private Texture2D _sheetTexture;
+    private Sprite _sheetSprite;
+    private SpriteRenderer[] _edgeTiles;
     private Transform _foam;
     private Transform _edge;       // animated shoreline tiles (TideEdge_Flow) riding the water line
     private float _edgeLift;       // tile centre above the water line so its foam crest sits exactly on it
     private Player _player;
+    private SfxLoopHandle _tideLoop;   // lapping waves, louder the higher the water
+    private int _sfxCycle = -1;        // tide cycle index that already played its "tide coming in" cue
 
     public bool Active => _active;
     public float LowTideY => _lowTideY;
@@ -49,6 +52,9 @@ public sealed class TideController : MonoBehaviour
     {
         if (Instance == this)
             Instance = null;
+        StopTideSfx();
+        if (_sheetSprite != null) Destroy(_sheetSprite);
+        if (_sheetTexture != null) Destroy(_sheetTexture);
     }
 
     public void Configure(float lowTideY, float minX, float maxX)
@@ -64,6 +70,7 @@ public sealed class TideController : MonoBehaviour
         _definition = definition;
         _phase = 0;
         _clock = 0f;
+        _sfxCycle = -1;
         _active = true;
     }
 
@@ -71,35 +78,63 @@ public sealed class TideController : MonoBehaviour
     {
         _phase = Mathf.Max(0, phase);
         _clock = 0f; // a new phase restarts the cycle at low tide
+        _sfxCycle = -1;
     }
 
     public void EndFight()
     {
         _active = false;
+        StopTideSfx();
     }
 
     public bool IsShallow(Vector2 point) => _active && point.y > WaterLineY;
 
     private void Update()
     {
+        float depth = _definition != null
+            ? BossDefinition.PerPhase(_definition.tideDepthByPhase, _phase, 8f) : 0f;
         if (_active && _definition != null)
         {
             float cycle = Mathf.Max(2f, BossDefinition.PerPhase(_definition.tideCycleSecondsByPhase, _phase, 40f));
-            float depth = BossDefinition.PerPhase(_definition.tideDepthByPhase, _phase, 8f);
             _clock += Time.deltaTime;
+            // Each cycle starts at low tide and rises first: one "tide coming in" cue per cycle.
+            int cycleIndex = Mathf.FloorToInt(_clock / cycle);
+            if (cycleIndex != _sfxCycle)
+            {
+                _sfxCycle = cycleIndex;
+                SoundFXManager.PlaySfx(SfxIds.BosswTideRise);
+            }
             float wave = 0.5f - 0.5f * Mathf.Cos(_clock / cycle * Mathf.PI * 2f);
             // Flood phase: the water never drains completely.
             Level = _phase >= 2 ? Mathf.Lerp(0.35f, 1f, wave) : wave;
-            WaterLineY = _lowTideY - depth * Level;
         }
         else
         {
             Level = Mathf.MoveTowards(Level, 0f, Time.deltaTime * 0.5f);
-            WaterLineY = _lowTideY;
         }
 
+        WaterLineY = _lowTideY - depth * Level;
         UpdateVisuals();
+        UpdateTideSfx();
         SlowPlayerInWater();
+    }
+
+    private void UpdateTideSfx()
+    {
+        if (!_active)
+        {
+            StopTideSfx();
+            return;
+        }
+        if (_tideLoop == null || !_tideLoop.IsPlaying)
+            _tideLoop = SoundFXManager.StartLoop(SfxIds.BosswTideLoop, 0f, 1f, 1f);
+        _tideLoop?.SetLevel(Mathf.Lerp(0.15f, 1f, Level));
+    }
+
+    private void StopTideSfx()
+    {
+        _tideLoop?.Stop(1f);
+        _tideLoop = null;
     }
 
     private void SlowPlayerInWater()
@@ -115,75 +150,96 @@ public sealed class TideController : MonoBehaviour
 
     private void BuildVisuals()
     {
-        // below the animated sea tiles (-180) so the surf and shoreline of the map stay visible; only the sand below is flooded
-        _sheet = MakeBar("TideWater", _waterColor, -185);
-        _foam = MakeBar("TideFoam", _foamColor, -184);
+        // Overlay the base and the animated sea strips together so the tint cannot show through
+        // the small spaces between strips. Fade into the sea instead of drawing a hard top edge.
+        _sheet = MakeBar("TideWater", _waterColor, -179);
+        const int textureSize = 128;
+        _sheetTexture = new Texture2D(textureSize, textureSize, TextureFormat.RGBA32, false)
+        {
+            filterMode = FilterMode.Bilinear,
+            wrapMode = TextureWrapMode.Clamp
+        };
+        var pixels = new Color32[textureSize * textureSize];
+        for (int y = 0; y < textureSize; y++)
+        for (int x = 0; x < textureSize; x++)
+        {
+            float vertical = 1f - Mathf.SmoothStep(0f, 1f, (float)y / (textureSize - 1));
+            float horizontal = Mathf.Clamp01(Mathf.Min(x, textureSize - 1 - x) / 2f);
+            pixels[y * textureSize + x] = new Color(1f, 1f, 1f, vertical * horizontal);
+        }
+        _sheetTexture.SetPixels32(pixels);
+        _sheetTexture.Apply(false, true);
+        _sheetSprite = Sprite.Create(_sheetTexture, new Rect(0f, 0f, textureSize, textureSize),
+            new Vector2(0f, 0.5f), textureSize, 0, SpriteMeshType.FullRect);
+        _sheet.sprite = _sheetSprite;
 
-        // D-106: generated, animated shoreline (water ripples + foam crest) tiled along the whole water line
         Sprite[] frames = BossVfx.Frames("Water/TideEdge_Flow");
         if (frames == null || frames.Length == 0)
+        {
+            _foam = MakeBar("TideFoam", _foamColor, -178).transform;
+            UpdateVisuals();
             return;
+        }
 
         var root = new GameObject("TideEdge");
         root.transform.SetParent(transform, false);
-        const float tileSize = 3.6f;
-        float scale = tileSize / Mathf.Max(0.5f, frames[0].bounds.size.x);
-        int count = Mathf.CeilToInt((_maxX - _minX) / tileSize) + 1;
+        int count = Mathf.Max(1, Mathf.CeilToInt((_maxX - _minX) / 3.6f));
+        float tileSize = (_maxX - _minX) / count;
+        float scale = tileSize / frames[0].bounds.size.x;
+        float verticalScale = scale * 0.55f;
+        _edgeTiles = new SpriteRenderer[count];
         for (int i = 0; i < count; i++)
         {
-            var tile = new GameObject("Tile" + i);
+            var tile = MakeBar("Tile" + i, Color.white, -178);
             tile.transform.SetParent(root.transform, false);
-            tile.transform.localPosition = new Vector3(i * tileSize + tileSize * 0.5f, 0f, 0f);
-            tile.transform.localScale = Vector3.one * scale;
-            var renderer = tile.AddComponent<SpriteRenderer>();
-            renderer.sortingLayerName = "Default";
-            renderer.sortingOrder = -183;
-            tile.AddComponent<SkillFrameAnimator>().Play(frames, 9f, true, Random.value * 0.2f);
+            tile.transform.localPosition = new Vector3((i + 0.5f) * tileSize, 0f, 0f);
+            tile.transform.localScale = new Vector3(scale, verticalScale, 1f);
+            _edgeTiles[i] = tile;
+            // Adjacent tiles use the same animation frame so the crest remains continuous.
+            tile.gameObject.AddComponent<SkillFrameAnimator>().Play(frames, 9f, true);
         }
 
-        // the foam crest of the art sits about 42 px below the sprite centre (176 px frame, 48 px per unit)
-        _edgeLift = 42f / 48f * scale;
+        // The bottom of the foam sits 50 pixels below the centre of the 176-pixel source frame.
+        _edgeLift = 50f / frames[0].pixelsPerUnit * verticalScale;
         _edge = root.transform;
-        _foam.gameObject.SetActive(false);
-        var sheetRenderer = _sheet.GetComponent<SpriteRenderer>();
-        sheetRenderer.color = new Color(_waterColor.r, _waterColor.g, _waterColor.b, _waterColor.a * 0.7f);
+        UpdateVisuals();
     }
 
-    private static Transform MakeBar(string name, Color color, int order)
+    private SpriteRenderer MakeBar(string name, Color color, int order)
     {
         var go = new GameObject(name);
+        go.transform.SetParent(transform, false);
         var renderer = go.AddComponent<SpriteRenderer>();
-        renderer.sprite = BossTelegraph.SquareSprite; // 1x1 unit, pivot left-centre
+        renderer.sprite = BossTelegraph.SquareSprite;
         renderer.color = color;
         renderer.sortingLayerName = "Default";
         renderer.sortingOrder = order;
-        return go.transform;
+        return renderer;
     }
 
     private void UpdateVisuals()
     {
         float width = _maxX - _minX;
-        if (_sheet != null)
-        {
-            // from the water line up to the top (only where the tide has actually risen above the low-tide shoreline)
-            float height = Mathf.Max(0f, _topY - WaterLineY);
-            _sheet.position = new Vector3(_minX, WaterLineY + height * 0.5f, 0f);
-            _sheet.localScale = new Vector3(width, height, 1f);
-            _sheet.gameObject.SetActive(Level > 0.02f);
-        }
+        float opacity = Mathf.SmoothStep(0f, 1f, Mathf.Clamp01(Level / 0.18f));
+        float height = Mathf.Max(0f, _lowTideY + 5f - WaterLineY);
+        _sheet.transform.position = new Vector3(_minX, WaterLineY + height * 0.5f, 0f);
+        _sheet.transform.localScale = new Vector3(width, height, 1f);
+        _sheet.color = new Color(_waterColor.r, _waterColor.g, _waterColor.b, _waterColor.a * opacity);
+        _sheet.gameObject.SetActive(opacity > 0f);
 
         if (_edge != null)
         {
-            float wobble = Mathf.Sin(Time.time * 2.2f) * 0.12f;
-            _edge.position = new Vector3(_minX, WaterLineY + _edgeLift + wobble, 0f);
-            _edge.gameObject.SetActive(Level > 0.02f);
+            _edge.position = new Vector3(_minX, WaterLineY + _edgeLift, 0f);
+            _edge.gameObject.SetActive(opacity > 0f);
+            foreach (SpriteRenderer tile in _edgeTiles)
+                tile.color = new Color(1f, 1f, 1f, _foamColor.a * opacity);
         }
         else if (_foam != null)
         {
-            float wobble = Mathf.Sin(Time.time * 2.2f) * 0.12f;
-            _foam.position = new Vector3(_minX, WaterLineY + wobble, 0f);
-            _foam.localScale = new Vector3(width, 0.35f, 1f);
-            _foam.gameObject.SetActive(Level > 0.02f);
+            _foam.position = new Vector3(_minX, WaterLineY + 0.125f, 0f);
+            _foam.localScale = new Vector3(width, 0.25f, 1f);
+            _foam.GetComponent<SpriteRenderer>().color = new Color(_foamColor.r, _foamColor.g, _foamColor.b, _foamColor.a * opacity);
+            _foam.gameObject.SetActive(opacity > 0f);
         }
     }
 }

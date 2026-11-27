@@ -171,6 +171,13 @@ bóng theo `FlipHorizontal` chạy ở runtime — gây lệch kép vì giá tr�
 lệch cần thiết. Đã bỏ phép cộng đó.) Nếu cảnh sau cần một actor đổi bên (flip) giữa các dòng thoại
 trong cùng một cảnh, đây là chỗ cần thiết kế lại trước, không tự ý thêm lại offset runtime.
 
+### 8b. Kích thước bong bóng: 1 texel = 1 px, cao theo chữ (D-123)
+`SpeechBubble` rộng cố định 7,511 unit (sprite `dialogbox_2` 507 px ở 67,5 px/unit), chữ 32 px
+(0,474 unit), background `Image` kiểu **Sliced** với `Pixels Per Unit Multiplier = 67.5`, pivot `_root`
+= (0.5, 0) tại đầu đuôi. `ActorSpeechBubble` tự đặt chiều cao theo body text mỗi dòng thoại
+(`_fitHeightToText`, `_minHeight`). Body `RectTransform` phải giãn dọc (anchor y 0→1) với offset cố định,
+nếu không phép tính chrome = cao bong bóng − cao body sẽ sai. Chi tiết số liệu: `DevelopmentPlan/IntroCutscene.md`.
+
 ### 9. Actor double không được có `PlayerAnimationEvent`
 Hệ quả trực tiếp của mục #1: bỏ `PlayerAnimationEvent` (dùng để phát âm thanh bước chân) khiến
 Animation clip `WalkRight`/... log warning "no receiver" cho `AnimationEvent PlayFootSteps`. Vô hại

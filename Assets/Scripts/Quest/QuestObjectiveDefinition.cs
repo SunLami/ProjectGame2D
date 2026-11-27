@@ -28,6 +28,12 @@ public sealed class QuestObjectiveDefinition
         + "at an NPC (e.g. Purchase at a shop keeper).")]
     [SerializeField] private string _navigationNpcId;
 
+    [Tooltip("When set, NPC navigation and its hint apply only while this item is missing.")]
+    [SerializeField] private string _navigationMissingItemId;
+    [SerializeField, TextArea] private string _navigationMissingItemHint;
+
+    public string NavigationMissingItemId => _navigationMissingItemId;
+    public string NavigationMissingItemHint => _navigationMissingItemHint;
     public string ControlHint => _controlHint;
     public string NavigationAreaId => _navigationAreaId;
     public string NavigationNpcId => _navigationNpcId;

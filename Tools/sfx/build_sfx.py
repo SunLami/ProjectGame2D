@@ -1,4 +1,4 @@
-"""SFX build pipeline: Freesound previews -> game-ready mono WAV/OGG + QA report + CREDITS + catalog.json for Unity.
+"""SFX build pipeline: Pixabay sound effects (and legacy Freesound previews) -> game-ready mono WAV/OGG + QA report + CREDITS + catalog.json for Unity.
 
   python Tools/sfx/build_sfx.py [--only sfx.combat.*] [--force]
 
@@ -22,12 +22,15 @@ import numpy as np
 
 sys.path.insert(0, os.path.dirname(__file__))
 import fs  # noqa: E402
+import px  # noqa: E402
+import loudness  # noqa: E402
+import px_loudness  # noqa: E402
 
 ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
 SFX_DIR = os.path.join(ROOT, "Assets", "Resources", "Audio", "SFX")
 CATALOG_JSON = os.path.join(ROOT, "Assets", "Editor", "Sfx", "sfx_catalog.json")
 OUT_DIR = os.path.join(os.path.dirname(__file__), "out")
-WORK = os.path.join(os.environ.get("TEMP", "/tmp"), "sfx_work")
+WORK = os.path.join(os.environ.get("SFX_WORK") or os.environ.get("TEMP", "/tmp"), "sfx_work")
 SR = 44100
 CAT_RMS = {"Combat": -17, "Skill": -17, "Boss": -15, "World": -19, "UI": -20, "Quest": -19, "Commerce": -19,
            "Fishing": -19, "Farming": -20, "Player": -17, "System": -19, "Ambience": -26}
@@ -95,15 +98,27 @@ def prepare(clip, mp3, loop):
     a = decode(mp3, clip)
     if clip.start:
         a = a[int(clip.start * SR):]
+    align = getattr(clip, "align", None)
+    if align is not None and not loop and len(a):
+        # start `align` seconds before the loudest moment (impacts / whooshes whose source has a quiet lead-in)
+        a = a[max(0, int(np.argmax(np.abs(a))) - int(align * SR)):]
     if clip.rev:
         a = a[::-1].copy()
     if not loop:
         a = trim_leading(a)
     if clip.dur:
+        full_peak = float(np.max(np.abs(a))) if len(a) else 0.0
         a = a[: int(clip.dur * SR)]
+        kept_peak = float(np.max(np.abs(a))) if len(a) else 0.0
+        if not loop and full_peak > 1e-6 and db(kept_peak) < db(full_peak) - 6:
+            PEAK_CUT.append(f"{getattr(clip, 'note', '') or clip.fs_id}: loudest part is after dur={clip.dur}s "
+                            f"({db(kept_peak) - db(full_peak):.0f} dB) - use align= or a longer dur")
     if not loop:
         a = trim_trailing(a)
     return a
+
+
+PEAK_CUT = []
 
 
 def shape(a, fade_s, peak_db, gain_db, loop, xfade):
@@ -176,6 +191,22 @@ def balance(arrays, target_db):
     return out
 
 
+def balance_lufs(arrays, target, loop):
+    """Perceived-loudness pass (px_loudness.py tiers): every variant of an id lands on the same active LUFS. Short
+    transients that would clip are bent by a soft limiter (up to ~6 dB) before the hard -1 dB ceiling."""
+    out = []
+    for a in arrays:
+        b = a * (10 ** ((target - loudness.active_lufs(a)) / 20))
+        if not loop:
+            b = loudness.soft_limit(b, ceiling_db=-1.0, knee_db=6.0)
+        peak = float(np.max(np.abs(b))) if len(b) else 0.0
+        cap = 10 ** (-1.0 / 20)
+        if peak > cap:
+            b = b * (cap / peak)
+        out.append(np.clip(b, -1.0, 1.0).astype(np.float32))
+    return out
+
+
 def metrics(a):
     if len(a) == 0:
         return {}
@@ -187,6 +218,7 @@ def metrics(a):
     centroid = float(np.sum(freqs * spec) / max(np.sum(spec), 1e-9))
     lead = int(np.argmax(np.abs(a) > 10 ** (-42 / 20))) / SR
     return {"duration": round(len(a) / SR, 3), "peak_db": round(db(peak), 1), "rms_db": round(db(rms), 1),
+            "lufs": round(loudness.active_lufs(a), 1),
             "centroid_hz": int(centroid), "clipped": int(np.sum(np.abs(a) >= 0.999)), "lead_s": round(lead, 3)}
 
 
@@ -202,7 +234,11 @@ def write_wav(path, a):
 def write_ogg(path, a):
     tmp = path + ".tmp.wav"
     write_wav(tmp, a)
-    subprocess.run(["ffmpeg", "-v", "error", "-y", "-i", tmp, "-c:a", "libvorbis", "-q:a", "4", path], check=True)
+    import shutil
+    if shutil.which("oggenc"):  # Homebrew ffmpeg ships without libvorbis; vorbis-tools' oggenc is the same encoder
+        subprocess.run(["oggenc", "-Q", "-q", "4", "-o", path, tmp], check=True)
+    else:
+        subprocess.run(["ffmpeg", "-v", "error", "-y", "-i", tmp, "-c:a", "libvorbis", "-q:a", "4", path], check=True)
     os.remove(tmp)
 
 
@@ -228,7 +264,9 @@ def main():
         os.makedirs(folder, exist_ok=True)
         files = []
         ext = "ogg" if e["loop"] else "wav"
-        names = [f"{file_stem(sfx_id)}_{i}.{ext}" for i in range(1, len(e["clips"]) + 1)]
+        names = e.get("names") or [f"{file_stem(sfx_id)}_{i}.{ext}" for i in range(1, len(e["clips"]) + 1)]
+        if len(names) != len(e["clips"]):
+            raise SystemExit(f"{sfx_id}: {len(names)} file names for {len(e['clips'])} clips")
         outs = [os.path.join(folder, n) for n in names]
         rels = [f"Assets/Resources/Audio/SFX/{e['cat']}/{n}" for n in names]
         files.extend(rels)
@@ -239,6 +277,10 @@ def main():
                     metas = []
 
                     def mp3_for(fs_id, metas=metas):
+                        if px.is_px(fs_id):
+                            mp3, meta = px.fetch(fs_id, WORK)
+                            metas.append(meta)
+                            return mp3
                         mp3 = os.path.join(WORK, f"{fs_id}.mp3")
                         if not os.path.exists(mp3):
                             meta, _ = fs.download_preview(fs_id, mp3)
@@ -252,12 +294,13 @@ def main():
 
                     arrays.append(process(clip, mp3_for, e["loop"]))
                     metas_per_clip.append(metas)
-                arrays = balance(arrays, e["rms"] if e["rms"] is not None else CAT_RMS.get(e["cat"], -18))
+                arrays = balance_lufs(arrays, px_loudness.file_lufs(sfx_id), e["loop"])
                 for clip, audio, out, rel, metas in zip(e["clips"], arrays, outs, rels, metas_per_clip):
                     (write_ogg if e["loop"] else write_wav)(out, audio)
                     m = metrics(audio)
                     m.update(sfx=sfx_id, sources=[{"fs": meta["id"], "title": meta["title"], "user": meta["user"],
-                                                   "license": fs.license_name(meta["license_url"]), "url": meta["url"]} for meta in metas],
+                                                   "license": meta.get("license") or fs.license_name(meta["license_url"]),
+                                                   "url": meta["url"]} for meta in metas],
                              note=getattr(clip, "note", ""))
                     report[rel] = m
             except Exception as ex:  # keep going: one bad id must not stop the batch
@@ -265,12 +308,20 @@ def main():
         for rel in rels:
             if rel in report:
                 credits[rel] = report[rel]
+        if e.get("names"):
+            # legacy hand-named UI clips: the file is rebuilt in place (same GUID) but the id stays a scene
+            # SoundFXLibrary group (plain shared AudioSource), so it is kept out of the bank catalog
+            continue
         catalog.append({"id": sfx_id, "category": e["cat"], "files": files, "volume": e["vol"], "pitchJitter": e["jitter"],
                         "minInterval": e["cooldown"], "maxVoices": e["voices"], "loop": e["loop"], "desc": e["desc"]})
     json.dump(report, open(report_path, "w"), indent=1)
     json.dump({"entries": catalog}, open(CATALOG_JSON, "w"), indent=1)
     write_credits(credits)
     qa(report, entries)
+    if PEAK_CUT:
+        print("\nPEAK CUT (clip window misses the loudest part of the source):")
+        for p in PEAK_CUT:
+            print("  " + p)
     if problems:
         print("\nPROBLEMS:")
         for p in problems:
@@ -283,7 +334,7 @@ def write_credits(credits):
     text = open(path, encoding="utf-8").read() if os.path.exists(path) else "# Audio SFX Credits\n"
     if MARK_BEGIN in text:
         text = text[: text.index(MARK_BEGIN)].rstrip() + "\n"
-    rows = ["| Output file | Freesound source(s) | Author(s) | License(s) |", "| --- | --- | --- | --- |"]
+    rows = ["| Output file | Source(s) | Author(s) | License(s) |", "| --- | --- | --- | --- |"]
     for rel in sorted(credits):
         r = credits[rel]
         short = rel.replace("Assets/Resources/Audio/SFX/", "")
@@ -294,8 +345,9 @@ def write_credits(credits):
             ", ".join(sorted({x["user"] for x in srcs})),
             ", ".join(sorted({x["license"] for x in srcs})) or "own work"))
     body = (f"\n\n{MARK_BEGIN}\n## Generated catalog (combat, skills, bosses, world, environment, UI additions)\n\n"
-            "Every file below is a trimmed/filtered/normalised derivative of the linked Freesound preview "
-            "(mono, 44.1 kHz). Files licensed CC BY require this attribution; CC0 files are listed for provenance.\n\n"
+            "Every file below is a trimmed/filtered/normalised derivative (mono, 44.1 kHz) of the linked sound. "
+            "Pixabay sounds are used under the Pixabay Content License (no attribution required; listed for "
+            "provenance). Freesound files licensed CC BY require this attribution; CC0 files are listed for provenance.\n\n"
             + "\n".join(rows) + f"\n{MARK_END}\n")
     open(path, "w", encoding="utf-8").write(text + body)
 

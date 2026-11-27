@@ -56,6 +56,17 @@ public static class QuestNpcRegistry
             return true;
         }
 
+        foreach (TraderNpcInteractionUI npc in Object.FindObjectsByType<TraderNpcInteractionUI>(
+            FindObjectsInactive.Exclude, FindObjectsSortMode.None))
+        {
+            if (!string.Equals(npc.NpcId, npcId, System.StringComparison.Ordinal))
+                continue;
+
+            transform = npc.transform;
+            ById[npcId] = transform;
+            return true;
+        }
+
         transform = null;
         return false;
     }

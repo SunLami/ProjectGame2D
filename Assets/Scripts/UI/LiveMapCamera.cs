@@ -7,6 +7,7 @@ using UnityEngine.SceneManagement;
 internal sealed class LiveMapCamera : IDisposable
 {
     private static Collider2D _mapBorder;
+    private static Camera _mapSource;
     private static Scene _mapScene;
 
     private readonly Camera _output;
@@ -17,29 +18,58 @@ internal sealed class LiveMapCamera : IDisposable
     public RenderTexture Texture { get; }
     public float Aspect => (float)Texture.width / Texture.height;
 
-    public static bool TryGetSource(out Camera source, out Bounds bounds)
+    public static bool SupportsScene(Scene scene) =>
+        scene.name is "MapNhat" or "MapDuy" or "BossArena_Earth" or "BossArena_Water" or "BossArena_Wind";
+
+    public static Scene ResolveWorldScene()
     {
-        var scene = SceneManager.GetActiveScene();
-        bool supportsLiveMap = scene.name is "MapNhat" or "MapDuy" or "BossArena_Earth"
-            or "BossArena_Water" or "BossArena_Wind";
-        source = supportsLiveMap ? Camera.main : null;
+        Scene active = SceneManager.GetActiveScene();
+        if (SupportsScene(active))
+            return active;
+
+        // Direct Editor Play can leave Bootstrap active while its gameplay scene loads additively.
+        for (int index = SceneManager.sceneCount - 1; index >= 0; index--)
+        {
+            Scene loaded = SceneManager.GetSceneAt(index);
+            if (loaded.isLoaded && SupportsScene(loaded))
+                return loaded;
+        }
+
+        return active;
+    }
+
+    public static bool TryGetSource(Scene scene, out Camera source, out Bounds bounds)
+    {
+        source = null;
         bounds = default;
-        if (source == null || source.gameObject.scene != scene)
+        if (!scene.isLoaded || !SupportsScene(scene))
             return false;
 
-        if (_mapBorder == null || _mapScene != scene)
+        if (_mapScene != scene)
         {
             _mapScene = scene;
             _mapBorder = null;
+            _mapSource = null;
+        }
+
+        if (_mapBorder == null || _mapSource == null || !_mapSource.isActiveAndEnabled)
+        {
+            _mapSource = null;
             foreach (GameObject root in scene.GetRootGameObjects())
             {
-                if (root.name != "BorderMap") continue;
-                _mapBorder = root.GetComponent<Collider2D>();
-                break;
+                if (root.name == "BorderMap")
+                    _mapBorder = root.GetComponent<Collider2D>();
+
+                if (root.CompareTag("MainCamera") && root.TryGetComponent(out Camera camera)
+                    && camera.isActiveAndEnabled)
+                    _mapSource = camera;
             }
         }
-        if (_mapBorder == null) return false;
 
+        if (_mapSource == null || _mapBorder == null)
+            return false;
+
+        source = _mapSource;
         bounds = _mapBorder.bounds;
         return bounds.size.x > 0f && bounds.size.y > 0f;
     }

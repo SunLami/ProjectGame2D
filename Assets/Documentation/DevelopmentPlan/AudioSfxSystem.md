@@ -266,3 +266,7 @@ generate bằng AI prompt.
 Unmapped tiles use the scene footstep fallback. During additive transitions, outgoing scene listeners are disabled before the incoming scene activates.
 
 If an Editor reload interrupts an additive transition, the scene flow retains one active listener with preference for the active scene.
+
+2026-11-27 owner revision: background music is Main Menu only. MapNhat uses its existing village and forest SFX beds, and MapDuy and the boss arenas retain their authored ambience profiles. Music settings remain independent of ambience and other SFX.
+
+2026-11-27 — MapNhat footsteps use tile sounds with a grass fallback and lower walk gain than run gain. The village/forest layers use 0.48/0.22 and the UI category uses 0.85 in the MapNhat scene mix.

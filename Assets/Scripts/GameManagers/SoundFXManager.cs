@@ -90,16 +90,23 @@ public class SoundFXManager : MonoBehaviour
         }
     }
 
-    public static void PlayFootSteps(float volumeScale)
+    public static void PlayFootSteps(Vector2 playerPosition, bool isRunning)
     {
-        AudioClip clip = null;
-        if (Instance != null && Instance._playerFootPos != null && MapManager.Instance != null)
-            clip = MapManager.Instance.GetCurrentTileAudioClip(Instance._playerFootPos.position);
+        if (Instance == null || _audioSource == null)
+            return;
+
+        var map = MapManager.Instance;
+        Vector2 position = Instance._playerFootPos != null
+            ? (Vector2)Instance._playerFootPos.position
+            : playerPosition;
+        AudioClip clip = map != null ? map.GetCurrentTileAudioClip(position) : null;
+        bool inVillage = map != null && map.gameObject.scene.name == "MapNhat";
+        float volume = inVillage ? (isRunning ? 0.82f : 0.62f) : 1f;
 
         if (clip != null)
-            _audioSource.PlayOneShot(clip, volumeScale);
+            _audioSource.PlayOneShot(clip, volume);
         else if (!string.IsNullOrEmpty(FallbackFootstepId))
-            PlaySfx(FallbackFootstepId, volumeScale);
+            PlaySfx(FallbackFootstepId, volume);
     }
 
     /// <summary>Footstep SFX id used when the tile under the player has no clip (set by <see cref="SceneAmbience"/>

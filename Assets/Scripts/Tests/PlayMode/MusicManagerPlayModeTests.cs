@@ -3,6 +3,13 @@ using UnityEngine;
 
 public sealed class MusicManagerPlayModeTests
 {
+    [SetUp]
+    public void SetUp()
+    {
+        if (MusicManager.Instance != null)
+            Object.DestroyImmediate(MusicManager.Instance.gameObject);
+    }
+
     [TearDown]
     public void TearDown()
     {
@@ -11,7 +18,7 @@ public sealed class MusicManagerPlayModeTests
     }
 
     [Test]
-    public void SceneTrackVolume_IsMultipliedBySettingsVolume_WhenTrackChanges()
+    public void SceneTrackVolume_UsesSettingsAndIgnoresNonMenuSceneTrack()
     {
         AudioClip menuClip = AudioClip.Create("MenuTrack", 64, 1, 44100, false);
         AudioClip gameplayClip = AudioClip.Create("GameplayTrack", 64, 1, 44100, false);
@@ -24,6 +31,10 @@ public sealed class MusicManagerPlayModeTests
 
         GameObject gameplayObject = CreateMusicManager("GameplayMusic", gameplayClip, 0.35f);
 
+        Assert.AreSame(menuClip, persistentSource.clip);
+        Assert.IsFalse(persistentSource.isPlaying);
+
+        MusicManager.SetClip(gameplayClip, trackVolume: 0.35f);
         Assert.AreSame(gameplayClip, persistentSource.clip);
         Assert.AreEqual(0.14f, persistentSource.volume, 0.0001f);
 

@@ -24,274 +24,344 @@ resampled to 44.1 kHz, peak-normalized, and exported as 16-bit PCM WAV.
 <!-- GENERATED:BEGIN (Tools/sfx/build_sfx.py) -->
 ## Generated catalog (combat, skills, bosses, world, environment, UI additions)
 
-Every file below is a trimmed/filtered/normalised derivative of the linked Freesound preview (mono, 44.1 kHz). Files licensed CC BY require this attribution; CC0 files are listed for provenance.
+Every file below is a trimmed/filtered/normalised derivative (mono, 44.1 kHz) of the linked sound. Pixabay sounds are used under the Pixabay Content License (no attribution required; listed for provenance). Freesound files licensed CC BY require this attribution; CC0 files are listed for provenance.
 
-| Output file | Freesound source(s) | Author(s) | License(s) |
+| Output file | Source(s) | Author(s) | License(s) |
 | --- | --- | --- | --- |
-| `Ambience/sfx_amb_beach_1.ogg` | [Gentle Ocean Waves Loop](https://freesound.org/people/kkenny101/sounds/852826/) | kkenny101 | CC0 1.0 |
-| `Ambience/sfx_amb_campfire_1.ogg` | [fire small campfire crackling short +air tone.flac](https://freesound.org/people/kyles/sounds/637523/) | kyles | CC0 1.0 |
-| `Ambience/sfx_amb_cave_1.ogg` | [Dark Cave Factory Atmo.wav](https://freesound.org/people/szegvari/sounds/583474/) | szegvari | CC0 1.0 |
-| `Ambience/sfx_amb_forest_1.ogg` | [Birds in park near forest](https://freesound.org/people/myrinvp/sounds/273538/) | myrinvp | CC0 1.0 |
-| `Ambience/sfx_amb_night_1.ogg` | [campsite night hut crickets fire crackle embers light movements people sleeping +baby moan middle.flac](https://freesound.org/people/kyles/sounds/450573/) | kyles | CC0 1.0 |
-| `Ambience/sfx_amb_village_1.ogg` | [ambience, field, forest, Sergiev Posad](https://freesound.org/people/AlexanderChe/sounds/432066/) | AlexanderChe | CC0 1.0 |
-| `Ambience/sfx_amb_wind_1.ogg` | [Monologue Wind.wav](https://freesound.org/people/dlgebert/sounds/527281/) | dlgebert | CC0 1.0 |
-| `Boss/sfx_boss_arena_lock_1.wav` | [Grinding Sound](https://freesound.org/people/qubodup/sounds/743236/); [HeavyWobblyImpactHit_15](https://freesound.org/people/Johnny25225/sounds/718004/) | Johnny25225, qubodup | CC0 1.0 |
-| `Boss/sfx_boss_awaken_1.wav` | [Scary Monster Roar #2](https://freesound.org/people/NicknameLarry/sounds/489901/); [HeavyWobblyImpactHit_15](https://freesound.org/people/Johnny25225/sounds/718004/) | Johnny25225, NicknameLarry | CC0 1.0 |
-| `Boss/sfx_boss_death_1.wav` | [Scary Monster Roar #2](https://freesound.org/people/NicknameLarry/sounds/489901/); [Rock collapse or destruction](https://freesound.org/people/Vozme/sounds/590096/); [Rumble 1](https://freesound.org/people/_--Q--_/sounds/719865/) | NicknameLarry, Vozme, _--Q--_ | CC0 1.0 |
-| `Boss/sfx_boss_fist_impact_1.wav` | [HeavyWobblyImpactHit_15](https://freesound.org/people/Johnny25225/sounds/718004/); [Sharp Explosion 4 (of 5)](https://freesound.org/people/Rudmer_Rotteveel/sounds/336011/) | Johnny25225, Rudmer_Rotteveel | CC0 1.0 |
-| `Boss/sfx_boss_fist_launch_1.wav` | [Swoosh_Low](https://freesound.org/people/The_Real_Not_Important/sounds/517877/); [Grinding Sound](https://freesound.org/people/qubodup/sounds/743236/) | The_Real_Not_Important, qubodup | CC0 1.0 |
-| `Boss/sfx_boss_hit_1.wav` | [stone_slab3.wav](https://freesound.org/people/NistuGgner/sounds/700537/) | NistuGgner | CC0 1.0 |
-| `Boss/sfx_boss_hit_2.wav` | [rock hitting icy lake](https://freesound.org/people/ultraaxvii/sounds/591152/) | ultraaxvii | CC0 1.0 |
-| `Boss/sfx_boss_phase_roar_1.wav` | [Monster Short Roar.wav](https://freesound.org/people/ecfike/sounds/132874/) | ecfike | CC0 1.0 |
-| `Boss/sfx_boss_phase_roar_2.wav` | [Scary Monster Roar #2](https://freesound.org/people/NicknameLarry/sounds/489901/) | NicknameLarry | CC0 1.0 |
-| `Boss/sfx_boss_rain_drop_1.wav` | [Fireball](https://freesound.org/people/NearTheAtmoshphere/sounds/683179/) | NearTheAtmoshphere | CC0 1.0 |
-| `Boss/sfx_boss_rain_impact_1.wav` | [Collision](https://freesound.org/people/qubodup/sounds/332058/) | qubodup | CC0 1.0 |
-| `Boss/sfx_boss_rain_impact_2.wav` | [S020_Rock_Impact_Mono.wav](https://freesound.org/people/Pól/sounds/385938/) | Pól | CC0 1.0 |
-| `Boss/sfx_boss_rain_impact_3.wav` | [Rock drop, rock foley](https://freesound.org/people/SoundGuy1billione/sounds/666673/) | SoundGuy1billione | CC0 1.0 |
-| `Boss/sfx_boss_recovery_1.wav` | [Short Grind Sound](https://freesound.org/people/qubodup/sounds/743257/); [growl 9.wav](https://freesound.org/people/_stubb/sounds/389653/) | _stubb, qubodup | CC0 1.0 |
-| `Boss/sfx_boss_resonance_burst_1.wav` | [explosion2.wav](https://freesound.org/people/IdkMrGarcia/sounds/446624/); [ROCK_IMPACT_GALETS_OUTDOORS_260128 48](https://freesound.org/people/kevinklang/sounds/843547/) | IdkMrGarcia, kevinklang | CC0 1.0 |
-| `Boss/sfx_boss_resonance_charge_1.wav` | [Laser Charge Up](https://freesound.org/people/magnuswaker/sounds/588242/); [Rumble 1](https://freesound.org/people/_--Q--_/sounds/719865/) | _--Q--_, magnuswaker | CC0 1.0 |
-| `Boss/sfx_boss_ritual_beam_loop_1.ogg` | [Laser 1 main loop.ogg](https://freesound.org/people/jobro/sounds/245154/) | jobro | CC0 1.0 |
-| `Boss/sfx_boss_ritual_charge_1.wav` | [Laser Charge Up (Stronger)](https://freesound.org/people/magnuswaker/sounds/592573/); [Rumble 1](https://freesound.org/people/_--Q--_/sounds/719865/) | _--Q--_, magnuswaker | CC0 1.0 |
-| `Boss/sfx_boss_ritual_explosion_1.wav` | [explosion2.wav](https://freesound.org/people/IdkMrGarcia/sounds/446624/); [Rumble 1](https://freesound.org/people/_--Q--_/sounds/719865/) | IdkMrGarcia, _--Q--_ | CC0 1.0 |
-| `Boss/sfx_boss_rock_bullet_1.wav` | [projectile.wav](https://freesound.org/people/jeckkech/sounds/391660/) | jeckkech | CC0 1.0 |
-| `Boss/sfx_boss_rock_bullet_2.wav` | [Cartoon gun launcher sound](https://freesound.org/people/Frogdog37/sounds/635125/) | Frogdog37 | CC0 1.0 |
-| `Boss/sfx_boss_shrine_orb_place_1.wav` | [Magic Circle Medium Ringing SFX.mp3](https://freesound.org/people/Ari_Glitch/sounds/432288/); [ROCK_IMPACT_GALETS_OUTDOORS_260128 48](https://freesound.org/people/kevinklang/sounds/843547/) | Ari_Glitch, kevinklang | CC0 1.0 |
-| `Boss/sfx_boss_slam_1.wav` | [HeavyWobblyImpactHit_15](https://freesound.org/people/Johnny25225/sounds/718004/); [ROCK_IMPACT_GALETS_OUTDOORS_260128 48](https://freesound.org/people/kevinklang/sounds/843547/) | Johnny25225, kevinklang | CC0 1.0 |
-| `Boss/sfx_boss_slam_2.wav` | [Sharp Explosion 4 (of 5)](https://freesound.org/people/Rudmer_Rotteveel/sounds/336011/); [S020_Rock_Impact_Mono.wav](https://freesound.org/people/Pól/sounds/385938/) | Pól, Rudmer_Rotteveel | CC0 1.0 |
-| `Boss/sfx_boss_slam_windup_1.wav` | [growl 9.wav](https://freesound.org/people/_stubb/sounds/389653/); [Swoosh_Low](https://freesound.org/people/The_Real_Not_Important/sounds/517877/) | The_Real_Not_Important, _stubb | CC0 1.0 |
-| `Boss/sfx_boss_spike_lane_1.wav` | [Move Stone Rune 4](https://freesound.org/people/qubodup/sounds/743246/); [SFX_stone_scrap_massive_01.wav](https://freesound.org/people/EricsSoundschmiede/sounds/669449/) | EricsSoundschmiede, qubodup | CC0 1.0 |
-| `Boss/sfx_boss_spike_lane_2.wav` | [stone_slab3.wav](https://freesound.org/people/NistuGgner/sounds/700537/); [Rumble 1](https://freesound.org/people/_--Q--_/sounds/719865/) | NistuGgner, _--Q--_ | CC0 1.0 |
-| `Boss/sfx_boss_telegraph_1.wav` | [laser-charge.wav](https://freesound.org/people/StavSounds/sounds/701702/) | StavSounds | CC0 1.0 |
-| `Boss/sfx_boss_teleport_1.wav` | [Teleport](https://freesound.org/people/LilMati/sounds/441225/) | LilMati | CC0 1.0 |
-| `Boss/sfx_boss_teleport_2.wav` | [teleport.wav](https://freesound.org/people/saltchicken/sounds/241970/) | saltchicken | CC0 1.0 |
-| `Boss/sfx_boss_victory_1.wav` | [Complete](https://freesound.org/people/Fupicat/sounds/538145/) | Fupicat | CC0 1.0 |
-| `Boss/sfx_bossowl_awaken_1.wav` | procedural (Tools/sfx/synth.py) |  | own work |
-| `Boss/sfx_bossowl_awaken_2.wav` | procedural (Tools/sfx/synth.py) |  | own work |
-| `Boss/sfx_bossowl_blade_cut_1.wav` | procedural (Tools/sfx/synth.py) |  | own work |
-| `Boss/sfx_bossowl_blade_cut_2.wav` | procedural (Tools/sfx/synth.py) |  | own work |
-| `Boss/sfx_bossowl_blade_cut_3.wav` | procedural (Tools/sfx/synth.py) |  | own work |
-| `Boss/sfx_bossowl_blade_hit_1.wav` | procedural (Tools/sfx/synth.py) |  | own work |
-| `Boss/sfx_bossowl_cyclone_cast_1.wav` | procedural (Tools/sfx/synth.py) |  | own work |
-| `Boss/sfx_bossowl_cyclone_hit_1.wav` | procedural (Tools/sfx/synth.py) |  | own work |
-| `Boss/sfx_bossowl_cyclone_loop_1.ogg` | procedural (Tools/sfx/synth.py) |  | own work |
-| `Boss/sfx_bossowl_death_1.wav` | procedural (Tools/sfx/synth.py) |  | own work |
-| `Boss/sfx_bossowl_dive_hit_1.wav` | procedural (Tools/sfx/synth.py) |  | own work |
-| `Boss/sfx_bossowl_dive_warning_1.wav` | procedural (Tools/sfx/synth.py) |  | own work |
-| `Boss/sfx_bossowl_feather_hit_1.wav` | procedural (Tools/sfx/synth.py) |  | own work |
-| `Boss/sfx_bossowl_feather_hit_2.wav` | procedural (Tools/sfx/synth.py) |  | own work |
-| `Boss/sfx_bossowl_floor_break_1.wav` | procedural (Tools/sfx/synth.py) |  | own work |
-| `Boss/sfx_bossowl_floor_break_2.wav` | procedural (Tools/sfx/synth.py) |  | own work |
-| `Boss/sfx_bossowl_floor_warn_1.wav` | procedural (Tools/sfx/synth.py) |  | own work |
-| `Boss/sfx_bossowl_hit_1.wav` | procedural (Tools/sfx/synth.py) |  | own work |
-| `Boss/sfx_bossowl_hit_2.wav` | procedural (Tools/sfx/synth.py) |  | own work |
-| `Boss/sfx_bossowl_hit_3.wav` | procedural (Tools/sfx/synth.py) |  | own work |
-| `Boss/sfx_bossowl_phase_roar_1.wav` | procedural (Tools/sfx/synth.py) |  | own work |
-| `Boss/sfx_bossowl_phase_roar_2.wav` | procedural (Tools/sfx/synth.py) |  | own work |
-| `Boss/sfx_bossowl_recovery_1.wav` | procedural (Tools/sfx/synth.py) |  | own work |
-| `Boss/sfx_bossowl_slash_windup_1.wav` | procedural (Tools/sfx/synth.py) |  | own work |
-| `Boss/sfx_bossowl_storm_charge_1.wav` | procedural (Tools/sfx/synth.py) |  | own work |
-| `Boss/sfx_bossowl_storm_end_1.wav` | procedural (Tools/sfx/synth.py) |  | own work |
-| `Boss/sfx_bossowl_takeoff_1.wav` | procedural (Tools/sfx/synth.py) |  | own work |
-| `Boss/sfx_bossowl_volley_fling_1.wav` | procedural (Tools/sfx/synth.py) |  | own work |
-| `Boss/sfx_bossowl_volley_fling_2.wav` | procedural (Tools/sfx/synth.py) |  | own work |
-| `Boss/sfx_bossowl_volley_windup_1.wav` | procedural (Tools/sfx/synth.py) |  | own work |
-| `Boss/sfx_bossowl_wall_hit_1.wav` | procedural (Tools/sfx/synth.py) |  | own work |
-| `Boss/sfx_bossowl_wall_rush_1.wav` | procedural (Tools/sfx/synth.py) |  | own work |
-| `Boss/sfx_bossowl_wall_warning_1.wav` | procedural (Tools/sfx/synth.py) |  | own work |
-| `Boss/sfx_bossw_awaken_1.wav` | procedural (Tools/sfx/synth.py) |  | own work |
-| `Boss/sfx_bossw_bubble_pop_1.wav` | procedural (Tools/sfx/synth.py) |  | own work |
-| `Boss/sfx_bossw_bubble_pop_2.wav` | procedural (Tools/sfx/synth.py) |  | own work |
-| `Boss/sfx_bossw_bubble_pop_3.wav` | procedural (Tools/sfx/synth.py) |  | own work |
-| `Boss/sfx_bossw_bubble_spit_1.wav` | procedural (Tools/sfx/synth.py) |  | own work |
-| `Boss/sfx_bossw_bubble_spit_2.wav` | procedural (Tools/sfx/synth.py) |  | own work |
-| `Boss/sfx_bossw_bubble_spit_3.wav` | procedural (Tools/sfx/synth.py) |  | own work |
-| `Boss/sfx_bossw_burrow_dive_1.wav` | procedural (Tools/sfx/synth.py) |  | own work |
-| `Boss/sfx_bossw_claw_hold_1.wav` | procedural (Tools/sfx/synth.py) |  | own work |
-| `Boss/sfx_bossw_claw_snap_1.wav` | procedural (Tools/sfx/synth.py) |  | own work |
-| `Boss/sfx_bossw_claw_snap_2.wav` | procedural (Tools/sfx/synth.py) |  | own work |
-| `Boss/sfx_bossw_claw_snap_3.wav` | procedural (Tools/sfx/synth.py) |  | own work |
-| `Boss/sfx_bossw_claw_windup_1.wav` | procedural (Tools/sfx/synth.py) |  | own work |
-| `Boss/sfx_bossw_death_1.wav` | procedural (Tools/sfx/synth.py) |  | own work |
-| `Boss/sfx_bossw_emerge_1.wav` | procedural (Tools/sfx/synth.py) |  | own work |
-| `Boss/sfx_bossw_emerge_2.wav` | procedural (Tools/sfx/synth.py) |  | own work |
-| `Boss/sfx_bossw_hit_1.wav` | procedural (Tools/sfx/synth.py) |  | own work |
-| `Boss/sfx_bossw_hit_2.wav` | procedural (Tools/sfx/synth.py) |  | own work |
-| `Boss/sfx_bossw_hit_3.wav` | procedural (Tools/sfx/synth.py) |  | own work |
-| `Boss/sfx_bossw_mound_loop_1.ogg` | procedural (Tools/sfx/synth.py) |  | own work |
-| `Boss/sfx_bossw_phase_roar_1.wav` | procedural (Tools/sfx/synth.py) |  | own work |
-| `Boss/sfx_bossw_phase_roar_2.wav` | procedural (Tools/sfx/synth.py) |  | own work |
-| `Boss/sfx_bossw_recovery_1.wav` | procedural (Tools/sfx/synth.py) |  | own work |
-| `Boss/sfx_bossw_wave_hit_1.wav` | procedural (Tools/sfx/synth.py) |  | own work |
-| `Boss/sfx_bossw_wave_rush_1.wav` | procedural (Tools/sfx/synth.py) |  | own work |
-| `Boss/sfx_bossw_wave_warning_1.wav` | procedural (Tools/sfx/synth.py) |  | own work |
-| `Boss/sfx_bossw_whirl_charge_1.wav` | procedural (Tools/sfx/synth.py) |  | own work |
-| `Boss/sfx_bossw_whirl_jet_1.wav` | procedural (Tools/sfx/synth.py) |  | own work |
-| `Boss/sfx_bossw_whirl_jet_2.wav` | procedural (Tools/sfx/synth.py) |  | own work |
-| `Boss/sfx_bossw_whirl_loop_1.ogg` | procedural (Tools/sfx/synth.py) |  | own work |
-| `Combat/sfx_combat_enemy_death_1.wav` | [Zombie Groan 3](https://freesound.org/people/OwNathan/sounds/754441/) | OwNathan | CC0 1.0 |
-| `Combat/sfx_combat_enemy_death_2.wav` | [Slime Death](https://freesound.org/people/qubodup/sounds/751340/) | qubodup | CC0 1.0 |
-| `Combat/sfx_combat_enemy_hit_1.wav` | [Punch 1](https://freesound.org/people/qubodup/sounds/773737/) | qubodup | CC0 1.0 |
-| `Combat/sfx_combat_enemy_hit_2.wav` | [Punch 3](https://freesound.org/people/qubodup/sounds/773739/) | qubodup | CC0 1.0 |
-| `Combat/sfx_combat_enemy_hit_3.wav` | [soft_impact3](https://freesound.org/people/peoplearehappy/sounds/841274/) | peoplearehappy | CC0 1.0 |
-| `Combat/sfx_combat_hit_crit_1.wav` | [Sword Impact](https://freesound.org/people/TheBuilder15/sounds/434896/); [Sharp Explosion 4 (of 5)](https://freesound.org/people/Rudmer_Rotteveel/sounds/336011/) | Rudmer_Rotteveel, TheBuilder15 | CC0 1.0 |
-| `Combat/sfx_combat_hit_impact_1.wav` | [Sword Impact](https://freesound.org/people/TheBuilder15/sounds/434896/) | TheBuilder15 | CC0 1.0 |
-| `Combat/sfx_combat_hit_impact_2.wav` | [Realistic Punch](https://freesound.org/people/JewTwinz/sounds/244513/); [Sword_Clash (49).wav](https://freesound.org/people/JohnBuhr/sounds/326857/) | JewTwinz, JohnBuhr | CC0 1.0 |
-| `Combat/sfx_combat_hit_impact_3.wav` | [Hit Swing Sword](https://freesound.org/people/CogFireStudios/sounds/547038/) | CogFireStudios | CC0 1.0 |
-| `Combat/sfx_combat_hit_impact_4.wav` | [strikec.wav](https://freesound.org/people/Empiremonkey/sounds/616502/) | Empiremonkey | CC0 1.0 |
-| `Combat/sfx_combat_player_attack_1.wav` | [swosh swinging sword 37.flac](https://freesound.org/people/qubodup/sounds/60024/) | qubodup | CC0 1.0 |
-| `Combat/sfx_combat_player_attack_2.wav` | [swing.mp3](https://freesound.org/people/GaussTheWizard/sounds/367182/) | GaussTheWizard | CC0 1.0 |
-| `Combat/sfx_combat_player_attack_3.wav` | [Clean fast Swoosh.aiff](https://freesound.org/people/Danjocross/sounds/507466/) | Danjocross | CC0 1.0 |
-| `Combat/sfx_combat_player_attack_4.wav` | [Wooden Stick Swing 1_4](https://freesound.org/people/Joao_Janz/sounds/485279/) | Joao_Janz | CC0 1.0 |
-| `Combat/sfx_combat_player_death_1.wav` | [Male Death 4](https://freesound.org/people/scorpion67890/sounds/396801/) | scorpion67890 | CC0 1.0 |
-| `Combat/sfx_combat_player_death_2.wav` | [Male Death Sound](https://freesound.org/people/Blankened/sounds/554443/) | Blankened | CC0 1.0 |
-| `Combat/sfx_combat_player_dodge_1.wav` | [Whoosh / Dash](https://freesound.org/people/Kastenfrosch/sounds/521999/) | Kastenfrosch | CC0 1.0 |
-| `Combat/sfx_combat_player_dodge_2.wav` | [whoosh 1 short](https://freesound.org/people/Logicogonist/sounds/803773/) | Logicogonist | CC0 1.0 |
-| `Combat/sfx_combat_player_hurt_1.wav` | [Voice_AdultMale_PainGrunts_09.wav](https://freesound.org/people/MrFossy/sounds/547209/) | MrFossy | CC0 1.0 |
-| `Combat/sfx_combat_player_hurt_2.wav` | [male_hurt9.ogg](https://freesound.org/people/micahlg/sounds/413186/) | micahlg | CC0 1.0 |
-| `Combat/sfx_combat_player_hurt_3.wav` | [Grunt1 - Death Pain.wav](https://freesound.org/people/tonsil5/sounds/416839/) | tonsil5 | CC0 1.0 |
-| `Combat/sfx_combat_projectile_impact_1.wav` | [Projectile Hit](https://freesound.org/people/unfa/sounds/193429/) | unfa | CC0 1.0 |
-| `Combat/sfx_combat_projectile_impact_2.wav` | [magicProjectile_impact.wav](https://freesound.org/people/rafaelzimrp/sounds/570855/) | rafaelzimrp | CC0 1.0 |
-| `Combat/sfx_combat_projectile_launch_1.wav` | [projectile.wav](https://freesound.org/people/jeckkech/sounds/391660/) | jeckkech | CC0 1.0 |
-| `Combat/sfx_combat_projectile_launch_2.wav` | [Cartoon gun launcher sound](https://freesound.org/people/Frogdog37/sounds/635125/) | Frogdog37 | CC0 1.0 |
-| `Combat/sfx_combat_skill_aim_cancel_1.wav` | [Magic Spell 05.wav](https://freesound.org/people/LilMati/sounds/495453/) | LilMati | CC0 1.0 |
-| `Combat/sfx_combat_skill_aim_confirm_1.wav` | [Magic Spell Effect](https://freesound.org/people/SecureSubset/sounds/786291/) | SecureSubset | CC0 1.0 |
-| `Combat/sfx_combat_skill_aim_start_1.wav` | [Magic Spell 05.wav](https://freesound.org/people/LilMati/sounds/495453/) | LilMati | CC0 1.0 |
-| `Combat/sfx_combat_stun_apply_1.wav` | [Civilian Stun Gun 1/10s zap](https://freesound.org/people/AnthonyChan0/sounds/264779/) | AnthonyChan0 | CC0 1.0 |
-| `Combat/sfx_enemy_goblin_attack_1.wav` | [Goblin Growl](https://freesound.org/people/qubodup/sounds/442817/) | qubodup | CC0 1.0 |
-| `Combat/sfx_enemy_goblin_attack_2.wav` | [Goblin_Yell.mp3](https://freesound.org/people/SnowFightStudios/sounds/643655/) | SnowFightStudios | CC0 1.0 |
-| `Combat/sfx_enemy_goblin_death_1.wav` | [Screeching Creature 1_2](https://freesound.org/people/Joao_Janz/sounds/482360/) | Joao_Janz | CC0 1.0 |
-| `Combat/sfx_enemy_goblin_death_2.wav` | [Goblin_Yell.mp3](https://freesound.org/people/SnowFightStudios/sounds/643655/) | SnowFightStudios | CC0 1.0 |
-| `Combat/sfx_enemy_goblin_hurt_1.wav` | [hit_goblin](https://freesound.org/people/HydraSound/sounds/736274/) | HydraSound | CC0 1.0 |
-| `Combat/sfx_enemy_goblin_hurt_2.wav` | [Goblin Creature 1_8](https://freesound.org/people/Joao_Janz/sounds/482358/) | Joao_Janz | CC0 1.0 |
-| `Combat/sfx_enemy_slime_attack_1.wav` | [Slime Squish](https://freesound.org/people/qubodup/sounds/442772/) | qubodup | CC0 1.0 |
-| `Combat/sfx_enemy_slime_attack_2.wav` | [BloodSquish.wav](https://freesound.org/people/deoking/sounds/411671/) | deoking | CC0 1.0 |
-| `Combat/sfx_enemy_slime_death_1.wav` | [Cartoon - Splat!](https://freesound.org/people/Breviceps/sounds/445118/) | Breviceps | CC0 1.0 |
-| `Combat/sfx_enemy_slime_death_2.wav` | [Slime 27.wav](https://freesound.org/people/Archos/sounds/433840/) | Archos | CC0 1.0 |
-| `Combat/sfx_enemy_slime_death_3.wav` | [Step on a slug (Splat!) 2](https://freesound.org/people/Breviceps/sounds/447930/) | Breviceps | CC0 1.0 |
-| `Combat/sfx_enemy_slime_hurt_1.wav` | [Slime Squish](https://freesound.org/people/qubodup/sounds/442772/) | qubodup | CC0 1.0 |
-| `Combat/sfx_enemy_slime_hurt_2.wav` | [Splat/Squish 3](https://freesound.org/people/mrickey13/sounds/515620/) | mrickey13 | CC0 1.0 |
-| `Combat/sfx_enemy_slime_hurt_3.wav` | [Squish.ogg](https://freesound.org/people/egomassive/sounds/536765/) | egomassive | CC0 1.0 |
-| `Combat/sfx_player_dash_1.wav` | [SWOSH-01 44.1kHz](https://freesound.org/people/qubodup/sounds/59988/); [Whoosh / Dash](https://freesound.org/people/Kastenfrosch/sounds/521999/) | Kastenfrosch, qubodup | CC0 1.0 |
-| `Combat/sfx_player_dash_2.wav` | [Whoosh](https://freesound.org/people/qubodup/sounds/60013/); [Jump/Dash 2](https://freesound.org/people/avaol/sounds/864775/) | avaol, qubodup | CC0 1.0 |
-| `Combat/sfx_player_exhausted_1.wav` | [Male Gasp 1.wav](https://freesound.org/people/jawbutch/sounds/344407/) | jawbutch | CC0 1.0 |
-| `Combat/sfx_player_exhausted_2.wav` | [Gasp Male](https://freesound.org/people/bertiehs/sounds/271245/) | bertiehs | CC0 1.0 |
-| `Combat/sfx_player_exhausted_3.wav` | [Gasp.mp3](https://freesound.org/people/laft2k/sounds/437667/) | laft2k | CC0 1.0 |
-| `Combat/sfx_player_level_up_1.wav` | [Level Up](https://freesound.org/people/qubodup/sounds/442943/) | qubodup | CC0 1.0 |
-| `Commerce/sfx_craft_complete_1.wav` | [Anvil Hit 1](https://freesound.org/people/michorvath/sounds/270589/) | michorvath | CC0 1.0 |
-| `Commerce/sfx_craft_start_1.wav` | [Anvil Hit 2](https://freesound.org/people/michorvath/sounds/270588/) | michorvath | CC0 1.0 |
-| `Commerce/sfx_shop_buy_1.wav` | [coins - in paper bowl 02.wav](https://freesound.org/people/Anthousai/sounds/336583/) | Anthousai | CC0 1.0 |
-| `Commerce/sfx_shop_buy_2.wav` | [Coins35.wav](https://freesound.org/people/doudar41/sounds/573374/) | doudar41 | CC0 1.0 |
-| `Commerce/sfx_shop_sell_1.wav` | [2_Coins.ogg](https://freesound.org/people/jalastram/sounds/223342/) | jalastram | CC0 1.0 |
-| `Farming/sfx_farm_harvest_1.wav` | [Plant_Harvest_02](https://freesound.org/people/Valenspire/sounds/699491/) | Valenspire | CC0 1.0 |
-| `Farming/sfx_farm_plant_1.wav` | [Pull Plant](https://freesound.org/people/Jofae/sounds/387083/) | Jofae | CC0 1.0 |
-| `Farming/sfx_farm_water_1.wav` | [Fish Splashing Release 1.wav](https://freesound.org/people/paulprit/sounds/507094/) | paulprit | CC0 1.0 |
-| `Fishing/sfx_fishing_bite_1.wav` | [FishFlappingTail.wav](https://freesound.org/people/ramattahatta/sounds/649003/) | ramattahatta | CC0 1.0 |
-| `Fishing/sfx_fishing_cast_1.wav` | [Fishing Rod Cast - Swoosh](https://freesound.org/people/mwchristian95/sounds/725426/) | mwchristian95 | CC0 1.0 |
-| `Fishing/sfx_fishing_cast_2.wav` | [Casting Fishing Rod for Game Fishing SFX](https://freesound.org/people/el_boss/sounds/853287/) | el_boss | CC0 1.0 |
-| `Fishing/sfx_fishing_catch_1.wav` | [reeling.wav](https://freesound.org/people/BranndyBottle/sounds/464701/) | BranndyBottle | CC0 1.0 |
-| `Fishing/sfx_fishing_fail_1.wav` | [Message Notification 4](https://freesound.org/people/AnthonyRox/sounds/740423/) | AnthonyRox | CC0 1.0 |
-| `Fishing/sfx_fishing_reel_1.wav` | [Fishing Reel](https://freesound.org/people/mwchristian95/sounds/725424/) | mwchristian95 | CC0 1.0 |
-| `Fishing/sfx_fishing_reel_2.wav` | [Fishing reel winding](https://freesound.org/people/1bob/sounds/831928/) | 1bob | CC0 1.0 |
-| `Fishing/sfx_fishing_splash_1.wav` | [Fish Splashing Release 1.wav](https://freesound.org/people/paulprit/sounds/507094/) | paulprit | CC0 1.0 |
-| `Fishing/sfx_fishing_splash_2.wav` | [Tiny Splash](https://freesound.org/people/dslrguide/sounds/321490/) | dslrguide | CC0 1.0 |
-| `Quest/sfx_quest_accept_1.wav` | [Item 01](https://freesound.org/people/LilMati/sounds/523755/) | LilMati | CC0 1.0 |
-| `Quest/sfx_quest_complete_1.wav` | [Complete](https://freesound.org/people/Fupicat/sounds/538145/) | Fupicat | CC0 1.0 |
-| `Quest/sfx_quest_objective_1.wav` | [Key Pickup](https://freesound.org/people/LilMati/sounds/459694/) | LilMati | CC0 1.0 |
-| `Skill/sfx_skill_cast_generic_1.wav` | procedural (Tools/sfx/synth.py) |  | own work |
-| `Skill/sfx_skill_cast_generic_2.wav` | procedural (Tools/sfx/synth.py) |  | own work |
-| `Skill/sfx_skill_earth_s1_cast_1.wav` | procedural (Tools/sfx/synth.py) |  | own work |
-| `Skill/sfx_skill_earth_s1_cast_2.wav` | procedural (Tools/sfx/synth.py) |  | own work |
-| `Skill/sfx_skill_earth_s1_impact_1.wav` | procedural (Tools/sfx/synth.py) |  | own work |
-| `Skill/sfx_skill_earth_s1_impact_2.wav` | procedural (Tools/sfx/synth.py) |  | own work |
-| `Skill/sfx_skill_earth_s1_impact_3.wav` | procedural (Tools/sfx/synth.py) |  | own work |
-| `Skill/sfx_skill_earth_s2_rise_1.wav` | procedural (Tools/sfx/synth.py) |  | own work |
-| `Skill/sfx_skill_earth_s2_spike_1.wav` | procedural (Tools/sfx/synth.py) |  | own work |
-| `Skill/sfx_skill_earth_s2_spike_2.wav` | procedural (Tools/sfx/synth.py) |  | own work |
-| `Skill/sfx_skill_earth_s2_stun_loop_1.ogg` | procedural (Tools/sfx/synth.py) |  | own work |
-| `Skill/sfx_skill_earth_s3_cage_1.wav` | procedural (Tools/sfx/synth.py) |  | own work |
-| `Skill/sfx_skill_earth_s3_cone_1.wav` | procedural (Tools/sfx/synth.py) |  | own work |
-| `Skill/sfx_skill_earth_s4_aftermath_1.wav` | procedural (Tools/sfx/synth.py) |  | own work |
-| `Skill/sfx_skill_earth_s4_aftermath_2.wav` | procedural (Tools/sfx/synth.py) |  | own work |
-| `Skill/sfx_skill_earth_s4_charge_1.wav` | procedural (Tools/sfx/synth.py) |  | own work |
-| `Skill/sfx_skill_earth_s4_finale_1.wav` | procedural (Tools/sfx/synth.py) |  | own work |
-| `Skill/sfx_skill_earth_s4_meteor_fall_1.wav` | procedural (Tools/sfx/synth.py) |  | own work |
-| `Skill/sfx_skill_earth_s4_meteor_impact_1.wav` | procedural (Tools/sfx/synth.py) |  | own work |
-| `Skill/sfx_skill_earth_s4_meteor_impact_2.wav` | procedural (Tools/sfx/synth.py) |  | own work |
-| `Skill/sfx_skill_hit_flesh_1.wav` | [Punch 1](https://freesound.org/people/qubodup/sounds/773737/) | qubodup | CC0 1.0 |
-| `Skill/sfx_skill_hit_flesh_2.wav` | [soft_impact3](https://freesound.org/people/peoplearehappy/sounds/841274/) | peoplearehappy | CC0 1.0 |
-| `Skill/sfx_skill_screen_slam_1.wav` | procedural (Tools/sfx/synth.py) |  | own work |
-| `Skill/sfx_skill_water_s1_cast_1.wav` | procedural (Tools/sfx/synth.py) |  | own work |
-| `Skill/sfx_skill_water_s1_cast_2.wav` | procedural (Tools/sfx/synth.py) |  | own work |
-| `Skill/sfx_skill_water_s1_cast_3.wav` | procedural (Tools/sfx/synth.py) |  | own work |
-| `Skill/sfx_skill_water_s1_impact_1.wav` | procedural (Tools/sfx/synth.py) |  | own work |
-| `Skill/sfx_skill_water_s1_impact_2.wav` | procedural (Tools/sfx/synth.py) |  | own work |
-| `Skill/sfx_skill_water_s1_impact_3.wav` | procedural (Tools/sfx/synth.py) |  | own work |
-| `Skill/sfx_skill_water_s2_cast_1.wav` | procedural (Tools/sfx/synth.py) |  | own work |
-| `Skill/sfx_skill_water_s2_splash_1.wav` | procedural (Tools/sfx/synth.py) |  | own work |
-| `Skill/sfx_skill_water_s2_splash_2.wav` | procedural (Tools/sfx/synth.py) |  | own work |
-| `Skill/sfx_skill_water_s3_beam_loop_1.ogg` | procedural (Tools/sfx/synth.py) |  | own work |
-| `Skill/sfx_skill_water_s3_charge_1.wav` | procedural (Tools/sfx/synth.py) |  | own work |
-| `Skill/sfx_skill_water_s3_end_1.wav` | procedural (Tools/sfx/synth.py) |  | own work |
-| `Skill/sfx_skill_water_s4_aftermath_rain_1.ogg` | [Heavy_Rain_Loop.wav](https://freesound.org/people/Rubaoliva/sounds/624645/) | Rubaoliva | CC0 1.0 |
-| `Skill/sfx_skill_water_s4_charge_1.wav` | procedural (Tools/sfx/synth.py) |  | own work |
-| `Skill/sfx_skill_water_s4_crash_1.wav` | procedural (Tools/sfx/synth.py) |  | own work |
-| `Skill/sfx_skill_water_s4_wave_1.wav` | procedural (Tools/sfx/synth.py) |  | own work |
-| `Skill/sfx_skill_wind_s1_catch_1.wav` | procedural (Tools/sfx/synth.py) |  | own work |
-| `Skill/sfx_skill_wind_s1_loop_1.ogg` | procedural (Tools/sfx/synth.py) |  | own work |
-| `Skill/sfx_skill_wind_s1_throw_1.wav` | procedural (Tools/sfx/synth.py) |  | own work |
-| `Skill/sfx_skill_wind_s1_throw_2.wav` | procedural (Tools/sfx/synth.py) |  | own work |
-| `Skill/sfx_skill_wind_s2_cast_1.wav` | procedural (Tools/sfx/synth.py) |  | own work |
-| `Skill/sfx_skill_wind_s2_land_1.wav` | procedural (Tools/sfx/synth.py) |  | own work |
-| `Skill/sfx_skill_wind_s2_lift_loop_1.ogg` | procedural (Tools/sfx/synth.py) |  | own work |
-| `Skill/sfx_skill_wind_s3_pulse_1.wav` | procedural (Tools/sfx/synth.py) |  | own work |
-| `Skill/sfx_skill_wind_s3_pulse_2.wav` | procedural (Tools/sfx/synth.py) |  | own work |
-| `Skill/sfx_skill_wind_s3_wall_slam_1.wav` | procedural (Tools/sfx/synth.py) |  | own work |
-| `Skill/sfx_skill_wind_s4_charge_1.wav` | procedural (Tools/sfx/synth.py) |  | own work |
-| `Skill/sfx_skill_wind_s4_dive_1.wav` | procedural (Tools/sfx/synth.py) |  | own work |
-| `Skill/sfx_skill_wind_s4_feather_rain_1.wav` | procedural (Tools/sfx/synth.py) |  | own work |
-| `Skill/sfx_skill_wind_s4_feather_rain_2.wav` | procedural (Tools/sfx/synth.py) |  | own work |
-| `Skill/sfx_skill_wind_s4_flap_1.wav` | [Wing Flap 1.wav](https://freesound.org/people/_stubb/sounds/389634/) | _stubb | CC0 1.0 |
-| `Skill/sfx_skill_wind_s4_flap_2.wav` | [Wing Flap Heavy (prototype).mp3](https://freesound.org/people/GearArcanaNo37/sounds/561364/) | GearArcanaNo37 | CC0 1.0 |
-| `Skill/sfx_skill_wind_s4_screech_1.wav` | [Eagle Cry.wav](https://freesound.org/people/kaydinhamby/sounds/381200/) | kaydinhamby | CC0 1.0 |
-| `Skill/sfx_skill_wind_s4_screech_2.wav` | [Eagle s.mp3](https://freesound.org/people/GrayEpic/sounds/697363/) | GrayEpic | CC0 1.0 |
-| `Skill/sfx_skill_wind_s4_shockwave_1.wav` | procedural (Tools/sfx/synth.py) |  | own work |
-| `UI/sfx_inventory_close_1.wav` | [Inventory Close](https://freesound.org/people/Fission9/sounds/568991/) | Fission9 | CC0 1.0 |
-| `UI/sfx_inventory_drop_1.wav` | [put_item.wav](https://freesound.org/people/j1987/sounds/335751/) | j1987 | CC0 1.0 |
-| `UI/sfx_inventory_drop_2.wav` | [Item Snapping into Slot](https://freesound.org/people/qubodup/sounds/743237/) | qubodup | CC0 1.0 |
-| `UI/sfx_inventory_equip_1.wav` | [ClothingEquip.mp3](https://freesound.org/people/SoundEffEcks/sounds/396429/) | SoundEffEcks | CC0 1.0 |
-| `UI/sfx_inventory_equip_2.wav` | [Jacket/Cloth Rustle 9](https://freesound.org/people/brandondelehoy/sounds/494797/) | brandondelehoy | CC0 1.0 |
-| `UI/sfx_inventory_open_1.wav` | [Inventory Open](https://freesound.org/people/Fission9/sounds/568992/) | Fission9 | CC0 1.0 |
-| `UI/sfx_inventory_pickup_1.wav` | [item-pickup-v2.wav](https://freesound.org/people/DeltaCode/sounds/678385/) | DeltaCode | CC0 1.0 |
-| `UI/sfx_inventory_pickup_2.wav` | [item-pickup-v1.wav](https://freesound.org/people/DeltaCode/sounds/678384/) | DeltaCode | CC0 1.0 |
-| `UI/sfx_inventory_unequip_1.wav` | [Jacket/Cloth Rustle 9](https://freesound.org/people/brandondelehoy/sounds/494797/) | brandondelehoy | CC0 1.0 |
-| `UI/sfx_inventory_use_potion_1.wav` | [Potion - drink - swallow.wav](https://freesound.org/people/ValentinPetiteau/sounds/574077/) | ValentinPetiteau | CC0 1.0 |
-| `UI/sfx_inventory_use_potion_2.wav` | [Drink / Drinking liquid](https://freesound.org/people/Breviceps/sounds/445970/) | Breviceps | CC0 1.0 |
-| `UI/sfx_ui_dialogue_blip_1.wav` | [Script Dialogue 01.wav](https://freesound.org/people/LilMati/sounds/453037/) | LilMati | CC0 1.0 |
-| `UI/sfx_ui_notification_1.wav` | [Message Notification 4](https://freesound.org/people/AnthonyRox/sounds/740423/) | AnthonyRox | CC0 1.0 |
-| `UI/sfx_ui_notification_2.wav` | [Notification_2.wav](https://freesound.org/people/Wax_vibe/sounds/554554/) | Wax_vibe | CC0 1.0 |
-| `UI/sfx_ui_save_success_1.wav` | [Complete](https://freesound.org/people/Fupicat/sounds/538145/) | Fupicat | CC0 1.0 |
-| `UI/sfx_ui_tab_1.wav` | [UISwitchTab1](https://freesound.org/people/NoisyRedFox/sounds/759827/) | NoisyRedFox | CC0 1.0 |
-| `UI/sfx_ui_tab_2.wav` | [Simple or Cute UI / UX / Interface Hover sound](https://freesound.org/people/Feraly_/sounds/836451/) | Feraly_ | CC0 1.0 |
-| `World/sfx_step_grass_1.wav` | [Footstep_Grass_5.wav](https://freesound.org/people/GiocoSound/sounds/421135/) | GiocoSound | CC0 1.0 |
-| `World/sfx_step_grass_2.wav` | [Grassy Footstep 4](https://freesound.org/people/OwlStorm/sounds/151235/) | OwlStorm | CC0 1.0 |
-| `World/sfx_step_grass_3.wav` | [FX_001_footstep_grass_l.wav](https://freesound.org/people/d00121058/sounds/390760/) | d00121058 | CC0 1.0 |
-| `World/sfx_step_sand_1.wav` | [sandwalking_step1.wav](https://freesound.org/people/BranndyBottle/sounds/464699/) | BranndyBottle | CC0 1.0 |
-| `World/sfx_step_sand_2.wav` | [Steps_Fine_Snow_Or_Sand_Strong_29](https://freesound.org/people/BlondPanda/sounds/778568/) | BlondPanda | CC0 1.0 |
-| `World/sfx_step_stone_1.wav` | [Footsteps Stone (6).wav](https://freesound.org/people/Wdomino/sounds/517137/) | Wdomino | CC0 1.0 |
-| `World/sfx_step_stone_2.wav` | [FX_005_footstep_stone_l.wav](https://freesound.org/people/d00121058/sounds/390764/) | d00121058 | CC0 1.0 |
-| `World/sfx_step_stone_3.wav` | [Footstep on Stone 3](https://freesound.org/people/sgossner/sounds/197780/) | sgossner | CC0 1.0 |
-| `World/sfx_world_chest_open_1.wav` | [Wooden Chest Open.wav](https://freesound.org/people/The_Frisbee_of_Peace/sounds/573654/) | The_Frisbee_of_Peace | CC0 1.0 |
-| `World/sfx_world_chest_open_2.wav` | [Treasure Chest Open](https://freesound.org/people/steprock/sounds/771164/) | steprock | CC0 1.0 |
-| `World/sfx_world_gate_exit_1.wav` | [Teleport](https://freesound.org/people/LilMati/sounds/441225/) | LilMati | CC0 1.0 |
-| `World/sfx_world_harvest_plant_1.wav` | [Rustling Grass 3](https://freesound.org/people/morganpurkis/sounds/396012/) | morganpurkis | CC0 1.0 |
-| `World/sfx_world_harvest_plant_2.wav` | [Rustling Grass 1.wav](https://freesound.org/people/morganpurkis/sounds/396014/) | morganpurkis | CC0 1.0 |
-| `World/sfx_world_harvest_plant_3.wav` | [Rustling Grass 4.wav](https://freesound.org/people/morganpurkis/sounds/396016/) | morganpurkis | CC0 1.0 |
-| `World/sfx_world_harvest_stone_1.wav` | [Stone hit](https://freesound.org/people/CamoMano/sounds/431019/) | CamoMano | CC0 1.0 |
-| `World/sfx_world_harvest_stone_2.wav` | [Pickaxe3](https://freesound.org/people/NoisyRedFox/sounds/760567/) | NoisyRedFox | CC0 1.0 |
-| `World/sfx_world_harvest_stone_3.wav` | [Pickaxe #2.wav](https://freesound.org/people/abstraktgeneriert/sounds/233630/) | abstraktgeneriert | CC0 1.0 |
-| `World/sfx_world_harvest_wood_1.wav` | [axe chop into wood little debris.wav](https://freesound.org/people/kyles/sounds/452554/) | kyles | CC0 1.0 |
-| `World/sfx_world_harvest_wood_2.wav` | [Chop.ogg](https://freesound.org/people/egomassive/sounds/536736/) | egomassive | CC0 1.0 |
-| `World/sfx_world_resource_depleted_1.wav` | [Rock collapse or destruction](https://freesound.org/people/Vozme/sounds/590096/) | Vozme | CC0 1.0 |
-| `World/sfx_world_unique_pickup_1.wav` | [SFXWoodenObjectOpen.wav](https://freesound.org/people/WakuWakuWakuWaku/sounds/422975/) | WakuWakuWakuWaku | CC0 1.0 |
+| `Ambience/sfx_amb_beach_1.ogg` | [Ocean Waves](https://pixabay.com/sound-effects/112906/) | Pixabay | Pixabay Content License |
+| `Ambience/sfx_amb_campfire_1.ogg` | [Fire Crackling Sounds](https://pixabay.com/sound-effects/427410/) | Pixabay | Pixabay Content License |
+| `Ambience/sfx_amb_cave_1.ogg` | [Dripping Water in Cave](https://pixabay.com/sound-effects/114694/) | Pixabay | Pixabay Content License |
+| `Ambience/sfx_amb_forest_1.ogg` | [Birds Forest Nature](https://pixabay.com/sound-effects/445379/) | Pixabay | Pixabay Content License |
+| `Ambience/sfx_amb_night_1.ogg` | [Night atmosphere with crickets](https://pixabay.com/sound-effects/374652/) | Pixabay | Pixabay Content License |
+| `Ambience/sfx_amb_village_1.ogg` | [Quiet Town Ambience](https://pixabay.com/sound-effects/31063/) | Pixabay | Pixabay Content License |
+| `Ambience/sfx_amb_wind_1.ogg` | [howling wind](https://pixabay.com/sound-effects/109590/) | Pixabay | Pixabay Content License |
+| `Ambience/sfx_bossw_tide_loop_1.ogg` | [Lake Lapping at the Bank](https://pixabay.com/sound-effects/331501/) | Pixabay | Pixabay Content License |
+| `Boss/sfx_boss_arena_lock_1.wav` | [big stone door suddenly slamming shut](https://pixabay.com/sound-effects/45672/) | Pixabay | Pixabay Content License |
+| `Boss/sfx_boss_awaken_1.wav` | [Monster Warrior Roar](https://pixabay.com/sound-effects/195877/) | Pixabay | Pixabay Content License |
+| `Boss/sfx_boss_death_1.wav` | [Rock Cinematic](https://pixabay.com/sound-effects/161648/) | Pixabay | Pixabay Content License |
+| `Boss/sfx_boss_fist_impact_1.wav` | [Boulder Impact](https://pixabay.com/sound-effects/487673/) | Pixabay | Pixabay Content License |
+| `Boss/sfx_boss_fist_launch_1.wav` | [Epic Whoosh](https://pixabay.com/sound-effects/478371/) | Pixabay | Pixabay Content License |
+| `Boss/sfx_boss_hit_1.wav` | [Hit Rock 02](https://pixabay.com/sound-effects/266304/) | Pixabay | Pixabay Content License |
+| `Boss/sfx_boss_hit_2.wav` | [Hit Rock 01](https://pixabay.com/sound-effects/266301/) | Pixabay | Pixabay Content License |
+| `Boss/sfx_boss_phase_roar_1.wav` | [Epic Dragon Roar](https://pixabay.com/sound-effects/364481/) | Pixabay | Pixabay Content License |
+| `Boss/sfx_boss_phase_roar_2.wav` | [Deep Monster Growl](https://pixabay.com/sound-effects/86780/) | Pixabay | Pixabay Content License |
+| `Boss/sfx_boss_rain_drop_1.wav` | [Object Falling](https://pixabay.com/sound-effects/143024/) | Pixabay | Pixabay Content License |
+| `Boss/sfx_boss_rain_impact_1.wav` | [Ground Impact](https://pixabay.com/sound-effects/352053/) | Pixabay | Pixabay Content License |
+| `Boss/sfx_boss_rain_impact_2.wav` | [Impact Thud](https://pixabay.com/sound-effects/291047/) | Pixabay | Pixabay Content License |
+| `Boss/sfx_boss_rain_impact_3.wav` | [Heavy Object Falling](https://pixabay.com/sound-effects/291096/) | Pixabay | Pixabay Content License |
+| `Boss/sfx_boss_recovery_1.wav` | [Heavy Rock Rolling](https://pixabay.com/sound-effects/515254/) | Pixabay | Pixabay Content License |
+| `Boss/sfx_boss_resonance_burst_1.wav` | [Earth Spell](https://pixabay.com/sound-effects/393923/) | Pixabay | Pixabay Content License |
+| `Boss/sfx_boss_resonance_charge_1.wav` | [energy charge (4)](https://pixabay.com/sound-effects/482504/) | Pixabay | Pixabay Content License |
+| `Boss/sfx_boss_ritual_beam_loop_1.ogg` | [energy hum](https://pixabay.com/sound-effects/29083/) | Pixabay | Pixabay Content License |
+| `Boss/sfx_boss_ritual_charge_1.wav` | [Magic charge mana 2](https://pixabay.com/sound-effects/186628/) | Pixabay | Pixabay Content License |
+| `Boss/sfx_boss_ritual_explosion_1.wav` | [Rock Break Hard](https://pixabay.com/sound-effects/184891/); [Explosion](https://pixabay.com/sound-effects/42132/) | Pixabay | Pixabay Content License |
+| `Boss/sfx_boss_rock_bullet_1.wav` | [Simple Whoosh](https://pixabay.com/sound-effects/382724/) | Pixabay | Pixabay Content License |
+| `Boss/sfx_boss_rock_bullet_2.wav` | [Epic Whoosh](https://pixabay.com/sound-effects/478371/) | Pixabay | Pixabay Content License |
+| `Boss/sfx_boss_shrine_orb_place_1.wav` | [Magic Twinkle](https://pixabay.com/sound-effects/244951/) | Pixabay | Pixabay Content License |
+| `Boss/sfx_boss_slam_1.wav` | [powerful ground impact](https://pixabay.com/sound-effects/355967/) | Pixabay | Pixabay Content License |
+| `Boss/sfx_boss_slam_2.wav` | [Hard Heavy Impact](https://pixabay.com/sound-effects/515256/) | Pixabay | Pixabay Content License |
+| `Boss/sfx_boss_slam_windup_1.wav` | [Stone Block Drag Grind](https://pixabay.com/sound-effects/82327/) | Pixabay | Pixabay Content License |
+| `Boss/sfx_boss_spike_lane_1.wav` | [Rock destroy](https://pixabay.com/sound-effects/6409/) | Pixabay | Pixabay Content License |
+| `Boss/sfx_boss_spike_lane_2.wav` | [Crack and Crunch](https://pixabay.com/sound-effects/14891/) | Pixabay | Pixabay Content License |
+| `Boss/sfx_boss_telegraph_1.wav` | [Elemental Magic Spell Impact Outgoing](https://pixabay.com/sound-effects/228342/) | Pixabay | Pixabay Content License |
+| `Boss/sfx_boss_teleport_1.wav` | [Magic Teleport Whoosh](https://pixabay.com/sound-effects/352764/) | Pixabay | Pixabay Content License |
+| `Boss/sfx_boss_teleport_2.wav` | [teleport](https://pixabay.com/sound-effects/90137/) | Pixabay | Pixabay Content License |
+| `Boss/sfx_boss_victory_1.wav` | [Success Fanfare Trumpets](https://pixabay.com/sound-effects/6185/) | Pixabay | Pixabay Content License |
+| `Boss/sfx_bossowl_awaken_1.wav` | [Eagle Scream](https://pixabay.com/sound-effects/112940/) | Pixabay | Pixabay Content License |
+| `Boss/sfx_bossowl_awaken_2.wav` | [Eagle](https://pixabay.com/sound-effects/355831/) | Pixabay | Pixabay Content License |
+| `Boss/sfx_bossowl_blade_cut_1.wav` | [Slash](https://pixabay.com/sound-effects/21834/) | Pixabay | Pixabay Content License |
+| `Boss/sfx_bossowl_blade_cut_2.wav` | [Quick Swing Sound](https://pixabay.com/sound-effects/419581/) | Pixabay | Pixabay Content License |
+| `Boss/sfx_bossowl_blade_cut_3.wav` | [Fast Swoosh](https://pixabay.com/sound-effects/383967/) | Pixabay | Pixabay Content License |
+| `Boss/sfx_bossowl_blade_hit_1.wav` | [Hit Flesh 02](https://pixabay.com/sound-effects/266309/) | Pixabay | Pixabay Content License |
+| `Boss/sfx_bossowl_cyclone_cast_1.wav` | [flapping](https://pixabay.com/sound-effects/39306/) | Pixabay | Pixabay Content License |
+| `Boss/sfx_bossowl_cyclone_hit_1.wav` | [Dramatic Whoosh Swing](https://pixabay.com/sound-effects/487667/) | Pixabay | Pixabay Content License |
+| `Boss/sfx_bossowl_cyclone_loop_1.ogg` | [Tornado Sound](https://pixabay.com/sound-effects/68141/) | Pixabay | Pixabay Content License |
+| `Boss/sfx_bossowl_death_1.wav` | [Hawk Cry](https://pixabay.com/sound-effects/364472/) | Pixabay | Pixabay Content License |
+| `Boss/sfx_bossowl_dive_hit_1.wav` | [Ground Impact](https://pixabay.com/sound-effects/352053/) | Pixabay | Pixabay Content License |
+| `Boss/sfx_bossowl_dive_warning_1.wav` | [Falling Bomb](https://pixabay.com/sound-effects/41038/) | Pixabay | Pixabay Content License |
+| `Boss/sfx_bossowl_feather_hit_1.wav` | [Arrow Hit](https://pixabay.com/sound-effects/307490/) | Pixabay | Pixabay Content License |
+| `Boss/sfx_bossowl_feather_hit_2.wav` | [Arrow Body Impact](https://pixabay.com/sound-effects/146419/) | Pixabay | Pixabay Content License |
+| `Boss/sfx_bossowl_floor_break_1.wav` | [Rock Break Hard](https://pixabay.com/sound-effects/184891/) | Pixabay | Pixabay Content License |
+| `Boss/sfx_bossowl_floor_break_2.wav` | [Crack and Crunch](https://pixabay.com/sound-effects/14891/) | Pixabay | Pixabay Content License |
+| `Boss/sfx_bossowl_floor_warn_1.wav` | [Creak and Crack](https://pixabay.com/sound-effects/252628/) | Pixabay | Pixabay Content License |
+| `Boss/sfx_bossowl_hit_1.wav` | [an eagle squawking overhead](https://pixabay.com/sound-effects/226774/) | Pixabay | Pixabay Content License |
+| `Boss/sfx_bossowl_hit_2.wav` | [Macaw Sound](https://pixabay.com/sound-effects/382721/) | Pixabay | Pixabay Content License |
+| `Boss/sfx_bossowl_phase_roar_1.wav` | [screech](https://pixabay.com/sound-effects/103213/) | Pixabay | Pixabay Content License |
+| `Boss/sfx_bossowl_phase_roar_2.wav` | [Eagle Scream](https://pixabay.com/sound-effects/112940/) | Pixabay | Pixabay Content License |
+| `Boss/sfx_bossowl_recovery_1.wav` | [Light Wing Flap](https://pixabay.com/sound-effects/6143/) | Pixabay | Pixabay Content License |
+| `Boss/sfx_bossowl_slash_windup_1.wav` | [Wing Flap Heavy](https://pixabay.com/sound-effects/36710/) | Pixabay | Pixabay Content License |
+| `Boss/sfx_bossowl_storm_charge_1.wav` | [Whoosh Riser](https://pixabay.com/sound-effects/346045/) | Pixabay | Pixabay Content License |
+| `Boss/sfx_bossowl_storm_end_1.wav` | [Wind Gust](https://pixabay.com/sound-effects/386158/) | Pixabay | Pixabay Content License |
+| `Boss/sfx_bossowl_takeoff_1.wav` | [Bird Wings](https://pixabay.com/sound-effects/463212/) | Pixabay | Pixabay Content License |
+| `Boss/sfx_bossowl_volley_fling_1.wav` | [Knife throw 1](https://pixabay.com/sound-effects/105221/) | Pixabay | Pixabay Content License |
+| `Boss/sfx_bossowl_volley_fling_2.wav` | [Knife throw 2](https://pixabay.com/sound-effects/88028/) | Pixabay | Pixabay Content License |
+| `Boss/sfx_bossowl_volley_windup_1.wav` | [Wing Flap 1](https://pixabay.com/sound-effects/6434/) | Pixabay | Pixabay Content License |
+| `Boss/sfx_bossowl_wall_hit_1.wav` | [Cinematic Swoosh Impact](https://pixabay.com/sound-effects/454392/) | Pixabay | Pixabay Content License |
+| `Boss/sfx_bossowl_wall_rush_1.wav` | [Long Whoosh](https://pixabay.com/sound-effects/194554/) | Pixabay | Pixabay Content License |
+| `Boss/sfx_bossowl_wall_warning_1.wav` | [Gust of Wind](https://pixabay.com/sound-effects/511325/) | Pixabay | Pixabay Content License |
+| `Boss/sfx_bossw_awaken_1.wav` | [Deep Sea Monster Roar](https://pixabay.com/sound-effects/329857/) | Pixabay | Pixabay Content License |
+| `Boss/sfx_bossw_bubble_pop_1.wav` | [Bubble Pop 06](https://pixabay.com/sound-effects/351337/) | Pixabay | Pixabay Content License |
+| `Boss/sfx_bossw_bubble_pop_2.wav` | [Bubble Pop](https://pixabay.com/sound-effects/406640/) | Pixabay | Pixabay Content License |
+| `Boss/sfx_bossw_bubble_pop_3.wav` | [Bubble Pop 04](https://pixabay.com/sound-effects/323580/) | Pixabay | Pixabay Content License |
+| `Boss/sfx_bossw_bubble_spit_1.wav` | [Spit](https://pixabay.com/sound-effects/437708/) | Pixabay | Pixabay Content License |
+| `Boss/sfx_bossw_bubble_spit_2.wav` | [Spit](https://pixabay.com/sound-effects/81294/) | Pixabay | Pixabay Content License |
+| `Boss/sfx_bossw_bubble_spit_3.wav` | [Popping Bubbles](https://pixabay.com/sound-effects/406647/) | Pixabay | Pixabay Content License |
+| `Boss/sfx_bossw_burrow_dive_1.wav` | [Sand Transition](https://pixabay.com/sound-effects/451861/) | Pixabay | Pixabay Content License |
+| `Boss/sfx_bossw_claw_hold_1.wav` | [Kepiting (crab)](https://pixabay.com/sound-effects/220057/) | Pixabay | Pixabay Content License |
+| `Boss/sfx_bossw_claw_snap_1.wav` | [Snap Sound Effect](https://pixabay.com/sound-effects/226112/) | Pixabay | Pixabay Content License |
+| `Boss/sfx_bossw_claw_snap_2.wav` | [Snap Sound](https://pixabay.com/sound-effects/423219/) | Pixabay | Pixabay Content License |
+| `Boss/sfx_bossw_claw_snap_3.wav` | [Stick Snap 2](https://pixabay.com/sound-effects/83899/) | Pixabay | Pixabay Content License |
+| `Boss/sfx_bossw_claw_windup_1.wav` | [Clicking](https://pixabay.com/sound-effects/433009/) | Pixabay | Pixabay Content License |
+| `Boss/sfx_bossw_death_1.wav` | [Dragons Dying Breath](https://pixabay.com/sound-effects/84454/) | Pixabay | Pixabay Content License |
+| `Boss/sfx_bossw_emerge_1.wav` | [Sand Transition](https://pixabay.com/sound-effects/451861/); [Explosion](https://pixabay.com/sound-effects/42132/) | Pixabay | Pixabay Content License |
+| `Boss/sfx_bossw_emerge_2.wav` | [Sand Transition](https://pixabay.com/sound-effects/451861/) | Pixabay | Pixabay Content License |
+| `Boss/sfx_bossw_hit_1.wav` | [Hit Shell 01](https://pixabay.com/sound-effects/266294/) | Pixabay | Pixabay Content License |
+| `Boss/sfx_bossw_hit_2.wav` | [Hit Shell 03](https://pixabay.com/sound-effects/266297/) | Pixabay | Pixabay Content License |
+| `Boss/sfx_bossw_hit_3.wav` | [Hit Shell 02](https://pixabay.com/sound-effects/266295/) | Pixabay | Pixabay Content License |
+| `Boss/sfx_bossw_mound_loop_1.ogg` | [Pouring Sand Onto Sand](https://pixabay.com/sound-effects/291368/) | Pixabay | Pixabay Content License |
+| `Boss/sfx_bossw_phase_roar_1.wav` | [Monster Roar 02](https://pixabay.com/sound-effects/102957/) | Pixabay | Pixabay Content License |
+| `Boss/sfx_bossw_phase_roar_2.wav` | [Large Monster Roar](https://pixabay.com/sound-effects/195717/) | Pixabay | Pixabay Content License |
+| `Boss/sfx_bossw_recovery_1.wav` | [Monster Creature Sleeping Breath](https://pixabay.com/sound-effects/447075/) | Pixabay | Pixabay Content License |
+| `Boss/sfx_bossw_tide_rise_1.wav` | [Ocean Wave](https://pixabay.com/sound-effects/100271/) | Pixabay | Pixabay Content License |
+| `Boss/sfx_bossw_wave_hit_1.wav` | [Water Splash](https://pixabay.com/sound-effects/199583/) | Pixabay | Pixabay Content License |
+| `Boss/sfx_bossw_wave_rush_1.wav` | [Ocean Wave Slowly](https://pixabay.com/sound-effects/236010/) | Pixabay | Pixabay Content License |
+| `Boss/sfx_bossw_wave_warning_1.wav` | [Battle_horn_1](https://pixabay.com/sound-effects/6931/) | Pixabay | Pixabay Content License |
+| `Boss/sfx_bossw_whirl_charge_1.wav` | [Bubbling Whirlpool](https://pixabay.com/sound-effects/199420/) | Pixabay | Pixabay Content License |
+| `Boss/sfx_bossw_whirl_jet_1.wav` | [hose](https://pixabay.com/sound-effects/46810/) | Pixabay | Pixabay Content License |
+| `Boss/sfx_bossw_whirl_jet_2.wav` | [hose](https://pixabay.com/sound-effects/46810/) | Pixabay | Pixabay Content License |
+| `Boss/sfx_bossw_whirl_loop_1.ogg` | [Bubbling Whirlpool](https://pixabay.com/sound-effects/199420/) | Pixabay | Pixabay Content License |
+| `Combat/sfx_combat_dummy_hit_1.wav` | [hit by a wood](https://pixabay.com/sound-effects/230542/) | Pixabay | Pixabay Content License |
+| `Combat/sfx_combat_dummy_hit_2.wav` | [Wood hit](https://pixabay.com/sound-effects/432148/) | Pixabay | Pixabay Content License |
+| `Combat/sfx_combat_dummy_hit_3.wav` | [Hit Tree 01](https://pixabay.com/sound-effects/266310/) | Pixabay | Pixabay Content License |
+| `Combat/sfx_combat_enemy_death_1.wav` | [monster death grunt](https://pixabay.com/sound-effects/131480/) | Pixabay | Pixabay Content License |
+| `Combat/sfx_combat_enemy_death_2.wav` | [Monster Scream Death](https://pixabay.com/sound-effects/101123/) | Pixabay | Pixabay Content License |
+| `Combat/sfx_combat_enemy_hit_1.wav` | [grunt2](https://pixabay.com/sound-effects/85989/) | Pixabay | Pixabay Content License |
+| `Combat/sfx_combat_enemy_hit_2.wav` | [Dragon Hurt](https://pixabay.com/sound-effects/47161/) | Pixabay | Pixabay Content License |
+| `Combat/sfx_combat_enemy_hit_3.wav` | [Zombie Pain 1](https://pixabay.com/sound-effects/95166/) | Pixabay | Pixabay Content License |
+| `Combat/sfx_combat_hit_crit_1.wav` | [Sword Slice](https://pixabay.com/sound-effects/393847/) | Pixabay | Pixabay Content License |
+| `Combat/sfx_combat_hit_crit_2.wav` | [Sword Clash/Hit](https://pixabay.com/sound-effects/393837/) | Pixabay | Pixabay Content License |
+| `Combat/sfx_combat_hit_impact_1.wav` | [Hit Flesh 02](https://pixabay.com/sound-effects/266309/) | Pixabay | Pixabay Content License |
+| `Combat/sfx_combat_hit_impact_2.wav` | [Sword Blade Slicing Flesh](https://pixabay.com/sound-effects/352708/) | Pixabay | Pixabay Content License |
+| `Combat/sfx_combat_hit_impact_3.wav` | [Hit Flesh 03](https://pixabay.com/sound-effects/266308/) | Pixabay | Pixabay Content License |
+| `Combat/sfx_combat_player_attack_1.wav` | [Sword Slash and Swing](https://pixabay.com/sound-effects/185432/) | Pixabay | Pixabay Content License |
+| `Combat/sfx_combat_player_attack_2.wav` | [sword-sound](https://pixabay.com/sound-effects/260274/) | Pixabay | Pixabay Content License |
+| `Combat/sfx_combat_player_attack_3.wav` | [Knife slice](https://pixabay.com/sound-effects/41231/) | Pixabay | Pixabay Content License |
+| `Combat/sfx_combat_player_death_1.wav` | [Male Death Scream](https://pixabay.com/sound-effects/123078/) | Pixabay | Pixabay Content License |
+| `Combat/sfx_combat_player_death_2.wav` | [Male Scream](https://pixabay.com/sound-effects/121085/) | Pixabay | Pixabay Content License |
+| `Combat/sfx_combat_player_dodge_1.wav` | [Quick Whoosh](https://pixabay.com/sound-effects/405448/) | Pixabay | Pixabay Content License |
+| `Combat/sfx_combat_player_dodge_2.wav` | [Whoosh Effect](https://pixabay.com/sound-effects/382717/) | Pixabay | Pixabay Content License |
+| `Combat/sfx_combat_player_hurt_1.wav` | [male_hurt7](https://pixabay.com/sound-effects/48124/) | Pixabay | Pixabay Content License |
+| `Combat/sfx_combat_player_hurt_2.wav` | [Male Hurt Sound](https://pixabay.com/sound-effects/95206/) | Pixabay | Pixabay Content License |
+| `Combat/sfx_combat_player_hurt_3.wav` | [GRUNT 1](https://pixabay.com/sound-effects/85280/) | Pixabay | Pixabay Content License |
+| `Combat/sfx_combat_projectile_impact_1.wav` | [Arrow Body Impact](https://pixabay.com/sound-effects/146419/) | Pixabay | Pixabay Content License |
+| `Combat/sfx_combat_projectile_impact_2.wav` | [Arrow Impact](https://pixabay.com/sound-effects/87260/) | Pixabay | Pixabay Content License |
+| `Combat/sfx_combat_projectile_launch_1.wav` | [Movement Swipe Whoosh 3](https://pixabay.com/sound-effects/186577/) | Pixabay | Pixabay Content License |
+| `Combat/sfx_combat_projectile_launch_2.wav` | [Movement Swipe Whoosh 1](https://pixabay.com/sound-effects/186575/) | Pixabay | Pixabay Content License |
+| `Combat/sfx_combat_shield_block_1.wav` | [Shield Block Shortsword](https://pixabay.com/sound-effects/143940/) | Pixabay | Pixabay Content License |
+| `Combat/sfx_combat_shield_block_2.wav` | [Sword Slash With Metal Shield Impact](https://pixabay.com/sound-effects/185433/) | Pixabay | Pixabay Content License |
+| `Combat/sfx_combat_shield_raise_1.wav` | [shield guard](https://pixabay.com/sound-effects/6963/) | Pixabay | Pixabay Content License |
+| `Combat/sfx_combat_skill_aim_cancel_1.wav` | [UI back sound](https://pixabay.com/sound-effects/100590/) | Pixabay | Pixabay Content License |
+| `Combat/sfx_combat_skill_aim_confirm_1.wav` | [Magic Spell](https://pixabay.com/sound-effects/6005/) | Pixabay | Pixabay Content License |
+| `Combat/sfx_combat_skill_aim_start_1.wav` | [Fairy Sparkle](https://pixabay.com/sound-effects/451414/) | Pixabay | Pixabay Content License |
+| `Combat/sfx_combat_stun_apply_1.wav` | [Stunned_02](https://pixabay.com/sound-effects/99826/) | Pixabay | Pixabay Content License |
+| `Combat/sfx_combat_unarmed_crit_1.wav` | [Power Punch](https://pixabay.com/sound-effects/192118/) | Pixabay | Pixabay Content License |
+| `Combat/sfx_combat_unarmed_crit_2.wav` | [Hard Punch SFX](https://pixabay.com/sound-effects/515251/) | Pixabay | Pixabay Content License |
+| `Combat/sfx_combat_unarmed_hit_1.wav` | [Punch 2](https://pixabay.com/sound-effects/166695/) | Pixabay | Pixabay Content License |
+| `Combat/sfx_combat_unarmed_hit_2.wav` | [Punch 3](https://pixabay.com/sound-effects/166696/) | Pixabay | Pixabay Content License |
+| `Combat/sfx_combat_unarmed_hit_3.wav` | [Punch 5](https://pixabay.com/sound-effects/166698/) | Pixabay | Pixabay Content License |
+| `Combat/sfx_combat_unarmed_hit_4.wav` | [Punch 7](https://pixabay.com/sound-effects/166700/) | Pixabay | Pixabay Content License |
+| `Combat/sfx_combat_unarmed_swing_1.wav` | [Swish Sound](https://pixabay.com/sound-effects/94707/) | Pixabay | Pixabay Content License |
+| `Combat/sfx_combat_unarmed_swing_2.wav` | [Simple Whoosh](https://pixabay.com/sound-effects/382724/) | Pixabay | Pixabay Content License |
+| `Combat/sfx_combat_unarmed_swing_3.wav` | [Short Swoosh Whoosh](https://pixabay.com/sound-effects/561933/) | Pixabay | Pixabay Content License |
+| `Combat/sfx_enemy_ent_alert_1.wav` | [Beast deep groan](https://pixabay.com/sound-effects/100480/); [Wood Creak Single V3](https://pixabay.com/sound-effects/14657/) | Pixabay | Pixabay Content License |
+| `Combat/sfx_enemy_ent_attack_1.wav` | [Whoosh Cinematic](https://pixabay.com/sound-effects/376875/); [Wood Creak Single V3](https://pixabay.com/sound-effects/14657/) | Pixabay | Pixabay Content License |
+| `Combat/sfx_enemy_ent_death_1.wav` | [Wood Break](https://pixabay.com/sound-effects/40011/); [Falling branch](https://pixabay.com/sound-effects/90026/) | Pixabay | Pixabay Content License |
+| `Combat/sfx_enemy_ent_death_2.wav` | [Old tree falls](https://pixabay.com/sound-effects/493329/); [Body fall](https://pixabay.com/sound-effects/47877/) | Pixabay | Pixabay Content License |
+| `Combat/sfx_enemy_ent_hurt_1.wav` | [Wooden Thud](https://pixabay.com/sound-effects/6244/) | Pixabay | Pixabay Content License |
+| `Combat/sfx_enemy_ent_hurt_2.wav` | [Hit Tree 01](https://pixabay.com/sound-effects/266310/) | Pixabay | Pixabay Content License |
+| `Combat/sfx_enemy_ent_hurt_3.wav` | [Hit Tree 03](https://pixabay.com/sound-effects/266306/) | Pixabay | Pixabay Content License |
+| `Combat/sfx_enemy_ent_idle_1.wav` | [Floorboard Creak 03](https://pixabay.com/sound-effects/499651/) | Pixabay | Pixabay Content License |
+| `Combat/sfx_enemy_ent_idle_2.wav` | [Creak and Crack](https://pixabay.com/sound-effects/252628/) | Pixabay | Pixabay Content License |
+| `Combat/sfx_enemy_goblin_alert_1.wav` | [Monster Goblin Voice - Excited Enemy Spotted!](https://pixabay.com/sound-effects/519428/) | Pixabay | Pixabay Content License |
+| `Combat/sfx_enemy_goblin_alert_2.wav` | [Goblin Cackle](https://pixabay.com/sound-effects/87566/) | Pixabay | Pixabay Content License |
+| `Combat/sfx_enemy_goblin_attack_1.wav` | [Small Monster Attack](https://pixabay.com/sound-effects/195712/) | Pixabay | Pixabay Content License |
+| `Combat/sfx_enemy_goblin_attack_2.wav` | [Goblin Scream](https://pixabay.com/sound-effects/87564/) | Pixabay | Pixabay Content License |
+| `Combat/sfx_enemy_goblin_death_1.wav` | [Goblin Death](https://pixabay.com/sound-effects/6729/) | Pixabay | Pixabay Content License |
+| `Combat/sfx_enemy_goblin_death_2.wav` | [Goblin Scream](https://pixabay.com/sound-effects/87564/) | Pixabay | Pixabay Content License |
+| `Combat/sfx_enemy_goblin_hurt_1.wav` | [Hurt sound](https://pixabay.com/sound-effects/435314/) | Pixabay | Pixabay Content License |
+| `Combat/sfx_enemy_goblin_hurt_2.wav` | [Goblin Death](https://pixabay.com/sound-effects/6729/) | Pixabay | Pixabay Content License |
+| `Combat/sfx_enemy_goblin_idle_1.wav` | [Goblin Cackle](https://pixabay.com/sound-effects/87566/) | Pixabay | Pixabay Content License |
+| `Combat/sfx_enemy_goblin_idle_2.wav` | [Gremlin laugh](https://pixabay.com/sound-effects/100119/) | Pixabay | Pixabay Content License |
+| `Combat/sfx_enemy_slime_alert_1.wav` | [Slime Squish 5](https://pixabay.com/sound-effects/218569/) | Pixabay | Pixabay Content License |
+| `Combat/sfx_enemy_slime_alert_2.wav` | [Gooey Squish](https://pixabay.com/sound-effects/14820/) | Pixabay | Pixabay Content License |
+| `Combat/sfx_enemy_slime_attack_1.wav` | [SlimeJump](https://pixabay.com/sound-effects/6913/) | Pixabay | Pixabay Content License |
+| `Combat/sfx_enemy_slime_attack_2.wav` | [Cartoon Jump](https://pixabay.com/sound-effects/463196/) | Pixabay | Pixabay Content License |
+| `Combat/sfx_enemy_slime_death_1.wav` | [Cartoon Splat](https://pixabay.com/sound-effects/6086/) | Pixabay | Pixabay Content License |
+| `Combat/sfx_enemy_slime_death_2.wav` | [Cartoon Wet Splat](https://pixabay.com/sound-effects/352447/) | Pixabay | Pixabay Content License |
+| `Combat/sfx_enemy_slime_death_3.wav` | [Wet Squelch Impact](https://pixabay.com/sound-effects/352302/) | Pixabay | Pixabay Content License |
+| `Combat/sfx_enemy_slime_hurt_1.wav` | [Slime Impact](https://pixabay.com/sound-effects/352473/) | Pixabay | Pixabay Content License |
+| `Combat/sfx_enemy_slime_hurt_2.wav` | [Wet Impact](https://pixabay.com/sound-effects/352440/) | Pixabay | Pixabay Content License |
+| `Combat/sfx_enemy_slime_hurt_3.wav` | [Wet Squelch Impact](https://pixabay.com/sound-effects/352302/) | Pixabay | Pixabay Content License |
+| `Combat/sfx_enemy_slime_idle_1.wav` | [Goopy Slime 4](https://pixabay.com/sound-effects/219777/) | Pixabay | Pixabay Content License |
+| `Combat/sfx_enemy_slime_idle_2.wav` | [Slime Squish 5](https://pixabay.com/sound-effects/218569/) | Pixabay | Pixabay Content License |
+| `Combat/sfx_player_dash_1.wav` | [Swoosh 015](https://pixabay.com/sound-effects/383769/) | Pixabay | Pixabay Content License |
+| `Combat/sfx_player_dash_2.wav` | [Swoosh for Fight Scenes 2](https://pixabay.com/sound-effects/149890/) | Pixabay | Pixabay Content License |
+| `Combat/sfx_player_exhausted_1.wav` | [Exhausted Man Sighing](https://pixabay.com/sound-effects/307101/) | Pixabay | Pixabay Content License |
+| `Combat/sfx_player_exhausted_2.wav` | [Respiracion agitada](https://pixabay.com/sound-effects/100935/) | Pixabay | Pixabay Content License |
+| `Combat/sfx_player_level_up_1.wav` | [Level Up 06](https://pixabay.com/sound-effects/370051/) | Pixabay | Pixabay Content License |
+| `Combat/sfx_wildlife_boar_alert_1.wav` | [heavy grunt](https://pixabay.com/sound-effects/6969/) | Pixabay | Pixabay Content License |
+| `Combat/sfx_wildlife_boar_alert_2.wav` | [GRUNT 1](https://pixabay.com/sound-effects/85280/) | Pixabay | Pixabay Content License |
+| `Combat/sfx_wildlife_boar_attack_1.wav` | [Pig Grunt](https://pixabay.com/sound-effects/100272/) | Pixabay | Pixabay Content License |
+| `Combat/sfx_wildlife_boar_attack_2.wav` | [Angry Grunt](https://pixabay.com/sound-effects/103204/) | Pixabay | Pixabay Content License |
+| `Combat/sfx_wildlife_boar_death_1.wav` | [Pig Squeal Horror](https://pixabay.com/sound-effects/229155/) | Pixabay | Pixabay Content License |
+| `Combat/sfx_wildlife_boar_death_2.wav` | [Pig Squeal Horror](https://pixabay.com/sound-effects/229155/); [Body fall](https://pixabay.com/sound-effects/47877/) | Pixabay | Pixabay Content License |
+| `Combat/sfx_wildlife_boar_hurt_1.wav` | [Pig Oink](https://pixabay.com/sound-effects/47167/) | Pixabay | Pixabay Content License |
+| `Combat/sfx_wildlife_boar_hurt_2.wav` | [Pig Squeal Horror](https://pixabay.com/sound-effects/229155/) | Pixabay | Pixabay Content License |
+| `Combat/sfx_wildlife_boar_idle_1.wav` | [Pig Sound](https://pixabay.com/sound-effects/47168/) | Pixabay | Pixabay Content License |
+| `Combat/sfx_wildlife_boar_idle_2.wav` | [oink](https://pixabay.com/sound-effects/40664/) | Pixabay | Pixabay Content License |
+| `Combat/sfx_wildlife_deer_alert_1.wav` | [Deer Snort](https://pixabay.com/sound-effects/472365/) | Pixabay | Pixabay Content License |
+| `Combat/sfx_wildlife_deer_death_1.wav` | [Sheep Bleat](https://pixabay.com/sound-effects/122256/); [Body fall](https://pixabay.com/sound-effects/47877/) | Pixabay | Pixabay Content License |
+| `Combat/sfx_wildlife_deer_death_2.wav` | [Deer Grunt](https://pixabay.com/sound-effects/472371/); [Body fall](https://pixabay.com/sound-effects/47877/) | Pixabay | Pixabay Content License |
+| `Combat/sfx_wildlife_deer_hurt_1.wav` | [Deer Grunt](https://pixabay.com/sound-effects/472371/) | Pixabay | Pixabay Content License |
+| `Combat/sfx_wildlife_deer_hurt_2.wav` | [Deer Snort](https://pixabay.com/sound-effects/472365/) | Pixabay | Pixabay Content License |
+| `Combat/sfx_wildlife_deer_idle_1.wav` | [Deer Grunt](https://pixabay.com/sound-effects/472371/) | Pixabay | Pixabay Content License |
+| `Combat/sfx_wildlife_rabbit_alert_1.wav` | [Dry Grass Rustling](https://pixabay.com/sound-effects/478361/) | Pixabay | Pixabay Content License |
+| `Combat/sfx_wildlife_rabbit_alert_2.wav` | [bushmovement](https://pixabay.com/sound-effects/6986/) | Pixabay | Pixabay Content License |
+| `Combat/sfx_wildlife_rabbit_death_1.wav` | [squeal thing](https://pixabay.com/sound-effects/103111/); [Body Fall](https://pixabay.com/sound-effects/259680/) | Pixabay | Pixabay Content License |
+| `Combat/sfx_wildlife_rabbit_death_2.wav` | [Rat Squeaks 4 FX](https://pixabay.com/sound-effects/396298/); [Body Fall](https://pixabay.com/sound-effects/259680/) | Pixabay | Pixabay Content License |
+| `Combat/sfx_wildlife_rabbit_hurt_1.wav` | [Pig Squeak](https://pixabay.com/sound-effects/47166/) | Pixabay | Pixabay Content License |
+| `Combat/sfx_wildlife_rabbit_hurt_2.wav` | [Mouse](https://pixabay.com/sound-effects/6821/) | Pixabay | Pixabay Content License |
+| `Combat/sfx_wildlife_rabbit_hurt_3.wav` | [Rat Squeaks 4 FX](https://pixabay.com/sound-effects/396298/) | Pixabay | Pixabay Content License |
+| `Commerce/sfx_craft_complete_1.wav` | [Anvil Hit 2](https://pixabay.com/sound-effects/14845/); [Level Complete](https://pixabay.com/sound-effects/143022/) | Pixabay | Pixabay Content License |
+| `Commerce/sfx_craft_start_1.wav` | [Hammer Steel Impact](https://pixabay.com/sound-effects/454390/) | Pixabay | Pixabay Content License |
+| `Commerce/sfx_shop_buy_1.wav` | [Cash Register Kaching](https://pixabay.com/sound-effects/376867/) | Pixabay | Pixabay Content License |
+| `Commerce/sfx_shop_buy_2.wav` | [Clinking Coins 8](https://pixabay.com/sound-effects/468434/) | Pixabay | Pixabay Content License |
+| `Commerce/sfx_shop_sell_1.wav` | [Coin and Money Bag 3](https://pixabay.com/sound-effects/185264/) | Pixabay | Pixabay Content License |
+| `Commerce/sfx_shop_sell_2.wav` | [Drop Coin](https://pixabay.com/sound-effects/384921/) | Pixabay | Pixabay Content License |
+| `Farming/sfx_farm_harvest_1.wav` | [Bush Rustling](https://pixabay.com/sound-effects/467467/) | Pixabay | Pixabay Content License |
+| `Farming/sfx_farm_plant_1.wav` | [Walk On Dirt 1](https://pixabay.com/sound-effects/291981/) | Pixabay | Pixabay Content License |
+| `Farming/sfx_farm_water_1.wav` | [Pouring Water](https://pixabay.com/sound-effects/191999/) | Pixabay | Pixabay Content License |
+| `Fishing/sfx_fishing_bite_1.wav` | [Water splash](https://pixabay.com/sound-effects/46402/) | Pixabay | Pixabay Content License |
+| `Fishing/sfx_fishing_cast_1.wav` | [Fishing rod whoosh](https://pixabay.com/sound-effects/411640/) | Pixabay | Pixabay Content License |
+| `Fishing/sfx_fishing_cast_2.wav` | [Fast Whoosh](https://pixabay.com/sound-effects/118248/) | Pixabay | Pixabay Content License |
+| `Fishing/sfx_fishing_catch_1.wav` | [Fish Splashing Release 2](https://pixabay.com/sound-effects/40947/) | Pixabay | Pixabay Content License |
+| `Fishing/sfx_fishing_fail_1.wav` | [Splash](https://pixabay.com/sound-effects/6213/) | Pixabay | Pixabay Content License |
+| `Fishing/sfx_fishing_reel_1.wav` | [mouse click (reel tick)](https://pixabay.com/sound-effects/104737/) | Pixabay | Pixabay Content License |
+| `Fishing/sfx_fishing_reel_2.wav` | [Mouse click (reel tick)](https://pixabay.com/sound-effects/290204/) | Pixabay | Pixabay Content License |
+| `Fishing/sfx_fishing_splash_1.wav` | [Water Splash](https://pixabay.com/sound-effects/229315/) | Pixabay | Pixabay Content License |
+| `Fishing/sfx_fishing_splash_2.wav` | [Water splash](https://pixabay.com/sound-effects/80537/) | Pixabay | Pixabay Content License |
+| `Quest/sfx_quest_accept_1.wav` | [Accepter 1](https://pixabay.com/sound-effects/394922/) | Pixabay | Pixabay Content License |
+| `Quest/sfx_quest_complete_1.wav` | [Achievement Unlock](https://pixabay.com/sound-effects/243762/) | Pixabay | Pixabay Content License |
+| `Quest/sfx_quest_objective_1.wav` | [Correct](https://pixabay.com/sound-effects/472358/) | Pixabay | Pixabay Content License |
+| `Skill/sfx_skill_cast_generic_1.wav` | [Magical Spell Cast](https://pixabay.com/sound-effects/190272/) | Pixabay | Pixabay Content License |
+| `Skill/sfx_skill_cast_generic_2.wav` | [Spell Casting](https://pixabay.com/sound-effects/229208/) | Pixabay | Pixabay Content License |
+| `Skill/sfx_skill_earth_s1_cast_1.wav` | [Epic Whoosh](https://pixabay.com/sound-effects/478371/) | Pixabay | Pixabay Content License |
+| `Skill/sfx_skill_earth_s1_cast_2.wav` | [Whoosh Cinematic](https://pixabay.com/sound-effects/376875/) | Pixabay | Pixabay Content License |
+| `Skill/sfx_skill_earth_s1_impact_1.wav` | [Boulder Impact](https://pixabay.com/sound-effects/487673/) | Pixabay | Pixabay Content License |
+| `Skill/sfx_skill_earth_s1_impact_2.wav` | [Heavy Boulder Thud](https://pixabay.com/sound-effects/515257/) | Pixabay | Pixabay Content License |
+| `Skill/sfx_skill_earth_s1_impact_3.wav` | [Hit Rock 02](https://pixabay.com/sound-effects/266304/) | Pixabay | Pixabay Content License |
+| `Skill/sfx_skill_earth_s2_rise_1.wav` | [Deep Rumbling](https://pixabay.com/sound-effects/472370/); [Stone Block Drag Grind](https://pixabay.com/sound-effects/82327/) | Pixabay | Pixabay Content License |
+| `Skill/sfx_skill_earth_s2_spike_1.wav` | [Flint Strike](https://pixabay.com/sound-effects/38491/) | Pixabay | Pixabay Content License |
+| `Skill/sfx_skill_earth_s2_spike_2.wav` | [Rock destroy](https://pixabay.com/sound-effects/6409/) | Pixabay | Pixabay Content License |
+| `Skill/sfx_skill_earth_s2_stun_loop_1.ogg` | [earth rumble](https://pixabay.com/sound-effects/6953/) | Pixabay | Pixabay Content License |
+| `Skill/sfx_skill_earth_s3_cage_1.wav` | [Earth Spell](https://pixabay.com/sound-effects/393923/) | Pixabay | Pixabay Content License |
+| `Skill/sfx_skill_earth_s3_cone_1.wav` | [Earth Spell Impact 2](https://pixabay.com/sound-effects/393922/) | Pixabay | Pixabay Content License |
+| `Skill/sfx_skill_earth_s4_aftermath_1.wav` | [Rocks Falling](https://pixabay.com/sound-effects/44890/) | Pixabay | Pixabay Content License |
+| `Skill/sfx_skill_earth_s4_aftermath_2.wav` | [Object Falling](https://pixabay.com/sound-effects/143024/) | Pixabay | Pixabay Content License |
+| `Skill/sfx_skill_earth_s4_charge_1.wav` | [Cinematic Rumble](https://pixabay.com/sound-effects/106063/) | Pixabay | Pixabay Content License |
+| `Skill/sfx_skill_earth_s4_finale_1.wav` | [Explosion FX](https://pixabay.com/sound-effects/343683/) | Pixabay | Pixabay Content License |
+| `Skill/sfx_skill_earth_s4_meteor_fall_1.wav` | [Fireball Whoosh 5](https://pixabay.com/sound-effects/179129/) | Pixabay | Pixabay Content License |
+| `Skill/sfx_skill_earth_s4_meteor_impact_1.wav` | [Loud Explosion](https://pixabay.com/sound-effects/425457/) | Pixabay | Pixabay Content License |
+| `Skill/sfx_skill_earth_s4_meteor_impact_2.wav` | [Rock Break Hard](https://pixabay.com/sound-effects/184891/) | Pixabay | Pixabay Content License |
+| `Skill/sfx_skill_hit_flesh_1.wav` | [Impact Sound Effect](https://pixabay.com/sound-effects/335395/) | Pixabay | Pixabay Content License |
+| `Skill/sfx_skill_hit_flesh_2.wav` | [Hit Flesh 03](https://pixabay.com/sound-effects/266308/); [Cinematic Energy Impact - Aggressive Spark](https://pixabay.com/sound-effects/228337/) | Pixabay | Pixabay Content License |
+| `Skill/sfx_skill_screen_slam_1.wav` | [Cinematic Impact Boom 05](https://pixabay.com/sound-effects/352465/) | Pixabay | Pixabay Content License |
+| `Skill/sfx_skill_water_s1_cast_1.wav` | [Liquid Whoosh 3](https://pixabay.com/sound-effects/185332/) | Pixabay | Pixabay Content License |
+| `Skill/sfx_skill_water_s1_cast_2.wav` | [Underwater Movement Whoosh 1](https://pixabay.com/sound-effects/186898/) | Pixabay | Pixabay Content License |
+| `Skill/sfx_skill_water_s1_impact_1.wav` | [Water splash](https://pixabay.com/sound-effects/46402/) | Pixabay | Pixabay Content License |
+| `Skill/sfx_skill_water_s1_impact_2.wav` | [Water Splash](https://pixabay.com/sound-effects/229315/) | Pixabay | Pixabay Content License |
+| `Skill/sfx_skill_water_s1_impact_3.wav` | [Water splash](https://pixabay.com/sound-effects/80537/) | Pixabay | Pixabay Content License |
+| `Skill/sfx_skill_water_s2_cast_1.wav` | [Underwater Movement Whoosh 4](https://pixabay.com/sound-effects/186901/) | Pixabay | Pixabay Content License |
+| `Skill/sfx_skill_water_s2_splash_1.wav` | [Big Rock Splash 5](https://pixabay.com/sound-effects/467472/) | Pixabay | Pixabay Content License |
+| `Skill/sfx_skill_water_s2_splash_2.wav` | [Water Splash Effect](https://pixabay.com/sound-effects/443133/) | Pixabay | Pixabay Content License |
+| `Skill/sfx_skill_water_s3_beam_loop_1.ogg` | [Water Stream](https://pixabay.com/sound-effects/108384/) | Pixabay | Pixabay Content License |
+| `Skill/sfx_skill_water_s3_charge_1.wav` | [energy charge (2)](https://pixabay.com/sound-effects/482499/) | Pixabay | Pixabay Content License |
+| `Skill/sfx_skill_water_s3_end_1.wav` | [Water Splash Effect](https://pixabay.com/sound-effects/443133/) | Pixabay | Pixabay Content License |
+| `Skill/sfx_skill_water_s4_aftermath_rain_1.ogg` | [LIGHT RAIN](https://pixabay.com/sound-effects/109591/) | Pixabay | Pixabay Content License |
+| `Skill/sfx_skill_water_s4_charge_1.wav` | [Underwater rumble](https://pixabay.com/sound-effects/521068/) | Pixabay | Pixabay Content License |
+| `Skill/sfx_skill_water_s4_crash_1.wav` | [Waves Crashing](https://pixabay.com/sound-effects/397977/) | Pixabay | Pixabay Content License |
+| `Skill/sfx_skill_water_s4_wave_1.wav` | [Ocean Wave Fast](https://pixabay.com/sound-effects/236009/) | Pixabay | Pixabay Content License |
+| `Skill/sfx_skill_wind_s1_catch_1.wav` | [Wind Swoosh Short](https://pixabay.com/sound-effects/289744/) | Pixabay | Pixabay Content License |
+| `Skill/sfx_skill_wind_s1_loop_1.ogg` | [Spin Whoosh 1](https://pixabay.com/sound-effects/186596/) | Pixabay | Pixabay Content License |
+| `Skill/sfx_skill_wind_s1_throw_1.wav` | [Spin Whoosh 2](https://pixabay.com/sound-effects/186597/) | Pixabay | Pixabay Content License |
+| `Skill/sfx_skill_wind_s1_throw_2.wav` | [Whoosh Effect](https://pixabay.com/sound-effects/405447/) | Pixabay | Pixabay Content License |
+| `Skill/sfx_skill_wind_s2_cast_1.wav` | [Quick short gust of wind (3)](https://pixabay.com/sound-effects/535450/) | Pixabay | Pixabay Content License |
+| `Skill/sfx_skill_wind_s2_land_1.wav` | [Body Fall](https://pixabay.com/sound-effects/259680/) | Pixabay | Pixabay Content License |
+| `Skill/sfx_skill_wind_s2_land_2.wav` | [Body fall](https://pixabay.com/sound-effects/47877/) | Pixabay | Pixabay Content License |
+| `Skill/sfx_skill_wind_s2_lift_loop_1.ogg` | [Tornado Sound](https://pixabay.com/sound-effects/29406/) | Pixabay | Pixabay Content License |
+| `Skill/sfx_skill_wind_s3_pulse_1.wav` | [Gust of Wind](https://pixabay.com/sound-effects/511325/) | Pixabay | Pixabay Content License |
+| `Skill/sfx_skill_wind_s3_pulse_2.wav` | [Gentle gust](https://pixabay.com/sound-effects/108966/) | Pixabay | Pixabay Content License |
+| `Skill/sfx_skill_wind_s3_wall_slam_1.wav` | [Thud Impact Sound SFX](https://pixabay.com/sound-effects/379990/) | Pixabay | Pixabay Content License |
+| `Skill/sfx_skill_wind_s4_charge_1.wav` | [Wind Gust](https://pixabay.com/sound-effects/386158/) | Pixabay | Pixabay Content License |
+| `Skill/sfx_skill_wind_s4_dive_1.wav` | [Whoosh Cinematic](https://pixabay.com/sound-effects/376875/); [Eagle](https://pixabay.com/sound-effects/281163/) | Pixabay | Pixabay Content License |
+| `Skill/sfx_skill_wind_s4_feather_rain_1.wav` | [Arrow Swish_03](https://pixabay.com/sound-effects/306040/) | Pixabay | Pixabay Content License |
+| `Skill/sfx_skill_wind_s4_feather_rain_2.wav` | [Whoosh Transitions SFX 01](https://pixabay.com/sound-effects/118227/) | Pixabay | Pixabay Content License |
+| `Skill/sfx_skill_wind_s4_flap_1.wav` | [Wing Flap Heavy](https://pixabay.com/sound-effects/36710/) | Pixabay | Pixabay Content License |
+| `Skill/sfx_skill_wind_s4_flap_2.wav` | [Wing Flap 1](https://pixabay.com/sound-effects/6434/) | Pixabay | Pixabay Content License |
+| `Skill/sfx_skill_wind_s4_screech_1.wav` | [Eagle](https://pixabay.com/sound-effects/355831/) | Pixabay | Pixabay Content License |
+| `Skill/sfx_skill_wind_s4_screech_2.wav` | [Eagle](https://pixabay.com/sound-effects/281163/) | Pixabay | Pixabay Content License |
+| `Skill/sfx_skill_wind_s4_shockwave_1.wav` | [Shockwave](https://pixabay.com/sound-effects/105526/) | Pixabay | Pixabay Content License |
+| `UI/sfx_inventory_close_1.wav` | [Open Bag](https://pixabay.com/sound-effects/96178/) | Pixabay | Pixabay Content License |
+| `UI/sfx_inventory_drink_1.wav` | [Gulp](https://pixabay.com/sound-effects/37759/) | Pixabay | Pixabay Content License |
+| `UI/sfx_inventory_drink_2.wav` | [Drink Sip and Swallow](https://pixabay.com/sound-effects/6974/) | Pixabay | Pixabay Content License |
+| `UI/sfx_inventory_drop_1.wav` | [Thud2](https://pixabay.com/sound-effects/97615/) | Pixabay | Pixabay Content License |
+| `UI/sfx_inventory_eat_1.wav` | [apple bite](https://pixabay.com/sound-effects/316785/) | Pixabay | Pixabay Content License |
+| `UI/sfx_inventory_eat_2.wav` | [Apple bite n chew](https://pixabay.com/sound-effects/40568/) | Pixabay | Pixabay Content License |
+| `UI/sfx_inventory_equip_1.wav` | [Item Equip](https://pixabay.com/sound-effects/6904/) | Pixabay | Pixabay Content License |
+| `UI/sfx_inventory_equip_2.wav` | [Sword Unsheathing](https://pixabay.com/sound-effects/393851/) | Pixabay | Pixabay Content License |
+| `UI/sfx_inventory_open_1.wav` | [Open Bag Sound](https://pixabay.com/sound-effects/39216/) | Pixabay | Pixabay Content License |
+| `UI/sfx_inventory_pickup_1.wav` | [Item Pickup](https://pixabay.com/sound-effects/37089/) | Pixabay | Pixabay Content License |
+| `UI/sfx_inventory_pickup_2.wav` | [Item Pickup (3)](https://pixabay.com/sound-effects/540193/) | Pixabay | Pixabay Content License |
+| `UI/sfx_inventory_unequip_1.wav` | [heavy cloth rustle](https://pixabay.com/sound-effects/106346/) | Pixabay | Pixabay Content License |
+| `UI/sfx_inventory_use_potion_1.wav` | [Potion Drink (3)](https://pixabay.com/sound-effects/540167/) | Pixabay | Pixabay Content License |
+| `UI/sfx_inventory_use_potion_2.wav` | [Potion Drink (4)](https://pixabay.com/sound-effects/540186/) | Pixabay | Pixabay Content License |
+| `UI/sfx_ui_click_primary.wav` | [Click Button](https://pixabay.com/sound-effects/140881/) | Pixabay | Pixabay Content License |
+| `UI/sfx_ui_click_secondary.wav` | [Soft App Button Tap Sound #2](https://pixabay.com/sound-effects/547872/) | Pixabay | Pixabay Content License |
+| `UI/sfx_ui_dialogue_blip_1.wav` | [blip](https://pixabay.com/sound-effects/131856/) | Pixabay | Pixabay Content License |
+| `UI/sfx_ui_error.wav` | [UI Error Pop](https://pixabay.com/sound-effects/515668/) | Pixabay | Pixabay Content License |
+| `UI/sfx_ui_hover.wav` | [UI Hover SFX](https://pixabay.com/sound-effects/513360/) | Pixabay | Pixabay Content License |
+| `UI/sfx_ui_map_close_1.wav` | [paper](https://pixabay.com/sound-effects/245786/) | Pixabay | Pixabay Content License |
+| `UI/sfx_ui_map_open_1.wav` | [Unfold a map](https://pixabay.com/sound-effects/46452/) | Pixabay | Pixabay Content License |
+| `UI/sfx_ui_notification_1.wav` | [New Notification 07](https://pixabay.com/sound-effects/210334/) | Pixabay | Pixabay Content License |
+| `UI/sfx_ui_notification_2.wav` | [New Notification 010](https://pixabay.com/sound-effects/352755/) | Pixabay | Pixabay Content License |
+| `UI/sfx_ui_popup_close.wav` | [UI Close SFX](https://pixabay.com/sound-effects/513359/) | Pixabay | Pixabay Content License |
+| `UI/sfx_ui_popup_open.wav` | [UI Open SFX](https://pixabay.com/sound-effects/513358/) | Pixabay | Pixabay Content License |
+| `UI/sfx_ui_save_success_1.wav` | [Sound Alert Done](https://pixabay.com/sound-effects/174892/) | Pixabay | Pixabay Content License |
+| `UI/sfx_ui_skill_assign_1.wav` | [Equip Sound](https://pixabay.com/sound-effects/272428/) | Pixabay | Pixabay Content License |
+| `UI/sfx_ui_skill_cooldown_1.wav` | [Error Notification 010](https://pixabay.com/sound-effects/206498/) | Pixabay | Pixabay Content License |
+| `UI/sfx_ui_skill_learn_1.wav` | [power up (Type 1)](https://pixabay.com/sound-effects/230548/) | Pixabay | Pixabay Content License |
+| `UI/sfx_ui_tab_1.wav` | [Turn a Page](https://pixabay.com/sound-effects/336933/) | Pixabay | Pixabay Content License |
+| `UI/sfx_ui_tab_2.wav` | [Page Turn](https://pixabay.com/sound-effects/305789/) | Pixabay | Pixabay Content License |
+| `UI/sfx_ui_toggle.wav` | [Toggle Button On](https://pixabay.com/sound-effects/166329/) | Pixabay | Pixabay Content License |
+| `World/sfx_step_grass_1.wav` | [Walk On Grass 1](https://pixabay.com/sound-effects/291984/) | Pixabay | Pixabay Content License |
+| `World/sfx_step_grass_2.wav` | [Rustling Grass 1](https://pixabay.com/sound-effects/101282/) | Pixabay | Pixabay Content License |
+| `World/sfx_step_sand_1.wav` | [running on sand](https://pixabay.com/sound-effects/357373/) | Pixabay | Pixabay Content License |
+| `World/sfx_step_stone_1.wav` | [St3 - Footstep sfx](https://pixabay.com/sound-effects/323056/) | Pixabay | Pixabay Content License |
+| `World/sfx_step_stone_2.wav` | [St1 - Footstep sfx](https://pixabay.com/sound-effects/323053/) | Pixabay | Pixabay Content License |
+| `World/sfx_step_stone_3.wav` | [St2 - Footstep sfx](https://pixabay.com/sound-effects/323055/) | Pixabay | Pixabay Content License |
+| `World/sfx_world_chest_open_1.wav` | [Wooden Trunk Latch 3](https://pixabay.com/sound-effects/183946/); [Short Success Glockenspiel Treasure](https://pixabay.com/sound-effects/6346/) | Pixabay | Pixabay Content License |
+| `World/sfx_world_chest_open_2.wav` | [Wooden Trunk Latch 1](https://pixabay.com/sound-effects/183944/) | Pixabay | Pixabay Content License |
+| `World/sfx_world_gate_exit_1.wav` | [Portal Phase Jump](https://pixabay.com/sound-effects/6355/) | Pixabay | Pixabay Content License |
+| `World/sfx_world_harvest_plant_1.wav` | [Dry Grass Rustling](https://pixabay.com/sound-effects/478361/) | Pixabay | Pixabay Content License |
+| `World/sfx_world_harvest_plant_2.wav` | [Bush Rustling](https://pixabay.com/sound-effects/467467/) | Pixabay | Pixabay Content License |
+| `World/sfx_world_harvest_plant_3.wav` | [Bush Cut](https://pixabay.com/sound-effects/103503/) | Pixabay | Pixabay Content License |
+| `World/sfx_world_harvest_stone_1.wav` | [Pickaxe Blow](https://pixabay.com/sound-effects/333695/) | Pixabay | Pixabay Content License |
+| `World/sfx_world_harvest_stone_2.wav` | [Hit Rock 02](https://pixabay.com/sound-effects/266304/) | Pixabay | Pixabay Content License |
+| `World/sfx_world_harvest_stone_3.wav` | [Hit Rock 01](https://pixabay.com/sound-effects/266301/) | Pixabay | Pixabay Content License |
+| `World/sfx_world_harvest_wood_1.wav` | [Axe Slash 1](https://pixabay.com/sound-effects/106748/) | Pixabay | Pixabay Content License |
+| `World/sfx_world_harvest_wood_2.wav` | [Chopping wood](https://pixabay.com/sound-effects/96709/) | Pixabay | Pixabay Content License |
+| `World/sfx_world_harvest_wood_3.wav` | [giant axe strike hitting solid wood (3)](https://pixabay.com/sound-effects/450247/) | Pixabay | Pixabay Content License |
+| `World/sfx_world_loot_drop_1.wav` | [Coin Donation 2](https://pixabay.com/sound-effects/180438/) | Pixabay | Pixabay Content License |
+| `World/sfx_world_resource_depleted_1.wav` | [Old tree falls](https://pixabay.com/sound-effects/493329/) | Pixabay | Pixabay Content License |
+| `World/sfx_world_unique_pickup_1.wav` | [Short Success Glockenspiel Treasure](https://pixabay.com/sound-effects/6346/) | Pixabay | Pixabay Content License |
 <!-- GENERATED:END -->

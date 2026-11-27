@@ -14,8 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: ProjectGame2D.Runtime::BossDefinition
   bossId: boss.wind_owl
   displayName: Sky Owl
-  maxHealth: 2400
-  baseDamage: 14
+  maxHealth: 5000
+  baseDamage: 45
   moveSpeed: 3.4
   recoveryDamageTaken: 1.25
   ultimateRecoveryDamageTaken: 1.5
@@ -204,6 +204,54 @@ MonoBehaviour:
   waveThickness: 1.2
   waveDamage: 1.2
   wavePushDistance: 3
+  clampLungeSpeed: 14
+  clampLungeSeconds: 0.22
+  clampSpinRadius: 4.2
+  clampSpinDamage: 1.1
+  burstBubbleCountByPhase: 030000000400000006000000
+  burstFuseSeconds: 1.8
+  burstRadius: 2.2
+  burstJetLength: 7
+  burstJetWidth: 0.9
+  burstDamage: 0.9
+  burstJetDamage: 0.8
+  burstRootSeconds: 0.7
+  ambushDecoys: 2
+  ambushDecoyRadius: 2.2
+  ambushDecoyDamage: 0.5
+  ambushShockwaveRadius: 9
+  ambushShockwaveDamage: 0.7
+  waveBackwash: 1
+  waveBackwashWarnSeconds: 0.8
+  waveSlowMultiplier: 0.6
+  waveSlowSeconds: 2.5
+  rollLegsByPhase: 020000000300000004000000
+  rollSpeed: 15
+  rollWindup: 0.7
+  rollDamage: 1.1
+  rollHitRadius: 1.7
+  rollDizzySeconds: 2.6
+  rollDizzyDamageTaken: 1.5
+  totemBeamWarnSeconds: 1
+  totemBeamSeconds: 3.2
+  totemBeamLength: 34
+  totemBeamWidth: 0.9
+  totemBeamSpinDegrees: 38
+  totemBeamDamage: 0.8
+  crabCountByPhase: 030000000400000005000000
+  crabSpeed: 4.2
+  crabHealth: 22
+  crabFuseSeconds: 0.7
+  crabBlastRadius: 2.2
+  crabBlastDamage: 0.9
+  crabLifeSeconds: 9
+  crabWeakMultiplier: 1.4
+  crabWeakSeconds: 4
+  whirlMiniCountByPhase: 020000000200000003000000
+  whirlMiniRadius: 2.2
+  whirlMiniSeconds: 3
+  whirlMiniDamage: 0.35
+  whirlMiniPull: 3
   whirlRadius: 9
   whirlWarnSeconds: 2
   whirlPullSeconds: 3
@@ -268,6 +316,11 @@ MonoBehaviour:
   stormTickInterval: 0.5
   stormPushSpeed: 5
   stormDimAlpha: 0.45
+  stormEyeRadii:
+  - 17
+  - 13
+  - 9.5
+  - 6.5
   stormTierRects:
   - serializedVersion: 2
     x: -31.65

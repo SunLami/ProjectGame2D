@@ -36,9 +36,19 @@ public sealed class ActorLootDrop : MonoBehaviour
         if (grants.Count == 0) return;
         var root = new GameObject("DroppedLoot");
         root.transform.position = transform.position;
-        var view = root.AddComponent<SpriteRenderer>();
-        view.sprite = grants[0].Item.icon;
-        view.sortingOrder = 30;
-        root.AddComponent<DroppedLootPickup>().Initialize(grants);
+        UnityEngine.SceneManagement.SceneManager.MoveGameObjectToScene(root, gameObject.scene);
+
+        for (int i = 0; i < grants.Count; i++)
+        {
+            var icon = new GameObject(grants[i].Item.itemName);
+            icon.transform.SetParent(root.transform, false);
+            icon.transform.localPosition = Vector3.right * ((i - (grants.Count - 1) * 0.5f) * 0.5f);
+            var view = icon.AddComponent<SpriteRenderer>();
+            view.sprite = grants[i].Item.icon;
+            view.sortingOrder = 30;
+        }
+
+        root.AddComponent<DroppedLootPickup>().Initialize(grants, _animal != null ? 0.45f : 0f);
+        SoundFXManager.PlaySfxAt(SfxIds.WorldLootDrop, root.transform.position);
     }
 }

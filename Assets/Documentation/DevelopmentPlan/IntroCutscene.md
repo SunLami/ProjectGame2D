@@ -33,6 +33,35 @@ trắng hoặc khung thoại; `IntroCutsceneController` chỉ bật presentation
 Body text dùng safe area theo viền artwork (không dùng toàn bộ bounds của panel), với lề ngang 120 px
 ở reference resolution để glyph không đè lên đường viền trang trí.
 
+## Bong bóng thoại Gameplay Timeline (D-123, 2026-11-27)
+
+Sau Outro, thoại của Timeline `Intro` (`Assets/Timeline/IntroTimeline.playable`) hiện bằng bong bóng
+world-space `SpeechBubble` (component `ActorSpeechBubble`) trên hai actor double `Player_Actor_Scene1`
+(Frawand) và `TruongLang_Actor_Scene1` (Cenhelm). Chỉ scene `IntroCutscene` dùng bong bóng này
+(MapNhat không có), nên quy chuẩn kích thước dưới đây là quy chuẩn duy nhất.
+
+- **Quy đổi tham chiếu**: camera ortho size 8 ở 1920×1080 ⇒ **67,5 px màn hình / 1 world unit**. Bong
+  bóng vẽ sprite `dialogbox_2` (507×235 px) ở tỉ lệ **1 texel = 1 px màn hình** ⇒ rộng cố định
+  507 px = 7,511 unit; đây cũng là độ rộng dòng tối đa.
+- **Chữ**: Digital Disco (`DigitalDisco SDF v3`), speaker và body đều **32 px** (0,474 unit) — font vẽ trên
+  lưới 16 px/em nên 32 px = đúng 2 px màn hình cho mỗi pixel font, nét sắc. Trước đây body 0,26 unit
+  ≈ 17,5 px (≈1,1 px/pixel font, nhòe), speaker 0,3 unit ≈ 20 px; body hiện to **≈1,8×**. Màu chữ giữ nguyên.
+- **Layout (px tham chiếu)**: lề ngang 30; speaker cao 36, cách mép trên 22; body giãn giữa
+  top 62 và bottom 63 (vùng đuôi + lề dưới).
+- **Tự co giãn theo chữ**: `ActorSpeechBubble.FitHeightToText` đo chiều cao body đã wrap
+  (`GetPreferredValues` ở độ rộng body) rồi đặt chiều cao `_root` = phần chrome cố định + body, tối thiểu
+  `_minHeight` = 144 px (2,133 unit, bằng tổng slice trên + dưới). Sprite 9-slice border
+  L/B/R/T = 52/92/52/52 px: chỉ dải thẳng giữa giãn dọc, góc bo và đuôi giữ nguyên art. Chữ không bao giờ bị
+  cắt; 1 dòng ≈ 160 px, 2 dòng 193 px, 3 dòng 227 px.
+- **Đuôi cố định**: pivot `_root` = (0.5, 0) ở mép dưới, nên bong bóng lớn lên phía trên còn đầu đuôi
+  đứng yên. Khi đổi kích thước, vị trí đã được tính lại để đầu đuôi giữ đúng điểm cũ trên đầu actor
+  (vẫn tuân thủ `CutsceneTimeline.md` cạm bẫy #8: không cộng offset runtime).
+- **Đã kiểm tra trong Play Mode (2026-11-27, render camera 1920×1080)**: mọi dòng đã duyệt ≤3 dòng, không
+  overflow; dòng dài nhất *"This is our Farm Area. On the left we raise livestock, and on the right we grow
+  our crops."* = 3 dòng, bong bóng ở viewport x 0,48–0,74; bong bóng Frawand ở x 0,20–0,55. Không có lỗi Console.
+- Thêm thoại mới dài hơn ~3 dòng ở 447 px vẫn hiển thị đủ (bong bóng cao lên), nhưng cần kiểm tra lại còn
+  nằm trong màn hình.
+
 ## Runtime contract
 
 - `NewGame` luôn phát Intro. `Development` phát Intro khi prefab bật `Play In Development`.

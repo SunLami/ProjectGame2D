@@ -147165,10 +147165,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: ProjectGame2D.Runtime::SceneAmbience
   _bedId: sfx.amb.village
   _secondBedId: sfx.amb.forest
-  _bedLevel: 0.6
-  _secondBedLevel: 0.3
+  _bedLevel: 0.48
+  _secondBedLevel: 0.22
   _fadeInSeconds: 2
-  _fallbackFootstepId: 
+  _fallbackFootstepId: sfx.step.grass
 --- !u!4 &413558384
 Transform:
   m_ObjectHideFlags: 0
@@ -260039,8 +260039,8 @@ AudioSource:
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
   m_audioClip: {fileID: 0}
-  m_Resource: {fileID: 8300000, guid: bb1e9801c1ae4a3992d6cefcafbf291e, type: 3}
-  m_PlayOnAwake: 1
+  m_Resource: {fileID: 0}
+  m_PlayOnAwake: 0
   m_Volume: 0.2
   m_Pitch: 1
   Loop: 1

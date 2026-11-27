@@ -63,8 +63,8 @@ public sealed class BossDefinitionTests
         Assert.AreEqual(0, _definition.phases[0].ultimateEveryCombos);
         Assert.AreEqual(3, _definition.phases[1].ultimateEveryCombos);
         Assert.AreEqual(2, _definition.phases[2].ultimateEveryCombos);
-        Assert.AreEqual(14f, _definition.baseDamage, 0.0001f);
-        Assert.AreEqual(2400f, _definition.maxHealth, 0.0001f);
+        Assert.AreEqual(26f, _definition.baseDamage, 0.0001f); // D-121
+        Assert.AreEqual(3000f, _definition.maxHealth, 0.0001f); // D-121
     }
 
     [Test]

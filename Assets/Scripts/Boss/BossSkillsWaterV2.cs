@@ -191,7 +191,7 @@ public sealed partial class BossController
                 aim = Vector2.down;
             Vector2 direction = aim.normalized;
             float length = Mathf.Clamp(aim.magnitude + 9f, 12f, 26f);
-            float windup = Mathf.Max(0.45f, Tele(_definition.rollWindup) * (leg == 0 ? 1f : 0.75f));
+            float windup = Mathf.Max(0.6f, Tele(_definition.rollWindup) * (leg == 0 ? 1f : 0.75f)); // D-121: floor 0.45 -> 0.6 s
             Track(BossTelegraph.Line(origin, direction, length, radius * 1.8f, windup, true));
             WaterSfx(SfxIds.BosswClawWindup, origin);
             PlayClip(BossClipId.Whirl, windup);

@@ -56,10 +56,9 @@ Không còn scene nào trong build flow dùng package `DefaultInputActions` làm
 
 ## Input đọc ngoài action map
 
-SkillPanel presentation slice: SkillPanelUI owns a serialized `Skills` InputAction (default P),
-enabled independently of actor Gameplay map so P can close its own menu. It opens only from Playing,
-never Dialogue/Loading/other menus. UI/Cancel remains owned by GameInputCoordinator. This action does
-not change the shared project input asset or existing PlayerInput callbacks.
+Skills is opened through Agnes's training dialogue. During free gameplay, `TutorialOverlayUI`
+reads P to toggle the shared tutorial/instruction banner. The shortcut is ignored while commerce
+or the Skip Tutorial confirmation is open.
 
 | File | Input trực tiếp | Rủi ro |
 |---|---|---|

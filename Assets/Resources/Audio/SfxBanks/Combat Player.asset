@@ -14,6 +14,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: ProjectGame2D.Runtime::SfxBank
   title: Combat Player
   rows:
+  - label: Dummy hit
+    id: sfx.combat.dummy_hit
+    category: Combat
+    description: Village training dummy (wood) hit
+    clips:
+    - {fileID: 8300000, guid: 25c6f76e2c5c84ef7b79cb3fa947af2b, type: 3}
+    - {fileID: 8300000, guid: dc8e45e430a7e474f8833f9f63bdde4a, type: 3}
+    - {fileID: 8300000, guid: 65b1c9a838cd849759ca91317acc6272, type: 3}
+    volume: 1
+    pitchJitter: 0.08
+    minInterval: 0.04
+    maxVoices: 0
+    loop: 0
   - label: Enemy death
     id: sfx.combat.enemy_death
     category: Combat
@@ -21,10 +34,10 @@ MonoBehaviour:
     clips:
     - {fileID: 8300000, guid: cbc749b227e8417428fc33d481d54e65, type: 3}
     - {fileID: 8300000, guid: ce55545e071b06d4fbb98ccf619913cc, type: 3}
-    volume: 0.8
+    volume: 1
     pitchJitter: 0.06
-    minInterval: 0
-    maxVoices: 0
+    minInterval: 0.06
+    maxVoices: 3
     loop: 0
   - label: Enemy hit
     id: sfx.combat.enemy_hit
@@ -34,10 +47,10 @@ MonoBehaviour:
     - {fileID: 8300000, guid: fdec881ed97557f42b6403f3ba366a9d, type: 3}
     - {fileID: 8300000, guid: 760c5d2205342464d8494c681775ef23, type: 3}
     - {fileID: 8300000, guid: b7766e2d1289f834dbfc705f42804ff8, type: 3}
-    volume: 0.7
+    volume: 1
     pitchJitter: 0.08
     minInterval: 0.05
-    maxVoices: 0
+    maxVoices: 3
     loop: 0
   - label: Hit crit
     id: sfx.combat.hit_crit
@@ -45,6 +58,7 @@ MonoBehaviour:
     description: Critical hit (heavier layer)
     clips:
     - {fileID: 8300000, guid: 82c65e9ee56f65044a496861fff13a7e, type: 3}
+    - {fileID: 8300000, guid: 2283695464a9b48b6b98a1657cb7b368, type: 3}
     volume: 1
     pitchJitter: 0.04
     minInterval: 0
@@ -58,11 +72,10 @@ MonoBehaviour:
     - {fileID: 8300000, guid: 78a1f9218efea574e8fec71dde3ca9e8, type: 3}
     - {fileID: 8300000, guid: 66cd3382cef9d574191783033ea6fb39, type: 3}
     - {fileID: 8300000, guid: 1196135ae2153c34199f659505f334f3, type: 3}
-    - {fileID: 8300000, guid: 96899ca34492e0b41ab2f5d5b1951d45, type: 3}
-    volume: 0.9
+    volume: 1
     pitchJitter: 0.06
     minInterval: 0.04
-    maxVoices: 0
+    maxVoices: 3
     loop: 0
   - label: Player attack
     id: sfx.combat.player_attack
@@ -72,8 +85,7 @@ MonoBehaviour:
     - {fileID: 8300000, guid: 78fd4534ea499c04aab487e56a015b56, type: 3}
     - {fileID: 8300000, guid: cf0d44d771bfb934b936fc0c61073a1a, type: 3}
     - {fileID: 8300000, guid: 403b80a98421ce0419da45d2066ef84f, type: 3}
-    - {fileID: 8300000, guid: 64edfd5ab69e50f4ba53513de97dde80, type: 3}
-    volume: 0.8
+    volume: 1
     pitchJitter: 0.07
     minInterval: 0
     maxVoices: 0
@@ -85,7 +97,7 @@ MonoBehaviour:
     clips:
     - {fileID: 8300000, guid: b885b94bb0f4ecc429f131eb93cfcf8e, type: 3}
     - {fileID: 8300000, guid: 7234b9e6af2071a43947072e463bc5a3, type: 3}
-    volume: 0.95
+    volume: 1
     pitchJitter: 0
     minInterval: 0
     maxVoices: 0
@@ -97,7 +109,7 @@ MonoBehaviour:
     clips:
     - {fileID: 8300000, guid: 3d980a9f5c7852446b49c5a393b267ff, type: 3}
     - {fileID: 8300000, guid: b891bc91a92b3474b9d037d8c63fae89, type: 3}
-    volume: 0.7
+    volume: 1
     pitchJitter: 0.08
     minInterval: 0.15
     maxVoices: 0
@@ -110,7 +122,7 @@ MonoBehaviour:
     - {fileID: 8300000, guid: 966d6af316b4ed64b8fc2de365026a44, type: 3}
     - {fileID: 8300000, guid: 3f7589dbd7989934f86d2951584b08ff, type: 3}
     - {fileID: 8300000, guid: 5ac9a989be26fd943922577805461e9e, type: 3}
-    volume: 0.85
+    volume: 1
     pitchJitter: 0.05
     minInterval: 0.25
     maxVoices: 0
@@ -122,7 +134,7 @@ MonoBehaviour:
     clips:
     - {fileID: 8300000, guid: 2aaab8966ea16c54198af025317fd193, type: 3}
     - {fileID: 8300000, guid: 5a5b7f00e3d18cc4c83722124bab717f, type: 3}
-    volume: 0.75
+    volume: 1
     pitchJitter: 0.07
     minInterval: 0.06
     maxVoices: 0
@@ -134,9 +146,32 @@ MonoBehaviour:
     clips:
     - {fileID: 8300000, guid: e3caae51c2779674f839bed28b3c9fff, type: 3}
     - {fileID: 8300000, guid: e301c89997993324b90e3e099c54f6d3, type: 3}
-    volume: 0.7
+    volume: 1
     pitchJitter: 0.07
     minInterval: 0.08
+    maxVoices: 0
+    loop: 0
+  - label: Shield block
+    id: sfx.combat.shield_block
+    category: Combat
+    description: Shield absorbs a hit (and breaks)
+    clips:
+    - {fileID: 8300000, guid: b79ee36fa535a490cb3a96a3e7469276, type: 3}
+    - {fileID: 8300000, guid: b918a874daaee4defae116a5dcefa075, type: 3}
+    volume: 1
+    pitchJitter: 0.05
+    minInterval: 0.05
+    maxVoices: 0
+    loop: 0
+  - label: Shield raise
+    id: sfx.combat.shield_raise
+    category: Combat
+    description: Shield block raised (hold RMB)
+    clips:
+    - {fileID: 8300000, guid: 63141f441ea2b49029420a34288dcd6f, type: 3}
+    volume: 1
+    pitchJitter: 0.05
+    minInterval: 0.2
     maxVoices: 0
     loop: 0
   - label: Skill aim cancel
@@ -145,7 +180,7 @@ MonoBehaviour:
     description: Skill aim cancelled
     clips:
     - {fileID: 8300000, guid: 31e9ef0094c311d4991aa8c1bdfd57a6, type: 3}
-    volume: 0.5
+    volume: 1
     pitchJitter: 0
     minInterval: 0.2
     maxVoices: 0
@@ -156,7 +191,7 @@ MonoBehaviour:
     description: Skill aim confirmed
     clips:
     - {fileID: 8300000, guid: e703eb391ef12434d86c00b41502f79c, type: 3}
-    volume: 0.7
+    volume: 1
     pitchJitter: 0
     minInterval: 0
     maxVoices: 0
@@ -167,7 +202,7 @@ MonoBehaviour:
     description: Begin aiming a skill
     clips:
     - {fileID: 8300000, guid: 5e1e28bc3c3b5bf40930a2ba704d8397, type: 3}
-    volume: 0.55
+    volume: 1
     pitchJitter: 0
     minInterval: 0.2
     maxVoices: 0
@@ -178,9 +213,48 @@ MonoBehaviour:
     description: Target stunned
     clips:
     - {fileID: 8300000, guid: dc7e1d723a4b6944b9f329e90a63edd5, type: 3}
-    volume: 0.7
+    volume: 1
     pitchJitter: 0.05
     minInterval: 0.25
+    maxVoices: 0
+    loop: 0
+  - label: Unarmed crit
+    id: sfx.combat.unarmed_crit
+    category: Combat
+    description: Bare fist critical hit
+    clips:
+    - {fileID: 8300000, guid: 3e22da9c8c3344989a052859e2f9281f, type: 3}
+    - {fileID: 8300000, guid: 0bf1f214fdfac4caeb163f7c3a195c58, type: 3}
+    volume: 1
+    pitchJitter: 0.04
+    minInterval: 0
+    maxVoices: 0
+    loop: 0
+  - label: Unarmed hit
+    id: sfx.combat.unarmed_hit
+    category: Combat
+    description: Bare fist lands on a target
+    clips:
+    - {fileID: 8300000, guid: 1179a24f80d374454852f3da68214ae6, type: 3}
+    - {fileID: 8300000, guid: 912fd0ec01057452daa92b6630e604a7, type: 3}
+    - {fileID: 8300000, guid: 2ef432e88264e4144b81e3d3bd967a57, type: 3}
+    - {fileID: 8300000, guid: 0b2d08feb9c044f0692fea259aecbd61, type: 3}
+    volume: 1
+    pitchJitter: 0.07
+    minInterval: 0.04
+    maxVoices: 3
+    loop: 0
+  - label: Unarmed swing
+    id: sfx.combat.unarmed_swing
+    category: Combat
+    description: Bare-handed swing (no weapon equipped)
+    clips:
+    - {fileID: 8300000, guid: 88b2166a204344d09babe2b01c964064, type: 3}
+    - {fileID: 8300000, guid: 4c3410ec6e589476e9e3a06d227f7b5d, type: 3}
+    - {fileID: 8300000, guid: 2c10aa45c96214704aca8fe77a132d5f, type: 3}
+    volume: 1
+    pitchJitter: 0.08
+    minInterval: 0
     maxVoices: 0
     loop: 0
   - label: Dash
@@ -190,7 +264,7 @@ MonoBehaviour:
     clips:
     - {fileID: 8300000, guid: 5fe76c75af4425d4b99d064eac3d9ef0, type: 3}
     - {fileID: 8300000, guid: f8e6c9f8bd162bf409639d4c4a1e4504, type: 3}
-    volume: 0.75
+    volume: 1
     pitchJitter: 0.06
     minInterval: 0.2
     maxVoices: 0
@@ -202,8 +276,7 @@ MonoBehaviour:
     clips:
     - {fileID: 8300000, guid: f425633591a24a84f91cf36862e1bf71, type: 3}
     - {fileID: 8300000, guid: 7ccd82f1daa3bde4ba6121904219ecfd, type: 3}
-    - {fileID: 8300000, guid: 2eabda6e8a24ea04cadc49b9cdc129d4, type: 3}
-    volume: 0.7
+    volume: 1
     pitchJitter: 0.04
     minInterval: 1.2
     maxVoices: 0
@@ -214,7 +287,7 @@ MonoBehaviour:
     description: Player gained a level
     clips:
     - {fileID: 8300000, guid: dc487ac2bb0e2894a954d74f25dc3cab, type: 3}
-    volume: 0.85
+    volume: 1
     pitchJitter: 0
     minInterval: 0
     maxVoices: 0

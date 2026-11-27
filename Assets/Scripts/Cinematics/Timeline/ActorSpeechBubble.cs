@@ -29,6 +29,12 @@ public sealed class ActorSpeechBubble : MonoBehaviour
     [SerializeField, Range(0.5f, 1f)] private float _punchScale = 0.9f;
     [SerializeField, Min(0.01f)] private float _punchDuration = 0.14f;
 
+    [Header("Fit to text")]
+    [Tooltip("Resize _root's height to the wrapped body text on every line. _root's pivot should sit at the tail tip (bottom) so the tail stays on the actor's head while the bubble grows upward. Width stays fixed and acts as the maximum line width.")]
+    [SerializeField] private bool _fitHeightToText = true;
+    [Tooltip("Smallest bubble height, in _root's local units. Keep it >= the background sprite's top + bottom slice borders so the 9-slice never overlaps.")]
+    [SerializeField, Min(0f)] private float _minHeight;
+
     // Guarantees at most one bubble is ever open at a time. Normally the previous line's
     // Close() (fired by the player's confirm input) always runs before the next clip's Show(),
     // but a confirm press landing the same frame a new clip activates can still let Show() beat
@@ -99,6 +105,7 @@ public sealed class ActorSpeechBubble : MonoBehaviour
         // text should never depend on that coroutine actually starting.
         if (_bodyText != null)
             _bodyText.text = text ?? string.Empty;
+        FitHeightToText(text ?? string.Empty);
         if (_continueIndicator != null)
             _continueIndicator.SetActive(false);
 
@@ -108,6 +115,27 @@ public sealed class ActorSpeechBubble : MonoBehaviour
             StopCoroutine(_typewriter);
         _typewriter = StartCoroutine(RevealText(text ?? string.Empty));
         Punch();
+    }
+
+    /// <summary>
+    /// Grows or shrinks the bubble vertically so the wrapped body text never clips. The body
+    /// RectTransform stretches vertically inside _root with fixed offsets, so everything that is
+    /// not body text (padding, speaker row, tail) is simply _root's height minus the body's height;
+    /// that "chrome" stays constant and only the body share changes. The background is a 9-sliced
+    /// sprite, so only its straight middle band stretches and the corners and tail keep their art.
+    /// </summary>
+    private void FitHeightToText(string text)
+    {
+        if (!_fitHeightToText || _bodyText == null || _root == null)
+            return;
+        if (!(_root.transform is RectTransform bubble))
+            return;
+
+        RectTransform body = _bodyText.rectTransform;
+        float chrome = bubble.rect.height - body.rect.height;
+        float needed = _bodyText.GetPreferredValues(text, body.rect.width, 0f).y;
+        float height = Mathf.Max(_minHeight, chrome + needed);
+        bubble.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, height);
     }
 
     private void Advance()

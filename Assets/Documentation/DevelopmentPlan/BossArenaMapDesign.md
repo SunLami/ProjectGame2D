@@ -208,7 +208,7 @@ Style guide cho nhóm asset map: kế thừa bảng màu từng hệ (`ThuySkill
 
 **Ghi nhận / việc còn lại (không chặn scene):**
 1. **Teleport từ DemoScene** (trụ + UI chọn map) và **Shrine UI/ngọc** chưa làm; hiện chạy bằng cách mở scene này (PlayModeBootstrap nạp qua Bootstrap) và F6.
-2. **Minimap/HUD** vẫn hiển thị "Heart Village" (HUD thuộc Bootstrap, ảnh bản đồ MapNhat) — cần ảnh minimap riêng cho arena.
+2. **Minimap/HUD** dùng camera Cinemachine riêng của Bootstrap để hiển thị khu vực arena đang chơi, cùng tên khu vực theo scene.
 3. **Tiếng bước chân im lặng:** `RockTileData` có 1089 tham chiếu tile nhưng tất cả đều null (asset hỏng), `MapManager` bind vào tilemap rỗng (không lỗi, không tiếng); sửa khi có tile data.
 4. **Save:** scene này sao chép `PlayerSpawnReadinessSource`/`GameplaySessionController`; arena không có `FarmingManager` nên nếu lưu game ở đây `snapshot.farming` sẽ rỗng — cần quyết định "arena có phải vị trí lưu được không" trước khi nối teleport.
 5. `BossDefeatTracker` chưa nối (hiện chỉ hỗ trợ `EnemyUniversal` và xóa boss khi restore — trái với arena đánh lại được); cần bản theo `BossController` + cờ "hạ lần đầu" (đổi save ⇒ ghi tài liệu save trước).

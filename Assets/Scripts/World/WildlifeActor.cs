@@ -29,6 +29,8 @@ public sealed class WildlifeActor : MonoBehaviour, IDamageable
     private PathFollower _navigator;
     private FacingFilter _facing;
     private bool _started;
+    private bool _wasReacting;
+    private readonly MobVoiceTimer _voice = new();
 
     private const float Acceleration = 12f;
     public event Action<float, float> HealthChanged;
@@ -102,6 +104,7 @@ public sealed class WildlifeActor : MonoBehaviour, IDamageable
                     UpdateFacing(toPlayer, true);
                     _animator.SetTrigger(Attack);
                 }
+                WildlifeSfx.Attack(this, _definition.AnimalId);
                 if (animatedAttack)
                 {
                     _attackPending = true;
@@ -132,6 +135,11 @@ public sealed class WildlifeActor : MonoBehaviour, IDamageable
                 }
             }
         }
+        if (reactingToPlayer && !_wasReacting && _voice.TryAlert())
+            WildlifeSfx.Alert(this, _definition.AnimalId);
+        else if (!reactingToPlayer && _voice.TryIdle(position))
+            WildlifeSfx.Idle(this, _definition.AnimalId);
+        _wasReacting = reactingToPlayer;
         if (Vector2.Distance(position, _home) > _definition.LeashRange)
             direction = Navigate(position, _home, (_home - position).normalized);
         if (PathGridBuilder.Active != null && direction.sqrMagnitude > 0.0001f)
@@ -210,6 +218,7 @@ public sealed class WildlifeActor : MonoBehaviour, IDamageable
     public void TakeDamage(float damage, Vector2 knockbackDirection, float knockbackForce)
     {
         if (IsDead || damage <= 0f || float.IsNaN(damage)) return;
+        CombatFeedback.MapDuyActorHit(transform, damage);
         _health = Mathf.Max(0f, _health - damage);
         HealthChanged?.Invoke(_health, MaxHealth);
         _attackPending = false;
@@ -217,12 +226,16 @@ public sealed class WildlifeActor : MonoBehaviour, IDamageable
             _animator.ResetTrigger(Attack);
         if (!IsDead)
         {
+            WildlifeSfx.Hurt(this, _definition != null ? _definition.AnimalId : null);
             if (_animator != null)
                 _animator.SetTrigger(Hurt);
             return;
         }
+        WildlifeSfx.Death(this, _definition != null ? _definition.AnimalId : null);
         _body.linearVelocity = Vector2.zero;
         CrowdSeparation.Unregister(_body);
+        if (_definition != null && _definition.ExperienceReward > 0)
+            PlayerStat.Instance?.AddExperience(_definition.ExperienceReward);
         Died?.Invoke();
         if (_definition != null) QuestDomainEvents.RaiseEnemyKilled(_definition.AnimalId, string.Empty);
         if (_animator != null && _deathAnimationDuration > 0f)

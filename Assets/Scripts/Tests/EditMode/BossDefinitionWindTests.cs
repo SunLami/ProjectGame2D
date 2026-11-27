@@ -16,8 +16,8 @@ public sealed class BossDefinitionWindTests
     public void Defaults_MatchThePlan()
     {
         Assert.AreEqual("boss.wind_owl", _definition.bossId);
-        Assert.AreEqual(2400f, _definition.maxHealth);
-        Assert.AreEqual(14f, _definition.baseDamage);
+        Assert.AreEqual(5000f, _definition.maxHealth); // D-121
+        Assert.AreEqual(45f, _definition.baseDamage); // D-121
         Assert.AreEqual(BossSkillId.SkyStorm, _definition.ultimateSkill);
         Assert.AreEqual(3, _definition.phases.Length);
         Assert.AreEqual(0.65f, _definition.phases[1].startsBelowHealth, 0.001f);

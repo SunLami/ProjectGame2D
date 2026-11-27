@@ -3,10 +3,11 @@ using UnityEngine;
 [RequireComponent(typeof(Player))]
 public class PlayerAnimationEvent : MonoBehaviour
 {
-    private const float StepCooldown = 0.2f;
+    private const float WalkStepCooldown = 0.2f;
+    private const float RunStepCooldown = 0.14f;
 
     private Player _player;
-    private float _lastStepTime;
+    private float _lastStepTime = float.NegativeInfinity;
 
     private void Awake()
     {
@@ -25,10 +26,11 @@ public class PlayerAnimationEvent : MonoBehaviour
 
     public void PlayFootSteps()
     {
-        if (Time.time - _lastStepTime < StepCooldown)
+        bool isRunning = _player.IsRunning;
+        if (Time.time - _lastStepTime < (isRunning ? RunStepCooldown : WalkStepCooldown))
             return;
 
-        SoundFXManager.PlayFootSteps(1f);
+        SoundFXManager.PlayFootSteps(_player.transform.position, isRunning);
         _lastStepTime = Time.time;
     }
 }

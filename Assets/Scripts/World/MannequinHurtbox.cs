@@ -34,6 +34,7 @@ public sealed class MannequinHurtbox : MonoBehaviour, IDamageable
     public event Action Respawned;
 
     public bool IsDead => _isDead;
+    internal bool IsVillageTrainingTarget => gameObject.scene.name == "MapNhat" && _areaId == "area.training";
     public float Health => _health;
     public float MaxHealth => _maxHealth;
 

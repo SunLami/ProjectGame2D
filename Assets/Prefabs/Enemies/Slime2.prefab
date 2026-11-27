@@ -341,6 +341,7 @@ MonoBehaviour:
   _hurtDuration: 0.3
   _deathLifetime: 3
   _experienceReward: 25
+  _goldReward: 50
   _detectionRange: 5
   _chaseRange: 12
   _patrolRadius: 2
@@ -387,8 +388,12 @@ MonoBehaviour:
   _loot:
   - _item: {fileID: 11400000, guid: 89d25bffd6046934fbc54203c0ec8b16, type: 2}
     _chance: 1
-    _minimumQuantity: 1
+    _minimumQuantity: 3
     _maximumQuantity: 3
+  - _item: {fileID: 11400000, guid: 23780155dab636f46a71b4999e9d2c70, type: 2}
+    _chance: 0.05
+    _minimumQuantity: 1
+    _maximumQuantity: 1
 --- !u!1 &3866811954161973574
 GameObject:
   m_ObjectHideFlags: 0

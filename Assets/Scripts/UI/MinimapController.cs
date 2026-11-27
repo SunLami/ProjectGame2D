@@ -19,6 +19,7 @@ public sealed class MinimapController : MonoBehaviour
 
     private LiveMapCamera _liveMap;
     private Texture _snapshot;
+    private Camera _liveSource;
     private Scene _scene;
     private Vector2 _smoothedFocus;
     private Vector2 _followVelocity;
@@ -48,9 +49,6 @@ public sealed class MinimapController : MonoBehaviour
         // enable before MapNhat (and its BorderMap) has finished loading additively. Retrying every
         // LateUpdate until found (below) avoids a permanent "never tracks the Player" freeze from
         // that race, instead of a single OnEnable-time check that can lose the race silently.
-        BindZoneManager();
-        if (_zoneManager != null)
-            RefreshZoneText(_zoneManager.CurrentZoneName);
         RefreshDateText(force: true);
     }
 
@@ -62,15 +60,22 @@ public sealed class MinimapController : MonoBehaviour
 
     private void ReleaseLiveMap()
     {
-        if (_liveMap == null) return;
-        if (_mapImage != null) _mapImage.texture = _snapshot;
-        _liveMap.Dispose();
+        _liveMap?.Dispose();
         _liveMap = null;
+        _liveSource = null;
+        if (_mapImage != null)
+        {
+            bool useSnapshot = !LiveMapCamera.SupportsScene(_scene);
+            _mapImage.texture = useSnapshot ? _snapshot : null;
+            _mapImage.enabled = useSnapshot;
+            if (_playerMarker != null)
+                _playerMarker.gameObject.SetActive(useSnapshot);
+        }
     }
 
     private void LateUpdate()
     {
-        Scene scene = SceneManager.GetActiveScene();
+        Scene scene = LiveMapCamera.ResolveWorldScene();
         if (_scene != scene)
         {
             _scene = scene;
@@ -78,15 +83,18 @@ public sealed class MinimapController : MonoBehaviour
             _player = null;
             ReleaseLiveMap();
         }
+        BindZoneManager(scene);
         if (_player == null)
             _player = FindAnyObjectByType<Player>();
         if (_player == null) return;
 
-        if (_mapImage != null && LiveMapCamera.TryGetSource(out Camera source, out Bounds bounds))
+        if (_mapImage != null && LiveMapCamera.TryGetSource(scene, out Camera source, out Bounds bounds))
             UpdateLiveViewport(source, bounds);
         else
         {
             ReleaseLiveMap();
+            if (LiveMapCamera.SupportsScene(scene))
+                return;
             if (!_hasBounds)
                 _hasBounds = MapWorldBounds.TryGet(out _mapBounds);
             if (_hasBounds)
@@ -98,10 +106,15 @@ public sealed class MinimapController : MonoBehaviour
     private void UpdateLiveViewport(Camera source, Bounds bounds)
     {
         Vector2 position = _player.transform.position;
-        if (_liveMap == null)
+        if (_liveMap == null || _liveSource != source)
         {
+            ReleaseLiveMap();
+            _liveSource = source;
             _liveMap = new LiveMapCamera(source, OutputChannels.Channel14, 256, 256);
             _mapImage.texture = _liveMap.Texture;
+            _mapImage.enabled = true;
+            if (_playerMarker != null)
+                _playerMarker.gameObject.SetActive(true);
             _mapImage.uvRect = new Rect(0f, 0f, 1f, 1f);
             _smoothedFocus = position;
             _followVelocity = Vector2.zero;
@@ -136,11 +149,19 @@ public sealed class MinimapController : MonoBehaviour
         PositionMarker(new Vector2((normalized.x - u0) / _viewFraction, (normalized.y - v0) / _viewFraction));
     }
 
-    private void BindZoneManager()
+    private void BindZoneManager(Scene scene)
     {
-        _zoneManager = MapZoneManager.Instance;
+        MapZoneManager manager = MapZoneManager.Instance;
+        if (manager != null && manager.gameObject.scene != scene)
+            manager = null;
+        if (ReferenceEquals(_zoneManager, manager))
+            return;
+
+        UnbindZoneManager();
+        _zoneManager = manager;
         if (_zoneManager != null)
             _zoneManager.OnZoneChanged += RefreshZoneText;
+        RefreshZoneText(_zoneManager != null ? _zoneManager.CurrentZoneName : string.Empty);
     }
 
     private void UnbindZoneManager()

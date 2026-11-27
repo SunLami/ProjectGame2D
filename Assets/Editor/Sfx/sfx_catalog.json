@@ -1,56 +1,82 @@
 {
  "entries": [
   {
-   "id": "sfx.boss.shrine_orb_place",
-   "category": "Boss",
+   "id": "sfx.amb.beach",
+   "category": "Ambience",
    "files": [
-    "Assets/Resources/Audio/SFX/Boss/sfx_boss_shrine_orb_place_1.wav"
-   ],
-   "volume": 0.8,
-   "pitchJitter": 0.0,
-   "minInterval": 0.0,
-   "maxVoices": 0,
-   "loop": false,
-   "desc": "Orb offered to a shrine statue"
-  },
-  {
-   "id": "sfx.boss.ritual_charge",
-   "category": "Boss",
-   "files": [
-    "Assets/Resources/Audio/SFX/Boss/sfx_boss_ritual_charge_1.wav"
-   ],
-   "volume": 0.8,
-   "pitchJitter": 0.0,
-   "minInterval": 0.0,
-   "maxVoices": 0,
-   "loop": false,
-   "desc": "Statues charge their eyes"
-  },
-  {
-   "id": "sfx.boss.ritual_beam_loop",
-   "category": "Boss",
-   "files": [
-    "Assets/Resources/Audio/SFX/Boss/sfx_boss_ritual_beam_loop_1.ogg"
-   ],
-   "volume": 0.7,
-   "pitchJitter": 0.0,
-   "minInterval": 0.0,
-   "maxVoices": 0,
-   "loop": true,
-   "desc": "4 statue lasers"
-  },
-  {
-   "id": "sfx.boss.ritual_explosion",
-   "category": "Boss",
-   "files": [
-    "Assets/Resources/Audio/SFX/Boss/sfx_boss_ritual_explosion_1.wav"
+    "Assets/Resources/Audio/SFX/Ambience/sfx_amb_beach_1.ogg"
    ],
    "volume": 1.0,
    "pitchJitter": 0.0,
    "minInterval": 0.0,
    "maxVoices": 0,
-   "loop": false,
-   "desc": "Summoning statue explodes"
+   "loop": true,
+   "desc": "Beach / water arena"
+  },
+  {
+   "id": "sfx.amb.campfire",
+   "category": "Ambience",
+   "files": [
+    "Assets/Resources/Audio/SFX/Ambience/sfx_amb_campfire_1.ogg"
+   ],
+   "volume": 1.0,
+   "pitchJitter": 0.0,
+   "minInterval": 0.0,
+   "maxVoices": 0,
+   "loop": true,
+   "desc": "Campfire"
+  },
+  {
+   "id": "sfx.amb.cave",
+   "category": "Ambience",
+   "files": [
+    "Assets/Resources/Audio/SFX/Ambience/sfx_amb_cave_1.ogg"
+   ],
+   "volume": 1.0,
+   "pitchJitter": 0.0,
+   "minInterval": 0.0,
+   "maxVoices": 0,
+   "loop": true,
+   "desc": "Earth arena / ruins"
+  },
+  {
+   "id": "sfx.amb.forest",
+   "category": "Ambience",
+   "files": [
+    "Assets/Resources/Audio/SFX/Ambience/sfx_amb_forest_1.ogg"
+   ],
+   "volume": 1.0,
+   "pitchJitter": 0.0,
+   "minInterval": 0.0,
+   "maxVoices": 0,
+   "loop": true,
+   "desc": "Forest / village day"
+  },
+  {
+   "id": "sfx.amb.night",
+   "category": "Ambience",
+   "files": [
+    "Assets/Resources/Audio/SFX/Ambience/sfx_amb_night_1.ogg"
+   ],
+   "volume": 1.0,
+   "pitchJitter": 0.0,
+   "minInterval": 0.0,
+   "maxVoices": 0,
+   "loop": true,
+   "desc": "Night"
+  },
+  {
+   "id": "sfx.amb.wind",
+   "category": "Ambience",
+   "files": [
+    "Assets/Resources/Audio/SFX/Ambience/sfx_amb_wind_1.ogg"
+   ],
+   "volume": 1.0,
+   "pitchJitter": 0.0,
+   "minInterval": 0.0,
+   "maxVoices": 0,
+   "loop": true,
+   "desc": "Wind arena / plains"
   },
   {
    "id": "sfx.boss.awaken",
@@ -64,6 +90,59 @@
    "maxVoices": 0,
    "loop": false,
    "desc": "Boss appears / roars"
+  },
+  {
+   "id": "sfx.boss.death",
+   "category": "Boss",
+   "files": [
+    "Assets/Resources/Audio/SFX/Boss/sfx_boss_death_1.wav"
+   ],
+   "volume": 1.0,
+   "pitchJitter": 0.0,
+   "minInterval": 0.0,
+   "maxVoices": 0,
+   "loop": false,
+   "desc": "Boss collapses"
+  },
+  {
+   "id": "sfx.boss.fist_impact",
+   "category": "Boss",
+   "files": [
+    "Assets/Resources/Audio/SFX/Boss/sfx_boss_fist_impact_1.wav"
+   ],
+   "volume": 1.0,
+   "pitchJitter": 0.05,
+   "minInterval": 0.0,
+   "maxVoices": 0,
+   "loop": false,
+   "desc": "Rocket fist hits"
+  },
+  {
+   "id": "sfx.boss.fist_launch",
+   "category": "Boss",
+   "files": [
+    "Assets/Resources/Audio/SFX/Boss/sfx_boss_fist_launch_1.wav"
+   ],
+   "volume": 1.0,
+   "pitchJitter": 0.05,
+   "minInterval": 0.0,
+   "maxVoices": 0,
+   "loop": false,
+   "desc": "Rocket fist fired"
+  },
+  {
+   "id": "sfx.boss.hit",
+   "category": "Boss",
+   "files": [
+    "Assets/Resources/Audio/SFX/Boss/sfx_boss_hit_1.wav",
+    "Assets/Resources/Audio/SFX/Boss/sfx_boss_hit_2.wav"
+   ],
+   "volume": 1.0,
+   "pitchJitter": 0.1,
+   "minInterval": 0.06,
+   "maxVoices": 3,
+   "loop": false,
+   "desc": "Boss takes damage"
   },
   {
    "id": "sfx.boss.phase_roar",
@@ -80,17 +159,123 @@
    "desc": "Phase change roar"
   },
   {
-   "id": "sfx.boss.telegraph",
+   "id": "sfx.boss.rain_drop",
    "category": "Boss",
    "files": [
-    "Assets/Resources/Audio/SFX/Boss/sfx_boss_telegraph_1.wav"
+    "Assets/Resources/Audio/SFX/Boss/sfx_boss_rain_drop_1.wav"
    ],
-   "volume": 0.4,
+   "volume": 1.0,
+   "pitchJitter": 0.1,
+   "minInterval": 0.06,
+   "maxVoices": 4,
+   "loop": false,
+   "desc": "Stone rain falling"
+  },
+  {
+   "id": "sfx.boss.rain_impact",
+   "category": "Boss",
+   "files": [
+    "Assets/Resources/Audio/SFX/Boss/sfx_boss_rain_impact_1.wav",
+    "Assets/Resources/Audio/SFX/Boss/sfx_boss_rain_impact_2.wav",
+    "Assets/Resources/Audio/SFX/Boss/sfx_boss_rain_impact_3.wav"
+   ],
+   "volume": 1.0,
+   "pitchJitter": 0.1,
+   "minInterval": 0.05,
+   "maxVoices": 6,
+   "loop": false,
+   "desc": "Stone lands"
+  },
+  {
+   "id": "sfx.boss.recovery",
+   "category": "Boss",
+   "files": [
+    "Assets/Resources/Audio/SFX/Boss/sfx_boss_recovery_1.wav"
+   ],
+   "volume": 1.0,
    "pitchJitter": 0.0,
-   "minInterval": 0.15,
+   "minInterval": 0.0,
+   "maxVoices": 0,
+   "loop": false,
+   "desc": "Boss slumps and recovers"
+  },
+  {
+   "id": "sfx.boss.resonance_burst",
+   "category": "Boss",
+   "files": [
+    "Assets/Resources/Audio/SFX/Boss/sfx_boss_resonance_burst_1.wav"
+   ],
+   "volume": 1.0,
+   "pitchJitter": 0.05,
+   "minInterval": 0.1,
    "maxVoices": 3,
    "loop": false,
-   "desc": "Danger zone appears"
+   "desc": "Core resonance burst"
+  },
+  {
+   "id": "sfx.boss.resonance_charge",
+   "category": "Boss",
+   "files": [
+    "Assets/Resources/Audio/SFX/Boss/sfx_boss_resonance_charge_1.wav"
+   ],
+   "volume": 1.0,
+   "pitchJitter": 0.0,
+   "minInterval": 0.0,
+   "maxVoices": 0,
+   "loop": false,
+   "desc": "Core resonance charging"
+  },
+  {
+   "id": "sfx.boss.ritual_beam_loop",
+   "category": "Boss",
+   "files": [
+    "Assets/Resources/Audio/SFX/Boss/sfx_boss_ritual_beam_loop_1.ogg"
+   ],
+   "volume": 1.0,
+   "pitchJitter": 0.0,
+   "minInterval": 0.0,
+   "maxVoices": 0,
+   "loop": true,
+   "desc": "4 statue lasers"
+  },
+  {
+   "id": "sfx.boss.ritual_charge",
+   "category": "Boss",
+   "files": [
+    "Assets/Resources/Audio/SFX/Boss/sfx_boss_ritual_charge_1.wav"
+   ],
+   "volume": 1.0,
+   "pitchJitter": 0.0,
+   "minInterval": 0.0,
+   "maxVoices": 0,
+   "loop": false,
+   "desc": "Statues charge their eyes"
+  },
+  {
+   "id": "sfx.boss.ritual_explosion",
+   "category": "Boss",
+   "files": [
+    "Assets/Resources/Audio/SFX/Boss/sfx_boss_ritual_explosion_1.wav"
+   ],
+   "volume": 1.0,
+   "pitchJitter": 0.0,
+   "minInterval": 0.0,
+   "maxVoices": 0,
+   "loop": false,
+   "desc": "Summoning statue explodes"
+  },
+  {
+   "id": "sfx.boss.shrine_orb_place",
+   "category": "Boss",
+   "files": [
+    "Assets/Resources/Audio/SFX/Boss/sfx_boss_shrine_orb_place_1.wav"
+   ],
+   "volume": 1.0,
+   "pitchJitter": 0.0,
+   "minInterval": 0.0,
+   "maxVoices": 0,
+   "loop": false,
+   "desc": "Orb offered to a shrine statue"
   },
   {
    "id": "sfx.boss.slam",
@@ -112,40 +297,12 @@
    "files": [
     "Assets/Resources/Audio/SFX/Boss/sfx_boss_slam_windup_1.wav"
    ],
-   "volume": 0.8,
+   "volume": 1.0,
    "pitchJitter": 0.05,
    "minInterval": 0.2,
    "maxVoices": 0,
    "loop": false,
    "desc": "Slam wind-up"
-  },
-  {
-   "id": "sfx.boss.rain_drop",
-   "category": "Boss",
-   "files": [
-    "Assets/Resources/Audio/SFX/Boss/sfx_boss_rain_drop_1.wav"
-   ],
-   "volume": 0.5,
-   "pitchJitter": 0.1,
-   "minInterval": 0.06,
-   "maxVoices": 4,
-   "loop": false,
-   "desc": "Stone rain falling"
-  },
-  {
-   "id": "sfx.boss.rain_impact",
-   "category": "Boss",
-   "files": [
-    "Assets/Resources/Audio/SFX/Boss/sfx_boss_rain_impact_1.wav",
-    "Assets/Resources/Audio/SFX/Boss/sfx_boss_rain_impact_2.wav",
-    "Assets/Resources/Audio/SFX/Boss/sfx_boss_rain_impact_3.wav"
-   ],
-   "volume": 0.75,
-   "pitchJitter": 0.1,
-   "minInterval": 0.05,
-   "maxVoices": 6,
-   "loop": false,
-   "desc": "Stone lands"
   },
   {
    "id": "sfx.boss.spike_lane",
@@ -154,131 +311,12 @@
     "Assets/Resources/Audio/SFX/Boss/sfx_boss_spike_lane_1.wav",
     "Assets/Resources/Audio/SFX/Boss/sfx_boss_spike_lane_2.wav"
    ],
-   "volume": 0.85,
+   "volume": 1.0,
    "pitchJitter": 0.07,
    "minInterval": 0.08,
    "maxVoices": 4,
    "loop": false,
    "desc": "Spike lane erupts"
-  },
-  {
-   "id": "sfx.boss.fist_launch",
-   "category": "Boss",
-   "files": [
-    "Assets/Resources/Audio/SFX/Boss/sfx_boss_fist_launch_1.wav"
-   ],
-   "volume": 0.9,
-   "pitchJitter": 0.05,
-   "minInterval": 0.0,
-   "maxVoices": 0,
-   "loop": false,
-   "desc": "Rocket fist fired"
-  },
-  {
-   "id": "sfx.boss.fist_impact",
-   "category": "Boss",
-   "files": [
-    "Assets/Resources/Audio/SFX/Boss/sfx_boss_fist_impact_1.wav"
-   ],
-   "volume": 1.0,
-   "pitchJitter": 0.05,
-   "minInterval": 0.0,
-   "maxVoices": 0,
-   "loop": false,
-   "desc": "Rocket fist hits"
-  },
-  {
-   "id": "sfx.boss.resonance_charge",
-   "category": "Boss",
-   "files": [
-    "Assets/Resources/Audio/SFX/Boss/sfx_boss_resonance_charge_1.wav"
-   ],
-   "volume": 0.85,
-   "pitchJitter": 0.0,
-   "minInterval": 0.0,
-   "maxVoices": 0,
-   "loop": false,
-   "desc": "Core resonance charging"
-  },
-  {
-   "id": "sfx.boss.resonance_burst",
-   "category": "Boss",
-   "files": [
-    "Assets/Resources/Audio/SFX/Boss/sfx_boss_resonance_burst_1.wav"
-   ],
-   "volume": 0.9,
-   "pitchJitter": 0.05,
-   "minInterval": 0.1,
-   "maxVoices": 3,
-   "loop": false,
-   "desc": "Core resonance burst"
-  },
-  {
-   "id": "sfx.boss.rock_bullet",
-   "category": "Boss",
-   "files": [
-    "Assets/Resources/Audio/SFX/Boss/sfx_boss_rock_bullet_1.wav",
-    "Assets/Resources/Audio/SFX/Boss/sfx_boss_rock_bullet_2.wav"
-   ],
-   "volume": 0.5,
-   "pitchJitter": 0.1,
-   "minInterval": 0.05,
-   "maxVoices": 4,
-   "loop": false,
-   "desc": "Rock bullet fired"
-  },
-  {
-   "id": "sfx.boss.recovery",
-   "category": "Boss",
-   "files": [
-    "Assets/Resources/Audio/SFX/Boss/sfx_boss_recovery_1.wav"
-   ],
-   "volume": 0.8,
-   "pitchJitter": 0.0,
-   "minInterval": 0.0,
-   "maxVoices": 0,
-   "loop": false,
-   "desc": "Boss slumps and recovers"
-  },
-  {
-   "id": "sfx.boss.hit",
-   "category": "Boss",
-   "files": [
-    "Assets/Resources/Audio/SFX/Boss/sfx_boss_hit_1.wav",
-    "Assets/Resources/Audio/SFX/Boss/sfx_boss_hit_2.wav"
-   ],
-   "volume": 0.6,
-   "pitchJitter": 0.1,
-   "minInterval": 0.06,
-   "maxVoices": 3,
-   "loop": false,
-   "desc": "Boss takes damage"
-  },
-  {
-   "id": "sfx.boss.death",
-   "category": "Boss",
-   "files": [
-    "Assets/Resources/Audio/SFX/Boss/sfx_boss_death_1.wav"
-   ],
-   "volume": 1.0,
-   "pitchJitter": 0.0,
-   "minInterval": 0.0,
-   "maxVoices": 0,
-   "loop": false,
-   "desc": "Boss collapses"
-  },
-  {
-   "id": "sfx.boss.victory",
-   "category": "Boss",
-   "files": [
-    "Assets/Resources/Audio/SFX/Boss/sfx_boss_victory_1.wav"
-   ],
-   "volume": 0.8,
-   "pitchJitter": 0.0,
-   "minInterval": 0.0,
-   "maxVoices": 0,
-   "loop": false,
-   "desc": "Boss defeated stinger"
   },
   {
    "id": "sfx.boss.teleport",
@@ -287,7 +325,7 @@
     "Assets/Resources/Audio/SFX/Boss/sfx_boss_teleport_1.wav",
     "Assets/Resources/Audio/SFX/Boss/sfx_boss_teleport_2.wav"
    ],
-   "volume": 0.85,
+   "volume": 1.0,
    "pitchJitter": 0.0,
    "minInterval": 0.0,
    "maxVoices": 0,
@@ -295,269 +333,17 @@
    "desc": "Teleport pillar used"
   },
   {
-   "id": "sfx.boss.arena_lock",
+   "id": "sfx.boss.victory",
    "category": "Boss",
    "files": [
-    "Assets/Resources/Audio/SFX/Boss/sfx_boss_arena_lock_1.wav"
-   ],
-   "volume": 0.85,
-   "pitchJitter": 0.0,
-   "minInterval": 0.0,
-   "maxVoices": 0,
-   "loop": false,
-   "desc": "Arena sealed"
-  },
-  {
-   "id": "sfx.bossowl.volley_windup",
-   "category": "Boss",
-   "files": [
-    "Assets/Resources/Audio/SFX/Boss/sfx_bossowl_volley_windup_1.wav"
-   ],
-   "volume": 0.7,
-   "pitchJitter": 0.0,
-   "minInterval": 0.2,
-   "maxVoices": 0,
-   "loop": false,
-   "desc": "Wings draw back before the feather volley"
-  },
-  {
-   "id": "sfx.bossowl.volley_fling",
-   "category": "Boss",
-   "files": [
-    "Assets/Resources/Audio/SFX/Boss/sfx_bossowl_volley_fling_1.wav",
-    "Assets/Resources/Audio/SFX/Boss/sfx_bossowl_volley_fling_2.wav"
-   ],
-   "volume": 0.9,
-   "pitchJitter": 0.03,
-   "minInterval": 0.2,
-   "maxVoices": 0,
-   "loop": false,
-   "desc": "Wings fling out a fan of feathers"
-  },
-  {
-   "id": "sfx.bossowl.feather_hit",
-   "category": "Boss",
-   "files": [
-    "Assets/Resources/Audio/SFX/Boss/sfx_bossowl_feather_hit_1.wav",
-    "Assets/Resources/Audio/SFX/Boss/sfx_bossowl_feather_hit_2.wav"
-   ],
-   "volume": 0.6,
-   "pitchJitter": 0.05,
-   "minInterval": 0.05,
-   "maxVoices": 3,
-   "loop": false,
-   "desc": "A feather hits the player"
-  },
-  {
-   "id": "sfx.bossowl.takeoff",
-   "category": "Boss",
-   "files": [
-    "Assets/Resources/Audio/SFX/Boss/sfx_bossowl_takeoff_1.wav"
-   ],
-   "volume": 0.85,
-   "pitchJitter": 0.0,
-   "minInterval": 0.3,
-   "maxVoices": 0,
-   "loop": false,
-   "desc": "Owl beats its wings and rises out of sight"
-  },
-  {
-   "id": "sfx.bossowl.dive_warning",
-   "category": "Boss",
-   "files": [
-    "Assets/Resources/Audio/SFX/Boss/sfx_bossowl_dive_warning_1.wav"
-   ],
-   "volume": 0.7,
-   "pitchJitter": 0.0,
-   "minInterval": 0.4,
-   "maxVoices": 0,
-   "loop": false,
-   "desc": "A shadow grows: the owl is coming down"
-  },
-  {
-   "id": "sfx.bossowl.dive_hit",
-   "category": "Boss",
-   "files": [
-    "Assets/Resources/Audio/SFX/Boss/sfx_bossowl_dive_hit_1.wav"
+    "Assets/Resources/Audio/SFX/Boss/sfx_boss_victory_1.wav"
    ],
    "volume": 1.0,
    "pitchJitter": 0.0,
-   "minInterval": 0.3,
-   "maxVoices": 0,
-   "loop": false,
-   "desc": "Owl slams down on the target"
-  },
-  {
-   "id": "sfx.bossowl.cyclone_cast",
-   "category": "Boss",
-   "files": [
-    "Assets/Resources/Audio/SFX/Boss/sfx_bossowl_cyclone_cast_1.wav"
-   ],
-   "volume": 0.8,
-   "pitchJitter": 0.0,
-   "minInterval": 0.3,
-   "maxVoices": 0,
-   "loop": false,
-   "desc": "Rapid wing beats stir up cyclones"
-  },
-  {
-   "id": "sfx.bossowl.cyclone_loop",
-   "category": "Boss",
-   "files": [
-    "Assets/Resources/Audio/SFX/Boss/sfx_bossowl_cyclone_loop_1.ogg"
-   ],
-   "volume": 0.5,
-   "pitchJitter": 0.0,
    "minInterval": 0.0,
    "maxVoices": 0,
-   "loop": true,
-   "desc": "A cyclone wanders the platform"
-  },
-  {
-   "id": "sfx.bossowl.cyclone_hit",
-   "category": "Boss",
-   "files": [
-    "Assets/Resources/Audio/SFX/Boss/sfx_bossowl_cyclone_hit_1.wav"
-   ],
-   "volume": 0.8,
-   "pitchJitter": 0.0,
-   "minInterval": 0.2,
-   "maxVoices": 0,
    "loop": false,
-   "desc": "Cyclone throws the player"
-  },
-  {
-   "id": "sfx.bossowl.wall_warning",
-   "category": "Boss",
-   "files": [
-    "Assets/Resources/Audio/SFX/Boss/sfx_bossowl_wall_warning_1.wav"
-   ],
-   "volume": 0.7,
-   "pitchJitter": 0.0,
-   "minInterval": 0.4,
-   "maxVoices": 0,
-   "loop": false,
-   "desc": "Owl banks and the gale gathers"
-  },
-  {
-   "id": "sfx.bossowl.wall_rush",
-   "category": "Boss",
-   "files": [
-    "Assets/Resources/Audio/SFX/Boss/sfx_bossowl_wall_rush_1.wav"
-   ],
-   "volume": 0.85,
-   "pitchJitter": 0.0,
-   "minInterval": 0.4,
-   "maxVoices": 0,
-   "loop": false,
-   "desc": "The wall of wind sweeps across the platform"
-  },
-  {
-   "id": "sfx.bossowl.wall_hit",
-   "category": "Boss",
-   "files": [
-    "Assets/Resources/Audio/SFX/Boss/sfx_bossowl_wall_hit_1.wav"
-   ],
-   "volume": 0.9,
-   "pitchJitter": 0.0,
-   "minInterval": 0.3,
-   "maxVoices": 0,
-   "loop": false,
-   "desc": "Wall hits the player"
-  },
-  {
-   "id": "sfx.bossowl.slash_windup",
-   "category": "Boss",
-   "files": [
-    "Assets/Resources/Audio/SFX/Boss/sfx_bossowl_slash_windup_1.wav"
-   ],
-   "volume": 0.65,
-   "pitchJitter": 0.0,
-   "minInterval": 0.2,
-   "maxVoices": 0,
-   "loop": false,
-   "desc": "Wings lift before the blades"
-  },
-  {
-   "id": "sfx.bossowl.blade_cut",
-   "category": "Boss",
-   "files": [
-    "Assets/Resources/Audio/SFX/Boss/sfx_bossowl_blade_cut_1.wav",
-    "Assets/Resources/Audio/SFX/Boss/sfx_bossowl_blade_cut_2.wav",
-    "Assets/Resources/Audio/SFX/Boss/sfx_bossowl_blade_cut_3.wav"
-   ],
-   "volume": 0.85,
-   "pitchJitter": 0.04,
-   "minInterval": 0.1,
-   "maxVoices": 3,
-   "loop": false,
-   "desc": "Crescent blades fly out"
-  },
-  {
-   "id": "sfx.bossowl.blade_hit",
-   "category": "Boss",
-   "files": [
-    "Assets/Resources/Audio/SFX/Boss/sfx_bossowl_blade_hit_1.wav"
-   ],
-   "volume": 0.8,
-   "pitchJitter": 0.0,
-   "minInterval": 0.1,
-   "maxVoices": 0,
-   "loop": false,
-   "desc": "A blade cuts the player"
-  },
-  {
-   "id": "sfx.bossowl.storm_charge",
-   "category": "Boss",
-   "files": [
-    "Assets/Resources/Audio/SFX/Boss/sfx_bossowl_storm_charge_1.wav"
-   ],
-   "volume": 0.85,
-   "pitchJitter": 0.0,
-   "minInterval": 0.5,
-   "maxVoices": 0,
-   "loop": false,
-   "desc": "Owl circles overhead as the storm builds"
-  },
-  {
-   "id": "sfx.bossowl.floor_warn",
-   "category": "Boss",
-   "files": [
-    "Assets/Resources/Audio/SFX/Boss/sfx_bossowl_floor_warn_1.wav"
-   ],
-   "volume": 0.5,
-   "pitchJitter": 0.0,
-   "minInterval": 0.4,
-   "maxVoices": 0,
-   "loop": false,
-   "desc": "A section of floor starts to flicker"
-  },
-  {
-   "id": "sfx.bossowl.floor_break",
-   "category": "Boss",
-   "files": [
-    "Assets/Resources/Audio/SFX/Boss/sfx_bossowl_floor_break_1.wav",
-    "Assets/Resources/Audio/SFX/Boss/sfx_bossowl_floor_break_2.wav"
-   ],
-   "volume": 0.95,
-   "pitchJitter": 0.03,
-   "minInterval": 0.3,
-   "maxVoices": 0,
-   "loop": false,
-   "desc": "A floor section breaks away"
-  },
-  {
-   "id": "sfx.bossowl.storm_end",
-   "category": "Boss",
-   "files": [
-    "Assets/Resources/Audio/SFX/Boss/sfx_bossowl_storm_end_1.wav"
-   ],
-   "volume": 0.8,
-   "pitchJitter": 0.0,
-   "minInterval": 0.4,
-   "maxVoices": 0,
-   "loop": false,
-   "desc": "The storm dies and the owl drops, spent"
+   "desc": "Boss defeated stinger"
   },
   {
    "id": "sfx.bossowl.awaken",
@@ -574,46 +360,71 @@
    "desc": "Owl awakens"
   },
   {
-   "id": "sfx.bossowl.phase_roar",
+   "id": "sfx.bossowl.blade_cut",
    "category": "Boss",
    "files": [
-    "Assets/Resources/Audio/SFX/Boss/sfx_bossowl_phase_roar_1.wav",
-    "Assets/Resources/Audio/SFX/Boss/sfx_bossowl_phase_roar_2.wav"
+    "Assets/Resources/Audio/SFX/Boss/sfx_bossowl_blade_cut_1.wav",
+    "Assets/Resources/Audio/SFX/Boss/sfx_bossowl_blade_cut_2.wav",
+    "Assets/Resources/Audio/SFX/Boss/sfx_bossowl_blade_cut_3.wav"
+   ],
+   "volume": 1.0,
+   "pitchJitter": 0.04,
+   "minInterval": 0.1,
+   "maxVoices": 3,
+   "loop": false,
+   "desc": "Crescent blades fly out"
+  },
+  {
+   "id": "sfx.bossowl.blade_hit",
+   "category": "Boss",
+   "files": [
+    "Assets/Resources/Audio/SFX/Boss/sfx_bossowl_blade_hit_1.wav"
+   ],
+   "volume": 1.0,
+   "pitchJitter": 0.0,
+   "minInterval": 0.1,
+   "maxVoices": 0,
+   "loop": false,
+   "desc": "A blade cuts the player"
+  },
+  {
+   "id": "sfx.bossowl.cyclone_cast",
+   "category": "Boss",
+   "files": [
+    "Assets/Resources/Audio/SFX/Boss/sfx_bossowl_cyclone_cast_1.wav"
+   ],
+   "volume": 1.0,
+   "pitchJitter": 0.0,
+   "minInterval": 0.3,
+   "maxVoices": 0,
+   "loop": false,
+   "desc": "Rapid wing beats stir up cyclones"
+  },
+  {
+   "id": "sfx.bossowl.cyclone_hit",
+   "category": "Boss",
+   "files": [
+    "Assets/Resources/Audio/SFX/Boss/sfx_bossowl_cyclone_hit_1.wav"
+   ],
+   "volume": 1.0,
+   "pitchJitter": 0.0,
+   "minInterval": 0.2,
+   "maxVoices": 0,
+   "loop": false,
+   "desc": "Cyclone throws the player"
+  },
+  {
+   "id": "sfx.bossowl.cyclone_loop",
+   "category": "Boss",
+   "files": [
+    "Assets/Resources/Audio/SFX/Boss/sfx_bossowl_cyclone_loop_1.ogg"
    ],
    "volume": 1.0,
    "pitchJitter": 0.0,
    "minInterval": 0.0,
    "maxVoices": 0,
-   "loop": false,
-   "desc": "Phase change screech"
-  },
-  {
-   "id": "sfx.bossowl.hit",
-   "category": "Boss",
-   "files": [
-    "Assets/Resources/Audio/SFX/Boss/sfx_bossowl_hit_1.wav",
-    "Assets/Resources/Audio/SFX/Boss/sfx_bossowl_hit_2.wav",
-    "Assets/Resources/Audio/SFX/Boss/sfx_bossowl_hit_3.wav"
-   ],
-   "volume": 0.65,
-   "pitchJitter": 0.05,
-   "minInterval": 0.06,
-   "maxVoices": 3,
-   "loop": false,
-   "desc": "Owl takes damage"
-  },
-  {
-   "id": "sfx.bossowl.recovery",
-   "category": "Boss",
-   "files": [
-    "Assets/Resources/Audio/SFX/Boss/sfx_bossowl_recovery_1.wav"
-   ],
-   "volume": 0.7,
-   "pitchJitter": 0.0,
-   "minInterval": 0.0,
-   "maxVoices": 0,
-   "loop": false,
-   "desc": "Owl lands, winded"
+   "loop": true,
+   "desc": "A cyclone wanders the platform"
   },
   {
    "id": "sfx.bossowl.death",
@@ -629,194 +440,216 @@
    "desc": "Owl falls"
   },
   {
-   "id": "sfx.bossw.claw_windup",
+   "id": "sfx.bossowl.dive_hit",
    "category": "Boss",
    "files": [
-    "Assets/Resources/Audio/SFX/Boss/sfx_bossw_claw_windup_1.wav"
+    "Assets/Resources/Audio/SFX/Boss/sfx_bossowl_dive_hit_1.wav"
    ],
-   "volume": 0.7,
-   "pitchJitter": 0.0,
-   "minInterval": 0.2,
-   "maxVoices": 0,
-   "loop": false,
-   "desc": "Claws raise before the clamp"
-  },
-  {
-   "id": "sfx.bossw.claw_snap",
-   "category": "Boss",
-   "files": [
-    "Assets/Resources/Audio/SFX/Boss/sfx_bossw_claw_snap_1.wav",
-    "Assets/Resources/Audio/SFX/Boss/sfx_bossw_claw_snap_2.wav",
-    "Assets/Resources/Audio/SFX/Boss/sfx_bossw_claw_snap_3.wav"
-   ],
-   "volume": 0.9,
-   "pitchJitter": 0.03,
-   "minInterval": 0.1,
-   "maxVoices": 3,
-   "loop": false,
-   "desc": "Claw snaps shut"
-  },
-  {
-   "id": "sfx.bossw.claw_hold",
-   "category": "Boss",
-   "files": [
-    "Assets/Resources/Audio/SFX/Boss/sfx_bossw_claw_hold_1.wav"
-   ],
-   "volume": 0.7,
+   "volume": 1.0,
    "pitchJitter": 0.0,
    "minInterval": 0.3,
    "maxVoices": 0,
    "loop": false,
-   "desc": "Both claws land: player held"
+   "desc": "Owl slams down on the target"
   },
   {
-   "id": "sfx.bossw.bubble_spit",
+   "id": "sfx.bossowl.dive_warning",
    "category": "Boss",
    "files": [
-    "Assets/Resources/Audio/SFX/Boss/sfx_bossw_bubble_spit_1.wav",
-    "Assets/Resources/Audio/SFX/Boss/sfx_bossw_bubble_spit_2.wav",
-    "Assets/Resources/Audio/SFX/Boss/sfx_bossw_bubble_spit_3.wav"
+    "Assets/Resources/Audio/SFX/Boss/sfx_bossowl_dive_warning_1.wav"
    ],
-   "volume": 0.7,
-   "pitchJitter": 0.04,
-   "minInterval": 0.1,
-   "maxVoices": 3,
+   "volume": 1.0,
+   "pitchJitter": 0.0,
+   "minInterval": 0.4,
+   "maxVoices": 0,
    "loop": false,
-   "desc": "Crab spits a bubble"
+   "desc": "A shadow grows: the owl is coming down"
   },
   {
-   "id": "sfx.bossw.bubble_pop",
+   "id": "sfx.bossowl.feather_hit",
    "category": "Boss",
    "files": [
-    "Assets/Resources/Audio/SFX/Boss/sfx_bossw_bubble_pop_1.wav",
-    "Assets/Resources/Audio/SFX/Boss/sfx_bossw_bubble_pop_2.wav",
-    "Assets/Resources/Audio/SFX/Boss/sfx_bossw_bubble_pop_3.wav"
+    "Assets/Resources/Audio/SFX/Boss/sfx_bossowl_feather_hit_1.wav",
+    "Assets/Resources/Audio/SFX/Boss/sfx_bossowl_feather_hit_2.wav"
    ],
-   "volume": 0.75,
+   "volume": 1.0,
    "pitchJitter": 0.05,
    "minInterval": 0.05,
-   "maxVoices": 4,
+   "maxVoices": 3,
    "loop": false,
-   "desc": "Bubble bursts"
+   "desc": "A feather hits the player"
   },
   {
-   "id": "sfx.bossw.burrow_dive",
+   "id": "sfx.bossowl.floor_break",
    "category": "Boss",
    "files": [
-    "Assets/Resources/Audio/SFX/Boss/sfx_bossw_burrow_dive_1.wav"
-   ],
-   "volume": 0.85,
-   "pitchJitter": 0.0,
-   "minInterval": 0.3,
-   "maxVoices": 0,
-   "loop": false,
-   "desc": "Crab sinks into the sand"
-  },
-  {
-   "id": "sfx.bossw.mound_loop",
-   "category": "Boss",
-   "files": [
-    "Assets/Resources/Audio/SFX/Boss/sfx_bossw_mound_loop_1.ogg"
-   ],
-   "volume": 0.6,
-   "pitchJitter": 0.0,
-   "minInterval": 0.0,
-   "maxVoices": 0,
-   "loop": true,
-   "desc": "Sand mound chasing the player"
-  },
-  {
-   "id": "sfx.bossw.emerge",
-   "category": "Boss",
-   "files": [
-    "Assets/Resources/Audio/SFX/Boss/sfx_bossw_emerge_1.wav",
-    "Assets/Resources/Audio/SFX/Boss/sfx_bossw_emerge_2.wav"
+    "Assets/Resources/Audio/SFX/Boss/sfx_bossowl_floor_break_1.wav",
+    "Assets/Resources/Audio/SFX/Boss/sfx_bossowl_floor_break_2.wav"
    ],
    "volume": 1.0,
    "pitchJitter": 0.03,
    "minInterval": 0.3,
    "maxVoices": 0,
    "loop": false,
-   "desc": "Crab bursts out of the sand"
+   "desc": "A floor section breaks away"
   },
   {
-   "id": "sfx.bossw.wave_warning",
+   "id": "sfx.bossowl.floor_warn",
    "category": "Boss",
    "files": [
-    "Assets/Resources/Audio/SFX/Boss/sfx_bossw_wave_warning_1.wav"
+    "Assets/Resources/Audio/SFX/Boss/sfx_bossowl_floor_warn_1.wav"
    ],
-   "volume": 0.8,
+   "volume": 1.0,
    "pitchJitter": 0.0,
    "minInterval": 0.4,
    "maxVoices": 0,
    "loop": false,
-   "desc": "Conch horn before the wave"
+   "desc": "A section of floor starts to flicker"
   },
   {
-   "id": "sfx.bossw.wave_rush",
+   "id": "sfx.bossowl.phase_roar",
    "category": "Boss",
    "files": [
-    "Assets/Resources/Audio/SFX/Boss/sfx_bossw_wave_rush_1.wav"
+    "Assets/Resources/Audio/SFX/Boss/sfx_bossowl_phase_roar_1.wav",
+    "Assets/Resources/Audio/SFX/Boss/sfx_bossowl_phase_roar_2.wav"
    ],
-   "volume": 0.85,
+   "volume": 1.0,
    "pitchJitter": 0.0,
-   "minInterval": 0.4,
+   "minInterval": 0.0,
    "maxVoices": 0,
    "loop": false,
-   "desc": "Tidal wave sweeps the arena"
+   "desc": "Phase change screech"
   },
   {
-   "id": "sfx.bossw.wave_hit",
+   "id": "sfx.bossowl.recovery",
    "category": "Boss",
    "files": [
-    "Assets/Resources/Audio/SFX/Boss/sfx_bossw_wave_hit_1.wav"
+    "Assets/Resources/Audio/SFX/Boss/sfx_bossowl_recovery_1.wav"
    ],
-   "volume": 0.9,
+   "volume": 1.0,
    "pitchJitter": 0.0,
-   "minInterval": 0.3,
+   "minInterval": 0.0,
    "maxVoices": 0,
    "loop": false,
-   "desc": "Wave hits the player"
+   "desc": "Owl lands, winded"
   },
   {
-   "id": "sfx.bossw.whirl_charge",
+   "id": "sfx.bossowl.slash_windup",
    "category": "Boss",
    "files": [
-    "Assets/Resources/Audio/SFX/Boss/sfx_bossw_whirl_charge_1.wav"
+    "Assets/Resources/Audio/SFX/Boss/sfx_bossowl_slash_windup_1.wav"
    ],
-   "volume": 0.8,
+   "volume": 1.0,
+   "pitchJitter": 0.0,
+   "minInterval": 0.2,
+   "maxVoices": 0,
+   "loop": false,
+   "desc": "Wings lift before the blades"
+  },
+  {
+   "id": "sfx.bossowl.storm_charge",
+   "category": "Boss",
+   "files": [
+    "Assets/Resources/Audio/SFX/Boss/sfx_bossowl_storm_charge_1.wav"
+   ],
+   "volume": 1.0,
    "pitchJitter": 0.0,
    "minInterval": 0.5,
    "maxVoices": 0,
    "loop": false,
-   "desc": "Whirlpool opens"
+   "desc": "Owl circles overhead as the storm builds"
   },
   {
-   "id": "sfx.bossw.whirl_loop",
+   "id": "sfx.bossowl.storm_end",
    "category": "Boss",
    "files": [
-    "Assets/Resources/Audio/SFX/Boss/sfx_bossw_whirl_loop_1.ogg"
+    "Assets/Resources/Audio/SFX/Boss/sfx_bossowl_storm_end_1.wav"
    ],
-   "volume": 0.7,
+   "volume": 1.0,
    "pitchJitter": 0.0,
-   "minInterval": 0.0,
+   "minInterval": 0.4,
    "maxVoices": 0,
-   "loop": true,
-   "desc": "Whirlpool pulling"
+   "loop": false,
+   "desc": "The storm dies and the owl drops, spent"
   },
   {
-   "id": "sfx.bossw.whirl_jet",
+   "id": "sfx.bossowl.takeoff",
    "category": "Boss",
    "files": [
-    "Assets/Resources/Audio/SFX/Boss/sfx_bossw_whirl_jet_1.wav",
-    "Assets/Resources/Audio/SFX/Boss/sfx_bossw_whirl_jet_2.wav"
+    "Assets/Resources/Audio/SFX/Boss/sfx_bossowl_takeoff_1.wav"
    ],
-   "volume": 0.8,
-   "pitchJitter": 0.04,
-   "minInterval": 0.1,
-   "maxVoices": 3,
+   "volume": 1.0,
+   "pitchJitter": 0.0,
+   "minInterval": 0.3,
+   "maxVoices": 0,
    "loop": false,
-   "desc": "Water jets start spinning"
+   "desc": "Owl beats its wings and rises out of sight"
+  },
+  {
+   "id": "sfx.bossowl.volley_fling",
+   "category": "Boss",
+   "files": [
+    "Assets/Resources/Audio/SFX/Boss/sfx_bossowl_volley_fling_1.wav",
+    "Assets/Resources/Audio/SFX/Boss/sfx_bossowl_volley_fling_2.wav"
+   ],
+   "volume": 1.0,
+   "pitchJitter": 0.03,
+   "minInterval": 0.2,
+   "maxVoices": 0,
+   "loop": false,
+   "desc": "Wings fling out a fan of feathers"
+  },
+  {
+   "id": "sfx.bossowl.volley_windup",
+   "category": "Boss",
+   "files": [
+    "Assets/Resources/Audio/SFX/Boss/sfx_bossowl_volley_windup_1.wav"
+   ],
+   "volume": 1.0,
+   "pitchJitter": 0.0,
+   "minInterval": 0.2,
+   "maxVoices": 0,
+   "loop": false,
+   "desc": "Wings draw back before the feather volley"
+  },
+  {
+   "id": "sfx.bossowl.wall_hit",
+   "category": "Boss",
+   "files": [
+    "Assets/Resources/Audio/SFX/Boss/sfx_bossowl_wall_hit_1.wav"
+   ],
+   "volume": 1.0,
+   "pitchJitter": 0.0,
+   "minInterval": 0.3,
+   "maxVoices": 0,
+   "loop": false,
+   "desc": "Wall hits the player"
+  },
+  {
+   "id": "sfx.bossowl.wall_rush",
+   "category": "Boss",
+   "files": [
+    "Assets/Resources/Audio/SFX/Boss/sfx_bossowl_wall_rush_1.wav"
+   ],
+   "volume": 1.0,
+   "pitchJitter": 0.0,
+   "minInterval": 0.4,
+   "maxVoices": 0,
+   "loop": false,
+   "desc": "The wall of wind sweeps across the platform"
+  },
+  {
+   "id": "sfx.bossowl.wall_warning",
+   "category": "Boss",
+   "files": [
+    "Assets/Resources/Audio/SFX/Boss/sfx_bossowl_wall_warning_1.wav"
+   ],
+   "volume": 1.0,
+   "pitchJitter": 0.0,
+   "minInterval": 0.4,
+   "maxVoices": 0,
+   "loop": false,
+   "desc": "Owl banks and the gale gathers"
   },
   {
    "id": "sfx.bossw.awaken",
@@ -830,6 +663,103 @@
    "maxVoices": 0,
    "loop": false,
    "desc": "Crab emerges and roars"
+  },
+  {
+   "id": "sfx.bossw.bubble_pop",
+   "category": "Boss",
+   "files": [
+    "Assets/Resources/Audio/SFX/Boss/sfx_bossw_bubble_pop_1.wav",
+    "Assets/Resources/Audio/SFX/Boss/sfx_bossw_bubble_pop_2.wav",
+    "Assets/Resources/Audio/SFX/Boss/sfx_bossw_bubble_pop_3.wav"
+   ],
+   "volume": 1.0,
+   "pitchJitter": 0.05,
+   "minInterval": 0.05,
+   "maxVoices": 4,
+   "loop": false,
+   "desc": "Bubble bursts"
+  },
+  {
+   "id": "sfx.bossw.burrow_dive",
+   "category": "Boss",
+   "files": [
+    "Assets/Resources/Audio/SFX/Boss/sfx_bossw_burrow_dive_1.wav"
+   ],
+   "volume": 1.0,
+   "pitchJitter": 0.0,
+   "minInterval": 0.3,
+   "maxVoices": 0,
+   "loop": false,
+   "desc": "Crab sinks into the sand"
+  },
+  {
+   "id": "sfx.bossw.claw_hold",
+   "category": "Boss",
+   "files": [
+    "Assets/Resources/Audio/SFX/Boss/sfx_bossw_claw_hold_1.wav"
+   ],
+   "volume": 1.0,
+   "pitchJitter": 0.0,
+   "minInterval": 0.3,
+   "maxVoices": 0,
+   "loop": false,
+   "desc": "Both claws land: player held"
+  },
+  {
+   "id": "sfx.bossw.claw_snap",
+   "category": "Boss",
+   "files": [
+    "Assets/Resources/Audio/SFX/Boss/sfx_bossw_claw_snap_1.wav",
+    "Assets/Resources/Audio/SFX/Boss/sfx_bossw_claw_snap_2.wav",
+    "Assets/Resources/Audio/SFX/Boss/sfx_bossw_claw_snap_3.wav"
+   ],
+   "volume": 1.0,
+   "pitchJitter": 0.03,
+   "minInterval": 0.1,
+   "maxVoices": 3,
+   "loop": false,
+   "desc": "Claw snaps shut"
+  },
+  {
+   "id": "sfx.bossw.claw_windup",
+   "category": "Boss",
+   "files": [
+    "Assets/Resources/Audio/SFX/Boss/sfx_bossw_claw_windup_1.wav"
+   ],
+   "volume": 1.0,
+   "pitchJitter": 0.0,
+   "minInterval": 0.2,
+   "maxVoices": 0,
+   "loop": false,
+   "desc": "Claws raise before the clamp"
+  },
+  {
+   "id": "sfx.bossw.death",
+   "category": "Boss",
+   "files": [
+    "Assets/Resources/Audio/SFX/Boss/sfx_bossw_death_1.wav"
+   ],
+   "volume": 1.0,
+   "pitchJitter": 0.0,
+   "minInterval": 0.0,
+   "maxVoices": 0,
+   "loop": false,
+   "desc": "Crab collapses"
+  },
+  {
+   "id": "sfx.bossw.hit",
+   "category": "Boss",
+   "files": [
+    "Assets/Resources/Audio/SFX/Boss/sfx_bossw_hit_1.wav",
+    "Assets/Resources/Audio/SFX/Boss/sfx_bossw_hit_2.wav",
+    "Assets/Resources/Audio/SFX/Boss/sfx_bossw_hit_3.wav"
+   ],
+   "volume": 1.0,
+   "pitchJitter": 0.05,
+   "minInterval": 0.06,
+   "maxVoices": 3,
+   "loop": false,
+   "desc": "Crab takes damage"
   },
   {
    "id": "sfx.bossw.phase_roar",
@@ -846,27 +776,12 @@
    "desc": "Phase change roar"
   },
   {
-   "id": "sfx.bossw.hit",
-   "category": "Boss",
-   "files": [
-    "Assets/Resources/Audio/SFX/Boss/sfx_bossw_hit_1.wav",
-    "Assets/Resources/Audio/SFX/Boss/sfx_bossw_hit_2.wav",
-    "Assets/Resources/Audio/SFX/Boss/sfx_bossw_hit_3.wav"
-   ],
-   "volume": 0.65,
-   "pitchJitter": 0.05,
-   "minInterval": 0.06,
-   "maxVoices": 3,
-   "loop": false,
-   "desc": "Crab takes damage"
-  },
-  {
    "id": "sfx.bossw.recovery",
    "category": "Boss",
    "files": [
     "Assets/Resources/Audio/SFX/Boss/sfx_bossw_recovery_1.wav"
    ],
-   "volume": 0.7,
+   "volume": 1.0,
    "pitchJitter": 0.0,
    "minInterval": 0.0,
    "maxVoices": 0,
@@ -874,17 +789,43 @@
    "desc": "Crab slumps and recovers"
   },
   {
-   "id": "sfx.bossw.death",
+   "id": "sfx.bossw.wave_hit",
    "category": "Boss",
    "files": [
-    "Assets/Resources/Audio/SFX/Boss/sfx_bossw_death_1.wav"
+    "Assets/Resources/Audio/SFX/Boss/sfx_bossw_wave_hit_1.wav"
+   ],
+   "volume": 1.0,
+   "pitchJitter": 0.0,
+   "minInterval": 0.3,
+   "maxVoices": 0,
+   "loop": false,
+   "desc": "Wave hits the player"
+  },
+  {
+   "id": "sfx.bossw.wave_rush",
+   "category": "Boss",
+   "files": [
+    "Assets/Resources/Audio/SFX/Boss/sfx_bossw_wave_rush_1.wav"
+   ],
+   "volume": 1.0,
+   "pitchJitter": 0.0,
+   "minInterval": 0.4,
+   "maxVoices": 0,
+   "loop": false,
+   "desc": "Tidal wave sweeps the arena"
+  },
+  {
+   "id": "sfx.bossw.tide_loop",
+   "category": "Ambience",
+   "files": [
+    "Assets/Resources/Audio/SFX/Ambience/sfx_bossw_tide_loop_1.ogg"
    ],
    "volume": 1.0,
    "pitchJitter": 0.0,
    "minInterval": 0.0,
    "maxVoices": 0,
-   "loop": false,
-   "desc": "Crab collapses"
+   "loop": true,
+   "desc": "Lapping water, level follows the tide"
   },
   {
    "id": "sfx.combat.player_attack",
@@ -892,10 +833,9 @@
    "files": [
     "Assets/Resources/Audio/SFX/Combat/sfx_combat_player_attack_1.wav",
     "Assets/Resources/Audio/SFX/Combat/sfx_combat_player_attack_2.wav",
-    "Assets/Resources/Audio/SFX/Combat/sfx_combat_player_attack_3.wav",
-    "Assets/Resources/Audio/SFX/Combat/sfx_combat_player_attack_4.wav"
+    "Assets/Resources/Audio/SFX/Combat/sfx_combat_player_attack_3.wav"
    ],
-   "volume": 0.8,
+   "volume": 1.0,
    "pitchJitter": 0.07,
    "minInterval": 0.0,
    "maxVoices": 0,
@@ -908,13 +848,12 @@
    "files": [
     "Assets/Resources/Audio/SFX/Combat/sfx_combat_hit_impact_1.wav",
     "Assets/Resources/Audio/SFX/Combat/sfx_combat_hit_impact_2.wav",
-    "Assets/Resources/Audio/SFX/Combat/sfx_combat_hit_impact_3.wav",
-    "Assets/Resources/Audio/SFX/Combat/sfx_combat_hit_impact_4.wav"
+    "Assets/Resources/Audio/SFX/Combat/sfx_combat_hit_impact_3.wav"
    ],
-   "volume": 0.9,
+   "volume": 1.0,
    "pitchJitter": 0.06,
    "minInterval": 0.04,
-   "maxVoices": 0,
+   "maxVoices": 3,
    "loop": false,
    "desc": "Player attack lands on a target"
   },
@@ -922,7 +861,8 @@
    "id": "sfx.combat.hit_crit",
    "category": "Combat",
    "files": [
-    "Assets/Resources/Audio/SFX/Combat/sfx_combat_hit_crit_1.wav"
+    "Assets/Resources/Audio/SFX/Combat/sfx_combat_hit_crit_1.wav",
+    "Assets/Resources/Audio/SFX/Combat/sfx_combat_hit_crit_2.wav"
    ],
    "volume": 1.0,
    "pitchJitter": 0.04,
@@ -932,33 +872,91 @@
    "desc": "Critical hit (heavier layer)"
   },
   {
-   "id": "sfx.combat.player_hurt",
+   "id": "sfx.combat.unarmed_swing",
    "category": "Combat",
    "files": [
-    "Assets/Resources/Audio/SFX/Combat/sfx_combat_player_hurt_1.wav",
-    "Assets/Resources/Audio/SFX/Combat/sfx_combat_player_hurt_2.wav",
-    "Assets/Resources/Audio/SFX/Combat/sfx_combat_player_hurt_3.wav"
+    "Assets/Resources/Audio/SFX/Combat/sfx_combat_unarmed_swing_1.wav",
+    "Assets/Resources/Audio/SFX/Combat/sfx_combat_unarmed_swing_2.wav",
+    "Assets/Resources/Audio/SFX/Combat/sfx_combat_unarmed_swing_3.wav"
    ],
-   "volume": 0.85,
-   "pitchJitter": 0.05,
-   "minInterval": 0.25,
+   "volume": 1.0,
+   "pitchJitter": 0.08,
+   "minInterval": 0.0,
    "maxVoices": 0,
    "loop": false,
-   "desc": "Player takes damage"
+   "desc": "Bare-handed swing (no weapon equipped)"
   },
   {
-   "id": "sfx.combat.player_dodge",
+   "id": "sfx.combat.unarmed_hit",
    "category": "Combat",
    "files": [
-    "Assets/Resources/Audio/SFX/Combat/sfx_combat_player_dodge_1.wav",
-    "Assets/Resources/Audio/SFX/Combat/sfx_combat_player_dodge_2.wav"
+    "Assets/Resources/Audio/SFX/Combat/sfx_combat_unarmed_hit_1.wav",
+    "Assets/Resources/Audio/SFX/Combat/sfx_combat_unarmed_hit_2.wav",
+    "Assets/Resources/Audio/SFX/Combat/sfx_combat_unarmed_hit_3.wav",
+    "Assets/Resources/Audio/SFX/Combat/sfx_combat_unarmed_hit_4.wav"
    ],
-   "volume": 0.7,
-   "pitchJitter": 0.08,
-   "minInterval": 0.15,
+   "volume": 1.0,
+   "pitchJitter": 0.07,
+   "minInterval": 0.04,
+   "maxVoices": 3,
+   "loop": false,
+   "desc": "Bare fist lands on a target"
+  },
+  {
+   "id": "sfx.combat.unarmed_crit",
+   "category": "Combat",
+   "files": [
+    "Assets/Resources/Audio/SFX/Combat/sfx_combat_unarmed_crit_1.wav",
+    "Assets/Resources/Audio/SFX/Combat/sfx_combat_unarmed_crit_2.wav"
+   ],
+   "volume": 1.0,
+   "pitchJitter": 0.04,
+   "minInterval": 0.0,
    "maxVoices": 0,
    "loop": false,
-   "desc": "Player dodged a hit"
+   "desc": "Bare fist critical hit"
+  },
+  {
+   "id": "sfx.combat.dummy_hit",
+   "category": "Combat",
+   "files": [
+    "Assets/Resources/Audio/SFX/Combat/sfx_combat_dummy_hit_1.wav",
+    "Assets/Resources/Audio/SFX/Combat/sfx_combat_dummy_hit_2.wav",
+    "Assets/Resources/Audio/SFX/Combat/sfx_combat_dummy_hit_3.wav"
+   ],
+   "volume": 1.0,
+   "pitchJitter": 0.08,
+   "minInterval": 0.04,
+   "maxVoices": 0,
+   "loop": false,
+   "desc": "Village training dummy (wood) hit"
+  },
+  {
+   "id": "sfx.combat.shield_raise",
+   "category": "Combat",
+   "files": [
+    "Assets/Resources/Audio/SFX/Combat/sfx_combat_shield_raise_1.wav"
+   ],
+   "volume": 1.0,
+   "pitchJitter": 0.05,
+   "minInterval": 0.2,
+   "maxVoices": 0,
+   "loop": false,
+   "desc": "Shield block raised (hold RMB)"
+  },
+  {
+   "id": "sfx.combat.shield_block",
+   "category": "Combat",
+   "files": [
+    "Assets/Resources/Audio/SFX/Combat/sfx_combat_shield_block_1.wav",
+    "Assets/Resources/Audio/SFX/Combat/sfx_combat_shield_block_2.wav"
+   ],
+   "volume": 1.0,
+   "pitchJitter": 0.05,
+   "minInterval": 0.05,
+   "maxVoices": 0,
+   "loop": false,
+   "desc": "Shield absorbs a hit (and breaks)"
   },
   {
    "id": "sfx.combat.player_death",
@@ -967,12 +965,41 @@
     "Assets/Resources/Audio/SFX/Combat/sfx_combat_player_death_1.wav",
     "Assets/Resources/Audio/SFX/Combat/sfx_combat_player_death_2.wav"
    ],
-   "volume": 0.95,
+   "volume": 1.0,
    "pitchJitter": 0.0,
    "minInterval": 0.0,
    "maxVoices": 0,
    "loop": false,
    "desc": "Player dies"
+  },
+  {
+   "id": "sfx.combat.player_dodge",
+   "category": "Combat",
+   "files": [
+    "Assets/Resources/Audio/SFX/Combat/sfx_combat_player_dodge_1.wav",
+    "Assets/Resources/Audio/SFX/Combat/sfx_combat_player_dodge_2.wav"
+   ],
+   "volume": 1.0,
+   "pitchJitter": 0.08,
+   "minInterval": 0.15,
+   "maxVoices": 0,
+   "loop": false,
+   "desc": "Player dodged a hit"
+  },
+  {
+   "id": "sfx.combat.player_hurt",
+   "category": "Combat",
+   "files": [
+    "Assets/Resources/Audio/SFX/Combat/sfx_combat_player_hurt_1.wav",
+    "Assets/Resources/Audio/SFX/Combat/sfx_combat_player_hurt_2.wav",
+    "Assets/Resources/Audio/SFX/Combat/sfx_combat_player_hurt_3.wav"
+   ],
+   "volume": 1.0,
+   "pitchJitter": 0.05,
+   "minInterval": 0.25,
+   "maxVoices": 0,
+   "loop": false,
+   "desc": "Player takes damage"
   },
   {
    "id": "sfx.player.dash",
@@ -981,7 +1008,7 @@
     "Assets/Resources/Audio/SFX/Combat/sfx_player_dash_1.wav",
     "Assets/Resources/Audio/SFX/Combat/sfx_player_dash_2.wav"
    ],
-   "volume": 0.75,
+   "volume": 1.0,
    "pitchJitter": 0.06,
    "minInterval": 0.2,
    "maxVoices": 0,
@@ -993,10 +1020,9 @@
    "category": "Combat",
    "files": [
     "Assets/Resources/Audio/SFX/Combat/sfx_player_exhausted_1.wav",
-    "Assets/Resources/Audio/SFX/Combat/sfx_player_exhausted_2.wav",
-    "Assets/Resources/Audio/SFX/Combat/sfx_player_exhausted_3.wav"
+    "Assets/Resources/Audio/SFX/Combat/sfx_player_exhausted_2.wav"
    ],
-   "volume": 0.7,
+   "volume": 1.0,
    "pitchJitter": 0.04,
    "minInterval": 1.2,
    "maxVoices": 0,
@@ -1009,12 +1035,106 @@
    "files": [
     "Assets/Resources/Audio/SFX/Combat/sfx_player_level_up_1.wav"
    ],
-   "volume": 0.85,
+   "volume": 1.0,
    "pitchJitter": 0.0,
    "minInterval": 0.0,
    "maxVoices": 0,
    "loop": false,
    "desc": "Player gained a level"
+  },
+  {
+   "id": "sfx.combat.projectile_impact",
+   "category": "Combat",
+   "files": [
+    "Assets/Resources/Audio/SFX/Combat/sfx_combat_projectile_impact_1.wav",
+    "Assets/Resources/Audio/SFX/Combat/sfx_combat_projectile_impact_2.wav"
+   ],
+   "volume": 1.0,
+   "pitchJitter": 0.07,
+   "minInterval": 0.06,
+   "maxVoices": 0,
+   "loop": false,
+   "desc": "Enemy projectile hits"
+  },
+  {
+   "id": "sfx.combat.projectile_launch",
+   "category": "Combat",
+   "files": [
+    "Assets/Resources/Audio/SFX/Combat/sfx_combat_projectile_launch_1.wav",
+    "Assets/Resources/Audio/SFX/Combat/sfx_combat_projectile_launch_2.wav"
+   ],
+   "volume": 1.0,
+   "pitchJitter": 0.07,
+   "minInterval": 0.08,
+   "maxVoices": 0,
+   "loop": false,
+   "desc": "Enemy projectile fired"
+  },
+  {
+   "id": "sfx.combat.skill_aim_cancel",
+   "category": "Combat",
+   "files": [
+    "Assets/Resources/Audio/SFX/Combat/sfx_combat_skill_aim_cancel_1.wav"
+   ],
+   "volume": 1.0,
+   "pitchJitter": 0.0,
+   "minInterval": 0.2,
+   "maxVoices": 0,
+   "loop": false,
+   "desc": "Skill aim cancelled"
+  },
+  {
+   "id": "sfx.combat.skill_aim_confirm",
+   "category": "Combat",
+   "files": [
+    "Assets/Resources/Audio/SFX/Combat/sfx_combat_skill_aim_confirm_1.wav"
+   ],
+   "volume": 1.0,
+   "pitchJitter": 0.0,
+   "minInterval": 0.0,
+   "maxVoices": 0,
+   "loop": false,
+   "desc": "Skill aim confirmed"
+  },
+  {
+   "id": "sfx.combat.skill_aim_start",
+   "category": "Combat",
+   "files": [
+    "Assets/Resources/Audio/SFX/Combat/sfx_combat_skill_aim_start_1.wav"
+   ],
+   "volume": 1.0,
+   "pitchJitter": 0.0,
+   "minInterval": 0.2,
+   "maxVoices": 0,
+   "loop": false,
+   "desc": "Begin aiming a skill"
+  },
+  {
+   "id": "sfx.combat.stun_apply",
+   "category": "Combat",
+   "files": [
+    "Assets/Resources/Audio/SFX/Combat/sfx_combat_stun_apply_1.wav"
+   ],
+   "volume": 1.0,
+   "pitchJitter": 0.05,
+   "minInterval": 0.25,
+   "maxVoices": 0,
+   "loop": false,
+   "desc": "Target stunned"
+  },
+  {
+   "id": "sfx.combat.enemy_death",
+   "category": "Combat",
+   "files": [
+    "Assets/Resources/Audio/SFX/Combat/sfx_combat_enemy_death_1.wav",
+    "Assets/Resources/Audio/SFX/Combat/sfx_combat_enemy_death_2.wav"
+   ],
+   "volume": 1.0,
+   "pitchJitter": 0.06,
+   "minInterval": 0.06,
+   "maxVoices": 3,
+   "loop": false,
+   "desc": "Generic enemy dies (fallback)"
   },
   {
    "id": "sfx.combat.enemy_hit",
@@ -1024,41 +1144,68 @@
     "Assets/Resources/Audio/SFX/Combat/sfx_combat_enemy_hit_2.wav",
     "Assets/Resources/Audio/SFX/Combat/sfx_combat_enemy_hit_3.wav"
    ],
-   "volume": 0.7,
+   "volume": 1.0,
    "pitchJitter": 0.08,
    "minInterval": 0.05,
-   "maxVoices": 0,
+   "maxVoices": 3,
    "loop": false,
    "desc": "Generic enemy takes damage (fallback)"
   },
   {
-   "id": "sfx.combat.enemy_death",
+   "id": "sfx.enemy.goblin_attack",
    "category": "Combat",
    "files": [
-    "Assets/Resources/Audio/SFX/Combat/sfx_combat_enemy_death_1.wav",
-    "Assets/Resources/Audio/SFX/Combat/sfx_combat_enemy_death_2.wav"
+    "Assets/Resources/Audio/SFX/Combat/sfx_enemy_goblin_attack_1.wav",
+    "Assets/Resources/Audio/SFX/Combat/sfx_enemy_goblin_attack_2.wav"
    ],
-   "volume": 0.8,
-   "pitchJitter": 0.06,
-   "minInterval": 0.0,
-   "maxVoices": 0,
+   "volume": 1.0,
+   "pitchJitter": 0.07,
+   "minInterval": 0.3,
+   "maxVoices": 2,
    "loop": false,
-   "desc": "Generic enemy dies (fallback)"
+   "desc": "Goblin swings"
   },
   {
-   "id": "sfx.enemy.slime_hurt",
+   "id": "sfx.enemy.goblin_death",
    "category": "Combat",
    "files": [
-    "Assets/Resources/Audio/SFX/Combat/sfx_enemy_slime_hurt_1.wav",
-    "Assets/Resources/Audio/SFX/Combat/sfx_enemy_slime_hurt_2.wav",
-    "Assets/Resources/Audio/SFX/Combat/sfx_enemy_slime_hurt_3.wav"
+    "Assets/Resources/Audio/SFX/Combat/sfx_enemy_goblin_death_1.wav",
+    "Assets/Resources/Audio/SFX/Combat/sfx_enemy_goblin_death_2.wav"
    ],
-   "volume": 0.8,
-   "pitchJitter": 0.1,
+   "volume": 1.0,
+   "pitchJitter": 0.05,
    "minInterval": 0.06,
-   "maxVoices": 0,
+   "maxVoices": 3,
    "loop": false,
-   "desc": "Slime hit"
+   "desc": "Goblin dies"
+  },
+  {
+   "id": "sfx.enemy.goblin_hurt",
+   "category": "Combat",
+   "files": [
+    "Assets/Resources/Audio/SFX/Combat/sfx_enemy_goblin_hurt_1.wav",
+    "Assets/Resources/Audio/SFX/Combat/sfx_enemy_goblin_hurt_2.wav"
+   ],
+   "volume": 1.0,
+   "pitchJitter": 0.07,
+   "minInterval": 0.1,
+   "maxVoices": 3,
+   "loop": false,
+   "desc": "Goblin hit"
+  },
+  {
+   "id": "sfx.enemy.slime_attack",
+   "category": "Combat",
+   "files": [
+    "Assets/Resources/Audio/SFX/Combat/sfx_enemy_slime_attack_1.wav",
+    "Assets/Resources/Audio/SFX/Combat/sfx_enemy_slime_attack_2.wav"
+   ],
+   "volume": 1.0,
+   "pitchJitter": 0.1,
+   "minInterval": 0.2,
+   "maxVoices": 2,
+   "loop": false,
+   "desc": "Slime lunge/attack"
   },
   {
    "id": "sfx.enemy.slime_death",
@@ -1068,148 +1215,571 @@
     "Assets/Resources/Audio/SFX/Combat/sfx_enemy_slime_death_2.wav",
     "Assets/Resources/Audio/SFX/Combat/sfx_enemy_slime_death_3.wav"
    ],
-   "volume": 0.85,
+   "volume": 1.0,
    "pitchJitter": 0.06,
-   "minInterval": 0.0,
-   "maxVoices": 0,
+   "minInterval": 0.06,
+   "maxVoices": 3,
    "loop": false,
    "desc": "Slime dies"
   },
   {
-   "id": "sfx.enemy.slime_attack",
+   "id": "sfx.enemy.slime_hurt",
    "category": "Combat",
    "files": [
-    "Assets/Resources/Audio/SFX/Combat/sfx_enemy_slime_attack_1.wav",
-    "Assets/Resources/Audio/SFX/Combat/sfx_enemy_slime_attack_2.wav"
+    "Assets/Resources/Audio/SFX/Combat/sfx_enemy_slime_hurt_1.wav",
+    "Assets/Resources/Audio/SFX/Combat/sfx_enemy_slime_hurt_2.wav",
+    "Assets/Resources/Audio/SFX/Combat/sfx_enemy_slime_hurt_3.wav"
    ],
-   "volume": 0.65,
+   "volume": 1.0,
    "pitchJitter": 0.1,
+   "minInterval": 0.06,
+   "maxVoices": 3,
+   "loop": false,
+   "desc": "Slime hit"
+  },
+  {
+   "id": "sfx.enemy.ent_attack",
+   "category": "Combat",
+   "files": [
+    "Assets/Resources/Audio/SFX/Combat/sfx_enemy_ent_attack_1.wav"
+   ],
+   "volume": 1.0,
+   "pitchJitter": 0.06,
+   "minInterval": 0.1,
+   "maxVoices": 2,
+   "loop": false,
+   "desc": "Ent swings its branches"
+  },
+  {
+   "id": "sfx.enemy.ent_hurt",
+   "category": "Combat",
+   "files": [
+    "Assets/Resources/Audio/SFX/Combat/sfx_enemy_ent_hurt_1.wav",
+    "Assets/Resources/Audio/SFX/Combat/sfx_enemy_ent_hurt_2.wav",
+    "Assets/Resources/Audio/SFX/Combat/sfx_enemy_ent_hurt_3.wav"
+   ],
+   "volume": 1.0,
+   "pitchJitter": 0.07,
+   "minInterval": 0.05,
+   "maxVoices": 2,
+   "loop": false,
+   "desc": "Ent hit (wood)"
+  },
+  {
+   "id": "sfx.enemy.ent_death",
+   "category": "Combat",
+   "files": [
+    "Assets/Resources/Audio/SFX/Combat/sfx_enemy_ent_death_1.wav",
+    "Assets/Resources/Audio/SFX/Combat/sfx_enemy_ent_death_2.wav"
+   ],
+   "volume": 1.0,
+   "pitchJitter": 0.03,
+   "minInterval": 0.06,
+   "maxVoices": 2,
+   "loop": false,
+   "desc": "Ent collapses"
+  },
+  {
+   "id": "sfx.enemy.slime_alert",
+   "category": "Combat",
+   "files": [
+    "Assets/Resources/Audio/SFX/Combat/sfx_enemy_slime_alert_1.wav",
+    "Assets/Resources/Audio/SFX/Combat/sfx_enemy_slime_alert_2.wav"
+   ],
+   "volume": 1.0,
+   "pitchJitter": 0.06,
+   "minInterval": 0.3,
+   "maxVoices": 2,
+   "loop": false,
+   "desc": "Slime notices the player"
+  },
+  {
+   "id": "sfx.enemy.slime_idle",
+   "category": "Combat",
+   "files": [
+    "Assets/Resources/Audio/SFX/Combat/sfx_enemy_slime_idle_1.wav",
+    "Assets/Resources/Audio/SFX/Combat/sfx_enemy_slime_idle_2.wav"
+   ],
+   "volume": 1.0,
+   "pitchJitter": 0.08,
+   "minInterval": 0.8,
+   "maxVoices": 2,
+   "loop": false,
+   "desc": "Slime idle voice (rare, only near the player)"
+  },
+  {
+   "id": "sfx.enemy.goblin_alert",
+   "category": "Combat",
+   "files": [
+    "Assets/Resources/Audio/SFX/Combat/sfx_enemy_goblin_alert_1.wav",
+    "Assets/Resources/Audio/SFX/Combat/sfx_enemy_goblin_alert_2.wav"
+   ],
+   "volume": 1.0,
+   "pitchJitter": 0.06,
+   "minInterval": 0.3,
+   "maxVoices": 2,
+   "loop": false,
+   "desc": "Goblin notices the player"
+  },
+  {
+   "id": "sfx.enemy.goblin_idle",
+   "category": "Combat",
+   "files": [
+    "Assets/Resources/Audio/SFX/Combat/sfx_enemy_goblin_idle_1.wav",
+    "Assets/Resources/Audio/SFX/Combat/sfx_enemy_goblin_idle_2.wav"
+   ],
+   "volume": 1.0,
+   "pitchJitter": 0.08,
+   "minInterval": 0.8,
+   "maxVoices": 2,
+   "loop": false,
+   "desc": "Goblin idle voice (rare, only near the player)"
+  },
+  {
+   "id": "sfx.enemy.ent_alert",
+   "category": "Combat",
+   "files": [
+    "Assets/Resources/Audio/SFX/Combat/sfx_enemy_ent_alert_1.wav"
+   ],
+   "volume": 1.0,
+   "pitchJitter": 0.06,
+   "minInterval": 0.3,
+   "maxVoices": 2,
+   "loop": false,
+   "desc": "Ent notices the player"
+  },
+  {
+   "id": "sfx.enemy.ent_idle",
+   "category": "Combat",
+   "files": [
+    "Assets/Resources/Audio/SFX/Combat/sfx_enemy_ent_idle_1.wav",
+    "Assets/Resources/Audio/SFX/Combat/sfx_enemy_ent_idle_2.wav"
+   ],
+   "volume": 1.0,
+   "pitchJitter": 0.08,
+   "minInterval": 0.8,
+   "maxVoices": 2,
+   "loop": false,
+   "desc": "Ent idle voice (rare, only near the player)"
+  },
+  {
+   "id": "sfx.wildlife.boar_alert",
+   "category": "Combat",
+   "files": [
+    "Assets/Resources/Audio/SFX/Combat/sfx_wildlife_boar_alert_1.wav",
+    "Assets/Resources/Audio/SFX/Combat/sfx_wildlife_boar_alert_2.wav"
+   ],
+   "volume": 1.0,
+   "pitchJitter": 0.06,
+   "minInterval": 0.3,
+   "maxVoices": 2,
+   "loop": false,
+   "desc": "Boar notices the player"
+  },
+  {
+   "id": "sfx.wildlife.boar_idle",
+   "category": "Combat",
+   "files": [
+    "Assets/Resources/Audio/SFX/Combat/sfx_wildlife_boar_idle_1.wav",
+    "Assets/Resources/Audio/SFX/Combat/sfx_wildlife_boar_idle_2.wav"
+   ],
+   "volume": 1.0,
+   "pitchJitter": 0.08,
+   "minInterval": 0.8,
+   "maxVoices": 2,
+   "loop": false,
+   "desc": "Boar idle voice (rare, only near the player)"
+  },
+  {
+   "id": "sfx.wildlife.deer_alert",
+   "category": "Combat",
+   "files": [
+    "Assets/Resources/Audio/SFX/Combat/sfx_wildlife_deer_alert_1.wav"
+   ],
+   "volume": 1.0,
+   "pitchJitter": 0.06,
+   "minInterval": 0.3,
+   "maxVoices": 2,
+   "loop": false,
+   "desc": "Deer notices the player"
+  },
+  {
+   "id": "sfx.wildlife.deer_idle",
+   "category": "Combat",
+   "files": [
+    "Assets/Resources/Audio/SFX/Combat/sfx_wildlife_deer_idle_1.wav"
+   ],
+   "volume": 1.0,
+   "pitchJitter": 0.08,
+   "minInterval": 0.8,
+   "maxVoices": 2,
+   "loop": false,
+   "desc": "Deer idle voice (rare, only near the player)"
+  },
+  {
+   "id": "sfx.wildlife.rabbit_alert",
+   "category": "Combat",
+   "files": [
+    "Assets/Resources/Audio/SFX/Combat/sfx_wildlife_rabbit_alert_1.wav",
+    "Assets/Resources/Audio/SFX/Combat/sfx_wildlife_rabbit_alert_2.wav"
+   ],
+   "volume": 1.0,
+   "pitchJitter": 0.06,
+   "minInterval": 0.3,
+   "maxVoices": 2,
+   "loop": false,
+   "desc": "Rabbit notices the player"
+  },
+  {
+   "id": "sfx.wildlife.deer_hurt",
+   "category": "Combat",
+   "files": [
+    "Assets/Resources/Audio/SFX/Combat/sfx_wildlife_deer_hurt_1.wav",
+    "Assets/Resources/Audio/SFX/Combat/sfx_wildlife_deer_hurt_2.wav"
+   ],
+   "volume": 1.0,
+   "pitchJitter": 0.06,
+   "minInterval": 0.1,
+   "maxVoices": 2,
+   "loop": false,
+   "desc": "Deer hit"
+  },
+  {
+   "id": "sfx.wildlife.boar_attack",
+   "category": "Combat",
+   "files": [
+    "Assets/Resources/Audio/SFX/Combat/sfx_wildlife_boar_attack_1.wav",
+    "Assets/Resources/Audio/SFX/Combat/sfx_wildlife_boar_attack_2.wav"
+   ],
+   "volume": 1.0,
+   "pitchJitter": 0.06,
+   "minInterval": 0.3,
+   "maxVoices": 2,
+   "loop": false,
+   "desc": "Boar charges / bites"
+  },
+  {
+   "id": "sfx.wildlife.boar_death",
+   "category": "Combat",
+   "files": [
+    "Assets/Resources/Audio/SFX/Combat/sfx_wildlife_boar_death_1.wav",
+    "Assets/Resources/Audio/SFX/Combat/sfx_wildlife_boar_death_2.wav"
+   ],
+   "volume": 1.0,
+   "pitchJitter": 0.04,
+   "minInterval": 0.06,
+   "maxVoices": 2,
+   "loop": false,
+   "desc": "Boar dies"
+  },
+  {
+   "id": "sfx.craft.start",
+   "category": "Commerce",
+   "files": [
+    "Assets/Resources/Audio/SFX/Commerce/sfx_craft_start_1.wav"
+   ],
+   "volume": 1.0,
+   "pitchJitter": 0.05,
    "minInterval": 0.2,
    "maxVoices": 0,
    "loop": false,
-   "desc": "Slime lunge/attack"
+   "desc": "Crafting begins"
   },
   {
-   "id": "sfx.enemy.goblin_hurt",
-   "category": "Combat",
+   "id": "sfx.craft.complete",
+   "category": "Commerce",
    "files": [
-    "Assets/Resources/Audio/SFX/Combat/sfx_enemy_goblin_hurt_1.wav",
-    "Assets/Resources/Audio/SFX/Combat/sfx_enemy_goblin_hurt_2.wav"
+    "Assets/Resources/Audio/SFX/Commerce/sfx_craft_complete_1.wav"
    ],
-   "volume": 0.85,
-   "pitchJitter": 0.07,
-   "minInterval": 0.1,
-   "maxVoices": 0,
-   "loop": false,
-   "desc": "Goblin hit"
-  },
-  {
-   "id": "sfx.enemy.goblin_death",
-   "category": "Combat",
-   "files": [
-    "Assets/Resources/Audio/SFX/Combat/sfx_enemy_goblin_death_1.wav",
-    "Assets/Resources/Audio/SFX/Combat/sfx_enemy_goblin_death_2.wav"
-   ],
-   "volume": 0.9,
-   "pitchJitter": 0.05,
-   "minInterval": 0.0,
-   "maxVoices": 0,
-   "loop": false,
-   "desc": "Goblin dies"
-  },
-  {
-   "id": "sfx.enemy.goblin_attack",
-   "category": "Combat",
-   "files": [
-    "Assets/Resources/Audio/SFX/Combat/sfx_enemy_goblin_attack_1.wav",
-    "Assets/Resources/Audio/SFX/Combat/sfx_enemy_goblin_attack_2.wav"
-   ],
-   "volume": 0.75,
-   "pitchJitter": 0.07,
+   "volume": 1.0,
+   "pitchJitter": 0.0,
    "minInterval": 0.3,
    "maxVoices": 0,
    "loop": false,
-   "desc": "Goblin swings"
+   "desc": "Crafting complete"
   },
   {
-   "id": "sfx.combat.projectile_launch",
-   "category": "Combat",
+   "id": "sfx.farm.water",
+   "category": "Farming",
    "files": [
-    "Assets/Resources/Audio/SFX/Combat/sfx_combat_projectile_launch_1.wav",
-    "Assets/Resources/Audio/SFX/Combat/sfx_combat_projectile_launch_2.wav"
+    "Assets/Resources/Audio/SFX/Farming/sfx_farm_water_1.wav"
    ],
-   "volume": 0.7,
-   "pitchJitter": 0.07,
+   "volume": 1.0,
+   "pitchJitter": 0.06,
+   "minInterval": 0.2,
+   "maxVoices": 0,
+   "loop": false,
+   "desc": "Water crop"
+  },
+  {
+   "id": "sfx.fishing.bite",
+   "category": "Fishing",
+   "files": [
+    "Assets/Resources/Audio/SFX/Fishing/sfx_fishing_bite_1.wav"
+   ],
+   "volume": 1.0,
+   "pitchJitter": 0.0,
+   "minInterval": 0.3,
+   "maxVoices": 0,
+   "loop": false,
+   "desc": "Fish bites"
+  },
+  {
+   "id": "sfx.fishing.cast",
+   "category": "Fishing",
+   "files": [
+    "Assets/Resources/Audio/SFX/Fishing/sfx_fishing_cast_1.wav",
+    "Assets/Resources/Audio/SFX/Fishing/sfx_fishing_cast_2.wav"
+   ],
+   "volume": 1.0,
+   "pitchJitter": 0.05,
+   "minInterval": 0.3,
+   "maxVoices": 0,
+   "loop": false,
+   "desc": "Rod cast"
+  },
+  {
+   "id": "sfx.fishing.catch",
+   "category": "Fishing",
+   "files": [
+    "Assets/Resources/Audio/SFX/Fishing/sfx_fishing_catch_1.wav"
+   ],
+   "volume": 1.0,
+   "pitchJitter": 0.0,
+   "minInterval": 0.3,
+   "maxVoices": 0,
+   "loop": false,
+   "desc": "Fish caught"
+  },
+  {
+   "id": "sfx.fishing.fail",
+   "category": "Fishing",
+   "files": [
+    "Assets/Resources/Audio/SFX/Fishing/sfx_fishing_fail_1.wav"
+   ],
+   "volume": 1.0,
+   "pitchJitter": 0.0,
+   "minInterval": 0.3,
+   "maxVoices": 0,
+   "loop": false,
+   "desc": "Fish escaped"
+  },
+  {
+   "id": "sfx.fishing.reel",
+   "category": "Fishing",
+   "files": [
+    "Assets/Resources/Audio/SFX/Fishing/sfx_fishing_reel_1.wav",
+    "Assets/Resources/Audio/SFX/Fishing/sfx_fishing_reel_2.wav"
+   ],
+   "volume": 1.0,
+   "pitchJitter": 0.06,
+   "minInterval": 0.15,
+   "maxVoices": 0,
+   "loop": false,
+   "desc": "Reeling tick"
+  },
+  {
+   "id": "sfx.fishing.splash",
+   "category": "Fishing",
+   "files": [
+    "Assets/Resources/Audio/SFX/Fishing/sfx_fishing_splash_1.wav",
+    "Assets/Resources/Audio/SFX/Fishing/sfx_fishing_splash_2.wav"
+   ],
+   "volume": 1.0,
+   "pitchJitter": 0.06,
+   "minInterval": 0.2,
+   "maxVoices": 0,
+   "loop": false,
+   "desc": "Bobber lands / fish splash"
+  },
+  {
+   "id": "sfx.inventory.open",
+   "category": "UI",
+   "files": [
+    "Assets/Resources/Audio/SFX/UI/sfx_inventory_open_1.wav"
+   ],
+   "volume": 1.0,
+   "pitchJitter": 0.03,
+   "minInterval": 0.1,
+   "maxVoices": 0,
+   "loop": false,
+   "desc": "Inventory opens"
+  },
+  {
+   "id": "sfx.inventory.close",
+   "category": "UI",
+   "files": [
+    "Assets/Resources/Audio/SFX/UI/sfx_inventory_close_1.wav"
+   ],
+   "volume": 1.0,
+   "pitchJitter": 0.03,
+   "minInterval": 0.1,
+   "maxVoices": 0,
+   "loop": false,
+   "desc": "Inventory closes"
+  },
+  {
+   "id": "sfx.inventory.drop",
+   "category": "UI",
+   "files": [
+    "Assets/Resources/Audio/SFX/UI/sfx_inventory_drop_1.wav"
+   ],
+   "volume": 1.0,
+   "pitchJitter": 0.08,
+   "minInterval": 0.05,
+   "maxVoices": 0,
+   "loop": false,
+   "desc": "Item dropped / moved"
+  },
+  {
+   "id": "sfx.inventory.equip",
+   "category": "UI",
+   "files": [
+    "Assets/Resources/Audio/SFX/UI/sfx_inventory_equip_1.wav",
+    "Assets/Resources/Audio/SFX/UI/sfx_inventory_equip_2.wav"
+   ],
+   "volume": 1.0,
+   "pitchJitter": 0.05,
    "minInterval": 0.08,
    "maxVoices": 0,
    "loop": false,
-   "desc": "Enemy projectile fired"
+   "desc": "Equip item"
   },
   {
-   "id": "sfx.combat.projectile_impact",
-   "category": "Combat",
+   "id": "sfx.inventory.unequip",
+   "category": "UI",
    "files": [
-    "Assets/Resources/Audio/SFX/Combat/sfx_combat_projectile_impact_1.wav",
-    "Assets/Resources/Audio/SFX/Combat/sfx_combat_projectile_impact_2.wav"
+    "Assets/Resources/Audio/SFX/UI/sfx_inventory_unequip_1.wav"
    ],
-   "volume": 0.75,
-   "pitchJitter": 0.07,
-   "minInterval": 0.06,
-   "maxVoices": 0,
-   "loop": false,
-   "desc": "Enemy projectile hits"
-  },
-  {
-   "id": "sfx.combat.stun_apply",
-   "category": "Combat",
-   "files": [
-    "Assets/Resources/Audio/SFX/Combat/sfx_combat_stun_apply_1.wav"
-   ],
-   "volume": 0.7,
+   "volume": 1.0,
    "pitchJitter": 0.05,
-   "minInterval": 0.25,
+   "minInterval": 0.08,
    "maxVoices": 0,
    "loop": false,
-   "desc": "Target stunned"
+   "desc": "Unequip item"
   },
   {
-   "id": "sfx.combat.skill_aim_start",
-   "category": "Combat",
+   "id": "sfx.inventory.pickup",
+   "category": "UI",
    "files": [
-    "Assets/Resources/Audio/SFX/Combat/sfx_combat_skill_aim_start_1.wav"
+    "Assets/Resources/Audio/SFX/UI/sfx_inventory_pickup_1.wav",
+    "Assets/Resources/Audio/SFX/UI/sfx_inventory_pickup_2.wav"
    ],
-   "volume": 0.55,
-   "pitchJitter": 0.0,
+   "volume": 1.0,
+   "pitchJitter": 0.08,
+   "minInterval": 0.05,
+   "maxVoices": 3,
+   "loop": false,
+   "desc": "Item picked up"
+  },
+  {
+   "id": "sfx.inventory.use_potion",
+   "category": "UI",
+   "files": [
+    "Assets/Resources/Audio/SFX/UI/sfx_inventory_use_potion_1.wav",
+    "Assets/Resources/Audio/SFX/UI/sfx_inventory_use_potion_2.wav"
+   ],
+   "volume": 1.0,
+   "pitchJitter": 0.04,
    "minInterval": 0.2,
    "maxVoices": 0,
    "loop": false,
-   "desc": "Begin aiming a skill"
+   "desc": "Drink potion / consume"
   },
   {
-   "id": "sfx.combat.skill_aim_confirm",
-   "category": "Combat",
+   "id": "sfx.inventory.eat",
+   "category": "UI",
    "files": [
-    "Assets/Resources/Audio/SFX/Combat/sfx_combat_skill_aim_confirm_1.wav"
+    "Assets/Resources/Audio/SFX/UI/sfx_inventory_eat_1.wav",
+    "Assets/Resources/Audio/SFX/UI/sfx_inventory_eat_2.wav"
    ],
-   "volume": 0.7,
-   "pitchJitter": 0.0,
-   "minInterval": 0.0,
-   "maxVoices": 0,
-   "loop": false,
-   "desc": "Skill aim confirmed"
-  },
-  {
-   "id": "sfx.combat.skill_aim_cancel",
-   "category": "Combat",
-   "files": [
-    "Assets/Resources/Audio/SFX/Combat/sfx_combat_skill_aim_cancel_1.wav"
-   ],
-   "volume": 0.5,
-   "pitchJitter": 0.0,
+   "volume": 1.0,
+   "pitchJitter": 0.06,
    "minInterval": 0.2,
    "maxVoices": 0,
    "loop": false,
-   "desc": "Skill aim cancelled"
+   "desc": "Eat food from the quick bar"
+  },
+  {
+   "id": "sfx.inventory.drink",
+   "category": "UI",
+   "files": [
+    "Assets/Resources/Audio/SFX/UI/sfx_inventory_drink_1.wav",
+    "Assets/Resources/Audio/SFX/UI/sfx_inventory_drink_2.wav"
+   ],
+   "volume": 1.0,
+   "pitchJitter": 0.06,
+   "minInterval": 0.2,
+   "maxVoices": 0,
+   "loop": false,
+   "desc": "Drink from the quick bar"
+  },
+  {
+   "id": "sfx.quest.accept",
+   "category": "Quest",
+   "files": [
+    "Assets/Resources/Audio/SFX/Quest/sfx_quest_accept_1.wav"
+   ],
+   "volume": 1.0,
+   "pitchJitter": 0.0,
+   "minInterval": 0.3,
+   "maxVoices": 0,
+   "loop": false,
+   "desc": "Quest accepted"
+  },
+  {
+   "id": "sfx.quest.objective",
+   "category": "Quest",
+   "files": [
+    "Assets/Resources/Audio/SFX/Quest/sfx_quest_objective_1.wav"
+   ],
+   "volume": 1.0,
+   "pitchJitter": 0.0,
+   "minInterval": 0.3,
+   "maxVoices": 0,
+   "loop": false,
+   "desc": "Objective progress"
+  },
+  {
+   "id": "sfx.quest.complete",
+   "category": "Quest",
+   "files": [
+    "Assets/Resources/Audio/SFX/Quest/sfx_quest_complete_1.wav"
+   ],
+   "volume": 1.0,
+   "pitchJitter": 0.0,
+   "minInterval": 0.5,
+   "maxVoices": 0,
+   "loop": false,
+   "desc": "Quest complete / turned in"
+  },
+  {
+   "id": "sfx.shop.buy",
+   "category": "Commerce",
+   "files": [
+    "Assets/Resources/Audio/SFX/Commerce/sfx_shop_buy_1.wav",
+    "Assets/Resources/Audio/SFX/Commerce/sfx_shop_buy_2.wav"
+   ],
+   "volume": 1.0,
+   "pitchJitter": 0.05,
+   "minInterval": 0.1,
+   "maxVoices": 0,
+   "loop": false,
+   "desc": "Item bought"
+  },
+  {
+   "id": "sfx.shop.sell",
+   "category": "Commerce",
+   "files": [
+    "Assets/Resources/Audio/SFX/Commerce/sfx_shop_sell_1.wav",
+    "Assets/Resources/Audio/SFX/Commerce/sfx_shop_sell_2.wav"
+   ],
+   "volume": 1.0,
+   "pitchJitter": 0.05,
+   "minInterval": 0.1,
+   "maxVoices": 0,
+   "loop": false,
+   "desc": "Item sold"
   },
   {
    "id": "sfx.skill.cast_generic",
@@ -1218,7 +1788,7 @@
     "Assets/Resources/Audio/SFX/Skill/sfx_skill_cast_generic_1.wav",
     "Assets/Resources/Audio/SFX/Skill/sfx_skill_cast_generic_2.wav"
    ],
-   "volume": 0.75,
+   "volume": 1.0,
    "pitchJitter": 0.03,
    "minInterval": 0.1,
    "maxVoices": 0,
@@ -1226,26 +1796,12 @@
    "desc": "Fallback cast"
   },
   {
-   "id": "sfx.skill.hit_flesh",
-   "category": "Skill",
-   "files": [
-    "Assets/Resources/Audio/SFX/Skill/sfx_skill_hit_flesh_1.wav",
-    "Assets/Resources/Audio/SFX/Skill/sfx_skill_hit_flesh_2.wav"
-   ],
-   "volume": 0.6,
-   "pitchJitter": 0.05,
-   "minInterval": 0.08,
-   "maxVoices": 3,
-   "loop": false,
-   "desc": "Skill damage lands on an enemy"
-  },
-  {
    "id": "sfx.skill.screen_slam",
    "category": "Skill",
    "files": [
     "Assets/Resources/Audio/SFX/Skill/sfx_skill_screen_slam_1.wav"
    ],
-   "volume": 0.8,
+   "volume": 1.0,
    "pitchJitter": 0.0,
    "minInterval": 0.3,
    "maxVoices": 0,
@@ -1253,14 +1809,148 @@
    "desc": "Heavy screen shake"
   },
   {
+   "id": "sfx.skill.earth_s1_impact",
+   "category": "Skill",
+   "files": [
+    "Assets/Resources/Audio/SFX/Skill/sfx_skill_earth_s1_impact_1.wav",
+    "Assets/Resources/Audio/SFX/Skill/sfx_skill_earth_s1_impact_2.wav",
+    "Assets/Resources/Audio/SFX/Skill/sfx_skill_earth_s1_impact_3.wav"
+   ],
+   "volume": 1.0,
+   "pitchJitter": 0.05,
+   "minInterval": 0.05,
+   "maxVoices": 3,
+   "loop": false,
+   "desc": "Rock impact"
+  },
+  {
+   "id": "sfx.skill.earth_s2_rise",
+   "category": "Skill",
+   "files": [
+    "Assets/Resources/Audio/SFX/Skill/sfx_skill_earth_s2_rise_1.wav"
+   ],
+   "volume": 1.0,
+   "pitchJitter": 0.0,
+   "minInterval": 0.0,
+   "maxVoices": 0,
+   "loop": false,
+   "desc": "Rock arena rises"
+  },
+  {
+   "id": "sfx.skill.earth_s2_spike",
+   "category": "Skill",
+   "files": [
+    "Assets/Resources/Audio/SFX/Skill/sfx_skill_earth_s2_spike_1.wav",
+    "Assets/Resources/Audio/SFX/Skill/sfx_skill_earth_s2_spike_2.wav"
+   ],
+   "volume": 1.0,
+   "pitchJitter": 0.05,
+   "minInterval": 0.06,
+   "maxVoices": 3,
+   "loop": false,
+   "desc": "Arena spike"
+  },
+  {
+   "id": "sfx.skill.earth_s3_cage",
+   "category": "Skill",
+   "files": [
+    "Assets/Resources/Audio/SFX/Skill/sfx_skill_earth_s3_cage_1.wav"
+   ],
+   "volume": 1.0,
+   "pitchJitter": 0.03,
+   "minInterval": 0.0,
+   "maxVoices": 0,
+   "loop": false,
+   "desc": "Spike cage"
+  },
+  {
+   "id": "sfx.skill.earth_s3_cone",
+   "category": "Skill",
+   "files": [
+    "Assets/Resources/Audio/SFX/Skill/sfx_skill_earth_s3_cone_1.wav"
+   ],
+   "volume": 1.0,
+   "pitchJitter": 0.03,
+   "minInterval": 0.1,
+   "maxVoices": 0,
+   "loop": false,
+   "desc": "Spike cone"
+  },
+  {
+   "id": "sfx.skill.earth_s4_aftermath",
+   "category": "Skill",
+   "files": [
+    "Assets/Resources/Audio/SFX/Skill/sfx_skill_earth_s4_aftermath_1.wav",
+    "Assets/Resources/Audio/SFX/Skill/sfx_skill_earth_s4_aftermath_2.wav"
+   ],
+   "volume": 1.0,
+   "pitchJitter": 0.0,
+   "minInterval": 0.0,
+   "maxVoices": 0,
+   "loop": false,
+   "desc": "Debris settling"
+  },
+  {
+   "id": "sfx.skill.earth_s4_charge",
+   "category": "Skill",
+   "files": [
+    "Assets/Resources/Audio/SFX/Skill/sfx_skill_earth_s4_charge_1.wav"
+   ],
+   "volume": 1.0,
+   "pitchJitter": 0.0,
+   "minInterval": 0.0,
+   "maxVoices": 0,
+   "loop": false,
+   "desc": "Meteor storm charge"
+  },
+  {
+   "id": "sfx.skill.earth_s4_finale",
+   "category": "Skill",
+   "files": [
+    "Assets/Resources/Audio/SFX/Skill/sfx_skill_earth_s4_finale_1.wav"
+   ],
+   "volume": 1.0,
+   "pitchJitter": 0.0,
+   "minInterval": 0.0,
+   "maxVoices": 0,
+   "loop": false,
+   "desc": "Meteor storm finale"
+  },
+  {
+   "id": "sfx.skill.earth_s4_meteor_fall",
+   "category": "Skill",
+   "files": [
+    "Assets/Resources/Audio/SFX/Skill/sfx_skill_earth_s4_meteor_fall_1.wav"
+   ],
+   "volume": 1.0,
+   "pitchJitter": 0.05,
+   "minInterval": 0.1,
+   "maxVoices": 4,
+   "loop": false,
+   "desc": "Meteor falling"
+  },
+  {
+   "id": "sfx.skill.earth_s4_meteor_impact",
+   "category": "Skill",
+   "files": [
+    "Assets/Resources/Audio/SFX/Skill/sfx_skill_earth_s4_meteor_impact_1.wav",
+    "Assets/Resources/Audio/SFX/Skill/sfx_skill_earth_s4_meteor_impact_2.wav"
+   ],
+   "volume": 1.0,
+   "pitchJitter": 0.05,
+   "minInterval": 0.06,
+   "maxVoices": 6,
+   "loop": false,
+   "desc": "Meteor impact"
+  },
+  {
    "id": "sfx.skill.water_s1_cast",
    "category": "Skill",
    "files": [
     "Assets/Resources/Audio/SFX/Skill/sfx_skill_water_s1_cast_1.wav",
-    "Assets/Resources/Audio/SFX/Skill/sfx_skill_water_s1_cast_2.wav",
-    "Assets/Resources/Audio/SFX/Skill/sfx_skill_water_s1_cast_3.wav"
+    "Assets/Resources/Audio/SFX/Skill/sfx_skill_water_s1_cast_2.wav"
    ],
-   "volume": 0.75,
+   "volume": 1.0,
    "pitchJitter": 0.03,
    "minInterval": 0.08,
    "maxVoices": 3,
@@ -1275,10 +1965,10 @@
     "Assets/Resources/Audio/SFX/Skill/sfx_skill_water_s1_impact_2.wav",
     "Assets/Resources/Audio/SFX/Skill/sfx_skill_water_s1_impact_3.wav"
    ],
-   "volume": 0.7,
+   "volume": 1.0,
    "pitchJitter": 0.05,
    "minInterval": 0.05,
-   "maxVoices": 4,
+   "maxVoices": 3,
    "loop": false,
    "desc": "Water bolt impact"
   },
@@ -1288,7 +1978,7 @@
    "files": [
     "Assets/Resources/Audio/SFX/Skill/sfx_skill_water_s2_cast_1.wav"
    ],
-   "volume": 0.75,
+   "volume": 1.0,
    "pitchJitter": 0.0,
    "minInterval": 0.0,
    "maxVoices": 0,
@@ -1302,7 +1992,7 @@
     "Assets/Resources/Audio/SFX/Skill/sfx_skill_water_s2_splash_1.wav",
     "Assets/Resources/Audio/SFX/Skill/sfx_skill_water_s2_splash_2.wav"
    ],
-   "volume": 0.85,
+   "volume": 1.0,
    "pitchJitter": 0.03,
    "minInterval": 0.1,
    "maxVoices": 3,
@@ -1315,7 +2005,7 @@
    "files": [
     "Assets/Resources/Audio/SFX/Skill/sfx_skill_water_s3_charge_1.wav"
    ],
-   "volume": 0.7,
+   "volume": 1.0,
    "pitchJitter": 0.0,
    "minInterval": 0.0,
    "maxVoices": 0,
@@ -1323,25 +2013,12 @@
    "desc": "Water beam charge"
   },
   {
-   "id": "sfx.skill.water_s3_beam_loop",
-   "category": "Skill",
-   "files": [
-    "Assets/Resources/Audio/SFX/Skill/sfx_skill_water_s3_beam_loop_1.ogg"
-   ],
-   "volume": 0.65,
-   "pitchJitter": 0.0,
-   "minInterval": 0.0,
-   "maxVoices": 0,
-   "loop": true,
-   "desc": "Water beam sustained"
-  },
-  {
    "id": "sfx.skill.water_s3_end",
    "category": "Skill",
    "files": [
     "Assets/Resources/Audio/SFX/Skill/sfx_skill_water_s3_end_1.wav"
    ],
-   "volume": 0.65,
+   "volume": 1.0,
    "pitchJitter": 0.0,
    "minInterval": 0.0,
    "maxVoices": 0,
@@ -1349,56 +2026,179 @@
    "desc": "Water beam ends"
   },
   {
-   "id": "sfx.skill.water_s4_charge",
-   "category": "Skill",
+   "id": "sfx.amb.village",
+   "category": "Ambience",
    "files": [
-    "Assets/Resources/Audio/SFX/Skill/sfx_skill_water_s4_charge_1.wav"
+    "Assets/Resources/Audio/SFX/Ambience/sfx_amb_village_1.ogg"
    ],
-   "volume": 0.8,
-   "pitchJitter": 0.0,
-   "minInterval": 0.0,
-   "maxVoices": 0,
-   "loop": false,
-   "desc": "Tsunami charge"
-  },
-  {
-   "id": "sfx.skill.water_s4_wave",
-   "category": "Skill",
-   "files": [
-    "Assets/Resources/Audio/SFX/Skill/sfx_skill_water_s4_wave_1.wav"
-   ],
-   "volume": 0.8,
-   "pitchJitter": 0.0,
-   "minInterval": 0.0,
-   "maxVoices": 0,
-   "loop": false,
-   "desc": "Tsunami wave rolling"
-  },
-  {
-   "id": "sfx.skill.water_s4_crash",
-   "category": "Skill",
-   "files": [
-    "Assets/Resources/Audio/SFX/Skill/sfx_skill_water_s4_crash_1.wav"
-   ],
-   "volume": 0.95,
-   "pitchJitter": 0.0,
-   "minInterval": 0.2,
-   "maxVoices": 0,
-   "loop": false,
-   "desc": "Tsunami crash"
-  },
-  {
-   "id": "sfx.skill.water_s4_aftermath_rain",
-   "category": "Skill",
-   "files": [
-    "Assets/Resources/Audio/SFX/Skill/sfx_skill_water_s4_aftermath_rain_1.ogg"
-   ],
-   "volume": 0.45,
+   "volume": 1.0,
    "pitchJitter": 0.0,
    "minInterval": 0.0,
    "maxVoices": 0,
    "loop": true,
-   "desc": "Aftermath rain loop"
+   "desc": "Village"
+  },
+  {
+   "id": "sfx.boss.arena_lock",
+   "category": "Boss",
+   "files": [
+    "Assets/Resources/Audio/SFX/Boss/sfx_boss_arena_lock_1.wav"
+   ],
+   "volume": 1.0,
+   "pitchJitter": 0.0,
+   "minInterval": 0.0,
+   "maxVoices": 0,
+   "loop": false,
+   "desc": "Arena sealed"
+  },
+  {
+   "id": "sfx.boss.rock_bullet",
+   "category": "Boss",
+   "files": [
+    "Assets/Resources/Audio/SFX/Boss/sfx_boss_rock_bullet_1.wav",
+    "Assets/Resources/Audio/SFX/Boss/sfx_boss_rock_bullet_2.wav"
+   ],
+   "volume": 1.0,
+   "pitchJitter": 0.1,
+   "minInterval": 0.05,
+   "maxVoices": 4,
+   "loop": false,
+   "desc": "Rock bullet fired"
+  },
+  {
+   "id": "sfx.boss.telegraph",
+   "category": "Boss",
+   "files": [
+    "Assets/Resources/Audio/SFX/Boss/sfx_boss_telegraph_1.wav"
+   ],
+   "volume": 1.0,
+   "pitchJitter": 0.0,
+   "minInterval": 0.15,
+   "maxVoices": 3,
+   "loop": false,
+   "desc": "Danger zone appears"
+  },
+  {
+   "id": "sfx.bossowl.hit",
+   "category": "Boss",
+   "files": [
+    "Assets/Resources/Audio/SFX/Boss/sfx_bossowl_hit_1.wav",
+    "Assets/Resources/Audio/SFX/Boss/sfx_bossowl_hit_2.wav"
+   ],
+   "volume": 1.0,
+   "pitchJitter": 0.05,
+   "minInterval": 0.06,
+   "maxVoices": 3,
+   "loop": false,
+   "desc": "Owl takes damage"
+  },
+  {
+   "id": "sfx.bossw.emerge",
+   "category": "Boss",
+   "files": [
+    "Assets/Resources/Audio/SFX/Boss/sfx_bossw_emerge_1.wav",
+    "Assets/Resources/Audio/SFX/Boss/sfx_bossw_emerge_2.wav"
+   ],
+   "volume": 1.0,
+   "pitchJitter": 0.03,
+   "minInterval": 0.3,
+   "maxVoices": 0,
+   "loop": false,
+   "desc": "Crab bursts out of the sand"
+  },
+  {
+   "id": "sfx.bossw.mound_loop",
+   "category": "Boss",
+   "files": [
+    "Assets/Resources/Audio/SFX/Boss/sfx_bossw_mound_loop_1.ogg"
+   ],
+   "volume": 1.0,
+   "pitchJitter": 0.0,
+   "minInterval": 0.0,
+   "maxVoices": 0,
+   "loop": true,
+   "desc": "Sand mound chasing the player"
+  },
+  {
+   "id": "sfx.bossw.wave_warning",
+   "category": "Boss",
+   "files": [
+    "Assets/Resources/Audio/SFX/Boss/sfx_bossw_wave_warning_1.wav"
+   ],
+   "volume": 1.0,
+   "pitchJitter": 0.0,
+   "minInterval": 0.4,
+   "maxVoices": 0,
+   "loop": false,
+   "desc": "Conch horn before the wave"
+  },
+  {
+   "id": "sfx.bossw.bubble_spit",
+   "category": "Boss",
+   "files": [
+    "Assets/Resources/Audio/SFX/Boss/sfx_bossw_bubble_spit_1.wav",
+    "Assets/Resources/Audio/SFX/Boss/sfx_bossw_bubble_spit_2.wav",
+    "Assets/Resources/Audio/SFX/Boss/sfx_bossw_bubble_spit_3.wav"
+   ],
+   "volume": 1.0,
+   "pitchJitter": 0.04,
+   "minInterval": 0.1,
+   "maxVoices": 3,
+   "loop": false,
+   "desc": "Crab spits a bubble"
+  },
+  {
+   "id": "sfx.bossw.whirl_charge",
+   "category": "Boss",
+   "files": [
+    "Assets/Resources/Audio/SFX/Boss/sfx_bossw_whirl_charge_1.wav"
+   ],
+   "volume": 1.0,
+   "pitchJitter": 0.0,
+   "minInterval": 0.5,
+   "maxVoices": 0,
+   "loop": false,
+   "desc": "Whirlpool opens"
+  },
+  {
+   "id": "sfx.bossw.whirl_jet",
+   "category": "Boss",
+   "files": [
+    "Assets/Resources/Audio/SFX/Boss/sfx_bossw_whirl_jet_1.wav",
+    "Assets/Resources/Audio/SFX/Boss/sfx_bossw_whirl_jet_2.wav"
+   ],
+   "volume": 1.0,
+   "pitchJitter": 0.04,
+   "minInterval": 0.1,
+   "maxVoices": 3,
+   "loop": false,
+   "desc": "Water jets start spinning"
+  },
+  {
+   "id": "sfx.bossw.whirl_loop",
+   "category": "Boss",
+   "files": [
+    "Assets/Resources/Audio/SFX/Boss/sfx_bossw_whirl_loop_1.ogg"
+   ],
+   "volume": 1.0,
+   "pitchJitter": 0.0,
+   "minInterval": 0.0,
+   "maxVoices": 0,
+   "loop": true,
+   "desc": "Whirlpool pulling"
+  },
+  {
+   "id": "sfx.bossw.tide_rise",
+   "category": "Boss",
+   "files": [
+    "Assets/Resources/Audio/SFX/Boss/sfx_bossw_tide_rise_1.wav"
+   ],
+   "volume": 1.0,
+   "pitchJitter": 0.0,
+   "minInterval": 2.0,
+   "maxVoices": 0,
+   "loop": false,
+   "desc": "Tide starts coming in (Water arena)"
   },
   {
    "id": "sfx.skill.earth_s1_cast",
@@ -1407,7 +2207,7 @@
     "Assets/Resources/Audio/SFX/Skill/sfx_skill_earth_s1_cast_1.wav",
     "Assets/Resources/Audio/SFX/Skill/sfx_skill_earth_s1_cast_2.wav"
    ],
-   "volume": 0.75,
+   "volume": 1.0,
    "pitchJitter": 0.03,
    "minInterval": 0.08,
    "maxVoices": 3,
@@ -1415,54 +2215,12 @@
    "desc": "Rock thrown"
   },
   {
-   "id": "sfx.skill.earth_s1_impact",
-   "category": "Skill",
-   "files": [
-    "Assets/Resources/Audio/SFX/Skill/sfx_skill_earth_s1_impact_1.wav",
-    "Assets/Resources/Audio/SFX/Skill/sfx_skill_earth_s1_impact_2.wav",
-    "Assets/Resources/Audio/SFX/Skill/sfx_skill_earth_s1_impact_3.wav"
-   ],
-   "volume": 0.75,
-   "pitchJitter": 0.05,
-   "minInterval": 0.05,
-   "maxVoices": 4,
-   "loop": false,
-   "desc": "Rock impact"
-  },
-  {
-   "id": "sfx.skill.earth_s2_rise",
-   "category": "Skill",
-   "files": [
-    "Assets/Resources/Audio/SFX/Skill/sfx_skill_earth_s2_rise_1.wav"
-   ],
-   "volume": 0.85,
-   "pitchJitter": 0.0,
-   "minInterval": 0.0,
-   "maxVoices": 0,
-   "loop": false,
-   "desc": "Rock arena rises"
-  },
-  {
-   "id": "sfx.skill.earth_s2_spike",
-   "category": "Skill",
-   "files": [
-    "Assets/Resources/Audio/SFX/Skill/sfx_skill_earth_s2_spike_1.wav",
-    "Assets/Resources/Audio/SFX/Skill/sfx_skill_earth_s2_spike_2.wav"
-   ],
-   "volume": 0.7,
-   "pitchJitter": 0.05,
-   "minInterval": 0.06,
-   "maxVoices": 4,
-   "loop": false,
-   "desc": "Arena spike"
-  },
-  {
    "id": "sfx.skill.earth_s2_stun_loop",
    "category": "Skill",
    "files": [
     "Assets/Resources/Audio/SFX/Skill/sfx_skill_earth_s2_stun_loop_1.ogg"
    ],
-   "volume": 0.5,
+   "volume": 1.0,
    "pitchJitter": 0.0,
    "minInterval": 0.0,
    "maxVoices": 0,
@@ -1470,97 +2228,166 @@
    "desc": "Arena spinning ring"
   },
   {
-   "id": "sfx.skill.earth_s3_cone",
+   "id": "sfx.skill.water_s3_beam_loop",
    "category": "Skill",
    "files": [
-    "Assets/Resources/Audio/SFX/Skill/sfx_skill_earth_s3_cone_1.wav"
+    "Assets/Resources/Audio/SFX/Skill/sfx_skill_water_s3_beam_loop_1.ogg"
    ],
-   "volume": 0.8,
-   "pitchJitter": 0.03,
-   "minInterval": 0.1,
-   "maxVoices": 0,
-   "loop": false,
-   "desc": "Spike cone"
-  },
-  {
-   "id": "sfx.skill.earth_s3_cage",
-   "category": "Skill",
-   "files": [
-    "Assets/Resources/Audio/SFX/Skill/sfx_skill_earth_s3_cage_1.wav"
-   ],
-   "volume": 0.8,
-   "pitchJitter": 0.03,
-   "minInterval": 0.0,
-   "maxVoices": 0,
-   "loop": false,
-   "desc": "Spike cage"
-  },
-  {
-   "id": "sfx.skill.earth_s4_charge",
-   "category": "Skill",
-   "files": [
-    "Assets/Resources/Audio/SFX/Skill/sfx_skill_earth_s4_charge_1.wav"
-   ],
-   "volume": 0.75,
+   "volume": 1.0,
    "pitchJitter": 0.0,
    "minInterval": 0.0,
    "maxVoices": 0,
-   "loop": false,
-   "desc": "Meteor storm charge"
+   "loop": true,
+   "desc": "Water beam sustained"
   },
   {
-   "id": "sfx.skill.earth_s4_meteor_fall",
-   "category": "Skill",
+   "id": "sfx.wildlife.deer_death",
+   "category": "Combat",
    "files": [
-    "Assets/Resources/Audio/SFX/Skill/sfx_skill_earth_s4_meteor_fall_1.wav"
+    "Assets/Resources/Audio/SFX/Combat/sfx_wildlife_deer_death_1.wav",
+    "Assets/Resources/Audio/SFX/Combat/sfx_wildlife_deer_death_2.wav"
    ],
-   "volume": 0.5,
-   "pitchJitter": 0.05,
+   "volume": 1.0,
+   "pitchJitter": 0.04,
+   "minInterval": 0.06,
+   "maxVoices": 2,
+   "loop": false,
+   "desc": "Deer dies"
+  },
+  {
+   "id": "sfx.wildlife.boar_hurt",
+   "category": "Combat",
+   "files": [
+    "Assets/Resources/Audio/SFX/Combat/sfx_wildlife_boar_hurt_1.wav",
+    "Assets/Resources/Audio/SFX/Combat/sfx_wildlife_boar_hurt_2.wav"
+   ],
+   "volume": 1.0,
+   "pitchJitter": 0.06,
    "minInterval": 0.1,
-   "maxVoices": 4,
+   "maxVoices": 2,
    "loop": false,
-   "desc": "Meteor falling"
+   "desc": "Boar hit"
   },
   {
-   "id": "sfx.skill.earth_s4_meteor_impact",
-   "category": "Skill",
+   "id": "sfx.wildlife.rabbit_hurt",
+   "category": "Combat",
    "files": [
-    "Assets/Resources/Audio/SFX/Skill/sfx_skill_earth_s4_meteor_impact_1.wav",
-    "Assets/Resources/Audio/SFX/Skill/sfx_skill_earth_s4_meteor_impact_2.wav"
+    "Assets/Resources/Audio/SFX/Combat/sfx_wildlife_rabbit_hurt_1.wav",
+    "Assets/Resources/Audio/SFX/Combat/sfx_wildlife_rabbit_hurt_2.wav",
+    "Assets/Resources/Audio/SFX/Combat/sfx_wildlife_rabbit_hurt_3.wav"
    ],
-   "volume": 0.75,
+   "volume": 1.0,
+   "pitchJitter": 0.08,
+   "minInterval": 0.1,
+   "maxVoices": 2,
+   "loop": false,
+   "desc": "Rabbit hit"
+  },
+  {
+   "id": "sfx.wildlife.rabbit_death",
+   "category": "Combat",
+   "files": [
+    "Assets/Resources/Audio/SFX/Combat/sfx_wildlife_rabbit_death_1.wav",
+    "Assets/Resources/Audio/SFX/Combat/sfx_wildlife_rabbit_death_2.wav"
+   ],
+   "volume": 1.0,
    "pitchJitter": 0.05,
    "minInterval": 0.06,
-   "maxVoices": 6,
+   "maxVoices": 2,
    "loop": false,
-   "desc": "Meteor impact"
+   "desc": "Rabbit dies"
   },
   {
-   "id": "sfx.skill.earth_s4_finale",
+   "id": "sfx.farm.harvest",
+   "category": "Farming",
+   "files": [
+    "Assets/Resources/Audio/SFX/Farming/sfx_farm_harvest_1.wav"
+   ],
+   "volume": 1.0,
+   "pitchJitter": 0.06,
+   "minInterval": 0.1,
+   "maxVoices": 0,
+   "loop": false,
+   "desc": "Harvest crop"
+  },
+  {
+   "id": "sfx.farm.plant",
+   "category": "Farming",
+   "files": [
+    "Assets/Resources/Audio/SFX/Farming/sfx_farm_plant_1.wav"
+   ],
+   "volume": 1.0,
+   "pitchJitter": 0.06,
+   "minInterval": 0.1,
+   "maxVoices": 0,
+   "loop": false,
+   "desc": "Plant seed"
+  },
+  {
+   "id": "sfx.skill.hit_flesh",
    "category": "Skill",
    "files": [
-    "Assets/Resources/Audio/SFX/Skill/sfx_skill_earth_s4_finale_1.wav"
+    "Assets/Resources/Audio/SFX/Skill/sfx_skill_hit_flesh_1.wav",
+    "Assets/Resources/Audio/SFX/Skill/sfx_skill_hit_flesh_2.wav"
    ],
-   "volume": 0.95,
+   "volume": 1.0,
+   "pitchJitter": 0.05,
+   "minInterval": 0.08,
+   "maxVoices": 3,
+   "loop": false,
+   "desc": "Skill damage lands on an enemy"
+  },
+  {
+   "id": "sfx.skill.water_s4_aftermath_rain",
+   "category": "Skill",
+   "files": [
+    "Assets/Resources/Audio/SFX/Skill/sfx_skill_water_s4_aftermath_rain_1.ogg"
+   ],
+   "volume": 1.0,
+   "pitchJitter": 0.0,
+   "minInterval": 0.0,
+   "maxVoices": 0,
+   "loop": true,
+   "desc": "Aftermath rain loop"
+  },
+  {
+   "id": "sfx.skill.water_s4_charge",
+   "category": "Skill",
+   "files": [
+    "Assets/Resources/Audio/SFX/Skill/sfx_skill_water_s4_charge_1.wav"
+   ],
+   "volume": 1.0,
    "pitchJitter": 0.0,
    "minInterval": 0.0,
    "maxVoices": 0,
    "loop": false,
-   "desc": "Meteor storm finale"
+   "desc": "Tsunami charge"
   },
   {
-   "id": "sfx.skill.earth_s4_aftermath",
+   "id": "sfx.skill.water_s4_crash",
    "category": "Skill",
    "files": [
-    "Assets/Resources/Audio/SFX/Skill/sfx_skill_earth_s4_aftermath_1.wav",
-    "Assets/Resources/Audio/SFX/Skill/sfx_skill_earth_s4_aftermath_2.wav"
+    "Assets/Resources/Audio/SFX/Skill/sfx_skill_water_s4_crash_1.wav"
    ],
-   "volume": 0.55,
+   "volume": 1.0,
+   "pitchJitter": 0.0,
+   "minInterval": 0.2,
+   "maxVoices": 0,
+   "loop": false,
+   "desc": "Tsunami crash"
+  },
+  {
+   "id": "sfx.skill.water_s4_wave",
+   "category": "Skill",
+   "files": [
+    "Assets/Resources/Audio/SFX/Skill/sfx_skill_water_s4_wave_1.wav"
+   ],
+   "volume": 1.0,
    "pitchJitter": 0.0,
    "minInterval": 0.0,
    "maxVoices": 0,
    "loop": false,
-   "desc": "Debris settling"
+   "desc": "Tsunami wave rolling"
   },
   {
    "id": "sfx.skill.wind_s1_throw",
@@ -1569,7 +2396,7 @@
     "Assets/Resources/Audio/SFX/Skill/sfx_skill_wind_s1_throw_1.wav",
     "Assets/Resources/Audio/SFX/Skill/sfx_skill_wind_s1_throw_2.wav"
    ],
-   "volume": 0.75,
+   "volume": 1.0,
    "pitchJitter": 0.03,
    "minInterval": 0.1,
    "maxVoices": 0,
@@ -1582,7 +2409,7 @@
    "files": [
     "Assets/Resources/Audio/SFX/Skill/sfx_skill_wind_s1_loop_1.ogg"
    ],
-   "volume": 0.4,
+   "volume": 1.0,
    "pitchJitter": 0.0,
    "minInterval": 0.0,
    "maxVoices": 0,
@@ -1595,7 +2422,7 @@
    "files": [
     "Assets/Resources/Audio/SFX/Skill/sfx_skill_wind_s1_catch_1.wav"
    ],
-   "volume": 0.65,
+   "volume": 1.0,
    "pitchJitter": 0.03,
    "minInterval": 0.0,
    "maxVoices": 0,
@@ -1608,7 +2435,7 @@
    "files": [
     "Assets/Resources/Audio/SFX/Skill/sfx_skill_wind_s2_cast_1.wav"
    ],
-   "volume": 0.75,
+   "volume": 1.0,
    "pitchJitter": 0.0,
    "minInterval": 0.0,
    "maxVoices": 0,
@@ -1621,7 +2448,7 @@
    "files": [
     "Assets/Resources/Audio/SFX/Skill/sfx_skill_wind_s2_lift_loop_1.ogg"
    ],
-   "volume": 0.5,
+   "volume": 1.0,
    "pitchJitter": 0.0,
    "minInterval": 0.0,
    "maxVoices": 0,
@@ -1632,9 +2459,10 @@
    "id": "sfx.skill.wind_s2_land",
    "category": "Skill",
    "files": [
-    "Assets/Resources/Audio/SFX/Skill/sfx_skill_wind_s2_land_1.wav"
+    "Assets/Resources/Audio/SFX/Skill/sfx_skill_wind_s2_land_1.wav",
+    "Assets/Resources/Audio/SFX/Skill/sfx_skill_wind_s2_land_2.wav"
    ],
-   "volume": 0.6,
+   "volume": 1.0,
    "pitchJitter": 0.05,
    "minInterval": 0.06,
    "maxVoices": 3,
@@ -1648,7 +2476,7 @@
     "Assets/Resources/Audio/SFX/Skill/sfx_skill_wind_s3_pulse_1.wav",
     "Assets/Resources/Audio/SFX/Skill/sfx_skill_wind_s3_pulse_2.wav"
    ],
-   "volume": 0.75,
+   "volume": 1.0,
    "pitchJitter": 0.03,
    "minInterval": 0.1,
    "maxVoices": 0,
@@ -1661,7 +2489,7 @@
    "files": [
     "Assets/Resources/Audio/SFX/Skill/sfx_skill_wind_s3_wall_slam_1.wav"
    ],
-   "volume": 0.7,
+   "volume": 1.0,
    "pitchJitter": 0.05,
    "minInterval": 0.08,
    "maxVoices": 3,
@@ -1674,7 +2502,7 @@
    "files": [
     "Assets/Resources/Audio/SFX/Skill/sfx_skill_wind_s4_charge_1.wav"
    ],
-   "volume": 0.75,
+   "volume": 1.0,
    "pitchJitter": 0.0,
    "minInterval": 0.0,
    "maxVoices": 0,
@@ -1682,58 +2510,17 @@
    "desc": "Wind roc charge"
   },
   {
-   "id": "sfx.skill.wind_s4_screech",
-   "category": "Skill",
-   "files": [
-    "Assets/Resources/Audio/SFX/Skill/sfx_skill_wind_s4_screech_1.wav",
-    "Assets/Resources/Audio/SFX/Skill/sfx_skill_wind_s4_screech_2.wav"
-   ],
-   "volume": 0.85,
-   "pitchJitter": 0.03,
-   "minInterval": 0.0,
-   "maxVoices": 0,
-   "loop": false,
-   "desc": "Roc appears"
-  },
-  {
-   "id": "sfx.skill.wind_s4_flap",
-   "category": "Skill",
-   "files": [
-    "Assets/Resources/Audio/SFX/Skill/sfx_skill_wind_s4_flap_1.wav",
-    "Assets/Resources/Audio/SFX/Skill/sfx_skill_wind_s4_flap_2.wav"
-   ],
-   "volume": 0.65,
-   "pitchJitter": 0.04,
-   "minInterval": 0.25,
-   "maxVoices": 2,
-   "loop": false,
-   "desc": "Wing flap"
-  },
-  {
    "id": "sfx.skill.wind_s4_dive",
    "category": "Skill",
    "files": [
     "Assets/Resources/Audio/SFX/Skill/sfx_skill_wind_s4_dive_1.wav"
    ],
-   "volume": 0.85,
+   "volume": 1.0,
    "pitchJitter": 0.0,
    "minInterval": 0.0,
    "maxVoices": 0,
    "loop": false,
    "desc": "Roc dives"
-  },
-  {
-   "id": "sfx.skill.wind_s4_shockwave",
-   "category": "Skill",
-   "files": [
-    "Assets/Resources/Audio/SFX/Skill/sfx_skill_wind_s4_shockwave_1.wav"
-   ],
-   "volume": 0.95,
-   "pitchJitter": 0.0,
-   "minInterval": 0.2,
-   "maxVoices": 0,
-   "loop": false,
-   "desc": "Dive shockwave"
   },
   {
    "id": "sfx.skill.wind_s4_feather_rain",
@@ -1742,7 +2529,7 @@
     "Assets/Resources/Audio/SFX/Skill/sfx_skill_wind_s4_feather_rain_1.wav",
     "Assets/Resources/Audio/SFX/Skill/sfx_skill_wind_s4_feather_rain_2.wav"
    ],
-   "volume": 0.4,
+   "volume": 1.0,
    "pitchJitter": 0.06,
    "minInterval": 0.08,
    "maxVoices": 3,
@@ -1750,18 +2537,100 @@
    "desc": "Feather rain tick"
   },
   {
-   "id": "sfx.ui.tab",
-   "category": "UI",
+   "id": "sfx.skill.wind_s4_flap",
+   "category": "Skill",
    "files": [
-    "Assets/Resources/Audio/SFX/UI/sfx_ui_tab_1.wav",
-    "Assets/Resources/Audio/SFX/UI/sfx_ui_tab_2.wav"
+    "Assets/Resources/Audio/SFX/Skill/sfx_skill_wind_s4_flap_1.wav",
+    "Assets/Resources/Audio/SFX/Skill/sfx_skill_wind_s4_flap_2.wav"
    ],
-   "volume": 0.6,
+   "volume": 1.0,
    "pitchJitter": 0.04,
-   "minInterval": 0.05,
+   "minInterval": 0.25,
+   "maxVoices": 2,
+   "loop": false,
+   "desc": "Wing flap"
+  },
+  {
+   "id": "sfx.skill.wind_s4_screech",
+   "category": "Skill",
+   "files": [
+    "Assets/Resources/Audio/SFX/Skill/sfx_skill_wind_s4_screech_1.wav",
+    "Assets/Resources/Audio/SFX/Skill/sfx_skill_wind_s4_screech_2.wav"
+   ],
+   "volume": 1.0,
+   "pitchJitter": 0.03,
+   "minInterval": 0.0,
    "maxVoices": 0,
    "loop": false,
-   "desc": "Tab switch"
+   "desc": "Roc appears"
+  },
+  {
+   "id": "sfx.skill.wind_s4_shockwave",
+   "category": "Skill",
+   "files": [
+    "Assets/Resources/Audio/SFX/Skill/sfx_skill_wind_s4_shockwave_1.wav"
+   ],
+   "volume": 1.0,
+   "pitchJitter": 0.0,
+   "minInterval": 0.2,
+   "maxVoices": 0,
+   "loop": false,
+   "desc": "Dive shockwave"
+  },
+  {
+   "id": "sfx.step.grass",
+   "category": "World",
+   "files": [
+    "Assets/Resources/Audio/SFX/World/sfx_step_grass_1.wav",
+    "Assets/Resources/Audio/SFX/World/sfx_step_grass_2.wav"
+   ],
+   "volume": 1.0,
+   "pitchJitter": 0.07,
+   "minInterval": 0.12,
+   "maxVoices": 0,
+   "loop": false,
+   "desc": "Footstep on grass"
+  },
+  {
+   "id": "sfx.step.stone",
+   "category": "World",
+   "files": [
+    "Assets/Resources/Audio/SFX/World/sfx_step_stone_1.wav",
+    "Assets/Resources/Audio/SFX/World/sfx_step_stone_2.wav",
+    "Assets/Resources/Audio/SFX/World/sfx_step_stone_3.wav"
+   ],
+   "volume": 1.0,
+   "pitchJitter": 0.07,
+   "minInterval": 0.12,
+   "maxVoices": 0,
+   "loop": false,
+   "desc": "Footstep on stone"
+  },
+  {
+   "id": "sfx.step.sand",
+   "category": "World",
+   "files": [
+    "Assets/Resources/Audio/SFX/World/sfx_step_sand_1.wav"
+   ],
+   "volume": 1.0,
+   "pitchJitter": 0.07,
+   "minInterval": 0.12,
+   "maxVoices": 0,
+   "loop": false,
+   "desc": "Footstep on sand"
+  },
+  {
+   "id": "sfx.ui.dialogue_blip",
+   "category": "UI",
+   "files": [
+    "Assets/Resources/Audio/SFX/UI/sfx_ui_dialogue_blip_1.wav"
+   ],
+   "volume": 1.0,
+   "pitchJitter": 0.12,
+   "minInterval": 0.04,
+   "maxVoices": 0,
+   "loop": false,
+   "desc": "Dialogue typewriter"
   },
   {
    "id": "sfx.ui.notification",
@@ -1770,7 +2639,7 @@
     "Assets/Resources/Audio/SFX/UI/sfx_ui_notification_1.wav",
     "Assets/Resources/Audio/SFX/UI/sfx_ui_notification_2.wav"
    ],
-   "volume": 0.6,
+   "volume": 1.0,
    "pitchJitter": 0.0,
    "minInterval": 0.3,
    "maxVoices": 0,
@@ -1783,7 +2652,7 @@
    "files": [
     "Assets/Resources/Audio/SFX/UI/sfx_ui_save_success_1.wav"
    ],
-   "volume": 0.55,
+   "volume": 1.0,
    "pitchJitter": 0.0,
    "minInterval": 0.5,
    "maxVoices": 0,
@@ -1791,204 +2660,83 @@
    "desc": "Game saved"
   },
   {
-   "id": "sfx.ui.dialogue_blip",
+   "id": "sfx.ui.tab",
    "category": "UI",
    "files": [
-    "Assets/Resources/Audio/SFX/UI/sfx_ui_dialogue_blip_1.wav"
+    "Assets/Resources/Audio/SFX/UI/sfx_ui_tab_1.wav",
+    "Assets/Resources/Audio/SFX/UI/sfx_ui_tab_2.wav"
    ],
-   "volume": 0.35,
-   "pitchJitter": 0.12,
-   "minInterval": 0.04,
-   "maxVoices": 0,
-   "loop": false,
-   "desc": "Dialogue typewriter"
-  },
-  {
-   "id": "sfx.inventory.open",
-   "category": "UI",
-   "files": [
-    "Assets/Resources/Audio/SFX/UI/sfx_inventory_open_1.wav"
-   ],
-   "volume": 0.7,
-   "pitchJitter": 0.03,
-   "minInterval": 0.1,
-   "maxVoices": 0,
-   "loop": false,
-   "desc": "Inventory opens"
-  },
-  {
-   "id": "sfx.inventory.close",
-   "category": "UI",
-   "files": [
-    "Assets/Resources/Audio/SFX/UI/sfx_inventory_close_1.wav"
-   ],
-   "volume": 0.7,
-   "pitchJitter": 0.03,
-   "minInterval": 0.1,
-   "maxVoices": 0,
-   "loop": false,
-   "desc": "Inventory closes"
-  },
-  {
-   "id": "sfx.inventory.pickup",
-   "category": "UI",
-   "files": [
-    "Assets/Resources/Audio/SFX/UI/sfx_inventory_pickup_1.wav",
-    "Assets/Resources/Audio/SFX/UI/sfx_inventory_pickup_2.wav"
-   ],
-   "volume": 0.7,
-   "pitchJitter": 0.08,
-   "minInterval": 0.05,
-   "maxVoices": 3,
-   "loop": false,
-   "desc": "Item picked up"
-  },
-  {
-   "id": "sfx.inventory.drop",
-   "category": "UI",
-   "files": [
-    "Assets/Resources/Audio/SFX/UI/sfx_inventory_drop_1.wav",
-    "Assets/Resources/Audio/SFX/UI/sfx_inventory_drop_2.wav"
-   ],
-   "volume": 0.65,
-   "pitchJitter": 0.08,
-   "minInterval": 0.05,
-   "maxVoices": 0,
-   "loop": false,
-   "desc": "Item dropped / moved"
-  },
-  {
-   "id": "sfx.inventory.equip",
-   "category": "UI",
-   "files": [
-    "Assets/Resources/Audio/SFX/UI/sfx_inventory_equip_1.wav",
-    "Assets/Resources/Audio/SFX/UI/sfx_inventory_equip_2.wav"
-   ],
-   "volume": 0.7,
-   "pitchJitter": 0.05,
-   "minInterval": 0.08,
-   "maxVoices": 0,
-   "loop": false,
-   "desc": "Equip item"
-  },
-  {
-   "id": "sfx.inventory.unequip",
-   "category": "UI",
-   "files": [
-    "Assets/Resources/Audio/SFX/UI/sfx_inventory_unequip_1.wav"
-   ],
-   "volume": 0.6,
-   "pitchJitter": 0.05,
-   "minInterval": 0.08,
-   "maxVoices": 0,
-   "loop": false,
-   "desc": "Unequip item"
-  },
-  {
-   "id": "sfx.inventory.use_potion",
-   "category": "UI",
-   "files": [
-    "Assets/Resources/Audio/SFX/UI/sfx_inventory_use_potion_1.wav",
-    "Assets/Resources/Audio/SFX/UI/sfx_inventory_use_potion_2.wav"
-   ],
-   "volume": 0.7,
+   "volume": 1.0,
    "pitchJitter": 0.04,
-   "minInterval": 0.2,
+   "minInterval": 0.05,
    "maxVoices": 0,
    "loop": false,
-   "desc": "Drink potion / consume"
+   "desc": "Tab switch"
   },
   {
-   "id": "sfx.quest.accept",
-   "category": "Quest",
+   "id": "sfx.ui.skill_learn",
+   "category": "UI",
    "files": [
-    "Assets/Resources/Audio/SFX/Quest/sfx_quest_accept_1.wav"
+    "Assets/Resources/Audio/SFX/UI/sfx_ui_skill_learn_1.wav"
    ],
-   "volume": 0.7,
+   "volume": 1.0,
+   "pitchJitter": 0.0,
+   "minInterval": 0.0,
+   "maxVoices": 0,
+   "loop": false,
+   "desc": "Skill learned in the Skill panel"
+  },
+  {
+   "id": "sfx.ui.skill_assign",
+   "category": "UI",
+   "files": [
+    "Assets/Resources/Audio/SFX/UI/sfx_ui_skill_assign_1.wav"
+   ],
+   "volume": 1.0,
+   "pitchJitter": 0.03,
+   "minInterval": 0.0,
+   "maxVoices": 0,
+   "loop": false,
+   "desc": "Skill dropped into a loadout slot"
+  },
+  {
+   "id": "sfx.ui.skill_cooldown",
+   "category": "UI",
+   "files": [
+    "Assets/Resources/Audio/SFX/UI/sfx_ui_skill_cooldown_1.wav"
+   ],
+   "volume": 1.0,
    "pitchJitter": 0.0,
    "minInterval": 0.3,
    "maxVoices": 0,
    "loop": false,
-   "desc": "Quest accepted"
+   "desc": "Skill / potion not ready (cooldown or no mana)"
   },
   {
-   "id": "sfx.quest.objective",
-   "category": "Quest",
+   "id": "sfx.ui.map_open",
+   "category": "UI",
    "files": [
-    "Assets/Resources/Audio/SFX/Quest/sfx_quest_objective_1.wav"
+    "Assets/Resources/Audio/SFX/UI/sfx_ui_map_open_1.wav"
    ],
-   "volume": 0.6,
-   "pitchJitter": 0.0,
-   "minInterval": 0.3,
+   "volume": 1.0,
+   "pitchJitter": 0.03,
+   "minInterval": 0.0,
    "maxVoices": 0,
    "loop": false,
-   "desc": "Objective progress"
+   "desc": "Map opens"
   },
   {
-   "id": "sfx.quest.complete",
-   "category": "Quest",
+   "id": "sfx.ui.map_close",
+   "category": "UI",
    "files": [
-    "Assets/Resources/Audio/SFX/Quest/sfx_quest_complete_1.wav"
+    "Assets/Resources/Audio/SFX/UI/sfx_ui_map_close_1.wav"
    ],
-   "volume": 0.8,
-   "pitchJitter": 0.0,
-   "minInterval": 0.5,
+   "volume": 1.0,
+   "pitchJitter": 0.03,
+   "minInterval": 0.0,
    "maxVoices": 0,
    "loop": false,
-   "desc": "Quest complete / turned in"
-  },
-  {
-   "id": "sfx.shop.buy",
-   "category": "Commerce",
-   "files": [
-    "Assets/Resources/Audio/SFX/Commerce/sfx_shop_buy_1.wav",
-    "Assets/Resources/Audio/SFX/Commerce/sfx_shop_buy_2.wav"
-   ],
-   "volume": 0.7,
-   "pitchJitter": 0.05,
-   "minInterval": 0.1,
-   "maxVoices": 0,
-   "loop": false,
-   "desc": "Item bought"
-  },
-  {
-   "id": "sfx.shop.sell",
-   "category": "Commerce",
-   "files": [
-    "Assets/Resources/Audio/SFX/Commerce/sfx_shop_sell_1.wav"
-   ],
-   "volume": 0.7,
-   "pitchJitter": 0.05,
-   "minInterval": 0.1,
-   "maxVoices": 0,
-   "loop": false,
-   "desc": "Item sold"
-  },
-  {
-   "id": "sfx.craft.start",
-   "category": "Commerce",
-   "files": [
-    "Assets/Resources/Audio/SFX/Commerce/sfx_craft_start_1.wav"
-   ],
-   "volume": 0.7,
-   "pitchJitter": 0.05,
-   "minInterval": 0.2,
-   "maxVoices": 0,
-   "loop": false,
-   "desc": "Crafting begins"
-  },
-  {
-   "id": "sfx.craft.complete",
-   "category": "Commerce",
-   "files": [
-    "Assets/Resources/Audio/SFX/Commerce/sfx_craft_complete_1.wav"
-   ],
-   "volume": 0.8,
-   "pitchJitter": 0.0,
-   "minInterval": 0.3,
-   "maxVoices": 0,
-   "loop": false,
-   "desc": "Crafting complete"
+   "desc": "Map closes"
   },
   {
    "id": "sfx.world.chest_open",
@@ -1997,7 +2745,7 @@
     "Assets/Resources/Audio/SFX/World/sfx_world_chest_open_1.wav",
     "Assets/Resources/Audio/SFX/World/sfx_world_chest_open_2.wav"
    ],
-   "volume": 0.8,
+   "volume": 1.0,
    "pitchJitter": 0.04,
    "minInterval": 0.3,
    "maxVoices": 0,
@@ -2005,46 +2753,17 @@
    "desc": "Chest opens"
   },
   {
-   "id": "sfx.world.unique_pickup",
+   "id": "sfx.world.gate_exit",
    "category": "World",
    "files": [
-    "Assets/Resources/Audio/SFX/World/sfx_world_unique_pickup_1.wav"
+    "Assets/Resources/Audio/SFX/World/sfx_world_gate_exit_1.wav"
    ],
-   "volume": 0.8,
+   "volume": 1.0,
    "pitchJitter": 0.0,
-   "minInterval": 0.3,
+   "minInterval": 0.5,
    "maxVoices": 0,
    "loop": false,
-   "desc": "Unique item pickup"
-  },
-  {
-   "id": "sfx.world.harvest_wood",
-   "category": "World",
-   "files": [
-    "Assets/Resources/Audio/SFX/World/sfx_world_harvest_wood_1.wav",
-    "Assets/Resources/Audio/SFX/World/sfx_world_harvest_wood_2.wav"
-   ],
-   "volume": 0.8,
-   "pitchJitter": 0.07,
-   "minInterval": 0.1,
-   "maxVoices": 0,
-   "loop": false,
-   "desc": "Chop tree"
-  },
-  {
-   "id": "sfx.world.harvest_stone",
-   "category": "World",
-   "files": [
-    "Assets/Resources/Audio/SFX/World/sfx_world_harvest_stone_1.wav",
-    "Assets/Resources/Audio/SFX/World/sfx_world_harvest_stone_2.wav",
-    "Assets/Resources/Audio/SFX/World/sfx_world_harvest_stone_3.wav"
-   ],
-   "volume": 0.8,
-   "pitchJitter": 0.07,
-   "minInterval": 0.1,
-   "maxVoices": 0,
-   "loop": false,
-   "desc": "Mine rock"
+   "desc": "Scene transition"
   },
   {
    "id": "sfx.world.harvest_plant",
@@ -2054,7 +2773,7 @@
     "Assets/Resources/Audio/SFX/World/sfx_world_harvest_plant_2.wav",
     "Assets/Resources/Audio/SFX/World/sfx_world_harvest_plant_3.wav"
    ],
-   "volume": 0.7,
+   "volume": 1.0,
    "pitchJitter": 0.08,
    "minInterval": 0.1,
    "maxVoices": 0,
@@ -2062,12 +2781,42 @@
    "desc": "Gather plant"
   },
   {
+   "id": "sfx.world.harvest_stone",
+   "category": "World",
+   "files": [
+    "Assets/Resources/Audio/SFX/World/sfx_world_harvest_stone_1.wav",
+    "Assets/Resources/Audio/SFX/World/sfx_world_harvest_stone_2.wav",
+    "Assets/Resources/Audio/SFX/World/sfx_world_harvest_stone_3.wav"
+   ],
+   "volume": 1.0,
+   "pitchJitter": 0.07,
+   "minInterval": 0.1,
+   "maxVoices": 0,
+   "loop": false,
+   "desc": "Mine rock"
+  },
+  {
+   "id": "sfx.world.harvest_wood",
+   "category": "World",
+   "files": [
+    "Assets/Resources/Audio/SFX/World/sfx_world_harvest_wood_1.wav",
+    "Assets/Resources/Audio/SFX/World/sfx_world_harvest_wood_2.wav",
+    "Assets/Resources/Audio/SFX/World/sfx_world_harvest_wood_3.wav"
+   ],
+   "volume": 1.0,
+   "pitchJitter": 0.07,
+   "minInterval": 0.1,
+   "maxVoices": 0,
+   "loop": false,
+   "desc": "Chop tree"
+  },
+  {
    "id": "sfx.world.resource_depleted",
    "category": "World",
    "files": [
     "Assets/Resources/Audio/SFX/World/sfx_world_resource_depleted_1.wav"
    ],
-   "volume": 0.6,
+   "volume": 1.0,
    "pitchJitter": 0.0,
    "minInterval": 0.2,
    "maxVoices": 0,
@@ -2075,272 +2824,30 @@
    "desc": "Resource node depleted"
   },
   {
-   "id": "sfx.world.gate_exit",
+   "id": "sfx.world.unique_pickup",
    "category": "World",
    "files": [
-    "Assets/Resources/Audio/SFX/World/sfx_world_gate_exit_1.wav"
+    "Assets/Resources/Audio/SFX/World/sfx_world_unique_pickup_1.wav"
    ],
-   "volume": 0.6,
-   "pitchJitter": 0.0,
-   "minInterval": 0.5,
-   "maxVoices": 0,
-   "loop": false,
-   "desc": "Scene transition"
-  },
-  {
-   "id": "sfx.fishing.cast",
-   "category": "Fishing",
-   "files": [
-    "Assets/Resources/Audio/SFX/Fishing/sfx_fishing_cast_1.wav",
-    "Assets/Resources/Audio/SFX/Fishing/sfx_fishing_cast_2.wav"
-   ],
-   "volume": 0.75,
-   "pitchJitter": 0.05,
-   "minInterval": 0.3,
-   "maxVoices": 0,
-   "loop": false,
-   "desc": "Rod cast"
-  },
-  {
-   "id": "sfx.fishing.splash",
-   "category": "Fishing",
-   "files": [
-    "Assets/Resources/Audio/SFX/Fishing/sfx_fishing_splash_1.wav",
-    "Assets/Resources/Audio/SFX/Fishing/sfx_fishing_splash_2.wav"
-   ],
-   "volume": 0.7,
-   "pitchJitter": 0.06,
-   "minInterval": 0.2,
-   "maxVoices": 0,
-   "loop": false,
-   "desc": "Bobber lands / fish splash"
-  },
-  {
-   "id": "sfx.fishing.bite",
-   "category": "Fishing",
-   "files": [
-    "Assets/Resources/Audio/SFX/Fishing/sfx_fishing_bite_1.wav"
-   ],
-   "volume": 0.8,
+   "volume": 1.0,
    "pitchJitter": 0.0,
    "minInterval": 0.3,
    "maxVoices": 0,
    "loop": false,
-   "desc": "Fish bites"
+   "desc": "Unique item pickup"
   },
   {
-   "id": "sfx.fishing.reel",
-   "category": "Fishing",
-   "files": [
-    "Assets/Resources/Audio/SFX/Fishing/sfx_fishing_reel_1.wav",
-    "Assets/Resources/Audio/SFX/Fishing/sfx_fishing_reel_2.wav"
-   ],
-   "volume": 0.55,
-   "pitchJitter": 0.06,
-   "minInterval": 0.15,
-   "maxVoices": 0,
-   "loop": false,
-   "desc": "Reeling tick"
-  },
-  {
-   "id": "sfx.fishing.catch",
-   "category": "Fishing",
-   "files": [
-    "Assets/Resources/Audio/SFX/Fishing/sfx_fishing_catch_1.wav"
-   ],
-   "volume": 0.8,
-   "pitchJitter": 0.0,
-   "minInterval": 0.3,
-   "maxVoices": 0,
-   "loop": false,
-   "desc": "Fish caught"
-  },
-  {
-   "id": "sfx.fishing.fail",
-   "category": "Fishing",
-   "files": [
-    "Assets/Resources/Audio/SFX/Fishing/sfx_fishing_fail_1.wav"
-   ],
-   "volume": 0.6,
-   "pitchJitter": 0.0,
-   "minInterval": 0.3,
-   "maxVoices": 0,
-   "loop": false,
-   "desc": "Fish escaped"
-  },
-  {
-   "id": "sfx.farm.plant",
-   "category": "Farming",
-   "files": [
-    "Assets/Resources/Audio/SFX/Farming/sfx_farm_plant_1.wav"
-   ],
-   "volume": 0.7,
-   "pitchJitter": 0.06,
-   "minInterval": 0.1,
-   "maxVoices": 0,
-   "loop": false,
-   "desc": "Plant seed"
-  },
-  {
-   "id": "sfx.farm.harvest",
-   "category": "Farming",
-   "files": [
-    "Assets/Resources/Audio/SFX/Farming/sfx_farm_harvest_1.wav"
-   ],
-   "volume": 0.75,
-   "pitchJitter": 0.06,
-   "minInterval": 0.1,
-   "maxVoices": 0,
-   "loop": false,
-   "desc": "Harvest crop"
-  },
-  {
-   "id": "sfx.farm.water",
-   "category": "Farming",
-   "files": [
-    "Assets/Resources/Audio/SFX/Farming/sfx_farm_water_1.wav"
-   ],
-   "volume": 0.6,
-   "pitchJitter": 0.06,
-   "minInterval": 0.2,
-   "maxVoices": 0,
-   "loop": false,
-   "desc": "Water crop"
-  },
-  {
-   "id": "sfx.step.stone",
+   "id": "sfx.world.loot_drop",
    "category": "World",
    "files": [
-    "Assets/Resources/Audio/SFX/World/sfx_step_stone_1.wav",
-    "Assets/Resources/Audio/SFX/World/sfx_step_stone_2.wav",
-    "Assets/Resources/Audio/SFX/World/sfx_step_stone_3.wav"
+    "Assets/Resources/Audio/SFX/World/sfx_world_loot_drop_1.wav"
    ],
-   "volume": 0.7,
-   "pitchJitter": 0.07,
-   "minInterval": 0.12,
-   "maxVoices": 0,
+   "volume": 1.0,
+   "pitchJitter": 0.06,
+   "minInterval": 0.05,
+   "maxVoices": 2,
    "loop": false,
-   "desc": "Footstep on stone"
-  },
-  {
-   "id": "sfx.step.sand",
-   "category": "World",
-   "files": [
-    "Assets/Resources/Audio/SFX/World/sfx_step_sand_1.wav",
-    "Assets/Resources/Audio/SFX/World/sfx_step_sand_2.wav"
-   ],
-   "volume": 0.7,
-   "pitchJitter": 0.07,
-   "minInterval": 0.12,
-   "maxVoices": 0,
-   "loop": false,
-   "desc": "Footstep on sand"
-  },
-  {
-   "id": "sfx.step.grass",
-   "category": "World",
-   "files": [
-    "Assets/Resources/Audio/SFX/World/sfx_step_grass_1.wav",
-    "Assets/Resources/Audio/SFX/World/sfx_step_grass_2.wav",
-    "Assets/Resources/Audio/SFX/World/sfx_step_grass_3.wav"
-   ],
-   "volume": 0.7,
-   "pitchJitter": 0.07,
-   "minInterval": 0.12,
-   "maxVoices": 0,
-   "loop": false,
-   "desc": "Footstep on grass"
-  },
-  {
-   "id": "sfx.amb.forest",
-   "category": "Ambience",
-   "files": [
-    "Assets/Resources/Audio/SFX/Ambience/sfx_amb_forest_1.ogg"
-   ],
-   "volume": 0.5,
-   "pitchJitter": 0.0,
-   "minInterval": 0.0,
-   "maxVoices": 0,
-   "loop": true,
-   "desc": "Forest / village day"
-  },
-  {
-   "id": "sfx.amb.village",
-   "category": "Ambience",
-   "files": [
-    "Assets/Resources/Audio/SFX/Ambience/sfx_amb_village_1.ogg"
-   ],
-   "volume": 0.5,
-   "pitchJitter": 0.0,
-   "minInterval": 0.0,
-   "maxVoices": 0,
-   "loop": true,
-   "desc": "Village"
-  },
-  {
-   "id": "sfx.amb.beach",
-   "category": "Ambience",
-   "files": [
-    "Assets/Resources/Audio/SFX/Ambience/sfx_amb_beach_1.ogg"
-   ],
-   "volume": 0.55,
-   "pitchJitter": 0.0,
-   "minInterval": 0.0,
-   "maxVoices": 0,
-   "loop": true,
-   "desc": "Beach / water arena"
-  },
-  {
-   "id": "sfx.amb.campfire",
-   "category": "Ambience",
-   "files": [
-    "Assets/Resources/Audio/SFX/Ambience/sfx_amb_campfire_1.ogg"
-   ],
-   "volume": 0.45,
-   "pitchJitter": 0.0,
-   "minInterval": 0.0,
-   "maxVoices": 0,
-   "loop": true,
-   "desc": "Campfire"
-  },
-  {
-   "id": "sfx.amb.wind",
-   "category": "Ambience",
-   "files": [
-    "Assets/Resources/Audio/SFX/Ambience/sfx_amb_wind_1.ogg"
-   ],
-   "volume": 0.5,
-   "pitchJitter": 0.0,
-   "minInterval": 0.0,
-   "maxVoices": 0,
-   "loop": true,
-   "desc": "Wind arena / plains"
-  },
-  {
-   "id": "sfx.amb.cave",
-   "category": "Ambience",
-   "files": [
-    "Assets/Resources/Audio/SFX/Ambience/sfx_amb_cave_1.ogg"
-   ],
-   "volume": 0.5,
-   "pitchJitter": 0.0,
-   "minInterval": 0.0,
-   "maxVoices": 0,
-   "loop": true,
-   "desc": "Earth arena / ruins"
-  },
-  {
-   "id": "sfx.amb.night",
-   "category": "Ambience",
-   "files": [
-    "Assets/Resources/Audio/SFX/Ambience/sfx_amb_night_1.ogg"
-   ],
-   "volume": 0.4,
-   "pitchJitter": 0.0,
-   "minInterval": 0.0,
-   "maxVoices": 0,
-   "loop": true,
-   "desc": "Night"
+   "desc": "Loot drops from an enemy / animal"
   }
  ]
 }

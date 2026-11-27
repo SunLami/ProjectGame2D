@@ -129,6 +129,7 @@ public class SkillTestHarness : MonoBehaviour
         var stat = PlayerStat.Instance;
         if (slot < 0 || slot >= 4) return false;
         if (!GameStateManager.AllowsGameplayInput) return RejectCast(slot, "Gameplay input is blocked by the current game state.");
+        if (Player.IsVillageSafeZone()) return RejectCast(slot, "Skills are disabled in the village.");
         if (stat == null || _player == null || _catalog == null) return RejectCast(slot, "Missing player or catalog binding.");
         if (stat.IsDead) return RejectCast(slot, "Player is dead.");
         if (_player.IsAimingSkill || _player.IsGroundTargeting) return RejectCast(slot, "Confirm or cancel the current aim first.");
@@ -136,9 +137,15 @@ public class SkillTestHarness : MonoBehaviour
         if (!stat.Skills.IsLearned(id) || !_catalog.TryResolve(id, out var definition))
             return RejectCast(slot, "No learned skill equipped.");
         if (Time.time < _cooldownEndTime[slot])
+        {
+            SoundFXManager.PlaySfx(SfxIds.UiSkillCooldown);
             return RejectCast(slot, $"Cooldown: {Mathf.CeilToInt(_cooldownEndTime[slot] - Time.time)}s.");
+        }
         if (stat.Mana < definition.manaCost)
+        {
+            SoundFXManager.PlaySfx(SfxIds.UiSkillCooldown);
             return RejectCast(slot, $"Not enough mana for {definition.displayName}: {stat.Mana:0.#}/{definition.manaCost:0.#}.");
+        }
         if (_castHandlers == null)
         {
             _castHandlers = new Dictionary<SkillCastKind, Action>
@@ -179,7 +186,7 @@ public class SkillTestHarness : MonoBehaviour
         return target =>
         {
             var stat = PlayerStat.Instance;
-            if (committed || !isActiveAndEnabled || !GameStateManager.AllowsGameplayInput
+            if (committed || !isActiveAndEnabled || !GameStateManager.AllowsGameplayInput || Player.IsVillageSafeZone()
                 || stat == null || stat.IsDead || definition == null
                 || stat.Skills.Equipped(slot) != definition.id || !stat.Skills.IsLearned(definition.id)
                 || Time.time < _cooldownEndTime[slot] || !stat.TryConsumeMana(definition.manaCost))
