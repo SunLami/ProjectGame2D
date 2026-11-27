@@ -95,3 +95,15 @@ long stats, quick-slot numbers and frame margins fit with no panel overlap.
 
 Do not mark the redesign fully verified until final image inspection and gameplay drag/filter smoke
 checks are recorded here. Existing unrelated Boss Water/scene changes in the worktree are preserved.
+
+## Quick Assign alignment fix — 2026-11-27 (owner request)
+
+Icons and the selection highlight sat off-center inside the four Quick Assign diamonds baked into
+`inventory_complete_frame_approved.png`: slots used x = -12 + i*58, while the measured diamond
+centers (inner-edge midpoints, 1672x941 art to the 680x382.7 board) are x = -9.8, 49.6, 108.6, 167.4
+and y = -129.3 (~59 units apart), so drift grew to ~5 units on slot 4. The `Selection` image reuses
+`inventory_quick_slot_v1`, whose opaque area is ~80% of the sprite, so at 48x48 it was smaller than
+the baked inner diamond; it is now 58x56.5 so its edge meets the frame inner edge. Prefab and
+`InventoryTabbedPrefabBuilder` (`QuickSlotX`) updated; hit areas stay 48x48. Verified with an isolated
+Editor render. `InventoryTabbedPrefabTests`: 7/8 pass; `DecorationDoesNotBlockEmptyInventoryOrEquipmentDropTargets`
+fails identically on the unmodified prefab (grid vs `GridScrollView` size, pre-existing, not touched).

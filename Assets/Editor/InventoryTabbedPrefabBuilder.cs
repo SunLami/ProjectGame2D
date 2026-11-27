@@ -10,6 +10,9 @@ public static class InventoryTabbedPrefabBuilder
 {
     private const string PathRoot = "Assets/Resources/UI/Inventory/DarkInventoryTabbed/";
     private const string PrefabPath = "Assets/Prefabs/InventoryUIController.prefab";
+    // Centers of the four quick-assign diamonds baked into inventory_complete_frame_approved.png
+    // (measured from the art: inner-edge midpoints, converted to the 680x382.7 board).
+    private static readonly float[] QuickSlotX = { -9.8f, 49.6f, 108.6f, 167.4f };
 
     [MenuItem("Tools/ProjectGame2D/UI/Build Modular Inventory")]
     public static void Build()
@@ -101,7 +104,7 @@ public static class InventoryTabbedPrefabBuilder
             for(int i=0;i<4;i++)
             {
                 var bg=Image(quickRoot.transform,"QuickSlot"+(i+1),quick,-87+i*58,-3,48,48,false); bg.raycastTarget=true;
-                var selection=Image(bg.transform,"Selection",quick,0,0,48,48,false); selection.color=new Color(.25f,.7f,1,.4f); selection.enabled=i==0;
+                var selection=Image(bg.transform,"Selection",quick,0,0,58,56.5f,false); /* opaque part of the sprite fills the baked diamond's inner edge */ selection.color=new Color(.25f,.7f,1,.4f); selection.enabled=i==0;
                 var icon=Image(bg.transform,"Icon",null,0,0,25,25,false); icon.preserveAspect=true; icon.enabled=false;
                 var qty=Text(bg.transform,"Quantity",font,"",8,9,-10,22,12); qty.alignment=TextAlignmentOptions.Right;
                 Text(bg.transform,"Key",font,(i+1).ToString(),8,0,-26,20,12);
@@ -188,7 +191,7 @@ public static class InventoryTabbedPrefabBuilder
             quick.Find("Header").gameObject.SetActive(false);
             for(int i=0;i<4;i++)
             {
-                var t=quick.Find("QuickSlot"+(i+1)); Rect(t,-12+i*58,-129,48,48);
+                var t=quick.Find("QuickSlot"+(i+1)); Rect(t,QuickSlotX[i],-129.3f,48,48);
                 t.GetComponent<Image>().color=Color.clear;
                 Rect(t.Find("Key"),0,-15,20,12);
                 Rect(t.Find("Quantity"),9,-5,16,10);
