@@ -290,7 +290,7 @@ Người chơi save/load/return Main Menu an toàn từ Pause Menu.
 - Load Game hiển thị ba slot nhưng phân biệt rõ active slot.
 - Block double-submit trong Saving/Loading.
 - Hiển thị success/error và timestamp sau save.
-- Return Main Menu hỏi save trước khi rời nếu có dirty session.
+- Back to Menu luôn hỏi lưu trước khi rời phiên có ô lưu, kể cả phiên đang sạch.
 - Quit Desktop có lựa chọn save, quit without saving, cancel.
 
 ### Acceptance criteria
@@ -727,3 +727,9 @@ World travel now restores the active equipment appearance on each newly bound Pl
 Summoning Shrine uses the shared viewport fit and new frame art in all three boss arenas.
 
 Water Arena tide and shoreline alignment have been revised, and the player now has a boundary recovery fallback for knockback.
+
+Rebound the production player skill catalog in all three boss arenas and in the Earth skill kit builder.
+
+Boss health bars, Summoning Shrine and Boss Teleport now use Runic Golem, Wryshell Warden and Galewing Sentinent.
+
+Updated the five world location labels and the Edyth and Badda dialogue and shop names to the approved roster.

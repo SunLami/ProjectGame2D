@@ -209,7 +209,7 @@ Paused
 ├─ Save Game → Save Slot Overlay → (Empty: Saving trực tiếp | Valid/Corrupted/IncompatibleVersion:
 │  Confirm Overwrite → Saving) → Paused (Phase 10: chọn slot, không tự ghi vào ActiveSlotId)
 ├─ Load Game → Load Slot Overlay → Loading
-├─ Return Main Menu → Loading → MainMenu (dirty/save confirmation bổ sung ở Phase 9)
+├─ Back to Menu → Save and Return / Return Without Saving / Cancel → MainMenu nếu người chơi xác nhận
 └─ Quit Desktop → confirmation flow
 ```
 

@@ -321,8 +321,8 @@ không ghi đè manual backup mà không có policy riêng.
 **Phase 9 implementation note (2026-08-23):** cả 4 trigger trên đều đi qua cùng một điểm capture
 (`GameplaySessionController` → `PlayerSaveCapture` + từng domain `ToSaveData()` →
 `ISaveSlotRepository.WriteSave`), không có "hệ thống save thứ hai". Dirty-session tracking
-(`GameSessionManager.IsDirty`, xem D-024) quyết định khi nào Return/Quit cần hỏi xác nhận; save
-thành công luôn `ClearDirty()`. Chi tiết đầy đủ: [Phase9ImplementationReport.md](Phase9ImplementationReport.md).
+(`GameSessionManager.IsDirty`, xem D-024) dùng cho nhãn trạng thái và xác nhận Quit. Back to Menu luôn
+hỏi với phiên có ô lưu theo D-017. Save thành công luôn gọi `ClearDirty()`. Chi tiết đầy đủ: [Phase9ImplementationReport.md](Phase9ImplementationReport.md).
 
 ### V14 → V15 paid Act I drinks
 
@@ -360,3 +360,5 @@ Quest 2-2 reconciles existing planted plots after farm restore and gameplay read
 Boss travel shares the MapDuy world gate handoff. World snapshots merge by stable persistent ID across scenes. Manual saves in the three arenas retain the current scene for Continue.
 
 Death return uses the live world travel handoff to MapNhat, preserving the active session and outgoing world snapshot. Returning does not write or reload a save slot.
+
+The repository treats metadata as a rebuildable cache after the save is committed. A primary save from an incompatible version is shown as incompatible even if an older backup is readable.

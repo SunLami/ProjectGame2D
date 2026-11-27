@@ -25,43 +25,80 @@ public sealed class MainMenuControllerPlayModeTests
     }
 
     [UnityTest]
-    public IEnumerator DoubleSubmit_SecondRequestIsRejectedWithoutOverwritingSession()
+    public IEnumerator NewGame_SaveAndReturn_ContinueRestoresProductionSlot()
     {
-        GameObject controllerObject = new("MainMenuControllerFixture");
-        MainMenuController controller = controllerObject.AddComponent<MainMenuController>();
+        Assert.IsTrue(SceneFlowService.Instance.TryReturnToMainMenu());
+        yield return WaitFor(() => UnityEngine.SceneManagement.SceneManager.GetActiveScene().name == "MainMenu"
+            && GameStateManager.Instance.CurrentState == GameState.MainMenu, "MainMenu");
+        var menu = Object.FindAnyObjectByType<MainMenuController>();
+        Assert.IsNotNull(menu);
+        Assert.IsFalse(menu.CanContinue(1));
 
-        int failureCount = 0;
-        controller.OnOperationFailed += _ => failureCount++;
+        int failures = 0;
+        menu.OnOperationFailed += _ => failures++;
+        menu.RequestNewGame(1);
+        string saveId = GameSessionManager.Instance.Current.SaveData?.saveId;
+        Assert.IsNotNull(saveId);
+        menu.RequestNewGame(2);
+        Assert.AreEqual(1, failures);
+        Assert.AreEqual(saveId, GameSessionManager.Instance.Current.SaveData.saveId);
 
-        // Two rapid clicks on the same frame, as a real double-click/double-submit would produce.
-        controller.RequestNewGame(1);
-        string firstSaveId = GameSessionManager.Instance.Current.SaveData.saveId;
-        Assert.IsNotNull(firstSaveId);
-
-        controller.RequestNewGame(1);
-
-        Assert.AreEqual(1, failureCount, "The second concurrent RequestNewGame must be rejected.");
-        Assert.AreEqual(firstSaveId, GameSessionManager.Instance.Current.SaveData.saveId,
-            "A rejected double-submit must not overwrite the in-flight session's save data.");
-
-        float waited = 0f;
-        while (GameStateManager.Instance.CurrentState != GameState.Playing && waited < 10f)
+        yield return WaitFor(() => Object.FindAnyObjectByType<IntroCutsceneController>()?.IsPlaying == true,
+            "intro playback");
+        Object.FindAnyObjectByType<IntroCutsceneController>().SkipIntro();
+        yield return WaitFor(() =>
         {
-            waited += Time.unscaledDeltaTime;
+            if (UnityEngine.SceneManagement.SceneManager.GetActiveScene().name == "MapNhat")
+                return GameStateManager.Instance.CurrentState == GameState.Playing;
+
+            if (!SceneFlowService.Instance.IsTransitioning)
+                Object.FindAnyObjectByType<GameplayTimelineController>()?.SkipToNextScene();
+            return false;
+        }, "first entry into MapNhat");
+
+        var repository = GameSessionManager.Instance.SaveRepository;
+        Assert.IsTrue(repository.TryReadSave(1, out GameSaveData initial));
+        Assert.AreEqual(saveId, initial.saveId);
+        Assert.AreEqual(SaveSlotStatus.Empty, repository.GetSlotInfo(2).Status);
+
+        int expectedGold = InventoryManager.Instance.Gold + 37;
+        InventoryManager.Instance.AddGold(37);
+        var pause = Object.FindAnyObjectByType<PauseMenuUI>();
+        Assert.IsNotNull(pause);
+        GameStateManager.Instance.Pause();
+        pause.OnReturnToMainMenuClicked();
+
+        var flags = System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic;
+        var confirmation = (GameObject)typeof(PauseMenuUI).GetField("_confirmationPopup", flags).GetValue(pause);
+        Assert.IsTrue(confirmation.activeInHierarchy, "Back to Menu must show the actual Pause confirmation.");
+        var save = (UnityEngine.UI.Button)typeof(PauseMenuUI).GetField("_confirmationSaveButton", flags).GetValue(pause);
+        save.onClick.Invoke();
+
+        yield return WaitFor(() => UnityEngine.SceneManagement.SceneManager.GetActiveScene().name == "MainMenu"
+            && GameStateManager.Instance.CurrentState == GameState.MainMenu, "Save and Return");
+        Assert.IsTrue(repository.TryReadSave(1, out GameSaveData saved));
+        Assert.AreEqual(expectedGold, saved.inventory.gold);
+        Assert.AreEqual(saveId, saved.saveId);
+
+        menu = Object.FindAnyObjectByType<MainMenuController>();
+        Assert.IsTrue(menu.CanContinue(1));
+        Assert.IsFalse(menu.CanContinue(2));
+        menu.RequestContinue(1);
+        yield return WaitFor(() => UnityEngine.SceneManagement.SceneManager.GetActiveScene().name == "MapNhat"
+            && GameStateManager.Instance.CurrentState == GameState.Playing, "Continue in MapNhat");
+        Assert.AreEqual(expectedGold, InventoryManager.Instance.Gold);
+        Assert.AreEqual(1, GameSessionManager.Instance.Current.SlotId);
+
+        Assert.IsTrue(SceneFlowService.Instance.TryReturnToMainMenu());
+        yield return WaitFor(() => GameStateManager.Instance.CurrentState == GameState.MainMenu, "test cleanup");
+    }
+
+    private static IEnumerator WaitFor(System.Func<bool> predicate, string description)
+    {
+        float deadline = Time.realtimeSinceStartup + 45f;
+        while (!predicate() && Time.realtimeSinceStartup < deadline)
             yield return null;
-        }
 
-        Assert.AreEqual(GameState.Playing, GameStateManager.Instance.CurrentState);
-        Assert.AreEqual(firstSaveId, GameSessionManager.Instance.Current.SaveData.saveId);
-
-        Object.Destroy(controllerObject);
-        SceneFlowService.Instance.TryReturnToMainMenu();
-
-        waited = 0f;
-        while (GameStateManager.Instance.CurrentState != GameState.MainMenu && waited < 10f)
-        {
-            waited += Time.unscaledDeltaTime;
-            yield return null;
-        }
+        Assert.IsTrue(predicate(), $"Timed out waiting for {description}.");
     }
 }

@@ -38,6 +38,9 @@ public sealed class FileSaveSlotRepository : ISaveSlotRepository
         if (TryLoadValid(savePath, out GameSaveData data, out SaveSlotStatus primaryStatus))
             return new SaveSlotInfo(slotId, SaveSlotStatus.Valid, ResolveMetadata(slotId, data, savePath));
 
+        if (primaryStatus == SaveSlotStatus.IncompatibleVersion)
+            return new SaveSlotInfo(slotId, primaryStatus, null);
+
         if (TryLoadValid(backupPath, out data, out SaveSlotStatus backupStatus))
             return new SaveSlotInfo(slotId, SaveSlotStatus.Valid, ResolveMetadata(slotId, data, backupPath));
 
@@ -61,10 +64,11 @@ public sealed class FileSaveSlotRepository : ISaveSlotRepository
     {
         ValidateSlotId(slotId);
 
-        if (TryLoadValid(SavePath(slotId), out data, out _))
+        if (TryLoadValid(SavePath(slotId), out data, out SaveSlotStatus primaryStatus))
             return true;
 
-        return TryLoadValid(BackupPath(slotId), out data, out _);
+        return primaryStatus != SaveSlotStatus.IncompatibleVersion
+            && TryLoadValid(BackupPath(slotId), out data, out _);
     }
 
     public SaveOperationResult WriteSave(int slotId, GameSaveData data)
@@ -75,6 +79,8 @@ public sealed class FileSaveSlotRepository : ISaveSlotRepository
             return SaveOperationResult.Failure("GameSaveData is null.");
         if (string.IsNullOrWhiteSpace(data.saveId))
             return SaveOperationResult.Failure("GameSaveData.saveId is empty.");
+        if (data.player?.location == null)
+            return SaveOperationResult.Failure("Player location is missing from the save.");
 
         string slotDir = SlotDirectory(slotId);
         string savePath = SavePath(slotId);
@@ -91,7 +97,7 @@ public sealed class FileSaveSlotRepository : ISaveSlotRepository
             // Round-trip validate before it ever becomes the live save.
             string readBack = File.ReadAllText(tempPath, Encoding.UTF8);
             GameSaveData parsed = JsonUtility.FromJson<GameSaveData>(readBack);
-            if (parsed == null || parsed.saveId != data.saveId)
+            if (parsed?.player?.location == null || parsed.saveId != data.saveId)
             {
                 File.Delete(tempPath);
                 return SaveOperationResult.Failure("Written save failed round-trip validation.");
@@ -105,7 +111,20 @@ public sealed class FileSaveSlotRepository : ISaveSlotRepository
             string checksum = ComputeChecksum(json);
             SaveSlotMetadata metadata = BuildMetadata(slotId, data, checksum);
             metadata.lastSavedUtcTicks = DateTime.UtcNow.Ticks;
-            WriteMetadata(slotId, metadata);
+            // The save is already committed. Metadata is a rebuildable cache, so a failure
+            // here must not present a successful save as a failed write.
+            try
+            {
+                WriteMetadata(slotId, metadata);
+            }
+            catch (IOException)
+            {
+                // ResolveMetadata rebuilds from save.json when needed.
+            }
+            catch (UnauthorizedAccessException)
+            {
+                // A read-only metadata cache does not invalidate the committed gameplay data.
+            }
 
             return SaveOperationResult.Ok();
         }
@@ -179,6 +198,12 @@ public sealed class FileSaveSlotRepository : ISaveSlotRepository
             parsed = SaveMigration.Migrate(parsed);
         }
 
+        if (parsed.player?.location == null)
+        {
+            status = SaveSlotStatus.Corrupted;
+            return false;
+        }
+
         data = parsed;
         status = SaveSlotStatus.Valid;
         return true;
@@ -187,8 +212,7 @@ public sealed class FileSaveSlotRepository : ISaveSlotRepository
     /// <summary>
     /// Prefers the metadata.json written alongside this save (has the real lastSavedUtcTicks) and
     /// only falls back to reconstructing from the GameSaveData itself when metadata.json is
-    /// missing/stale/corrupted -- in that fallback path lastSavedUtcTicks is unrecoverable and
-    /// stays 0 ("unknown"), everything else is rebuilt from the save that was actually loaded.
+    /// missing/stale/corrupted. The fallback takes its timestamp from the selected save file.
     /// </summary>
     private SaveSlotMetadata ResolveMetadata(int slotId, GameSaveData data, string sourcePath)
     {
@@ -198,7 +222,9 @@ public sealed class FileSaveSlotRepository : ISaveSlotRepository
         if (persisted != null && persisted.saveId == data.saveId && persisted.contentChecksum == checksum)
             return persisted;
 
-        return BuildMetadata(slotId, data, checksum);
+        SaveSlotMetadata rebuilt = BuildMetadata(slotId, data, checksum);
+        rebuilt.lastSavedUtcTicks = File.GetLastWriteTimeUtc(sourcePath).Ticks;
+        return rebuilt;
     }
 
     private SaveSlotMetadata TryReadPersistedMetadata(int slotId)
@@ -239,8 +265,9 @@ public sealed class FileSaveSlotRepository : ISaveSlotRepository
 
         File.WriteAllText(tempPath, json, Encoding.UTF8);
         if (File.Exists(path))
-            File.Delete(path);
-        File.Move(tempPath, path);
+            File.Replace(tempPath, path, null);
+        else
+            File.Move(tempPath, path);
     }
 
     private static string ComputeChecksum(string content)

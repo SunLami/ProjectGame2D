@@ -160,8 +160,9 @@ public sealed class SceneFlowService : MonoBehaviour
         BeginSceneLoad(MainMenuSceneName, enterMainMenu: true, resetBootstrap: true);
     }
 
-    private bool CanStartTransition(string sceneName) =>
-        !IsTransitioning && !string.IsNullOrWhiteSpace(sceneName);
+    internal bool CanStartTransition(string sceneName) =>
+        !IsTransitioning && !string.IsNullOrWhiteSpace(sceneName)
+        && Application.CanStreamedLevelBeLoaded(sceneName);
 
     private void BeginSceneLoad(string sceneName, bool enterMainMenu, bool resetBootstrap)
     {

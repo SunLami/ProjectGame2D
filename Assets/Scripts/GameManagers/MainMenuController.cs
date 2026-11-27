@@ -46,6 +46,13 @@ public sealed class MainMenuController : MonoBehaviour
             return;
         }
 
+        if (!SceneFlowService.Instance.CanStartTransition(_introSceneName)
+            || !Application.CanStreamedLevelBeLoaded(_gameplaySceneName))
+        {
+            OnOperationFailed?.Invoke("The intro or gameplay scene is unavailable.");
+            return;
+        }
+
         GameSaveData saveData = NewGameFactory.CreateDefault();
 
         if (!GameSessionManager.Instance.TryStartNewGame(slotId, _gameplaySceneName, saveData))
@@ -58,7 +65,10 @@ public sealed class MainMenuController : MonoBehaviour
         // records _gameplaySceneName (MapNhat) as its ultimate destination for Save/Return.
         // resetBootstrap: a fresh session must never inherit the previous session's manager state.
         if (!SceneFlowService.Instance.TryLoadGameplay(_introSceneName, resetBootstrap: true))
+        {
+            GameSessionManager.Instance.ClearSession();
             OnOperationFailed?.Invoke("Could not start loading the intro scene.");
+        }
     }
 
     public void RequestContinue(int slotId)
@@ -76,6 +86,12 @@ public sealed class MainMenuController : MonoBehaviour
         }
 
         string destination = SceneTravel.ResolveSavedScene(saveData, _gameplaySceneName);
+        if (!SceneFlowService.Instance.CanStartTransition(destination))
+        {
+            OnOperationFailed?.Invoke("The saved gameplay scene is unavailable.");
+            return;
+        }
+
         if (!GameSessionManager.Instance.TryStartLoadedGame(slotId, destination, saveData))
         {
             OnOperationFailed?.Invoke("Could not start the loaded game session.");
@@ -85,7 +101,10 @@ public sealed class MainMenuController : MonoBehaviour
         // resetBootstrap: loading a different save slot must never inherit the previous
         // session's manager state (leaking slot A's inventory/quest/etc. into slot B).
         if (!SceneFlowService.Instance.TryLoadGameplay(destination, resetBootstrap: true))
+        {
+            GameSessionManager.Instance.ClearSession();
             OnOperationFailed?.Invoke("Could not start loading the gameplay scene.");
+        }
     }
 
     /// <summary>Guards against double-submit: TryStartNewGame/TryStartLoadedGame would otherwise

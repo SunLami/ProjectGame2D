@@ -113,6 +113,7 @@ public class PauseMenuUI : MonoBehaviour
             GameStateManager.Instance.StateChanged -= HandleStateChanged;
 
         UnsubscribeFromSessionController();
+        _sessionController = null;
 
         if (GameSessionManager.Instance != null)
             GameSessionManager.Instance.DirtyStateChanged -= HandleDirtyChanged;
@@ -422,15 +423,28 @@ public class PauseMenuUI : MonoBehaviour
     // with the previous gameplay scene) and re-subscribe so Save/Load/Return/Quit stay responsive.
     private void EnsureSessionController()
     {
-        if (_sessionController != null)
+        var activeScene = UnityEngine.SceneManagement.SceneManager.GetActiveScene();
+        if (_sessionController != null && _sessionController.gameObject.scene == activeScene)
             return;
 
-        GameplaySessionController found = FindAnyObjectByType<GameplaySessionController>();
-        if (found == null)
-            return;
+        foreach (GameplaySessionController candidate in FindObjectsByType<GameplaySessionController>(FindObjectsSortMode.None))
+        {
+            if (candidate.gameObject.scene != activeScene)
+                continue;
 
-        _sessionController = found;
-        SubscribeToSessionController();
+            UnsubscribeFromSessionController();
+            _sessionController = candidate;
+            SubscribeToSessionController();
+            return;
+        }
+
+        // Some Bootstrap-led scene loads have no active world yet. A later bind will prefer the
+        // destination scene once it becomes active.
+        if (_sessionController == null)
+        {
+            _sessionController = FindAnyObjectByType<GameplaySessionController>();
+            SubscribeToSessionController();
+        }
     }
 
     private void SubscribeToSessionController()

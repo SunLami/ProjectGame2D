@@ -6,7 +6,7 @@ using UnityEngine;
 public sealed class TeleportDestination
 {
     public string id = "boss.earth";
-    public string displayName = "Earth Golem";
+    public string displayName = "Runic Golem";
     [TextArea(2, 4)] public string description = "A sealed stone courtyard guarded by a golem of living rock.";
     [Tooltip("Scene loaded through SceneFlowService (must be in Build Settings).")]
     public string sceneName = "BossArena_Earth";
