@@ -59,3 +59,12 @@ orders -6/-5/-4/-1 retained. This restores the original terrain/water interleavi
 all ground below Default negative-order VFX. Trees/buildings/actors untouched.
 Full-map Editor render verified: Captures/Skills/mapnhat_water_restored_editor.png.
 No Play Mode transition or runtime cast acceptance claimed.
+
+### MapDuy and boss arenas follow-up
+
+MapDuy had 13 terrain renderers in Default at orders above ground skill effects. They now use
+Ground1, including the water and filler layers, with their existing relative orders preserved.
+Trees, buildings and other props retain their sorting. The arena bases already sort at -200.
+All five world cameras include every GameObject layer, and each scene resolves all twelve
+skill prefab references and the optional Tsunami wrapper. MapNhat remains a skill-free safe zone
+under the existing village policy. This check is static and does not verify full cast playback.

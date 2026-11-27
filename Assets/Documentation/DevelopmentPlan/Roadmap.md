@@ -733,3 +733,5 @@ Rebound the production player skill catalog in all three boss arenas and in the 
 Boss health bars, Summoning Shrine and Boss Teleport now use Runic Golem, Wryshell Warden and Galewing Sentinent.
 
 Updated the five world location labels and the Edyth and Badda dialogue and shop names to the approved roster.
+
+MapDuy terrain now uses the existing Ground1 sorting contract so ground skill effects render above it. Audited skill prefab references and camera masks in all five production maps.
